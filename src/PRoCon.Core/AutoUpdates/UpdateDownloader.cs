@@ -19,7 +19,7 @@ namespace PRoCon.Core.AutoUpdates {
 
         public UpdateDownloader(string updatesDirectoryName) {
             UpdatesDirectoryName = updatesDirectoryName;
-            VersionChecker = new CDownloadFile("https://repo.myrcon.com/procon1/version3.php");
+            VersionChecker = new CDownloadFile("https://api.myrcon.net/procon/version");
             VersionChecker.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(VersionChecker_DownloadComplete);
         }
 
