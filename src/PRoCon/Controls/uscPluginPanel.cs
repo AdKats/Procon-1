@@ -708,7 +708,7 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
         }
 
         private void lnkMorePlugins_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            System.Diagnostics.Process.Start("https://forum.myrcon.com/forumdisplay.php?13-Plugins");
+            System.Diagnostics.Process.Start("https://myrcon.net/forum/9-plugins/");
         }
 
         private void uscPluginPanel_Resize(object sender, EventArgs e) {
