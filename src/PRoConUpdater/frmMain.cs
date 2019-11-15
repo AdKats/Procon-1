@@ -308,7 +308,7 @@ namespace PRoConUpdater {
             else {
                 this.Invoke(new EmptyParameterHandler(this.EndFileUpdatesError));
 
-                this.Invoke(new frmMain.AppendStatusHandler(this.AppendNewlineStatus), "Update canceled by user.  You can manually move the files from your /Updates dir or download the update from http://phogue.net");
+                this.Invoke(new frmMain.AppendStatusHandler(this.AppendNewlineStatus), "Update canceled by user.  You can manually move the files from your /Updates dir or download the update from https://myrcon.net");
             }
 
             try {

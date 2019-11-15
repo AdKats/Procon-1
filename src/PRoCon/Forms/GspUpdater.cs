@@ -51,7 +51,15 @@ namespace PRoCon.Forms {
         }
 
         private void cdfDownloading_DownloadProgressUpdate(PRoCon.Core.CDownloadFile cdfSender) {
-            this.lblDownloadStatus.Text = cdfSender.GetLabelProgress();
+            try
+            {
+                this.lblDownloadStatus.Text = cdfSender.GetLabelProgress();
+            }
+            catch (InvalidOperationException e)
+            {
+                // Handle exception
+            }
+
         }
 
         private void m_updateDownloader_DownloadUnzipComplete() {
