@@ -16,6 +16,12 @@ If you are looking for a list of available plugins, head over to the [plugins se
 ## Known bugs ##
 Please refer to the [issues section](https://github.com/AdKats/Procon-1/issues?labels=bug&page=1&state=open "List of known bugs for Procon 1") for issues tagged as "bug" for a list of known bugs.
 
+### 1.5.2.0 to 1.5.2.1 ###
+#### Core ####
+- Updated Automatic Updater to work with https://api.myrcon.net/procon/version
+- Updated usage posting to https://api.myrcon.net/procon/usage
+- Updated numerous references to myrcon.com and updated them to myrcon.net
+
 ### 1.5.1.1 to 1.5.2.0 ###
 #### Core ####
 - Added [UTF-8 support](https://github.com/I-MrFixIt-I/Procon-1/commit/0caaeadb06e04afedff9e02a42b2f893eb07beeb)
