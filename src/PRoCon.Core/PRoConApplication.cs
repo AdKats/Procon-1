@@ -2418,7 +2418,7 @@ namespace PRoCon.Core {
                 this.BeginRssUpdate(this);
             }
 
-            CDownloadFile downloadRssFeed = new CDownloadFile("https://forum.myrcon.com/external.php?do=rss&type=newcontent&sectionid=1&days=120&count=10");
+            CDownloadFile downloadRssFeed = new CDownloadFile("https://myrcon.net/index.php?app=core&module=global&section=rss&type=forums&id=1");
             downloadRssFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadComplete);
             downloadRssFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadError);
             downloadRssFeed.BeginDownload();
@@ -2670,7 +2670,8 @@ namespace PRoCon.Core {
             return FrameworkName;
         }
 
-        private void SendUsageData() {
+        private void SendUsageData()
+        {
 
             XmlDocument document = new XmlDocument();
             XmlNode usage = document.CreateElement("usage");
@@ -2740,7 +2741,7 @@ namespace PRoCon.Core {
 
             try {
                 // Create a request using a URL that can receive a post. 
-                WebRequest request = WebRequest.Create("http://myrcon.com/procon/usage/report");
+                WebRequest request = WebRequest.Create("https://api.myrcon.net/procon/usage");
                 request.Method = "POST";
 
                 string postData = document.OuterXml;
@@ -2765,11 +2766,12 @@ namespace PRoCon.Core {
                 response.Close();
             }
             catch (Exception) {
-                // Oh Noes our usage data!!
+                // Say nada
             }
         }
 
         private void ReconnectVersionChecker() {
+            this.SendUsageData();
             // Send a report naow, next in 30 mins.
             if (this.m_blInitialUsageDataSent == false && this.OptionsSettings.AllowAnonymousUsageData == true) {
                 this.SendUsageData();

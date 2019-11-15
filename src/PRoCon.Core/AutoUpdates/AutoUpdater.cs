@@ -55,7 +55,7 @@ namespace PRoCon.Core.AutoUpdates {
             Arguments = args;
             Application = praApplication;
 
-            VersionChecker = new CDownloadFile("https://repo.myrcon.com/procon1/version3.php");
+            VersionChecker = new CDownloadFile("https://api.myrcon.net/procon/version");
             VersionChecker.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(VersionChecker_DownloadComplete);
             DownloadingLocalizations = new List<CDownloadFile>();
             DownloadingGameConfigs = new List<CDownloadFile>();

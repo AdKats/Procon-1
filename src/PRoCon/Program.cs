@@ -81,7 +81,7 @@ namespace PRoCon {
                     }
                     catch (Exception e) {
                         FrostbiteConnection.LogError("Application error", String.Empty, e);
-                        MessageBox.Show("Procon ran into a critical error, but hopefully it logged that error in DEBUG.txt.  Please post/pm/email this to phogue at forum.myrcon.com");
+                        MessageBox.Show("Procon ran into a critical error, but hopefully it logged that error in DEBUG.txt. Please post this to the forums at https://myrcon.net/");
                     }
                     finally {
                         if (Program.ProconApplication != null) {
