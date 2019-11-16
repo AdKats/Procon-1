@@ -116,11 +116,11 @@ namespace PRoCon.Forms {
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            System.Diagnostics.Process.Start("https://myrcon.com/");
+            System.Diagnostics.Process.Start("https://myrcon.net/");
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            System.Diagnostics.Process.Start("https://forum.myrcon.com/");
+            System.Diagnostics.Process.Start("https://myrcon.net/");
         }
 
         private void okButton_Click(object sender, EventArgs e) {

@@ -19,7 +19,7 @@ namespace PRoCon.Core.AutoUpdates {
 
         public UpdateDownloader(string updatesDirectoryName) {
             UpdatesDirectoryName = updatesDirectoryName;
-            VersionChecker = new CDownloadFile("https://repo.myrcon.com/procon1/version3.php");
+            VersionChecker = new CDownloadFile("https://api.myrcon.net/procon/version");
             VersionChecker.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(VersionChecker_DownloadComplete);
         }
 
@@ -52,7 +52,7 @@ namespace PRoCon.Core.AutoUpdates {
             if (versionData.Length >= 4 && (ProconUpdate == null || ProconUpdate.FileDownloading == false)) {
                 // Download file, alert or auto apply once complete with release notes.
                 ProconUpdate = new CDownloadFile(versionData[2], versionData[3]);
-                ProconUpdate.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(cdfPRoConUpdate_DownloadComplete);
+                ProconUpdate.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(CdfPRoConUpdate_DownloadComplete);
 
                 if (UpdateDownloading != null) {
                     this.UpdateDownloading(ProconUpdate);
@@ -62,7 +62,7 @@ namespace PRoCon.Core.AutoUpdates {
             }
         }
 
-        private void cdfPRoConUpdate_DownloadComplete(CDownloadFile sender) {
+        private void CdfPRoConUpdate_DownloadComplete(CDownloadFile sender) {
             if (String.Compare(MD5Data(sender.CompleteFileData), (string) sender.AdditionalData, StringComparison.OrdinalIgnoreCase) == 0) {
                 string updatesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UpdatesDirectoryName);
 
@@ -87,7 +87,7 @@ namespace PRoCon.Core.AutoUpdates {
             }
             else {
                 if (CustomDownloadError != null) {
-                    this.CustomDownloadError("Downloaded file failed checksum, please try again or download direct from https://myrcon.com");
+                    this.CustomDownloadError("Downloaded file failed checksum, please try again or download direct from https://myrcon.net");
                 }
             }
         }

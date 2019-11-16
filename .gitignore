@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 
 # Procon specific folders
 /builds
+/src/.vs
+/.vs
