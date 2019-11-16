@@ -297,7 +297,7 @@ namespace PRoCon.Core.Events {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerRoundBanned, target);
                 }
                 else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
-                    this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerTimedBanned, target, (cbiAddedBan.BanLength.Seconds / 60).ToString());
+                    this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
             else if (String.Compare(cbiAddedBan.IdType, "ip", true) == 0) {
@@ -314,7 +314,7 @@ namespace PRoCon.Core.Events {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.IPRoundBanned, target);
                 }
                 else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
-                    this.ProcessEvent(EventType.Banlist, CapturableEvents.IPTimedBanned, target, (cbiAddedBan.BanLength.Seconds / 60).ToString());
+                    this.ProcessEvent(EventType.Banlist, CapturableEvents.IPTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
             else if (String.Compare(cbiAddedBan.IdType, "guid", true) == 0) {
@@ -331,7 +331,7 @@ namespace PRoCon.Core.Events {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDRoundBanned, target);
                 }
                 else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
-                    this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDTimedBanned, target, (cbiAddedBan.BanLength.Seconds / 60).ToString());
+                    this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
         }

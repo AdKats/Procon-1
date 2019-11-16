@@ -49,7 +49,6 @@ namespace PRoCon.Core.Plugin {
                 null,
                 constructArguments,
                 null, 
-                null, 
                 null).Unwrap();
 
             this.LoadedPlugins.Add(loadedPlugin);

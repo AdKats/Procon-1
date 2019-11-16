@@ -18,9 +18,15 @@ namespace PRoCon.Core {
             private set;
         }
 
-        public int Seconds {
+        public int Timeout {
             get;
             set;
+        }
+
+		[Obsolete("This property is obsolete. Please use Timeout instead.", false)]
+		public int Seconds {
+            get { return this.Timeout; }
+			set { this.Timeout = value; }
         }
 
         public TimeoutSubset(List<string> lstTimeoutSubsetWords) {
@@ -31,14 +37,16 @@ namespace PRoCon.Core {
             if (String.Compare(lstTimeoutSubsetWords[0], "perm") == 0) {
                 this.Subset = TimeoutSubsetType.Permanent;
             }
-            else if (String.Compare(lstTimeoutSubsetWords[0], "round") == 0) {
-                this.Subset = TimeoutSubsetType.Round;
-            }
-            else if (lstTimeoutSubsetWords.Count == 2 && String.Compare(lstTimeoutSubsetWords[0], "seconds") == 0 && int.TryParse(lstTimeoutSubsetWords[1], out iLength) == true) {
-                this.Subset = TimeoutSubsetType.Seconds;
-                this.Seconds = iLength;
-            }
-        }
+			else if (String.Compare(lstTimeoutSubsetWords[0], "rounds") == 0 && (lstTimeoutSubsetWords.Count == 3 && int.TryParse(lstTimeoutSubsetWords[2], out iLength) == true) ||
+																				(lstTimeoutSubsetWords.Count == 2 && int.TryParse(lstTimeoutSubsetWords[1], out iLength) == true)) {
+				this.Subset = TimeoutSubsetType.Round;
+				this.Timeout = iLength;
+			}
+			else if (String.Compare(lstTimeoutSubsetWords[0], "seconds") == 0 && lstTimeoutSubsetWords.Count >= 2 && int.TryParse(lstTimeoutSubsetWords[1], out iLength) == true) {
+				this.Subset = TimeoutSubsetType.Seconds;
+				this.Timeout = iLength;
+			}
+		}
 
         public TimeoutSubset(TimeoutSubsetType enTimeoutType) {
             this.Subset = enTimeoutType;
@@ -55,13 +63,13 @@ namespace PRoCon.Core {
             }
             else if (int.TryParse(strServed, out iServed) == true && int.TryParse(strLength, out iLength) == true) {
                 this.Subset = TimeoutSubsetType.Seconds;
-                this.Seconds = (iLength - iServed) * 60;
+                this.Timeout = (iLength - iServed) * 60;
             }
         }
 
         public TimeoutSubset(TimeoutSubsetType enTimeoutType, int iSeconds) {
             this.Subset = enTimeoutType;
-            this.Seconds = iSeconds;
+            this.Timeout = iSeconds;
         }
 
 
@@ -69,10 +77,10 @@ namespace PRoCon.Core {
 
             int iRequiredLength = 1;
 
-            if (String.Compare(strSubsetType, "seconds") == 0) {
+            if (String.Compare(strSubsetType, "seconds") == 0 || String.Compare(strSubsetType, "rounds") == 0) {
                 iRequiredLength = 2;
             }
-            // perm and round only need a List<string> with 1 string in it.
+            // perm only need a List<string> with 1 string in it.
 
             return iRequiredLength;
         }

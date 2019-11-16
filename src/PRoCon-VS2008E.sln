@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRoCon", "PRoCon\PRoCon.csproj", "{4A9D8238-7DA4-4FB0-B0AA-9B6B01E425F0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{43B6B00A-374D-4170-9153-50E29167B304} = {43B6B00A-374D-4170-9153-50E29167B304}
@@ -82,5 +84,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C4DF1E14-89BD-47F0-A74B-F42AA5693FC0}
 	EndGlobalSection
 EndGlobal

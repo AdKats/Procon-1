@@ -1,5 +1,4 @@
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -8,9 +7,12 @@ using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using System.Security.Policy;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Microsoft.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
 using PRoCon.Core.Accounts;
 using PRoCon.Core.Battlemap;
 using PRoCon.Core.Maps;
@@ -517,58 +519,54 @@ namespace PRoCon.Core.Plugin {
             }
         }
 
-        private CompilerParameters GenerateCompilerParameters() {
-            var parameters = new CompilerParameters();
+		private CSharpCompilationOptions GetCSharpCompilationOptions(bool enableDebugging)
+		{
+			CSharpCompilationOptions compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary).WithOverflowChecks(true);
 
-            parameters.ReferencedAssemblies.Add("System.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
-            parameters.ReferencedAssemblies.Add("System.Data.dll");
-            parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
-            parameters.ReferencedAssemblies.Add("System.Xml.dll");
-            parameters.ReferencedAssemblies.Add("MySql.Data.dll");
-            parameters.ReferencedAssemblies.Add("PRoCon.Core.dll");
-            parameters.GenerateInMemory = false;
-            parameters.IncludeDebugInformation = this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging;
+			if (enableDebugging)
+			{
+				compilationOptions = compilationOptions.WithOptimizationLevel(OptimizationLevel.Debug);
+			}
+			else
+			{
+				compilationOptions = compilationOptions.WithOptimizationLevel(OptimizationLevel.Release);
+			}
 
-            if (this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging == true)
-            {
-                Directory.CreateDirectory(PluginDebugTempDirectory); // checks also if folder exists, in that case does nothing
-                
-                if (!Directory.Exists(PluginDebugTempDirectory))
-                {
-                    WritePluginConsole("^1PluginManager.CompilePlugin(): failed to create temp directory");
-                    // TODO: Disable debugging when directory creation fails?
-                    //parameters.IncludeDebugInformation = false;
-                }
-            }
-            else
-            {
-                try
-                {
-                    if (Directory.Exists(PluginDebugTempDirectory))
-                    {
-                        Directory.Delete(PluginDebugTempDirectory, true);
-                    }
-                }
-                catch (Exception e)
-                {
-                    WritePluginConsole("^1PluginManager.CompilePlugin(): delete directory error: {0};", e.Message);
-                }
-            }
+			return compilationOptions;
+		}
 
-            parameters.OutputAssembly = "Default.dll";
+		private CSharpParseOptions GetCSharpParseOptions()
+		{
+			return CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
+		}
 
-            return parameters;
-        }
+		private IEnumerable<MetadataReference> GetCSharpCompilationReferences()
+		{
+			string dotnetRuntimePath = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "{0}.dll");
+			string proconRuntimePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "{0}.dll");
 
-        private void PrintPluginResults(FileInfo pluginFile, CompilerResults pluginResults) {
+			return new[]
+			{
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "mscorlib")),
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System")),
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Core")),
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Data")),
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Windows.Forms")),
+				MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Xml")),
+
+				MetadataReference.CreateFromFile(string.Format(proconRuntimePath, "MySql.Data")),
+				MetadataReference.CreateFromFile(string.Format(proconRuntimePath, "PRoCon.Core"))
+			};
+		}
+
+        private void PrintPluginResults(FileInfo pluginFile, EmitResult pluginResults) {
             // Produce compiler errors (if any)
-            if (pluginResults.Errors.HasErrors == true && String.Compare(pluginResults.Errors[0].ErrorNumber, "CS0016", StringComparison.Ordinal) != 0) {
+            if (pluginResults.Success == false) {
                 WritePluginConsole("Compiling {0}... ^1Errors^0 or ^3Warnings", pluginFile.Name);
 
-                foreach (CompilerError errComp in pluginResults.Errors) {
-                    if (String.Compare(errComp.ErrorNumber, "CS0016", StringComparison.Ordinal) != 0 && errComp.IsWarning == false) {
-                        WritePluginConsole("\t^1{0} (Line: {1}, C: {2}) {3}: {4}", pluginFile.Name, errComp.Line, errComp.Column, errComp.ErrorNumber, errComp.ErrorText);
+                foreach (Diagnostic diagnostic in pluginResults.Diagnostics) {
+                    if (diagnostic.Severity == DiagnosticSeverity.Error) {
+                        WritePluginConsole("\t^1{0}: {1}", pluginFile.Name, diagnostic.ToString());
                     }
                 }
             }
@@ -630,7 +628,7 @@ namespace PRoCon.Core.Plugin {
             return fullPluginSource;
         }
 
-        private void CompilePlugin(FileInfo pluginFile, string pluginClassName, CodeDomProvider pluginsCodeDomProvider, CompilerParameters parameters) {
+        private void CompilePlugin(FileInfo pluginFile, string pluginClassName, CSharpCompilationOptions compilationOptions) {
 
             // 1. Grab the full source of this plugin
             String fullPluginSource = this.BuildPluginSource(pluginFile);
@@ -642,6 +640,9 @@ namespace PRoCon.Core.Plugin {
             bool requiresRecompiling = this.PluginCache.IsModified(pluginClassName, pluginSourceHash);
 
             String outputAssembly = Path.Combine(PluginBaseDirectory, pluginClassName + ".dll");
+			// we don't need the pdb or xml file if plugin debugging is disabled
+			String pdbPath = this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging ? Path.Combine(PluginBaseDirectory, pluginClassName + ".pdb") : null;
+			String xmlDocPath = this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging ? Path.Combine(PluginBaseDirectory, pluginClassName + ".xml") : null;
 
             // 2.1: check if plugin debugging is enabled, always force compilation if true
             if (requiresRecompiling == true || File.Exists(outputAssembly) == false || this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging == true)
@@ -656,14 +657,27 @@ namespace PRoCon.Core.Plugin {
                     }
                 }
 
-                try {
-                    parameters.OutputAssembly = outputAssembly;
-                    if (this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging == true) {
-                        parameters.TempFiles = new TempFileCollection(PluginDebugTempDirectory, true);
-                    }
+				try
+				{
+					// 4. Prepare compilation of the plugin
+					CSharpParseOptions parseOptions = this.GetCSharpParseOptions();
 
-                    // 4. Now compile the plugin
-                    this.PrintPluginResults(pluginFile, pluginsCodeDomProvider.CompileAssemblyFromSource(parameters, fullPluginSource));
+					// create a list of syntax trees and add the main source file by default
+					List<SyntaxTree> syntaxTrees = new List<SyntaxTree> { CSharpSyntaxTree.ParseText(fullPluginSource, parseOptions, pluginFile.FullName, Encoding.UTF8) };
+
+					// get all related partial source files and add them to the list too
+					DirectoryInfo pluginsDirectoryInfo = new DirectoryInfo(PluginBaseDirectory);
+					foreach (FileInfo partialPluginFile in pluginsDirectoryInfo.GetFiles(pluginClassName + ".*.cs"))
+					{
+						string partialPluginSource = File.ReadAllText(partialPluginFile.FullName);
+						syntaxTrees.Add(CSharpSyntaxTree.ParseText(partialPluginSource, parseOptions, partialPluginFile.FullName, Encoding.UTF8));
+					}
+
+					IEnumerable<MetadataReference> compilationReferences = this.GetCSharpCompilationReferences();
+					CSharpCompilation compilation = CSharpCompilation.Create(pluginClassName + ".dll", syntaxTrees, compilationReferences, compilationOptions);
+
+					// 4.1. Now compile the plugin
+					this.PrintPluginResults(pluginFile, compilation.Emit(outputAssembly, pdbPath, xmlDocPath));
 
                     // 5. Add/Update the storage cache for this plugin.
                     this.PluginCache.Cache(new PluginCacheEntry() {
@@ -777,14 +791,8 @@ namespace PRoCon.Core.Plugin {
                 WritePluginConsole("Moving legacy plugins..");
                 MoveLegacyPlugins();
 
-                WritePluginConsole("Creating compiler..");
-                // CodeDomProvider pluginsCodeDomProvider = CodeDomProvider.CreateProvider("CSharp");
-                var providerOptions = new Dictionary<String, String>();
-                providerOptions.Add("CompilerVersion", "v3.5");
-                CodeDomProvider pluginsCodeDomProvider = new CSharpCodeProvider(providerOptions);
-
-                WritePluginConsole("Configuring compiler..");
-                CompilerParameters parameters = GenerateCompilerParameters();
+                WritePluginConsole("Creating and configuring compiler..");
+				CSharpCompilationOptions compilationOptions = this.GetCSharpCompilationOptions(this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging);
                 // AppDomainSetup domainSetup = new AppDomainSetup() { ApplicationBase = this.PluginBaseDirectory };
                 // Start of XpKillers mono workaround
 
@@ -834,9 +842,18 @@ namespace PRoCon.Core.Plugin {
                     {
                         className = Regex.Replace(pluginFile.Name, "\\.cs$", "");
 
+						// skip partial classes (only continue with the "main" partial class, the rest is getting added on compilation)
+						// files containing a dot (.) will be treated as additional partial classes/files, the main file does not contain any dots
+						// Example: MyPlugin.cs => Main file, so the file name equals the class name
+						//			MyPlugin.Additional.cs => additional file(s)
+						if (className.Contains("."))
+						{
+							continue;
+						}
+
                         if (IgnoredPluginClassNames.Contains(className) == false)
                         {
-                            CompilePlugin(pluginFile, className, pluginsCodeDomProvider, parameters);
+                            CompilePlugin(pluginFile, className, compilationOptions);
 
                             LoadPlugin(className, PluginFactory, pluginSandboxPermissions.IsUnrestricted());
                         }
@@ -853,8 +870,6 @@ namespace PRoCon.Core.Plugin {
                 }
 
                 this.PluginCache.Save(Path.Combine(this.PluginBaseDirectory, "PluginCache.xml"));
-
-                pluginsCodeDomProvider.Dispose();
             }
             catch (Exception e) {
                 WritePluginConsole(e.Message);

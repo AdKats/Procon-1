@@ -1150,14 +1150,15 @@ namespace PRoCon.Controls {
                         lviBanEntry.SubItems["timeremaining"].Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Permanent", null);
                     }
                     else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Round) {
-                        lviBanEntry.SubItems["timeremaining"].Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Round", null);
+                        lviBanEntry.SubItems["timeremaining"].Text =
+							ctsTimeout.Timeout + " " + this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Round", null);
                     }
                     else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
 
-                        if (ctsTimeout.Seconds > 0) {
-                            lviBanEntry.SubItems["timeremaining"].Text = this.SecondsToText((UInt32)ctsTimeout.Seconds, this.ma_strTimeDescriptionsShort);
+                        if (ctsTimeout.Timeout > 0) {
+                            lviBanEntry.SubItems["timeremaining"].Text = this.SecondsToText((UInt32)ctsTimeout.Timeout, this.ma_strTimeDescriptionsShort);
 
-                            ctsTimeout.Seconds -= (this.tmrRefreshBanlist.Interval / 1000);
+                            ctsTimeout.Timeout -= (this.tmrRefreshBanlist.Interval / 1000);
                         }
                         else {
                             // I was going to remove it here but I want it to display unbanned until next banList update.

@@ -23,12 +23,12 @@
         }
 
         public CBanInfo(List<string> lstBanWords) {
-            // Id-type, id, ban-type, time and reason
-            // Used to pull data from a banList.list command which is always 5 words.
-            if (lstBanWords.Count == 5) {
+            // Id-type, id, ban-type, time, (rounds) and reason
+            // Used to pull data from a banList.list command which is 5 or 6 words long.
+            if (lstBanWords.Count == 5 || lstBanWords.Count == 6) {
 
                 this.IdType = lstBanWords[0];
-                this.BanLength = new TimeoutSubset(lstBanWords.GetRange(2, 2));
+                this.BanLength = new TimeoutSubset(lstBanWords.GetRange(2, lstBanWords.Count - 3));
 
                 if (String.Compare(lstBanWords[0], "name") == 0 || String.Compare(lstBanWords[0], "persona") == 0) {
                     this.SoldierName = lstBanWords[1];
@@ -40,7 +40,7 @@
                     this.Guid = lstBanWords[1];
                 }
 
-                this.Reason = lstBanWords[4];
+                this.Reason = lstBanWords[lstBanWords.Count - 1];
             }
         }
 
@@ -106,7 +106,6 @@
             else {
                 for (int i = 0; i < lstWords.Count / 6; i++) {
                     List<string> words = lstWords.GetRange(i * 6, 6);
-                    words.RemoveAt(4);
 
                     lstBans.Add(new CBanInfo(words) {
                         Offset = offset + i

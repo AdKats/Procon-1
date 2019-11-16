@@ -1329,7 +1329,7 @@ namespace PRoCon.Core.Remote.Layer {
                 }
                 else if (newBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds && this.Privileges.CanTemporaryBanPlayers == true) {
                     
-                    if (newBan.BanLength.Seconds <= this.Client.Variables.GetVariable("TEMP_BAN_CEILING", 3600)) {
+                    if (newBan.BanLength.Timeout <= this.Client.Variables.GetVariable("TEMP_BAN_CEILING", 3600)) {
                         this.Client.SendProconLayerPacket(this, packet);
                     }
                     else {
