@@ -592,6 +592,7 @@ namespace PRoCon.Controls {
         private void m_prcConnection_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal) {
             this.InvokeIfRequired(() => {
                 if (String.Compare(this.Client.GameType, "MOH", true) == 0) {
+#pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
                                                             this.m_prcConnection.GetPlaylistByMapname(mapFileName),
@@ -601,8 +602,10 @@ namespace PRoCon.Controls {
                                                             this.m_prcConnection.CurrentServerInfo.TotalRounds,
                                                             this.m_prcConnection.CurrentServerInfo.TeamScores,
                                                             this.m_prcConnection.CurrentServerInfo.ConnectionState));
+#pragma warning restore CS0612 // Type or member is obsolete
                 }
                 else {
+#pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
                                                             this.m_prcConnection.GetPlaylistByMapname(mapFileName),
@@ -612,6 +615,7 @@ namespace PRoCon.Controls {
                                                             this.m_prcConnection.CurrentServerInfo.TotalRounds,
                                                             this.m_prcConnection.CurrentServerInfo.TeamScores,
                                                             this.m_prcConnection.CurrentServerInfo.ConnectionState));
+#pragma warning restore CS0612 // Type or member is obsolete
                 }
                 this.m_prcConnection.Game.SendGetMaplistNextLevelIndexPacket();
             });
@@ -624,6 +628,7 @@ namespace PRoCon.Controls {
         private void m_prcConnection_LevelLoaded(FrostbiteClient sender, string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal) {
             this.InvokeIfRequired(() => {
                 if (String.Compare(this.Client.GameType, "BF3", true) == 0 || String.Compare(this.Client.GameType, "MOHW", true) == 0) {
+#pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
                                                             Gamemode,
@@ -633,6 +638,7 @@ namespace PRoCon.Controls {
                                                             this.m_prcConnection.CurrentServerInfo.TotalRounds,
                                                             this.m_prcConnection.CurrentServerInfo.TeamScores,
                                                             this.m_prcConnection.CurrentServerInfo.ConnectionState));
+#pragma warning restore CS0612 // Type or member is obsolete
                     this.m_prcConnection.Game.SendGetMaplistGetMapIndicesPacket();
                 }
             });
