@@ -74,7 +74,7 @@
             this.chkAgreeUsageReports.Name = "chkAgreeUsageReports";
             this.chkAgreeUsageReports.Size = new System.Drawing.Size(397, 17);
             this.chkAgreeUsageReports.TabIndex = 4;
-            this.chkAgreeUsageReports.Text = "I\'m awesome and wish to send anonymous usage reports to http://myrcon.com";
+            this.chkAgreeUsageReports.Text = "I\'m awesome and wish to send anonymous usage reports to https://myrcon.net";
             this.chkAgreeUsageReports.UseVisualStyleBackColor = true;
             // 
             // lnkDownloadPdf
