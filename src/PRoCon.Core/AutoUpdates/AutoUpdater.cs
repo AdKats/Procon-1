@@ -303,7 +303,7 @@ namespace PRoCon.Core.AutoUpdates {
             }
             else {
                 if (CustomDownloadError != null) {
-                    this.CustomDownloadError("Downloaded file failed checksum, please try again or download direct from https://myrcon.com");
+                    this.CustomDownloadError("Downloaded file failed checksum, please try again or download direct from https://myrcon.net");
                 }
 
                 //this.Invoke(new DownloadErrorDelegate(DownloadError_Callback), "Downloaded file failed checksum, please try again or download direct from https://myrcon.com");
