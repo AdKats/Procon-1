@@ -202,7 +202,7 @@ For example, an APHP that has hosted an average of (210) layers per month would 
         }
 
         private void lnkDownloadPdf_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            System.Diagnostics.Process.Start("http://myrcon.com/licenses/myrcon.pdf");
+            System.Diagnostics.Process.Start("https://myrcon.net/licenses/myrcon.pdf");
         }
     }
 }

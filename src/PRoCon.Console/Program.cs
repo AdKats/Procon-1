@@ -52,7 +52,7 @@ namespace PRoCon.Console {
                     System.Console.WriteLine("Procon Frostbite");
                     System.Console.WriteLine("================");
                     System.Console.WriteLine("By executing this application you agree to the license available at:");
-                    System.Console.WriteLine("\thttp://myrcon.com/licenses/myrcon.pdf");
+                    System.Console.WriteLine("\thttps://myrcon.net/licenses/myrcon.pdf");
                     System.Console.WriteLine("If you do not agree you must immediately exit this application.");
                     System.Console.WriteLine("================");
                     System.Console.WriteLine("This is a cut down version of PRoCon.exe to be used by GSPs and PRoCon Hosts.");
