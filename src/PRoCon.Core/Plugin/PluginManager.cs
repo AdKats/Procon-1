@@ -818,7 +818,7 @@ namespace PRoCon.Core.Plugin {
 
                 WritePluginConsole("Building sandbox..");
                 var hostEvidence = new Evidence();
-                hostEvidence.AddHostEvidence(new Zone(SecurityZone.MyComputer));
+                hostEvidence.AddHost(new Zone(SecurityZone.MyComputer));
 
                 AppDomainSandbox = AppDomain.CreateDomain(ProconClient.HostName + ProconClient.Port + "Engine", hostEvidence, domainSetup, pluginSandboxPermissions, PluginManager.GetStrongName(AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == "MySql.Data")));
 
