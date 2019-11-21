@@ -18,17 +18,20 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
 using PRoCon.Core.Logging;
 using PRoCon.Core.Remote;
+using System;
 
 // This class will move to .Core once ProConClient is in .Core.
 
-namespace PRoCon.Core.Consoles {
-    public class PunkbusterConsole : Loggable {
+namespace PRoCon.Core.Consoles
+{
+    public class PunkbusterConsole : Loggable
+    {
         protected readonly PRoConClient Client;
 
-        public PunkbusterConsole(PRoConClient client) : base() {
+        public PunkbusterConsole(PRoConClient client) : base()
+        {
             Client = client;
 
             FileHostNamePort = Client.FileHostNamePort;
@@ -42,21 +45,25 @@ namespace PRoCon.Core.Consoles {
 
         public event WriteConsoleHandler WriteConsole;
 
-        private void m_prcClient_SendPunkbusterMessage(FrostbiteClient sender, string punkbusterMessage) {
+        private void m_prcClient_SendPunkbusterMessage(FrostbiteClient sender, string punkbusterMessage)
+        {
             Write("^2" + punkbusterMessage.TrimEnd('\r', '\n').Replace("{", "{{").Replace("}", "}}"));
         }
 
-        private void m_prcClient_PunkbusterMessage(FrostbiteClient sender, string punkbusterMessage) {
+        private void m_prcClient_PunkbusterMessage(FrostbiteClient sender, string punkbusterMessage)
+        {
             Write(punkbusterMessage.TrimEnd('\r', '\n').Replace("{", "{{").Replace("}", "}}"));
         }
 
-        public void Write(string strFormat, params string[] arguments) {
+        public void Write(string strFormat, params string[] arguments)
+        {
             DateTime dtLoggedTime = DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime();
             string strText = String.Format(strFormat, arguments);
 
             WriteLogLine(String.Format("[{0}] {1}", dtLoggedTime.ToString("HH:mm:ss"), strText));
 
-            if (WriteConsole != null) {
+            if (WriteConsole != null)
+            {
                 this.WriteConsole(dtLoggedTime, strText);
             }
         }

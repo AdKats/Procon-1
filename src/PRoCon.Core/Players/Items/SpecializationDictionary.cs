@@ -18,29 +18,35 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon.Core.Players.Items {
+namespace PRoCon.Core.Players.Items
+{
 
     [Serializable]
-    public class SpecializationDictionary : KeyedCollection<string, Specialization>, ICloneable {
+    public class SpecializationDictionary : KeyedCollection<string, Specialization>, ICloneable
+    {
 
-        protected override string GetKeyForItem(Specialization item) {
+        protected override string GetKeyForItem(Specialization item)
+        {
             return item.Name;
         }
 
-        public object Clone() {
+        public object Clone()
+        {
             return this.MemberwiseClone();
         }
 
-        public new Specialization this[string key] {
-            get {
+        public new Specialization this[string key]
+        {
+            get
+            {
                 Specialization keyedSpecialization = null;
 
-                foreach (Specialization spec in this) {
-                    if (String.Compare(spec.Name, key, true) == 0) {
+                foreach (Specialization spec in this)
+                {
+                    if (String.Compare(spec.Name, key, true) == 0)
+                    {
                         keyedSpecialization = spec;
                         break;
                     }
@@ -50,12 +56,15 @@ namespace PRoCon.Core.Players.Items {
             }
         }
 
-        public new bool Contains(string key) {
+        public new bool Contains(string key)
+        {
 
             bool isKeyed = false;
 
-            foreach (Specialization spec in this) {
-                if (String.Compare(spec.Name, key, true) == 0) {
+            foreach (Specialization spec in this)
+            {
+                if (String.Compare(spec.Name, key, true) == 0)
+                {
                     isKeyed = true;
                     break;
                 }

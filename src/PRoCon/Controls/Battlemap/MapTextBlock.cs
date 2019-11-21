@@ -1,71 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap {
-    public class MapTextBlock : IDisposable {
+namespace PRoCon.Controls.Battlemap
+{
+    public class MapTextBlock : IDisposable
+    {
 
-        public float HorizontalSpacing {
-            get {
+        public float HorizontalSpacing
+        {
+            get
+            {
                 return 5.0F;
             }
         }
 
-        public float VerticalSpacing {
-            get {
+        public float VerticalSpacing
+        {
+            get
+            {
                 return 5.0F;
             }
         }
 
-        public List<MapTextBlockString> Strings {
+        public List<MapTextBlockString> Strings
+        {
             get;
             private set;
         }
 
-        public MapTextBlock() {
+        public MapTextBlock()
+        {
             this.Strings = new List<MapTextBlockString>();
         }
 
-        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons) {
+        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons)
+        {
 
             PointF BlockStringDrawOffset = new PointF(pntDrawOffset.X, pntDrawOffset.Y);
 
-            foreach (MapTextBlockString blockString in this.Strings) {
+            foreach (MapTextBlockString blockString in this.Strings)
+            {
                 blockString.Draw(g, BlockStringDrawOffset, pntMouseLocation, mbButtons);
 
-                if (blockString.NewLine == true) {
+                if (blockString.NewLine == true)
+                {
                     BlockStringDrawOffset.X = pntDrawOffset.X;
                     BlockStringDrawOffset.Y += blockString.HotSpot.Height + VerticalSpacing;
                 }
-                else {
+                else
+                {
                     BlockStringDrawOffset.X += blockString.HotSpot.Width + HorizontalSpacing;
                 }
             }
 
         }
 
-        public RectangleF GetBounds() {
+        public RectangleF GetBounds()
+        {
 
             RectangleF returnRec = new RectangleF();
 
             float lineWidth = 0.0F;
             float totalHeight = 0.0F;
 
-            foreach (MapTextBlockString blockString in this.Strings) {
+            foreach (MapTextBlockString blockString in this.Strings)
+            {
 
                 lineWidth += blockString.HotSpot.Width + HorizontalSpacing;
 
-                if (blockString.NewLine == true) {
+                if (blockString.NewLine == true)
+                {
                     returnRec.Width = Math.Max(returnRec.Width, lineWidth);
                     lineWidth = 0;
 
                     totalHeight += blockString.HotSpot.Height + VerticalSpacing;
                 }
-                else if (totalHeight == 0.0F) {
+                else if (totalHeight == 0.0F)
+                {
                     totalHeight = blockString.HotSpot.Height + VerticalSpacing;
                 }
             }
@@ -77,8 +90,10 @@ namespace PRoCon.Controls.Battlemap {
 
         #region IDisposable Members
 
-        public void Dispose() {
-            foreach (MapTextBlockString blockString in this.Strings) {
+        public void Dispose()
+        {
+            foreach (MapTextBlockString blockString in this.Strings)
+            {
                 blockString.Dispose();
             }
         }

@@ -17,12 +17,10 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PRoCon.Core.Remote {
-    public enum ConnectionState {
+namespace PRoCon.Core.Remote
+{
+    public enum ConnectionState
+    {
         None,
         Connected,      // Connection is connected fine
         Connecting,     // Connection is currently attempting a connection

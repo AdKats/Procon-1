@@ -1,5 +1,5 @@
-﻿namespace PRoCon.Core.Settings {
-    using System;
+﻿namespace PRoCon.Core.Settings
+{
     using Core.Remote;
 
     /// <summary>
@@ -7,7 +7,8 @@
     /// 
     /// @copyright by macx
     /// </summary>
-    public class ServerSettings {
+    public class ServerSettings
+    {
         private PRoConClient m_prcClient;
 
         public string GamePassword { get; set; }
@@ -32,11 +33,13 @@
         public string PublicDescription { get; set; }
         public string BannerUrl { get; set; }
 
-        public ServerSettings() {
+        public ServerSettings()
+        {
 
         }
 
-        public ServerSettings(PRoConClient prcClient) {
+        public ServerSettings(PRoConClient prcClient)
+        {
             this.m_prcClient = prcClient;
 
             this.m_prcClient.Game.GamePassword += new FrostbiteClient.PasswordHandler(m_prcClient_GamePassword);
@@ -61,84 +64,105 @@
 
         }
 
-        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsThirdPersonVehicleCamActivated = isEnabled;
         }
 
-        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsMiniMapSpottingActivated = isEnabled;
         }
 
-        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.Is3DSpottingActivated = isEnabled;
         }
 
-        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsCrossHairActivated = isEnabled;
         }
 
-        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsMiniMapActivated = isEnabled;
         }
 
-        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsKillCamActivated = isEnabled;
         }
 
-        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription) {
+        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription)
+        {
             this.PublicDescription = serverDescription;
         }
 
-        private void m_prcClient_BannerUrl(FrostbiteClient sender, string url) {
+        private void m_prcClient_BannerUrl(FrostbiteClient sender, string url)
+        {
             this.BannerUrl = url;
         }
 
-        private void m_prcClient_CurrentPlayerLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_CurrentPlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.CurrentPlayerLimit = limit;
         }
 
-        private void m_prcClient_MaxPlayerLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_MaxPlayerLimit(FrostbiteClient sender, int limit)
+        {
 
         }
 
-        private void m_prcClient_PlayerLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_PlayerLimit(FrostbiteClient sender, int limit)
+        {
 
         }
 
-        private void m_prcClient_FriendlyFire(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_FriendlyFire(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsFriendlyFireActivated = isEnabled;
         }
 
-        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsTeamBalanceActivated = isEnabled;
         }
 
-        private void m_prcClient_RankLimit(FrostbiteClient sender, int limit) {
-            if (limit == -1) {
+        private void m_prcClient_RankLimit(FrostbiteClient sender, int limit)
+        {
+            if (limit == -1)
+            {
                 this.IsRankLimitActivated = true;
             }
-            else {
+            else
+            {
                 this.CurrentRankLimit = limit;
             }
         }
 
-        private void m_prcClient_Ranked(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_Ranked(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsRanked = isEnabled;
         }
 
-        private void m_prcClient_Hardcore(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_Hardcore(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsHardcoreActivated = isEnabled;
         }
 
-        private void m_prcClient_Punkbuster(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_Punkbuster(FrostbiteClient sender, bool isEnabled)
+        {
             this.IsPunkbusterActivated = isEnabled;
         }
 
-        private void m_prcClient_AdminPassword(FrostbiteClient sender, string password) {
+        private void m_prcClient_AdminPassword(FrostbiteClient sender, string password)
+        {
             this.AdminPassword = password;
         }
 
-        private void m_prcClient_GamePassword(FrostbiteClient sender, string password) {
+        private void m_prcClient_GamePassword(FrostbiteClient sender, string password)
+        {
             this.GamePassword = password;
         }
     }

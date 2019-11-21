@@ -20,25 +20,26 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings {
+namespace PRoCon.Controls.ServerSettings
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsConfigGenerator : uscServerSettings {
+    public partial class uscServerSettingsConfigGenerator : uscServerSettings
+    {
 
         private Dictionary<string, string[]> m_dicSettings = new Dictionary<string, string[]>();
 
-        public string HeaderText {
+        public string HeaderText
+        {
             get;
             protected set;
         }
 
-        public uscServerSettingsConfigGenerator() {
+        public uscServerSettingsConfigGenerator()
+        {
             InitializeComponent();
 
             this.HeaderText = @"# -------------------------------------------------------------------------------------------------------------------------
@@ -55,21 +56,26 @@ namespace PRoCon.Controls.ServerSettings {
 ";
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.DisplayName = clocLanguage.GetLocalized("ConfigGenerator.Title");
             this.btnCopyToClipboard.Text = clocLanguage.GetLocalized("ConfigGenerator.btnCopyToClipboard");
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
 
@@ -77,8 +83,10 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.Ranked += new FrostbiteClient.IsEnabledHandler(Client_Ranked);
                 this.Client.Game.Punkbuster += new FrostbiteClient.IsEnabledHandler(Client_Punkbuster);
                 this.Client.Game.ServerName += new FrostbiteClient.ServerNameHandler(Client_ServerName);
@@ -116,60 +124,75 @@ namespace PRoCon.Controls.ServerSettings {
             });
         }
 
-        protected virtual void Game_Login(FrostbiteClient sender) {
+        protected virtual void Game_Login(FrostbiteClient sender)
+        {
             this.AppendAdminPassword();
         }
 
-        protected virtual void AppendAdminPassword() {
-            if (this.Client.IsPRoConConnection == false) {
+        protected virtual void AppendAdminPassword()
+        {
+            if (this.Client.IsPRoConConnection == false)
+            {
                 this.AppendSetting("admin.password", this.Client.Password);
             }
-            else {
+            else
+            {
                 this.AppendSetting("admin.password", "*** REPLACE WITH YOUR RCON PASSWORD " + new Random().NextDouble() + " ***");
             }
         }
 
-        protected virtual void Client_ServerName(FrostbiteClient sender, string strServerName) {
+        protected virtual void Client_ServerName(FrostbiteClient sender, string strServerName)
+        {
             this.AppendSetting("vars.serverName", strServerName);
         }
 
-        protected virtual void Client_GamePassword(FrostbiteClient sender, string password) {
+        protected virtual void Client_GamePassword(FrostbiteClient sender, string password)
+        {
             this.AppendSetting("vars.gamePassword", password);
         }
 
-        protected virtual void Client_Punkbuster(FrostbiteClient sender, bool isEnabled) {
+        protected virtual void Client_Punkbuster(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.punkBuster", isEnabled.ToString());
         }
 
-        protected virtual void Client_Hardcore(FrostbiteClient sender, bool isEnabled) {
+        protected virtual void Client_Hardcore(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hardCore", isEnabled.ToString());
         }
 
-        protected virtual void Client_Ranked(FrostbiteClient sender, bool isEnabled) {
+        protected virtual void Client_Ranked(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.ranked", isEnabled.ToString());
         }
 
-        protected virtual void Client_FriendlyFire(FrostbiteClient sender, bool isEnabled) {
+        protected virtual void Client_FriendlyFire(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.friendlyFire", isEnabled.ToString());
         }
 
-        protected virtual void Client_PlayerLimit(FrostbiteClient sender, int limit) {
+        protected virtual void Client_PlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.playerLimit", limit.ToString());
         }
 
-        protected virtual void Client_BannerUrl(FrostbiteClient sender, string url) {
+        protected virtual void Client_BannerUrl(FrostbiteClient sender, string url)
+        {
             this.AppendSetting("vars.bannerUrl", url);
         }
 
-        protected virtual void Client_ServerDescription(FrostbiteClient sender, string serverDescription) {
+        protected virtual void Client_ServerDescription(FrostbiteClient sender, string serverDescription)
+        {
             this.AppendSetting("vars.serverDescription", serverDescription);
         }
 
-        protected virtual void Client_TeamKillCountForKick(FrostbiteClient sender, int limit) {
+        protected virtual void Client_TeamKillCountForKick(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.teamKillCountForKick", limit.ToString());
         }
 
-        protected virtual void Client_TeamKillKickForBan(FrostbiteClient sender, int limit) {
+        protected virtual void Client_TeamKillKickForBan(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.teamKillKickForBan", limit.ToString());
         }
 
@@ -178,38 +201,50 @@ namespace PRoCon.Controls.ServerSettings {
             this.AppendSetting("vars.teamKillValueDecreasePerSecond", limit.ToString());
         }
 
-        protected virtual void Client_TeamKillValueIncrease(FrostbiteClient sender, int limit) {
+        protected virtual void Client_TeamKillValueIncrease(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.teamKillValueIncrease", limit.ToString());
         }
 
-        protected virtual void Client_TeamKillValueForKick(FrostbiteClient sender, int limit) {
+        protected virtual void Client_TeamKillValueForKick(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.teamKillValueForKick", limit.ToString());
         }
 
-        protected virtual void Client_ProfanityFilter(FrostbiteClient sender, bool isEnabled) {
+        protected virtual void Client_ProfanityFilter(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.profanityFilter", isEnabled.ToString());
         }
 
-        protected virtual void Client_IdleTimeout(FrostbiteClient sender, int limit) {
+        protected virtual void Client_IdleTimeout(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.idleTimeout", limit.ToString());
         }
 
-        protected virtual void Client_LevelVariablesList(FrostbiteClient sender, LevelVariable lvRequestedContext, List<LevelVariable> lstReturnedValues) {
-            this.InvokeIfRequired(() => {
-                foreach (LevelVariable variable in lstReturnedValues) {
-                    if (variable.Context.ContextTarget.Length > 0) {
+        protected virtual void Client_LevelVariablesList(FrostbiteClient sender, LevelVariable lvRequestedContext, List<LevelVariable> lstReturnedValues)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                foreach (LevelVariable variable in lstReturnedValues)
+                {
+                    if (variable.Context.ContextTarget.Length > 0)
+                    {
                         this.AppendSetting(String.Format("levelVars.set {0} {1} {2}", variable.Context.ContextType.ToString().ToLower(), variable.Context.ContextTarget, variable.VariableName), variable.RawValue);
                     }
-                    else {
+                    else
+                    {
                         this.AppendSetting(String.Format("levelVars.set {0} {1}", variable.Context.ContextType.ToString().ToLower(), variable.VariableName), variable.RawValue);
                     }
                 }
             });
         }
 
-        protected virtual void Client_ListPlaylists(FrostbiteClient sender, List<string> lstPlaylists) {
-            this.InvokeIfRequired(() => {
-                foreach (string playList in lstPlaylists) {
+        protected virtual void Client_ListPlaylists(FrostbiteClient sender, List<string> lstPlaylists)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                foreach (string playList in lstPlaylists)
+                {
 
                     this.Client.Game.SendLevelVarsListPacket(new LevelVariableContext(LevelVariableContextType.GameMode, playList));
                     //this.Client.SendRequest("levelVars.list", "gamemode", playList);
@@ -220,31 +255,39 @@ namespace PRoCon.Controls.ServerSettings {
             });
         }
 
-        protected virtual void Client_SupportedMaps(FrostbiteClient sender, string strPlaylist, List<string> lstSupportedMaps) {
-            this.InvokeIfRequired(() => {
-                foreach (string map in lstSupportedMaps) {
+        protected virtual void Client_SupportedMaps(FrostbiteClient sender, string strPlaylist, List<string> lstSupportedMaps)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                foreach (string map in lstSupportedMaps)
+                {
                     this.Client.Game.SendLevelVarsListPacket(new LevelVariableContext(LevelVariableContextType.Level, map));
                     //this.Client.SendRequest("levelVars.list", "level", map);
                 }
             });
         }
 
-        private string SettingToSafeString(string[] valueList) {
+        private string SettingToSafeString(string[] valueList)
+        {
 
             string[] formattedValueList = new string[valueList.Length];
 
-            for (int i = 0; i < valueList.Length; i++) {
+            for (int i = 0; i < valueList.Length; i++)
+            {
 
                 int iValue = 0;
                 bool blValue = false;
 
-                if (int.TryParse(valueList[i], out iValue) == true) {
+                if (int.TryParse(valueList[i], out iValue) == true)
+                {
                     formattedValueList[i] = valueList[i];
                 }
-                else if (bool.TryParse(valueList[i], out blValue) == true) {
+                else if (bool.TryParse(valueList[i], out blValue) == true)
+                {
                     formattedValueList[i] = Packet.Bltos(blValue);
                 }
-                else {
+                else
+                {
                     formattedValueList[i] = String.Format("\"{0}\"", valueList[i]);
                 }
             }
@@ -252,9 +295,12 @@ namespace PRoCon.Controls.ServerSettings {
             return String.Join(" ", formattedValueList);
         }
 
-        protected void AppendSetting(string settingName, params string[] settingValue) {
-            this.InvokeIfRequired(() => {
-                if (this.m_dicSettings.ContainsKey(settingName) == true) {
+        protected void AppendSetting(string settingName, params string[] settingValue)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.m_dicSettings.ContainsKey(settingName) == true)
+                {
                     this.m_dicSettings[settingName] = settingValue;
 
                     // Full update
@@ -264,18 +310,21 @@ namespace PRoCon.Controls.ServerSettings {
                     rewriteConfig.Append(this.HeaderText);
                     //this.txtConfig.Text = this.HeaderText;
 
-                    foreach (KeyValuePair<string, string[]> kvpSetting in this.m_dicSettings) {
+                    foreach (KeyValuePair<string, string[]> kvpSetting in this.m_dicSettings)
+                    {
                         rewriteConfig.AppendFormat("{0} {1}{2}", kvpSetting.Key, this.SettingToSafeString(kvpSetting.Value), Environment.NewLine);
                         //this.txtConfig.AppendText(String.Format());
                     }
 
                     this.txtConfig.Text = rewriteConfig.ToString();
                 }
-                else {
+                else
+                {
 
                     this.m_dicSettings.Add(settingName, settingValue);
 
-                    if (this.txtConfig.Text.Length == 0) {
+                    if (this.txtConfig.Text.Length == 0)
+                    {
                         this.txtConfig.Text = this.HeaderText;
                     }
 
@@ -285,11 +334,14 @@ namespace PRoCon.Controls.ServerSettings {
             });
         }
 
-        private void btnCopyToClipboard_Click(object sender, EventArgs e) {
-            try {
+        private void btnCopyToClipboard_Click(object sender, EventArgs e)
+        {
+            try
+            {
                 Clipboard.SetDataObject(this.txtConfig.Text, true, 5, 10);
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 // Nope, another thread is accessing the clipboard..
             }
         }

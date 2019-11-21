@@ -20,45 +20,53 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PRoCon.Core.Plugin.Commands {
+namespace PRoCon.Core.Plugin.Commands
+{
 
     [Serializable]
-    public class MatchCommand {
+    public class MatchCommand
+    {
 
-        public string RegisteredClassname {
+        public string RegisteredClassname
+        {
             get;
             private set;
         }
 
-        public string RegisteredMethodName {
+        public string RegisteredMethodName
+        {
             get;
             private set;
         }
 
-        public List<string> Scope {
+        public List<string> Scope
+        {
             get;
             private set;
         }
 
-        public string Command {
+        public string Command
+        {
             get;
             private set;
         }
 
-        public List<MatchArgumentFormat> ArgumentsFormat {
+        public List<MatchArgumentFormat> ArgumentsFormat
+        {
             get;
             private set;
         }
 
-        public ExecutionRequirements Requirements {
+        public ExecutionRequirements Requirements
+        {
             get;
             private set;
         }
 
-        public string Description {
+        public string Description
+        {
             get;
             private set;
         }
@@ -70,7 +78,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// <param name="lstScope"></param>
         /// <param name="strCommand"></param>
         /// <param name="lstArgumentsFormat"></param>
-        public MatchCommand(List<string> lstScope, string strCommand, List<MatchArgumentFormat> lstArgumentsFormat) {
+        public MatchCommand(List<string> lstScope, string strCommand, List<MatchArgumentFormat> lstArgumentsFormat)
+        {
             this.RegisteredClassname = String.Empty;
             this.RegisteredMethodName = String.Empty;
             this.Scope = lstScope;
@@ -90,7 +99,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// <param name="lstArgumentsFormat"></param>
         /// <param name="erRequirements"></param>
         /// <param name="strDescription"></param>
-        public MatchCommand(string strRegisteredClassname, string strRegisteredMethodName, List<string> lstScope, string strCommand, List<MatchArgumentFormat> lstArgumentsFormat, ExecutionRequirements erRequirements, string strDescription) {
+        public MatchCommand(string strRegisteredClassname, string strRegisteredMethodName, List<string> lstScope, string strCommand, List<MatchArgumentFormat> lstArgumentsFormat, ExecutionRequirements erRequirements, string strDescription)
+        {
             this.RegisteredClassname = strRegisteredClassname;
             this.RegisteredMethodName = strRegisteredMethodName;
             this.Scope = lstScope;
@@ -100,37 +110,46 @@ namespace PRoCon.Core.Plugin.Commands {
             this.Description = strDescription;
         }
 
-        public CapturedCommand Matches(string strText) {
+        public CapturedCommand Matches(string strText)
+        {
             CapturedCommand ccReturn = null;
 
             Match mtcCommandMatch = Regex.Match(strText, String.Format("^/?(?<scope>{0})(?<command>{1})[ ]?(?<arguments>.*)", String.Join("|", this.Scope.ToArray()), this.Command), RegexOptions.IgnoreCase);
 
-            if (mtcCommandMatch.Success == true) {
+            if (mtcCommandMatch.Success == true)
+            {
 
                 string strRemainderArguments = mtcCommandMatch.Groups["arguments"].Value;
                 List<MatchArgument> lstMatchedArguments = new List<MatchArgument>();
                 int skippedBlankArguments = 0;
 
-                foreach (MatchArgumentFormat argument in this.ArgumentsFormat) {
+                foreach (MatchArgumentFormat argument in this.ArgumentsFormat)
+                {
 
-                    if (argument.ArgumentValues != null && argument.ArgumentValues.Count > 0) {
+                    if (argument.ArgumentValues != null && argument.ArgumentValues.Count > 0)
+                    {
 
                         string strArgument = String.Empty;
 
-                        if (argument.ArgumentType == MatchArgumentFormatTypes.Dictionary) {
+                        if (argument.ArgumentType == MatchArgumentFormatTypes.Dictionary)
+                        {
                             int iMatchScore = MatchCommand.GetClosestMatch(strRemainderArguments, argument.ArgumentValues, out strArgument, out strRemainderArguments);
 
-                            if (iMatchScore != int.MaxValue) {
+                            if (iMatchScore != int.MaxValue)
+                            {
                                 lstMatchedArguments.Add(new MatchArgument(strArgument, iMatchScore));
                             }
                         }
-                        else if (argument.ArgumentType == MatchArgumentFormatTypes.Regex) {
+                        else if (argument.ArgumentType == MatchArgumentFormatTypes.Regex)
+                        {
 
-                            foreach (string regexInput in argument.ArgumentValues) {
+                            foreach (string regexInput in argument.ArgumentValues)
+                            {
 
                                 Match argumentMatch = Regex.Match(strRemainderArguments, String.Format("^({0})", regexInput));
-                                
-                                if (argumentMatch.Success == true && argumentMatch.Groups.Count >= 2) {
+
+                                if (argumentMatch.Success == true && argumentMatch.Groups.Count >= 2)
+                                {
 
                                     strRemainderArguments = strRemainderArguments.Substring(argumentMatch.Value.Length, strRemainderArguments.Length - argumentMatch.Value.Length);
 
@@ -142,12 +161,14 @@ namespace PRoCon.Core.Plugin.Commands {
                         }
                     }
 
-                    if (argument.ArgumentValues.Count == 0) {
+                    if (argument.ArgumentValues.Count == 0)
+                    {
                         skippedBlankArguments++;
                     }
                 }
 
-                if (lstMatchedArguments.Count == this.ArgumentsFormat.Count - skippedBlankArguments) {
+                if (lstMatchedArguments.Count == this.ArgumentsFormat.Count - skippedBlankArguments)
+                {
                     ccReturn = new CapturedCommand(mtcCommandMatch.Groups["scope"].Value, this.Command, lstMatchedArguments, strRemainderArguments);
                 }
             }
@@ -156,31 +177,38 @@ namespace PRoCon.Core.Plugin.Commands {
         }
 
         // Thanks Dr. Levenshtein and Sam Allen @ http://dotnetperls.com/levenshtein
-        private static int Compute(string s, string t) {
+        private static int Compute(string s, string t)
+        {
             int n = s.Length;
             int m = t.Length;
             int[,] d = new int[n + 1, m + 1];
 
             // Step 1
-            if (n == 0) {
+            if (n == 0)
+            {
                 return m;
             }
 
-            if (m == 0) {
+            if (m == 0)
+            {
                 return n;
             }
 
             // Step 2
-            for (int i = 0; i <= n; d[i, 0] = i++) {
+            for (int i = 0; i <= n; d[i, 0] = i++)
+            {
             }
 
-            for (int j = 0; j <= m; d[0, j] = j++) {
+            for (int j = 0; j <= m; d[0, j] = j++)
+            {
             }
 
             // Step 3
-            for (int i = 1; i <= n; i++) {
+            for (int i = 1; i <= n; i++)
+            {
                 //Step 4
-                for (int j = 1; j <= m; j++) {
+                for (int j = 1; j <= m; j++)
+                {
                     // Step 5
                     int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
 
@@ -194,40 +222,47 @@ namespace PRoCon.Core.Plugin.Commands {
             return d[n, m];
         }
 
-        private static int GetClosestMatch(string strArguments, List<string> lstDictionary, out string strMatchedDictionaryKey, out string strRemainderArguments) {
+        private static int GetClosestMatch(string strArguments, List<string> lstDictionary, out string strMatchedDictionaryKey, out string strRemainderArguments)
+        {
             int iSimilarity = int.MaxValue;
             int iScore = 0;
 
             strRemainderArguments = String.Empty;
             strMatchedDictionaryKey = String.Empty;
 
-            if (lstDictionary.Count >= 1) {
+            if (lstDictionary.Count >= 1)
+            {
 
                 int iLargestDictionaryKey = 0;
 
                 // Build array of default matches from the dictionary to store a rank for each match.
                 // (it's designed to work on smaller dictionaries with say.. 32 player names in it =)
                 List<MatchDictionaryKey> lstMatches = new List<MatchDictionaryKey>();
-                foreach (string strDictionaryKey in lstDictionary) {
+                foreach (string strDictionaryKey in lstDictionary)
+                {
                     lstMatches.Add(new MatchDictionaryKey(strDictionaryKey));
 
-                    if (strDictionaryKey.Length > iLargestDictionaryKey) {
+                    if (strDictionaryKey.Length > iLargestDictionaryKey)
+                    {
                         iLargestDictionaryKey = strDictionaryKey.Length;
                     }
                 }
 
                 // Rank each match, find the remaining characters for a match (arguements)
-                for (int x = 1; x <= Math.Min(strArguments.Length, iLargestDictionaryKey); x++) {
+                for (int x = 1; x <= Math.Min(strArguments.Length, iLargestDictionaryKey); x++)
+                {
                     // Skip it if it's a space (a space breaks a name and moves onto arguement.
                     // but the space could also be included in the dictionarykey, which will be checked
                     // on the next loop.
                     if (x + 1 < strArguments.Length && strArguments[x] != ' ')
                         continue;
 
-                    for (int i = 0; i < lstMatches.Count; i++) {
+                    for (int i = 0; i < lstMatches.Count; i++)
+                    {
                         iScore = MatchCommand.Compute(strArguments.Substring(0, x).ToLower(), lstMatches[i].LowerCaseMatchedText);
 
-                        if (iScore < lstMatches[i].MatchedScore) {
+                        if (iScore < lstMatches[i].MatchedScore)
+                        {
                             lstMatches[i].MatchedScore = iScore;
                             lstMatches[i].MatchedScoreCharacters = x;
                         }
@@ -244,8 +279,10 @@ namespace PRoCon.Core.Plugin.Commands {
                 // Now though we want to loop through from start to end and see if a subset of what we entered is found.
                 // if so then this will find the highest ranked item with a subset of what was entered and favour that instead.
                 string strBestCharsSubstringLower = strArguments.Substring(0, iBestCharactersMatched).ToLower();
-                for (int i = 0; i < lstMatches.Count; i++) {
-                    if (lstMatches[i].LowerCaseMatchedText.Contains(strBestCharsSubstringLower) == true) {
+                for (int i = 0; i < lstMatches.Count; i++)
+                {
+                    if (lstMatches[i].LowerCaseMatchedText.Contains(strBestCharsSubstringLower) == true)
+                    {
                         iSimilarity = lstMatches[i].MatchedScore;
                         strMatchedDictionaryKey = lstMatches[i].MatchedText;
                         iBestCharactersMatched = lstMatches[i].MatchedScoreCharacters;
@@ -254,10 +291,12 @@ namespace PRoCon.Core.Plugin.Commands {
                     }
                 }
 
-                if (iBestCharactersMatched < strArguments.Length) {
+                if (iBestCharactersMatched < strArguments.Length)
+                {
                     strRemainderArguments = strArguments.Substring(iBestCharactersMatched + 1);
                 }
-                else {
+                else
+                {
                     strRemainderArguments = strArguments.Substring(iBestCharactersMatched);
                 }
 
@@ -266,11 +305,13 @@ namespace PRoCon.Core.Plugin.Commands {
             return iSimilarity;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
 
             string strToString = this.Command;
 
-            foreach (MatchArgumentFormat mafArgument in this.ArgumentsFormat) {
+            foreach (MatchArgumentFormat mafArgument in this.ArgumentsFormat)
+            {
                 strToString = String.Format("{0} [{1}] ", strToString, mafArgument.ArgumentName);
             }
 

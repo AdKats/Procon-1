@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.MOH {
+namespace PRoCon.Controls.ServerSettings.MOH
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsGameplayMoH : uscServerSettingsGameplay {
+    public partial class uscServerSettingsGameplayMoH : uscServerSettingsGameplay
+    {
 
         private int[] ma_iPreviousSuccessSkillLimit;
         private int m_iPreviousSuccessTDMScoreLimit;
@@ -17,8 +14,9 @@ namespace PRoCon.Controls.ServerSettings.MOH {
         private int[] ma_iPreviousSuccessPreroundLimit;
         private int m_iPreviousSuccessRoundStartTimerPlayersLimit;
         private int m_iPreviousSuccessRoundStartTimerDelay;
-        
-        public uscServerSettingsGameplayMoH() {
+
+        public uscServerSettingsGameplayMoH()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.clanTeams", new AsyncStyleSetting(this.picSettingsClanTeams, this.chkSettingsClanTeams, new Control[] { this.chkSettingsClanTeams }, true));
@@ -48,7 +46,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             this.ma_iPreviousSuccessPreroundLimit = new int[2] { 1, 24 };
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsClanTeams.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.chkSettingsClanTeams");
@@ -74,7 +73,7 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             this.lblSettingsPreroundLimitUpper.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.lblSettingsPreroundLimitUpper");
             this.lnkSettingsPreroundLimitApply.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.lnkSettingsPreroundLimitApply");
             this.lblSettingsPreroundLimitExplanation.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.lblSettingsPreroundLimitExplanation");
-            
+
             this.lblSettingsRoundStartTimerPlayersLimit.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.lblSettingsRoundStartTimerPlayersLimit");
             this.lnkSettingsRoundStartTimerPlayersLimit.Text = this.Language.GetLocalized("uscServerSettingsMoHGameplay.lnkSettingsRoundStartTimerPlayersLimit");
 
@@ -83,21 +82,27 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.ClanTeams += new FrostbiteClient.IsEnabledHandler(Game_ClanTeams);
                 this.Client.Game.NoCrosshairs += new FrostbiteClient.IsEnabledHandler(Game_NoCrosshairs);
                 this.Client.Game.RealisticHealth += new FrostbiteClient.IsEnabledHandler(Game_RealisticHealth);
@@ -115,16 +120,21 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             });
         }
 
-        private void SetNumberPickerValue(NumericUpDown control, int value) {
-            this.InvokeIfRequired(() => {
+        private void SetNumberPickerValue(NumericUpDown control, int value)
+        {
+            this.InvokeIfRequired(() =>
+            {
 
-                if (value < control.Minimum) {
+                if (value < control.Minimum)
+                {
                     control.Value = control.Minimum;
                 }
-                else if (value > control.Maximum) {
+                else if (value > control.Maximum)
+                {
                     control.Value = control.Maximum;
                 }
-                else {
+                else
+                {
                     control.Value = value;
                 }
             });
@@ -132,9 +142,12 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Clan Teams
 
-        private void chkSettingsClanTeams_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.clanTeams"].IgnoreEvent == false) {
+        private void chkSettingsClanTeams_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.clanTeams"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.clanTeams", !this.chkSettingsClanTeams.Checked);
 
                     this.Client.Game.SendSetVarsClanTeamsPacket(this.chkSettingsClanTeams.Checked);
@@ -142,7 +155,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void Game_ClanTeams(FrostbiteClient sender, bool isEnabled) {
+        private void Game_ClanTeams(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.clanTeams", isEnabled, true);
         }
 
@@ -150,9 +164,12 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region No Crosshairs
 
-        private void chkSettingsNoCrosshairs_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noCrosshairs"].IgnoreEvent == false) {
+        private void chkSettingsNoCrosshairs_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noCrosshairs"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.noCrosshairs", !this.chkSettingsNoCrosshairs.Checked);
 
                     this.Client.Game.SendSetVarsNoCrosshairsPacket(this.chkSettingsNoCrosshairs.Checked);
@@ -160,7 +177,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void Game_NoCrosshairs(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoCrosshairs(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.noCrosshairs", isEnabled, true);
         }
 
@@ -168,9 +186,12 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Realistic Health
 
-        private void chkSettingsRealisticHealth_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.realisticHealth"].IgnoreEvent == false) {
+        private void chkSettingsRealisticHealth_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.realisticHealth"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.realisticHealth", !this.chkSettingsRealisticHealth.Checked);
 
                     this.Client.Game.SendSetVarsRealisticHealthPacket(this.chkSettingsRealisticHealth.Checked);
@@ -178,7 +199,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void Game_RealisticHealth(FrostbiteClient sender, bool isEnabled) {
+        private void Game_RealisticHealth(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.realisticHealth", isEnabled, true);
         }
 
@@ -186,9 +208,12 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region No Unlocks
 
-        private void chkSettingsNoUnlocks_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noUnlocks"].IgnoreEvent == false) {
+        private void chkSettingsNoUnlocks_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noUnlocks"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.noUnlocks", !this.chkSettingsNoUnlocks.Checked);
 
                     this.Client.Game.SendSetVarsNoUnlocksPacket(this.chkSettingsNoUnlocks.Checked);
@@ -196,7 +221,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void Game_NoUnlocks(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoUnlocks(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.noUnlocks", isEnabled, true);
         }
 
@@ -204,9 +230,12 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region No Ammo Pickups
 
-        private void chkSettingsNoAmmoPickups_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noAmmoPickups"].IgnoreEvent == false) {
+        private void chkSettingsNoAmmoPickups_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.noAmmoPickups"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.noAmmoPickups", !this.chkSettingsNoAmmoPickups.Checked);
 
                     this.Client.Game.SendSetVarsNoAmmoPickupsPacket(this.chkSettingsNoAmmoPickups.Checked);
@@ -214,7 +243,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void Game_NoAmmoPickups(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoAmmoPickups(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.noAmmoPickups", isEnabled, true);
         }
 
@@ -222,23 +252,29 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region TDM Score Limit
 
-        private void Game_TdmScoreCounterMaxScore(FrostbiteClient sender, int limit) {
+        private void Game_TdmScoreCounterMaxScore(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTDMScoreLimit = limit;
 
-            if (this.m_iPreviousSuccessTDMScoreLimit == -1) {
+            if (this.m_iPreviousSuccessTDMScoreLimit == -1)
+            {
                 this.OnSettingResponse("vars.tdmScoreCounterMaxScore -1", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.tdmScoreCounterMaxScore", (decimal)this.m_iPreviousSuccessTDMScoreLimit, true);
             }
         }
 
-        private void chkSettingsTDMScoreCounterLimit_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsTDMScoreCounterLimit_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlSettingsTDMScoreCounterLimit.Enabled = !this.chkSettingsTDMScoreCounterLimit.Checked;
             this.pnlSettingsTDMScoreCounterLimit.Visible = !this.chkSettingsTDMScoreCounterLimit.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.tdmScoreCounterMaxScore -1"].IgnoreEvent == false) {
-                if (this.chkSettingsTDMScoreCounterLimit.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.tdmScoreCounterMaxScore -1"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsTDMScoreCounterLimit.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.tdmScoreCounterMaxScore -1", !this.chkSettingsTDMScoreCounterLimit.Checked);
 
                     this.Client.Game.SendSetVarsTdmScoreCounterMaxScorePacket(-1);
@@ -246,7 +282,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void lnkSettingsTDMScoreCounterLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsTDMScoreCounterLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsTDMScoreCounterLimit.Focus();
 
             this.WaitForSettingResponse("vars.tdmScoreCounterMaxScore", (decimal)this.m_iPreviousSuccessTDMScoreLimit);
@@ -258,14 +295,17 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Skill Limit
 
-        private void Game_SkillLimit(FrostbiteClient sender, int upperLimit, int lowerLimit) {
+        private void Game_SkillLimit(FrostbiteClient sender, int upperLimit, int lowerLimit)
+        {
             this.ma_iPreviousSuccessSkillLimit[0] = lowerLimit;
             this.ma_iPreviousSuccessSkillLimit[1] = upperLimit;
 
-            if (lowerLimit == 0 && upperLimit == 0) {
+            if (lowerLimit == 0 && upperLimit == 0)
+            {
                 this.OnSettingResponse("vars.skillLimit 0 0", true, true);
             }
-            else {
+            else
+            {
                 this.SetNumberPickerValue(this.numSettingsSkillLimitLower, lowerLimit);
                 this.SetNumberPickerValue(this.numSettingsSkillLimitUpper, upperLimit);
 
@@ -273,12 +313,15 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void chkSettingsNoSkillLimit_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsNoSkillLimit_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlSettingsSetSkillLimit.Enabled = !this.chkSettingsNoSkillLimit.Checked;
             this.pnlSettingsSetSkillLimit.Visible = !this.chkSettingsNoSkillLimit.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.skillLimit 0 0"].IgnoreEvent == false) {
-                if (this.chkSettingsNoSkillLimit.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.skillLimit 0 0"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsNoSkillLimit.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.skillLimit 0 0", !this.chkSettingsNoSkillLimit.Checked);
 
                     this.Client.Game.SendSetVarsSkillLimitPacket(1, 1);
@@ -286,7 +329,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void lnkSettingsSkillLimitApply_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsSkillLimitApply_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsSkillLimitLower.Focus();
 
             this.WaitForSettingResponse("vars.skillLimit", null);
@@ -294,14 +338,18 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             this.Client.Game.SendSetVarsSkillLimitPacket((int)this.numSettingsSkillLimitUpper.Value, (int)this.numSettingsSkillLimitLower.Value);
         }
 
-        private void numSettingsSkillLimitLower_ValueChanged(object sender, EventArgs e) {
-            if (this.numSettingsSkillLimitLower.Value > this.numSettingsSkillLimitUpper.Value) {
+        private void numSettingsSkillLimitLower_ValueChanged(object sender, EventArgs e)
+        {
+            if (this.numSettingsSkillLimitLower.Value > this.numSettingsSkillLimitUpper.Value)
+            {
                 this.numSettingsSkillLimitUpper.Value = this.numSettingsSkillLimitLower.Value;
             }
         }
 
-        private void numSettingsSkillLimitUpper_ValueChanged(object sender, EventArgs e) {
-            if (this.numSettingsSkillLimitLower.Value > this.numSettingsSkillLimitUpper.Value) {
+        private void numSettingsSkillLimitUpper_ValueChanged(object sender, EventArgs e)
+        {
+            if (this.numSettingsSkillLimitLower.Value > this.numSettingsSkillLimitUpper.Value)
+            {
                 this.numSettingsSkillLimitLower.Value = this.numSettingsSkillLimitUpper.Value;
             }
         }
@@ -310,14 +358,17 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Preround Limit
 
-        private void Game_PreRoundLimit(FrostbiteClient sender, int upperLimit, int lowerLimit) {
+        private void Game_PreRoundLimit(FrostbiteClient sender, int upperLimit, int lowerLimit)
+        {
             this.ma_iPreviousSuccessPreroundLimit[0] = lowerLimit;
             this.ma_iPreviousSuccessPreroundLimit[1] = upperLimit;
 
-            if (lowerLimit == 1 && upperLimit == 1) {
+            if (lowerLimit == 1 && upperLimit == 1)
+            {
                 this.OnSettingResponse("vars.preRoundLimit 1 1", true, true);
             }
-            else {
+            else
+            {
                 this.SetNumberPickerValue(this.numSettingsPreroundLimitLower, lowerLimit);
                 this.SetNumberPickerValue(this.numSettingsPreroundLimitUpper, upperLimit);
 
@@ -325,12 +376,15 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void chkSettingsPreroundLimit_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsPreroundLimit_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlSettingsPreroundLimit.Enabled = !this.chkSettingsPreroundLimit.Checked;
             this.pnlSettingsPreroundLimit.Visible = !this.chkSettingsPreroundLimit.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.preRoundLimit 1 1"].IgnoreEvent == false) {
-                if (this.chkSettingsPreroundLimit.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.preRoundLimit 1 1"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsPreroundLimit.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.preRoundLimit 1 1", !this.chkSettingsPreroundLimit.Checked);
 
                     this.Client.Game.SendSetVarsPreRoundLimitPacket(1, 1);
@@ -338,7 +392,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void lnkSettingsPreroundLimitApply_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsPreroundLimitApply_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsPreroundLimitLower.Focus();
 
             this.WaitForSettingResponse("vars.preRoundLimit", null);
@@ -350,12 +405,15 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Round Start Timer Enabled
 
-        void Game_RoundStartTimer(FrostbiteClient sender, bool isEnabled) {
+        void Game_RoundStartTimer(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("admin.roundStartTimerEnabled", isEnabled, true);
         }
 
-        private void chkSettingsRoundStartTimer_CheckedChanged(object sender, EventArgs e) {
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["admin.roundStartTimerEnabled"].IgnoreEvent == false) {
+        private void chkSettingsRoundStartTimer_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["admin.roundStartTimerEnabled"].IgnoreEvent == false)
+            {
                 this.WaitForSettingResponse("admin.roundStartTimerEnabled", !this.chkSettingsRoundStartTimer.Checked);
 
                 this.Client.Game.SendSetAdminRoundStartTimerEnabledPacket(this.chkSettingsRoundStartTimer.Checked);
@@ -366,23 +424,29 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Preround Limit Delay
 
-        void Game_RoundStartTimerDelay(FrostbiteClient sender, int limit) {
+        void Game_RoundStartTimerDelay(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessRoundStartTimerDelay = limit;
 
-            if (this.m_iPreviousSuccessRoundStartTimerDelay == -1) {
+            if (this.m_iPreviousSuccessRoundStartTimerDelay == -1)
+            {
                 this.OnSettingResponse("vars.roundStartTimerDelay -1", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.roundStartTimerDelay", (decimal)this.m_iPreviousSuccessRoundStartTimerDelay, true);
             }
         }
 
-        private void chkSettingsRoundStartTimerDelay_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsRoundStartTimerDelay_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlSettingsRoundStartTimerDelay.Enabled = !this.chkSettingsRoundStartTimerDelay.Checked;
             this.pnlSettingsRoundStartTimerDelay.Visible = !this.chkSettingsRoundStartTimerDelay.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.roundStartTimerDelay -1"].IgnoreEvent == false) {
-                if (this.chkSettingsRoundStartTimerDelay.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.roundStartTimerDelay -1"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsRoundStartTimerDelay.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.roundStartTimerDelay -1", !this.chkSettingsRoundStartTimerDelay.Checked);
 
                     this.Client.Game.SendSetVarsRoundStartTimerDelayPacket(-1);
@@ -390,7 +454,8 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             }
         }
 
-        private void lnkSettingsRoundStartTimerDelay_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsRoundStartTimerDelay_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsRoundStartTimerDelay.Focus();
 
             this.WaitForSettingResponse("vars.roundStartTimerDelay", (decimal)this.m_iPreviousSuccessRoundStartTimerDelay);
@@ -402,13 +467,16 @@ namespace PRoCon.Controls.ServerSettings.MOH {
 
         #region Preround Player Limit
 
-        private void Game_RoundStartTimerPlayerLimit(FrostbiteClient sender, int limit) {
+        private void Game_RoundStartTimerPlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.OnSettingResponse("vars.roundStartTimerPlayersLimit", (decimal)limit, true);
             this.m_iPreviousSuccessRoundStartTimerPlayersLimit = limit;
         }
 
-        private void lnkSettingsRoundStartTimerPlayersLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsRoundStartTimerPlayersLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsRoundStartTimerPlayersLimit.Focus();
                 this.WaitForSettingResponse("vars.roundStartTimerPlayersLimit", (decimal)this.m_iPreviousSuccessRoundStartTimerPlayersLimit);
 
@@ -417,15 +485,19 @@ namespace PRoCon.Controls.ServerSettings.MOH {
         }
 
         // Kinda belongs here..
-        private void Game_Ranked(FrostbiteClient sender, bool isEnabled) {
-            this.InvokeIfRequired(() => {
+        private void Game_Ranked(FrostbiteClient sender, bool isEnabled)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.lblSettingsPreroundLimitExplanation.Visible = isEnabled;
 
-                if (isEnabled == true) {
+                if (isEnabled == true)
+                {
                     this.numSettingsPreroundLimitLower.Minimum = 2;
                     this.numSettingsPreroundLimitUpper.Minimum = 4;
                 }
-                else {
+                else
+                {
                     // They should use the checkbox if they want 1-1.
                     this.numSettingsPreroundLimitLower.Minimum = 1;
                     this.numSettingsPreroundLimitUpper.Minimum = 2;
@@ -433,14 +505,18 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             });
         }
 
-        private void numSettingsPreroundLimitLower_ValueChanged(object sender, EventArgs e) {
-            if (this.numSettingsPreroundLimitLower.Value > this.numSettingsPreroundLimitUpper.Value) {
+        private void numSettingsPreroundLimitLower_ValueChanged(object sender, EventArgs e)
+        {
+            if (this.numSettingsPreroundLimitLower.Value > this.numSettingsPreroundLimitUpper.Value)
+            {
                 this.numSettingsPreroundLimitUpper.Value = this.numSettingsPreroundLimitLower.Value;
             }
         }
 
-        private void numSettingsPreroundLimitUpper_ValueChanged(object sender, EventArgs e) {
-            if (this.numSettingsPreroundLimitLower.Value > this.numSettingsPreroundLimitUpper.Value) {
+        private void numSettingsPreroundLimitUpper_ValueChanged(object sender, EventArgs e)
+        {
+            if (this.numSettingsPreroundLimitLower.Value > this.numSettingsPreroundLimitUpper.Value)
+            {
                 this.numSettingsPreroundLimitLower.Value = this.numSettingsPreroundLimitUpper.Value;
             }
         }

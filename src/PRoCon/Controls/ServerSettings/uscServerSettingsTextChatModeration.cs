@@ -19,24 +19,22 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings {
+namespace PRoCon.Controls.ServerSettings
+{
     using Core;
     using Core.Remote;
     using Core.TextChatModeration;
-    public partial class uscServerSettingsTextChatModeration : uscServerSettings {
+    public partial class uscServerSettingsTextChatModeration : uscServerSettings
+    {
 
         private int m_iPreviousSuccessTextChatSpamTriggerCount;
         private int m_iPreviousSuccessTextChatSpamDetectionTime;
         private int m_iPreviousSuccessTextChatSpamCoolDownTime;
 
-        public uscServerSettingsTextChatModeration() {
+        public uscServerSettingsTextChatModeration()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.textChatModerationMode", new AsyncStyleSetting(this.picSettingsModerationMode, null, new Control[] { this.rdoSettingsModerationModeFree, this.rdoSettingsModerationModeModerated, this.rdoSettingsModerationModeMuted }, true));
@@ -49,7 +47,8 @@ namespace PRoCon.Controls.ServerSettings {
             this.m_iPreviousSuccessTextChatSpamCoolDownTime = 60;
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.DisplayName = this.Language.GetLocalized("uscServerSettingsTextChatModeration.DisplayName");
@@ -69,21 +68,27 @@ namespace PRoCon.Controls.ServerSettings {
             this.lnkSettingsModerationCooldownTime.Text = this.Language.GetLocalized("uscServerSettingsTextChatModeration.lnkSettingsModerationCooldownTime");
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.TextChatModerationMode += new FrostbiteClient.TextChatModerationModeHandler(Game_TextChatModerationMode);
                 this.Client.Game.TextChatSpamTriggerCount += new FrostbiteClient.LimitHandler(Game_TextChatSpamTriggerCount);
                 this.Client.Game.TextChatSpamDetectionTime += new FrostbiteClient.LimitHandler(Game_TextChatSpamDetectionTime);
@@ -93,10 +98,12 @@ namespace PRoCon.Controls.ServerSettings {
             });
         }
 
-        private void Game_ResponseError(FrostbiteClient sender, Packet originalRequest, string errorMessage) {
+        private void Game_ResponseError(FrostbiteClient sender, Packet originalRequest, string errorMessage)
+        {
 
             // if set moderation mode fail - Request current moderation mode.
-            if (originalRequest.Words.Count >= 2 && String.Compare(originalRequest.Words[0], "vars.textChatModerationMode") == 0) {
+            if (originalRequest.Words.Count >= 2 && String.Compare(originalRequest.Words[0], "vars.textChatModerationMode") == 0)
+            {
                 this.OnSettingResponse("vars.textChatModerationMode", null, false);
             }
 
@@ -104,10 +111,13 @@ namespace PRoCon.Controls.ServerSettings {
 
         #region Moderation Mode
 
-        private void rdoSettingsModerationModeFree_CheckedChanged(object sender, EventArgs e) {
+        private void rdoSettingsModerationModeFree_CheckedChanged(object sender, EventArgs e)
+        {
 
-            if (this.rdoSettingsModerationModeFree.Checked == true && this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false) {
+            if (this.rdoSettingsModerationModeFree.Checked == true && this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.textChatModerationMode", null);
 
                     this.Client.Game.SendSetVarsTextChatModerationModePacket(ServerModerationModeType.Free);
@@ -115,9 +125,12 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void rdoSettingsModerationModeModerated_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoSettingsModerationModeModerated.Checked == true && this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false) {
+        private void rdoSettingsModerationModeModerated_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoSettingsModerationModeModerated.Checked == true && this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.textChatModerationMode", null);
 
                     this.Client.Game.SendSetVarsTextChatModerationModePacket(ServerModerationModeType.Moderated);
@@ -125,9 +138,12 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void rdoSettingsModerationModeMuted_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoSettingsModerationModeMuted.Checked == true && this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false) {
+        private void rdoSettingsModerationModeMuted_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoSettingsModerationModeMuted.Checked == true && this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.textChatModerationMode"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.textChatModerationMode", null);
 
                     this.Client.Game.SendSetVarsTextChatModerationModePacket(ServerModerationModeType.Muted);
@@ -135,22 +151,28 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void Game_TextChatModerationMode(FrostbiteClient sender, ServerModerationModeType mode) {
-            this.InvokeIfRequired(() => {
+        private void Game_TextChatModerationMode(FrostbiteClient sender, ServerModerationModeType mode)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.OnSettingResponse("vars.textChatModerationMode", null, true);
 
                 this.IgnoreEvents = true;
 
-                if (mode == ServerModerationModeType.Free) {
+                if (mode == ServerModerationModeType.Free)
+                {
                     this.rdoSettingsModerationModeFree.Checked = true;
                 }
-                else if (mode == ServerModerationModeType.Moderated) {
+                else if (mode == ServerModerationModeType.Moderated)
+                {
                     this.rdoSettingsModerationModeModerated.Checked = true;
                 }
-                else if (mode == ServerModerationModeType.Muted) {
+                else if (mode == ServerModerationModeType.Muted)
+                {
                     this.rdoSettingsModerationModeMuted.Checked = true;
                 }
-                else {
+                else
+                {
                     this.rdoSettingsModerationModeFree.Checked = this.rdoSettingsModerationModeModerated.Checked = this.rdoSettingsModerationModeMuted.Checked = false;
                 }
 
@@ -162,8 +184,10 @@ namespace PRoCon.Controls.ServerSettings {
 
         #region Trigger count
 
-        private void lnkSettingsModerationTriggerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsModerationTriggerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsModerationTriggerCount.Focus();
                 this.WaitForSettingResponse("vars.textChatSpamTriggerCount", (decimal)this.m_iPreviousSuccessTextChatSpamTriggerCount);
 
@@ -171,7 +195,8 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void Game_TextChatSpamTriggerCount(FrostbiteClient sender, int limit) {
+        private void Game_TextChatSpamTriggerCount(FrostbiteClient sender, int limit)
+        {
             this.OnSettingResponse("vars.textChatSpamTriggerCount", (decimal)limit, true);
             this.m_iPreviousSuccessTextChatSpamTriggerCount = limit;
         }
@@ -180,8 +205,10 @@ namespace PRoCon.Controls.ServerSettings {
 
         #region Detection time
 
-        private void lnkSettingsModerationDetectionTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsModerationDetectionTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsModerationDetectionTime.Focus();
                 this.WaitForSettingResponse("vars.textChatSpamDetectionTime", (decimal)this.m_iPreviousSuccessTextChatSpamDetectionTime);
 
@@ -190,7 +217,8 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void Game_TextChatSpamDetectionTime(FrostbiteClient sender, int limit) {
+        private void Game_TextChatSpamDetectionTime(FrostbiteClient sender, int limit)
+        {
             this.OnSettingResponse("vars.textChatSpamDetectionTime", (decimal)limit, true);
             this.m_iPreviousSuccessTextChatSpamDetectionTime = limit;
         }
@@ -199,8 +227,10 @@ namespace PRoCon.Controls.ServerSettings {
 
         #region Cooldown time
 
-        private void lnkSettingsModerationCooldownTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsModerationCooldownTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsModerationCooldownTime.Focus();
                 this.WaitForSettingResponse("vars.textChatSpamCoolDownTime", (decimal)this.m_iPreviousSuccessTextChatSpamCoolDownTime);
 
@@ -209,7 +239,8 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void Game_TextChatSpamCoolDownTime(FrostbiteClient sender, int limit) {
+        private void Game_TextChatSpamCoolDownTime(FrostbiteClient sender, int limit)
+        {
             this.OnSettingResponse("vars.textChatSpamCoolDownTime", (decimal)limit, true);
             this.m_iPreviousSuccessTextChatSpamCoolDownTime = limit;
         }

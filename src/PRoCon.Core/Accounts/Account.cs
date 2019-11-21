@@ -1,13 +1,15 @@
 ﻿using System;
-using PRoCon.Core.Remote;
 
-namespace PRoCon.Core.Accounts {
-    public class Account {
+namespace PRoCon.Core.Accounts
+{
+    public class Account
+    {
         public delegate void AccountPasswordChangedHandler(Account item);
 
         private string _password;
 
-        public Account(string strName, string strPassword) {
+        public Account(string strName, string strPassword)
+        {
             Name = strName;
             Password = strPassword;
         }
@@ -20,12 +22,15 @@ namespace PRoCon.Core.Accounts {
         /// <summary>
         /// The password to login to this account.
         /// </summary>
-        public string Password {
+        public string Password
+        {
             get { return _password; }
-            set {
+            set
+            {
                 _password = value;
-                
-                if (AccountPasswordChanged != null) {
+
+                if (AccountPasswordChanged != null)
+                {
                     this.AccountPasswordChanged(this);
                 }
             }

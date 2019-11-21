@@ -1,10 +1,12 @@
-﻿using System;
+﻿using PRoCon.Core.Accounts;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using PRoCon.Core.Accounts;
 
-namespace PRoCon.Core.Remote.Layer {
-    public interface ILayerInstance {
+namespace PRoCon.Core.Remote.Layer
+{
+    public interface ILayerInstance
+    {
         /// <summary>
         /// Dictionary of connected clients
         /// </summary>

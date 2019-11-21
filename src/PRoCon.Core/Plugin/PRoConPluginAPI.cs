@@ -21,15 +21,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Plugin {
+namespace PRoCon.Core.Plugin
+{
+    using Core.Battlemap;
+    using Core.HttpServer;
+    using Core.Maps;
     using Core.Players;
     using Core.Plugin.Commands;
-    using Core.Battlemap;
-    using Core.Maps;
-    using Core.HttpServer;
     using Core.TextChatModeration;
 
-    public class PRoConPluginAPI : CPRoConMarshalByRefObject {
+    public class PRoConPluginAPI : CPRoConMarshalByRefObject
+    {
 
         public String ClassName { get; set; }
 
@@ -48,7 +50,8 @@ namespace PRoCon.Core.Plugin {
 
         #endregion
 
-        public PRoConPluginAPI() {
+        public PRoConPluginAPI()
+        {
             this.PunkbusterPlayerInfoList = new Dictionary<string, CPunkbusterInfo>();
             this.FrostbitePlayerInfoList = new Dictionary<string, CPlayerInfo>();
         }
@@ -62,10 +65,11 @@ namespace PRoCon.Core.Plugin {
         /// </summary>
         /// <param name="enumeration"></param>
         /// <returns></returns>
-        public string CreateEnumString(Type enumeration) {
+        public string CreateEnumString(Type enumeration)
+        {
             return string.Format("enum.{0}_{1}({2})", GetType().Name, enumeration.Name, string.Join("|", Enum.GetNames(enumeration)));
         }
-        
+
         #endregion
 
         // Commands sent by the client with a "OK" response received.
@@ -96,28 +100,37 @@ namespace PRoCon.Core.Plugin {
         public virtual void OnSupportedMaps(string playlist, List<string> lstSupportedMaps) { }
         public virtual void OnListPlaylists(List<string> playlists) { }
 
-        public virtual void OnListPlayers(List<CPlayerInfo> players, CPlayerSubset subset) {
-            if (subset.Subset == CPlayerSubset.PlayerSubsetType.All) {
-                foreach (CPlayerInfo player in players) {
-                    if (this.FrostbitePlayerInfoList.ContainsKey(player.SoldierName) == true) {
+        public virtual void OnListPlayers(List<CPlayerInfo> players, CPlayerSubset subset)
+        {
+            if (subset.Subset == CPlayerSubset.PlayerSubsetType.All)
+            {
+                foreach (CPlayerInfo player in players)
+                {
+                    if (this.FrostbitePlayerInfoList.ContainsKey(player.SoldierName) == true)
+                    {
                         this.FrostbitePlayerInfoList[player.SoldierName] = player;
                     }
-                    else {
+                    else
+                    {
                         this.FrostbitePlayerInfoList.Add(player.SoldierName, player);
                     }
                 }
 
-                foreach (var fpi_player in this.FrostbitePlayerInfoList.Keys) {
+                foreach (var fpi_player in this.FrostbitePlayerInfoList.Keys)
+                {
                     bool blFoundPlayer = false;
 
-                    foreach (CPlayerInfo iPlayer in players) {
-                        if (String.Compare(iPlayer.SoldierName, this.FrostbitePlayerInfoList[fpi_player].SoldierName) == 0) {
+                    foreach (CPlayerInfo iPlayer in players)
+                    {
+                        if (String.Compare(iPlayer.SoldierName, this.FrostbitePlayerInfoList[fpi_player].SoldierName) == 0)
+                        {
                             blFoundPlayer = true;
                             break;
                         }
                     }
 
-                    if (blFoundPlayer == false) {
+                    if (blFoundPlayer == false)
+                    {
                         this.FrostbitePlayerInfoList.Remove(fpi_player);
                         this.PunkbusterPlayerInfoList.Remove(fpi_player);
                     }
@@ -160,7 +173,7 @@ namespace PRoCon.Core.Plugin {
         public virtual void OnFairFight(bool isEnabled) { }
 
         public virtual void OnIsHitIndicator(bool isEnabled) { }
-        
+
         public virtual void OnCommander(bool isEnabled) { }
         public virtual void OnAlwaysAllowSpectators(bool isEnabled) { }
         public virtual void OnForceReloadWholeMags(bool isEnabled) { }
@@ -193,7 +206,7 @@ namespace PRoCon.Core.Plugin {
         public virtual void OnTextChatModerationList(TextChatModerationDictionary moderationList) { }
 
         #endregion
-        
+
         #region Maplist
 
         public virtual void OnMaplistConfigFile(string configFileName) { }
@@ -260,9 +273,9 @@ namespace PRoCon.Core.Plugin {
         public virtual void OnRoundLockdownCountdown(int limit) { }
         public virtual void OnRoundWarmupTimeout(int limit) { }
         public virtual void OnPremiumStatus(bool isEnabled) { }
-        
+
         public virtual void OnGunMasterWeaponsPreset(int preset) { }
-        
+
         public virtual void OnVehicleSpawnAllowed(bool isEnabled) { }
         public virtual void OnVehicleSpawnDelay(int limit) { }
         public virtual void OnBulletDamage(int limit) { }
@@ -376,29 +389,35 @@ namespace PRoCon.Core.Plugin {
         #endregion
 
         #endregion
-        
+
         // These events are sent from the server without any initial request from the client.
         #region Game Server Requests (Events)
 
         #region Players
 
-        public virtual void OnPlayerJoin(string soldierName) {
-            if (this.FrostbitePlayerInfoList.ContainsKey(soldierName) == false) {
+        public virtual void OnPlayerJoin(string soldierName)
+        {
+            if (this.FrostbitePlayerInfoList.ContainsKey(soldierName) == false)
+            {
                 this.FrostbitePlayerInfoList.Add(soldierName, new CPlayerInfo(soldierName, "", 0, 24));
             }
         }
 
-        public virtual void OnPlayerLeft(CPlayerInfo playerInfo) {
-            if (this.PunkbusterPlayerInfoList.ContainsKey(playerInfo.SoldierName) == true) {
+        public virtual void OnPlayerLeft(CPlayerInfo playerInfo)
+        {
+            if (this.PunkbusterPlayerInfoList.ContainsKey(playerInfo.SoldierName) == true)
+            {
                 this.PunkbusterPlayerInfoList.Remove(playerInfo.SoldierName);
             }
 
-            if (this.FrostbitePlayerInfoList.ContainsKey(playerInfo.SoldierName) == true) {
+            if (this.FrostbitePlayerInfoList.ContainsKey(playerInfo.SoldierName) == true)
+            {
                 this.FrostbitePlayerInfoList.Remove(playerInfo.SoldierName);
             }
         }
 
-        public virtual void OnPlayerDisconnected(string soldierName, string reason) {
+        public virtual void OnPlayerDisconnected(string soldierName, string reason)
+        {
             if (this.PunkbusterPlayerInfoList.ContainsKey(soldierName) == true)
             {
                 this.PunkbusterPlayerInfoList.Remove(soldierName);
@@ -485,12 +504,16 @@ namespace PRoCon.Core.Plugin {
         /// 
         /// </summary>
         /// <param name="playerInfo"></param>
-        public virtual void OnPunkbusterPlayerInfo(CPunkbusterInfo playerInfo) {
-            if (playerInfo != null) {
-                if (this.PunkbusterPlayerInfoList.ContainsKey(playerInfo.SoldierName) == false) {
+        public virtual void OnPunkbusterPlayerInfo(CPunkbusterInfo playerInfo)
+        {
+            if (playerInfo != null)
+            {
+                if (this.PunkbusterPlayerInfoList.ContainsKey(playerInfo.SoldierName) == false)
+                {
                     this.PunkbusterPlayerInfoList.Add(playerInfo.SoldierName, playerInfo);
                 }
-                else {
+                else
+                {
                     this.PunkbusterPlayerInfoList[playerInfo.SoldierName] = playerInfo;
                 }
             }
@@ -570,7 +593,8 @@ namespace PRoCon.Core.Plugin {
         /// </summary>
         /// <param name="data"></param>
         /// <returns>By default the response will be a blank "200 OK" document</returns>
-        public virtual HttpWebServerResponseData OnHttpRequest(HttpWebServerRequestData data) {
+        public virtual HttpWebServerResponseData OnHttpRequest(HttpWebServerRequestData data)
+        {
             return null;
         }
 

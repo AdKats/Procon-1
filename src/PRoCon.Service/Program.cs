@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ServiceProcess;
+﻿using System.ServiceProcess;
 //using System.Text;
 
 namespace PRoCon.Service
@@ -14,10 +12,10 @@ namespace PRoCon.Service
         static void Main()
         {
             ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-			{ 
-				new PRoConService() 
-			};
+            ServicesToRun = new ServiceBase[]
+            {
+                new PRoConService()
+            };
             ServiceBase.Run(ServicesToRun);
         }
     }

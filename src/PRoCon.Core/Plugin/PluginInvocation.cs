@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
 
-namespace PRoCon.Core.Plugin {
+namespace PRoCon.Core.Plugin
+{
 
     /// <summary>
     /// Just a class to stamp a call to a plugin.
@@ -10,7 +11,8 @@ namespace PRoCon.Core.Plugin {
     /// with a stamp which can then be used to work out how long a
     /// a call has taken.
     /// </summary>
-    public class PluginInvocation {
+    public class PluginInvocation
+    {
 
         /// <summary>
         /// The maxmimum time a plugin invocation should be allowed to execute
@@ -39,7 +41,8 @@ namespace PRoCon.Core.Plugin {
         /// </summary>
         public Object[] Parameters { get; set; }
 
-        public PluginInvocation() {
+        public PluginInvocation()
+        {
             this.Reset();
         }
 
@@ -47,7 +50,8 @@ namespace PRoCon.Core.Plugin {
         /// Resets the stamp of this invocation (Runtime == 0)
         /// </summary>
         /// <returns>Itself</returns>
-        public PluginInvocation Reset() {
+        public PluginInvocation Reset()
+        {
             this.Stamp = DateTime.Now;
 
             return this;
@@ -57,7 +61,8 @@ namespace PRoCon.Core.Plugin {
         /// Fetches how long the invocation has been running.
         /// </summary>
         /// <returns>The length of time this plugin invocation has been running for.</returns>
-        public TimeSpan Runtime() {
+        public TimeSpan Runtime()
+        {
             return DateTime.Now - this.Stamp;
         }
 
@@ -65,18 +70,21 @@ namespace PRoCon.Core.Plugin {
         /// Formats this invocation as a fault with an optional error.
         /// </summary>
         /// <returns>Returns the formatted fault output for logging</returns>
-        public string FormatInvocationFault(String format = null, params object[] parameters) {
+        public string FormatInvocationFault(String format = null, params object[] parameters)
+        {
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("Fault in plugin call to {0}.{1}", this.Plugin.ClassName, this.MethodName);
             sb.AppendLine();
 
-            if (format != null) {
+            if (format != null)
+            {
                 sb.AppendFormat(format, parameters);
                 sb.AppendLine();
             }
 
-            for (int i = 0; i < this.Parameters.Length; i++) {
+            for (int i = 0; i < this.Parameters.Length; i++)
+            {
                 sb.AppendFormat("\tParameter {0}: {1}, value: \"{2}\"", i, this.Parameters[i].GetType(), this.Parameters[i].ToString());
                 sb.AppendLine();
             }
@@ -84,7 +92,8 @@ namespace PRoCon.Core.Plugin {
             return sb.ToString();
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return this.FormatInvocationFault();
         }
     }

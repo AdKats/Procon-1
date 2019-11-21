@@ -19,18 +19,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using System.IO;
 
-namespace PRoCon.Controls.ServerSettings.BF4 {
+namespace PRoCon.Controls.ServerSettings.BF4
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsDetailsBF4 : uscServerSettings {
+    public partial class uscServerSettingsDetailsBF4 : uscServerSettings
+    {
 
         private string m_strPreviousSuccessServerName;
         private string m_strPreviousSuccessServerDescription;
@@ -39,7 +35,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private CDownloadFile m_cdfBanner;
 
-        public uscServerSettingsDetailsBF4() {
+        public uscServerSettingsDetailsBF4()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.servername", new AsyncStyleSetting(this.picSettingsServerName, this.txtSettingsServerName, new Control[] { this.lblSettingsServerName, this.txtSettingsServerName, this.lnkSettingsSetServerName }, true));
@@ -52,7 +49,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.m_strPreviousSuccessBannerURL = String.Empty;
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.lblSettingsDescription.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsDescription");
@@ -66,22 +64,28 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.DisplayName = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsDetails");
         }
 
-        public override void SetConnection(PRoConClient prcClient) {
+        public override void SetConnection(PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.ServerName += new FrostbiteClient.ServerNameHandler(m_prcClient_ServerName);
                 this.Client.Game.ServerDescription += new FrostbiteClient.ServerDescriptionHandler(m_prcClient_ServerDescription);
                 this.Client.Game.ServerMessage += new FrostbiteClient.ServerMessageHandler(m_prcClient_ServerMessage);
@@ -90,19 +94,23 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Server Description
 
-        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription) {
+        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription)
+        {
             this.m_strPreviousSuccessServerDescription = serverDescription.Replace("|", Environment.NewLine);
 
-            if (this.m_strPreviousSuccessServerDescription.Length >= 255) {
+            if (this.m_strPreviousSuccessServerDescription.Length >= 255)
+            {
                 this.m_strPreviousSuccessServerDescription = this.m_strPreviousSuccessServerDescription.Substring(0, 255);
             }
-            
+
             this.OnSettingResponse("vars.serverdescription", this.m_strPreviousSuccessServerDescription, true);
 
         }
 
-        private void lnkSettingsSetDescription_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetDescription_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsDescription.Focus();
                 this.WaitForSettingResponse("vars.serverdescription", this.m_strPreviousSuccessServerDescription);
 
@@ -145,13 +153,16 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Server Name
 
-        private void m_prcClient_ServerName(FrostbiteClient sender, string strServerName) {
+        private void m_prcClient_ServerName(FrostbiteClient sender, string strServerName)
+        {
             this.OnSettingResponse("vars.servername", strServerName, true);
             this.m_strPreviousSuccessServerName = strServerName;
         }
 
-        private void lnkSettingsSetServerName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetServerName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsServerName.Focus();
                 this.WaitForSettingResponse("vars.servername", this.m_strPreviousSuccessServerName);
 

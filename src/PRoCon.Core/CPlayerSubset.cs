@@ -20,7 +20,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace PRoCon.Core
 {
@@ -32,7 +31,8 @@ namespace PRoCon.Core
         private string m_strSoldierName;
         private int m_iTeamID, m_iSquadID;
 
-        public enum PlayerSubsetType {
+        public enum PlayerSubsetType
+        {
             None,
             All,
             Player,
@@ -134,7 +134,8 @@ namespace PRoCon.Core
             }
         }
 
-        public Hashtable ToHashtable() {
+        public Hashtable ToHashtable()
+        {
 
             Hashtable subset = new Hashtable();
 

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
     [Serializable]
-    public enum GameMods {
+    public enum GameMods
+    {
         None,
         BC2,
         VIETNAM

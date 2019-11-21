@@ -18,23 +18,25 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Reflection;
-using System.Reflection.Emit;
 using PRoCon.Controls.ControlsEx;
 using PRoCon.Core;
 using PRoCon.Core.Plugin;
 using PRoCon.Core.Remote;
 using PRoCon.Forms;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
 
-namespace PRoCon.Controls {
-    public partial class uscPluginPanel : UserControl {
+namespace PRoCon.Controls
+{
+    public partial class uscPluginPanel : UserControl
+    {
 
         private uscServerConnection m_uscParent;
         private frmMain m_frmMain;
@@ -59,9 +61,11 @@ namespace PRoCon.Controls {
 
         public delegate void PluginEnabledDelegate(string strClassName, bool blEnabled);
         public event PluginEnabledDelegate PluginEnabled;
-        
-        public ListViewNF.ListViewItemCollection LoadedPlugins {
-            get {
+
+        public ListViewNF.ListViewItemCollection LoadedPlugins
+        {
+            get
+            {
                 return this.lsvLoadedPlugins.Items;
             }
         }
@@ -132,14 +136,17 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
 
         private bool m_blLocalPlugins;
         [Category("PRoCon Settings"), Description("The control is used for local plugins or remote")]
-        public bool LocalPlugins {
-            set {
+        public bool LocalPlugins
+        {
+            set
+            {
                 //this.spltPlugins.Panel2Collapsed = value;
                 this.lnkReloadPlugins.Visible = !value;
 
                 this.m_blLocalPlugins = value;
             }
-            get {
+            get
+            {
                 return this.m_blLocalPlugins;
             }
         }
@@ -148,13 +155,15 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
         private ModuleBuilder m_modBuilder;
         private Dictionary<string, Enum> m_dicGeneratedEnums;
 
-        public uscPluginPanel() {
+        public uscPluginPanel()
+        {
             InitializeComponent();
 
             this.m_frmMain = null;
             this.m_uscParent = null;
 
-            if (this.webDescription.Document == null) {
+            if (this.webDescription.Document == null)
+            {
                 this.webDescription.Navigate("about:blank");
                 this.webDescription.Document.Window.Name = "hi";
             }
@@ -173,11 +182,13 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             this.lsvLoadedPlugins.CreateGraphics();
         }
 
-        void webDescription_Navigating(object sender, WebBrowserNavigatingEventArgs e) {
+        void webDescription_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
             e.Cancel = true;
         }
 
-        public void Initialize(frmMain frmMainWindow, uscServerConnection uscParent) {
+        public void Initialize(frmMain frmMainWindow, uscServerConnection uscParent)
+        {
 
             this.m_frmMain = frmMainWindow;
             this.m_uscParent = uscParent;
@@ -189,17 +200,21 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             this.tabPluginSettings.ImageKey = "plugin_edit.png";
         }
 
-        public void SetConnection(PRoConClient prcClient) {
-            if ((this.m_prcClient = prcClient) != null) {
+        public void SetConnection(PRoConClient prcClient)
+        {
+            if ((this.m_prcClient = prcClient) != null)
+            {
 
             }
         }
 
-        public void SetColour(string strVariable, string strValue) {
+        public void SetColour(string strVariable, string strValue)
+        {
             this.rtbScriptConsole.SetColour(strVariable, strValue);
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             this.m_clocLanguage = clocLanguage;
 
             //this.tbpPlugins.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.tbpPlugins.Title", null);
@@ -222,14 +237,18 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
         public event uscServerConnection.OnTabChangeDelegate OnTabChange;
 
         private bool m_blSettingTab = false;
-        private void tbcPluginDetails_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.m_blSettingTab == false && this.OnTabChange != null) {
+        private void tbcPluginDetails_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.m_blSettingTab == false && this.OnTabChange != null)
+            {
                 Stack<string> stkTabIndexes = new Stack<string>();
 
-                if (lsvLoadedPlugins.SelectedItems.Count > 0) {
+                if (lsvLoadedPlugins.SelectedItems.Count > 0)
+                {
                     stkTabIndexes.Push(lsvLoadedPlugins.SelectedItems[0].Name);
                 }
-                else {
+                else
+                {
                     stkTabIndexes.Push("");
                 }
 
@@ -240,35 +259,43 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             }
         }
 
-        public void SetTabIndexes(Stack<string> stkTabIndexes) {
+        public void SetTabIndexes(Stack<string> stkTabIndexes)
+        {
 
             this.m_blSettingTab = true;
 
-            if (stkTabIndexes.Count > 0 && tbcPluginDetails.TabPages.ContainsKey(stkTabIndexes.Peek()) == true) {
+            if (stkTabIndexes.Count > 0 && tbcPluginDetails.TabPages.ContainsKey(stkTabIndexes.Peek()) == true)
+            {
                 this.tbcPluginDetails.SelectedTab = tbcPluginDetails.TabPages[stkTabIndexes.Pop()];
             }
 
-            if (stkTabIndexes.Count > 0 && lsvLoadedPlugins.Items.ContainsKey(stkTabIndexes.Peek()) == true) {
+            if (stkTabIndexes.Count > 0 && lsvLoadedPlugins.Items.ContainsKey(stkTabIndexes.Peek()) == true)
+            {
                 lsvLoadedPlugins.Items[stkTabIndexes.Pop()].Selected = true;
             }
 
         }
 
-        public void Write(DateTime dtLoggedTime, string strPluginConsoleOutput) {
+        public void Write(DateTime dtLoggedTime, string strPluginConsoleOutput)
+        {
             this.rtbScriptConsole.AppendText(String.Format("[{0}] {1}{2}", dtLoggedTime.ToString("HH:mm:ss ff"), strPluginConsoleOutput, "\n"));
         }
 
-        private void rtbScriptConsole_Flushed(object arg1, EventArgs arg2) {
+        private void rtbScriptConsole_Flushed(object arg1, EventArgs arg2)
+        {
             this.rtbScriptConsole.ScrollToCaret();
 
             this.rtbScriptConsole.TrimLines(this.m_prcClient.Variables.GetVariable<int>("MAX_PLUGINCONSOLE_LINES", 75));
         }
 
-        public ListViewItem IsLoadedPlugin(string strClassName) {
+        public ListViewItem IsLoadedPlugin(string strClassName)
+        {
             ListViewItem lviLoadedPlugin = null;
 
-            foreach (ListViewItem lviPlugin in this.lsvLoadedPlugins.Items) {
-                if (lviPlugin.Tag != null && ((PluginDetails)lviPlugin.Tag).ClassName.CompareTo(strClassName) == 0) {
+            foreach (ListViewItem lviPlugin in this.lsvLoadedPlugins.Items)
+            {
+                if (lviPlugin.Tag != null && ((PluginDetails)lviPlugin.Tag).ClassName.CompareTo(strClassName) == 0)
+                {
                     lviLoadedPlugin = lviPlugin;
                 }
             }
@@ -278,27 +305,33 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
 
         private bool m_blSupressDisabledEvent = false;
 
-        public void SetEnabledPlugins(List<string> lstClassNames) {
+        public void SetEnabledPlugins(List<string> lstClassNames)
+        {
 
             ListViewItem lviPlugin = null;
 
-            foreach (string strClassName in lstClassNames) {
-                if ((lviPlugin = IsLoadedPlugin(strClassName)) != null) {
+            foreach (string strClassName in lstClassNames)
+            {
+                if ((lviPlugin = IsLoadedPlugin(strClassName)) != null)
+                {
                     lviPlugin.Checked = true;
                 }
             }
 
         }
 
-        public void SetLoadedPlugins(List<string> lstClassNames) {
+        public void SetLoadedPlugins(List<string> lstClassNames)
+        {
 
             ListViewItem lviPlugin = null;
 
-            foreach (string strClassName in new List<string>(lstClassNames)) {
+            foreach (string strClassName in new List<string>(lstClassNames))
+            {
 
                 PluginDetails spdDetails = this.GetPluginDetails(strClassName);
 
-                if ((lviPlugin = IsLoadedPlugin(strClassName)) == null) {
+                if ((lviPlugin = IsLoadedPlugin(strClassName)) == null)
+                {
 
                     ListViewItem lviNewItem = new ListViewItem(spdDetails.Name);
                     lviNewItem.Tag = spdDetails;
@@ -310,14 +343,16 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
 
                     lsvLoadedPlugins.Items.Add(lviNewItem);
 
-                    
+
                 }
-                else {
+                else
+                {
                     lviPlugin.Text = spdDetails.Name;
                     lviPlugin.Tag = spdDetails;
                 }
 
-                if (this.PluginLoaded != null) {
+                if (this.PluginLoaded != null)
+                {
                     this.PluginLoaded(spdDetails);
                 }
 
@@ -329,25 +364,31 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
 
             }
 
-            foreach (ColumnHeader column in this.lsvLoadedPlugins.Columns) {
+            foreach (ColumnHeader column in this.lsvLoadedPlugins.Columns)
+            {
                 column.Width = -2;
             }
 
         }
 
-        private Enum GenerateEnum(string enumName, string[] literals) {
+        private Enum GenerateEnum(string enumName, string[] literals)
+        {
 
             Enum returnEnum = null;
 
-            try {
+            try
+            {
 
-                if (this.m_dicGeneratedEnums.ContainsKey(enumName) == false) {
+                if (this.m_dicGeneratedEnums.ContainsKey(enumName) == false)
+                {
 
                     EnumBuilder enumBuilder = m_modBuilder.DefineEnum(enumName, TypeAttributes.Public, typeof(System.Int32));
                     //string[] al = { "en-US", "en-UK", "ar-SA", "da-DK", "French", "Cantonese" };
-                    for (int i = 0; i < literals.Length; i++) {
+                    for (int i = 0; i < literals.Length; i++)
+                    {
                         // here al is an array list with a list of string values
-                        if (literals[i].ToString().Length > 0) {
+                        if (literals[i].ToString().Length > 0)
+                        {
                             enumBuilder.DefineLiteral(literals[i].ToString(), i);
                         }
                     }
@@ -357,142 +398,178 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
 
                     this.m_dicGeneratedEnums.Add(enumName, returnEnum);
                 }
-                else {
+                else
+                {
                     returnEnum = this.m_dicGeneratedEnums[enumName];
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 FrostbiteConnection.LogError("uscPluginPanel.GenerateEnum", enumName + " " + String.Join("|", literals), e);
             }
 
             return returnEnum;
         }
 
-        private void SetPluginsVariables(string strClassName, string strPluginName, List<CPluginVariable> lstVariables) {
+        private void SetPluginsVariables(string strClassName, string strPluginName, List<CPluginVariable> lstVariables)
+        {
 
-            if (lstVariables != null) {
-                foreach (CPluginVariable cpvVariable in lstVariables) {
+            if (lstVariables != null)
+            {
+                foreach (CPluginVariable cpvVariable in lstVariables)
+                {
 
                     string strCategoryName = strPluginName;
                     string strVariableName = cpvVariable.Name;
                     bool blVariableReadOnly = cpvVariable.ReadOnly;
 
                     string[] a_strVariable = cpvVariable.Name.Split(new char[] { '|' }, 2);
-                    if (a_strVariable.Length == 2) {
+                    if (a_strVariable.Length == 2)
+                    {
                         strCategoryName = a_strVariable[0];
                         strVariableName = a_strVariable[1];
                     }
 
                     Enum generatedEnum = null;
                     Match isGeneratedEnum;
-                    if ((isGeneratedEnum = Regex.Match(cpvVariable.Type, @"enum.(?<enumname>.*?)\((?<literals>.*)\)")).Success == true) {
-                        if ((generatedEnum = this.GenerateEnum(isGeneratedEnum.Groups["enumname"].Value, isGeneratedEnum.Groups["literals"].Value.Split('|'))) != null) {
+                    if ((isGeneratedEnum = Regex.Match(cpvVariable.Type, @"enum.(?<enumname>.*?)\((?<literals>.*)\)")).Success == true)
+                    {
+                        if ((generatedEnum = this.GenerateEnum(isGeneratedEnum.Groups["enumname"].Value, isGeneratedEnum.Groups["literals"].Value.Split('|'))) != null)
+                        {
                             string variableValue = cpvVariable.Value;
 
-                            if (Enum.IsDefined(generatedEnum.GetType(), variableValue) == false) {
+                            if (Enum.IsDefined(generatedEnum.GetType(), variableValue) == false)
+                            {
                                 string[] a_Names = Enum.GetNames(generatedEnum.GetType());
 
-                                if (a_Names.Length > 0) {
+                                if (a_Names.Length > 0)
+                                {
                                     variableValue = a_Names[0];
                                 }
                             }
 
-                            if (Enum.IsDefined(generatedEnum.GetType(), variableValue) == true) {
-                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                            if (Enum.IsDefined(generatedEnum.GetType(), variableValue) == true)
+                            {
+                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                {
                                     this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, Enum.Parse(generatedEnum.GetType(), variableValue), generatedEnum.GetType(), blVariableReadOnly, true));
                                 }
-                                else {
+                                else
+                                {
                                     this.m_cscPluginVariables[cpvVariable.Name].Value = Enum.Parse(generatedEnum.GetType(), variableValue);
                                 }
                             }
-                            
+
                         }
 
                     }
-                    else {
+                    else
+                    {
 
-                        switch (cpvVariable.Type) {
+                        switch (cpvVariable.Type)
+                        {
                             case "bool":
                                 bool blTryBool;
-                                if (bool.TryParse(cpvVariable.Value, out blTryBool) == true) {
-                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (bool.TryParse(cpvVariable.Value, out blTryBool) == true)
+                                {
+                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                    {
                                         this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, blTryBool, typeof(bool), blVariableReadOnly, true));
                                     }
-                                    else {
+                                    else
+                                    {
                                         this.m_cscPluginVariables[cpvVariable.Name].Value = blTryBool;
                                     }
                                 }
                                 break;
                             case "onoff":
-                                if (Enum.IsDefined(typeof(enumBoolOnOff), cpvVariable.Value) == true) {
+                                if (Enum.IsDefined(typeof(enumBoolOnOff), cpvVariable.Value) == true)
+                                {
 
-                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                    {
                                         this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, Enum.Parse(typeof(enumBoolOnOff), cpvVariable.Value), typeof(enumBoolOnOff), blVariableReadOnly, true));
                                     }
-                                    else {
+                                    else
+                                    {
                                         this.m_cscPluginVariables[cpvVariable.Name].Value = Enum.Parse(typeof(enumBoolOnOff), cpvVariable.Value);
                                     }
                                 }
                                 break;
                             case "yesno":
-                                if (Enum.IsDefined(typeof(enumBoolYesNo), cpvVariable.Value) == true) {
-                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (Enum.IsDefined(typeof(enumBoolYesNo), cpvVariable.Value) == true)
+                                {
+                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                    {
                                         this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, Enum.Parse(typeof(enumBoolYesNo), cpvVariable.Value), typeof(enumBoolYesNo), blVariableReadOnly, true));
                                     }
-                                    else {
+                                    else
+                                    {
                                         this.m_cscPluginVariables[cpvVariable.Name].Value = Enum.Parse(typeof(enumBoolYesNo), cpvVariable.Value);
                                     }
                                 }
                                 break;
                             case "int":
                                 int iTryInt;
-                                if (int.TryParse(cpvVariable.Value, out iTryInt) == true) {
-                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (int.TryParse(cpvVariable.Value, out iTryInt) == true)
+                                {
+                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                    {
                                         this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, iTryInt, typeof(int), blVariableReadOnly, true));
                                     }
-                                    else {
+                                    else
+                                    {
                                         this.m_cscPluginVariables[cpvVariable.Name].Value = iTryInt;
                                     }
                                 }
                                 break;
                             case "double":
                                 double dblTryDouble;
-                                if (double.TryParse(cpvVariable.Value, out dblTryDouble) == true) {
-                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (double.TryParse(cpvVariable.Value, out dblTryDouble) == true)
+                                {
+                                    if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                    {
                                         this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, dblTryDouble, typeof(double), blVariableReadOnly, true));
                                     }
-                                    else {
+                                    else
+                                    {
                                         this.m_cscPluginVariables[cpvVariable.Name].Value = dblTryDouble;
                                     }
                                 }
                                 break;
                             case "string":
-                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                {
                                     this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, CPluginVariable.Decode(cpvVariable.Value), typeof(String), blVariableReadOnly, true));
                                 }
-                                else {
+                                else
+                                {
 
                                     this.m_cscPluginVariables[cpvVariable.Name].Value = cpvVariable.Value;
                                 }
                                 break;
                             case "multiline":
-                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                {
                                     CustomProperty cptNewProperty = new CustomProperty(strVariableName, strCategoryName, strClassName, CPluginVariable.Decode(cpvVariable.Value), typeof(String), blVariableReadOnly, true);
 
-                                    cptNewProperty.Attributes = new AttributeCollection( new EditorAttribute(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor)), new TypeConverterAttribute(typeof(System.ComponentModel.Design.MultilineStringEditor)) );
+                                    cptNewProperty.Attributes = new AttributeCollection(new EditorAttribute(typeof(System.ComponentModel.Design.MultilineStringEditor), typeof(System.Drawing.Design.UITypeEditor)), new TypeConverterAttribute(typeof(System.ComponentModel.Design.MultilineStringEditor)));
                                     this.m_cscPluginVariables.Add(cptNewProperty);
                                 }
-                                else {
+                                else
+                                {
                                     this.m_cscPluginVariables[cpvVariable.Name].Value = cpvVariable.Value;
                                 }
                                 break;
                             case "stringarray":
-                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false) {
+                                if (this.m_cscPluginVariables.ContainsKey(cpvVariable.Name) == false)
+                                {
                                     this.m_cscPluginVariables.Add(new CustomProperty(strVariableName, strCategoryName, strClassName, CPluginVariable.DecodeStringArray(cpvVariable.Value), typeof(string[]), blVariableReadOnly, true));
 
                                     //this.m_cscPluginVariables.Add(new CustomProperty(cpvVariable.Name, strPluginName, strClassName, "Alaska", typeof(StatesList), false, true));
                                 }
-                                else {
+                                else
+                                {
                                     this.m_cscPluginVariables[cpvVariable.Name].Value = CPluginVariable.DecodeStringArray(cpvVariable.Value);
                                 }
 
@@ -507,19 +584,23 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
         }
 
 
-        private void ppgScriptSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
+        private void ppgScriptSettings_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
 
-            if (this.m_cscPluginVariables.ContainsKey(e.ChangedItem.Label) == true) {
+            if (this.m_cscPluginVariables.ContainsKey(e.ChangedItem.Label) == true)
+            {
 
                 string strValue = e.ChangedItem.Value.ToString();
 
-                if (this.m_cscPluginVariables[e.ChangedItem.Label].Type == typeof(bool)) {
+                if (this.m_cscPluginVariables[e.ChangedItem.Label].Type == typeof(bool))
+                {
                     strValue = strValue.ToLower();
                 }
                 //               else if (this.m_cscPluginVariables[e.ChangedItem.Label].Type == typeof(string)) {
                 //                   strValue = strValue;
                 //               }
-                else if (this.m_cscPluginVariables[e.ChangedItem.Label].Type == typeof(string[])) {
+                else if (this.m_cscPluginVariables[e.ChangedItem.Label].Type == typeof(string[]))
+                {
                     strValue = CPluginVariable.EncodeStringArray((string[])e.ChangedItem.Value);
 
                 }
@@ -532,10 +613,12 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
                 //this.lsvLoadedPlugins_SelectedIndexChanged(this, null);
                 this.RefreshSelectedPlugin();
 
-                if (this.m_cscPluginVariables.ContainsKey(e.ChangedItem.Label) == true) {
+                if (this.m_cscPluginVariables.ContainsKey(e.ChangedItem.Label) == true)
+                {
 
                     PluginDetails spdUpdatedDetails = this.GetPluginDetails(this.m_cscPluginVariables[e.ChangedItem.Label].ClassName);
-                    if (this.PluginVariablesAltered != null) {
+                    if (this.PluginVariablesAltered != null)
+                    {
                         this.PluginVariablesAltered(spdUpdatedDetails);
                     }
 
@@ -548,13 +631,16 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             }
         }
 
-        public void RefreshPlugin() {
+        public void RefreshPlugin()
+        {
             //this.lsvLoadedPlugins_SelectedIndexChanged(this, null);
             this.RefreshSelectedPlugin();
         }
 
-        private void RefreshSelectedPlugin() {
-            if (this.lsvLoadedPlugins.SelectedItems.Count > 0) {
+        private void RefreshSelectedPlugin()
+        {
+            if (this.lsvLoadedPlugins.SelectedItems.Count > 0)
+            {
                 //this.tbcPluginDetails.Enabled = true;
 
                 PluginDetails spdDetails = this.GetPluginDetails(((PluginDetails)lsvLoadedPlugins.SelectedItems[0].Tag).ClassName);
@@ -578,7 +664,8 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
                 this.m_cscPluginVariables.Clear();
                 this.SetPluginsVariables(spdDetails.ClassName, spdDetails.Name, spdDetails.DisplayPluginVariables);
             }
-            else if (this.lsvLoadedPlugins.FocusedItem != null) {
+            else if (this.lsvLoadedPlugins.FocusedItem != null)
+            {
                 //this.tbcPluginDetails.Enabled = false;
 
                 //this.txtPluginName.Text = String.Empty;
@@ -593,16 +680,18 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             }
         }
 
-        private void lsvLoadedPlugins_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lsvLoadedPlugins_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
             // Start up optimization, takes 100ms at startup to assign this is ctor so now
             // it's set here when the user first selects a plugin to display.  They won't notice it at all there.
-            if (this.ppgScriptSettings.SelectedObject == null ) {
+            if (this.ppgScriptSettings.SelectedObject == null)
+            {
                 this.ppgScriptSettings.SelectedObject = this.m_cscPluginVariables;
             }
 
             //if (this.m_prcClient != null && this.m_prcClient.Plugins != null) {
-                this.RefreshSelectedPlugin();
+            this.RefreshSelectedPlugin();
             //}
             /*
             if (this.lsvLoadedPlugins.SelectedItems.Count > 0) {
@@ -638,7 +727,8 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
                 this.ppgScriptSettings.Refresh();
             }
             */
-            if (this.lsvLoadedPlugins.FocusedItem != null) {
+            if (this.lsvLoadedPlugins.FocusedItem != null)
+            {
                 this.m_blSettingTab = false;
                 this.tbcPluginDetails_SelectedIndexChanged(null, null);
             }
@@ -658,11 +748,15 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
         //    }
         //}
 
-        private void lsvLoadedPlugins_ItemChecked(object sender, ItemCheckedEventArgs e) {
-            if (e.Item.Tag != null && this.m_blSupressDisabledEvent == false) {
-                if (e.Item.Checked == true) {
+        private void lsvLoadedPlugins_ItemChecked(object sender, ItemCheckedEventArgs e)
+        {
+            if (e.Item.Tag != null && this.m_blSupressDisabledEvent == false)
+            {
+                if (e.Item.Checked == true)
+                {
 
-                    if (this.PluginEnabled != null) {
+                    if (this.PluginEnabled != null)
+                    {
                         this.PluginEnabled(((PluginDetails)e.Item.Tag).ClassName, true);
                         e.Item.ImageKey = "plugin.png";
                     }
@@ -675,11 +769,13 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
                     }
                     */
                 }
-                else {
+                else
+                {
 
-                    if (this.PluginEnabled != null) {
+                    if (this.PluginEnabled != null)
+                    {
                         this.PluginEnabled(((PluginDetails)e.Item.Tag).ClassName, false);
-                        
+
                         e.Item.ImageKey = "plugin_disabled.png";
                     }
 
@@ -696,9 +792,11 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             this.m_blSupressDisabledEvent = false;
         }
 
-        private void lnkReloadPlugins_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkReloadPlugins_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
-            if (this.ReloadPlugins != null) {
+            if (this.ReloadPlugins != null)
+            {
                 this.rtbScriptConsole.Text = String.Empty;
 
                 this.ReloadPlugins();
@@ -707,18 +805,21 @@ table.nostyle td,table.nostyle th,table.nostyle tr.even td,table.nostyle tr:hove
             //this.m_prcConnection.CompilePlugins();
         }
 
-        private void lnkMorePlugins_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkMorePlugins_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("https://myrcon.net/forum/9-plugins/");
         }
 
-        private void uscPluginPanel_Resize(object sender, EventArgs e) {
+        private void uscPluginPanel_Resize(object sender, EventArgs e)
+        {
             Rectangle tabBounds = this.tbcPluginDetails.Bounds;
             tabBounds.Width = this.Bounds.Width - tabBounds.X - 5;
             this.tbcPluginDetails.SetBounds(tabBounds.X, tabBounds.Y, tabBounds.Width, tabBounds.Height);
 
             this.lsvLoadedPlugins.Height = this.spltPlugins.Panel1.Height - 50;
 
-            try {
+            try
+            {
                 this.spltPlugins.SplitterDistance = (int)(this.spltPlugins.Bounds.Height * 0.8);
             }
             catch (Exception) { }

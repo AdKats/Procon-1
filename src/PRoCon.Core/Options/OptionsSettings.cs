@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Security;
 using System.Security.Permissions;
-using System.IO;
 using System.Text.RegularExpressions;
 
 // This can be moved into .Core once the contents of PRoCon.Plugin.* have been moved to .Core.
-namespace PRoCon.Core.Options {
-    using Core.Remote;
-    public class OptionsSettings {
+namespace PRoCon.Core.Options
+{
+    public class OptionsSettings
+    {
 
         private PRoConApplication m_praApplication;
 
@@ -47,96 +46,122 @@ namespace PRoCon.Core.Options {
         public event OptionsEnabledHandler EnablePluginDebuggingChanged;
 
         private bool m_isConsoleLoggingEnabled;
-        public bool ConsoleLogging {
-            get {
+        public bool ConsoleLogging
+        {
+            get
+            {
                 return this.m_isConsoleLoggingEnabled;
             }
-            set {
+            set
+            {
                 this.m_isConsoleLoggingEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.ConsoleLoggingChanged != null) {
+                if (this.ConsoleLoggingChanged != null)
+                {
                     this.ConsoleLoggingChanged(value);
                 }
             }
         }
 
         private bool m_isEventsLoggingEnabled;
-        public bool EventsLogging {
-            get {
+        public bool EventsLogging
+        {
+            get
+            {
                 return this.m_isEventsLoggingEnabled;
             }
-            set {
+            set
+            {
                 this.m_isEventsLoggingEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.EventsLoggingChanged != null) {
+                if (this.EventsLoggingChanged != null)
+                {
                     this.EventsLoggingChanged(value);
                 }
             }
         }
 
         private bool m_isPluginLoggingEnabled;
-        public bool PluginLogging {
-            get {
+        public bool PluginLogging
+        {
+            get
+            {
                 return this.m_isPluginLoggingEnabled;
             }
-            set {
+            set
+            {
                 this.m_isPluginLoggingEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.PluginsLoggingChanged != null) {
+                if (this.PluginsLoggingChanged != null)
+                {
                     this.PluginsLoggingChanged(value);
                 }
             }
         }
 
         private bool m_isChatLoggingEnabled;
-        public bool ChatLogging {
-            get {
+        public bool ChatLogging
+        {
+            get
+            {
                 return this.m_isChatLoggingEnabled;
             }
-            set {
+            set
+            {
                 this.m_isChatLoggingEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.ChatLoggingChanged != null) {
+                if (this.ChatLoggingChanged != null)
+                {
                     this.ChatLoggingChanged(value);
                 }
             }
         }
-        
+
         private bool m_isAutoCheckDownloadUpdatesEnabled;
-        public bool AutoCheckDownloadUpdates {
-            get {
+        public bool AutoCheckDownloadUpdates
+        {
+            get
+            {
                 return this.m_isAutoCheckDownloadUpdatesEnabled;
             }
-            set {
-                if (this.m_praApplication.BlockUpdateChecks == true) {
+            set
+            {
+                if (this.m_praApplication.BlockUpdateChecks == true)
+                {
                     this.m_isAutoCheckDownloadUpdatesEnabled = false;
                 }
-                else {
+                else
+                {
                     this.m_isAutoCheckDownloadUpdatesEnabled = value;
                 }
 
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AutoCheckDownloadUpdatesChanged != null) {
+                if (this.AutoCheckDownloadUpdatesChanged != null)
+                {
                     this.AutoCheckDownloadUpdatesChanged(value);
                 }
             }
         }
 
         private bool m_isAutoApplyUpdatesEnabled;
-        public bool AutoApplyUpdates {
-            get {
+        public bool AutoApplyUpdates
+        {
+            get
+            {
                 return this.m_isAutoApplyUpdatesEnabled;
             }
-            set {
+            set
+            {
                 this.m_isAutoApplyUpdatesEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AutoApplyUpdatesChanged != null) {
+                if (this.AutoApplyUpdatesChanged != null)
+                {
                     this.AutoApplyUpdatesChanged(value);
                 }
             }
@@ -145,111 +170,140 @@ namespace PRoCon.Core.Options {
         private bool m_isAutoCheckGameConfigsForUpdatesEnabled;
         public bool AutoCheckGameConfigsForUpdates
         {
-            get {
+            get
+            {
                 return this.m_isAutoCheckGameConfigsForUpdatesEnabled;
             }
-            set {
-                if (this.m_praApplication.BlockUpdateChecks == true) {
+            set
+            {
+                if (this.m_praApplication.BlockUpdateChecks == true)
+                {
                     this.m_isAutoCheckGameConfigsForUpdatesEnabled = false;
                 }
-                else {
+                else
+                {
                     this.m_isAutoCheckGameConfigsForUpdatesEnabled = value;
                 }
 
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AutoCheckDownloadUpdatesChanged != null) {
+                if (this.AutoCheckDownloadUpdatesChanged != null)
+                {
                     this.AutoCheckGameConfigsForUpdatesChanged(value);
                 }
             }
         }
 
         private bool m_isTrayIconVisible;
-        public bool ShowTrayIcon {
-            get {
+        public bool ShowTrayIcon
+        {
+            get
+            {
                 return this.m_isTrayIconVisible;
             }
-            set {
+            set
+            {
                 this.m_isTrayIconVisible = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.ShowTrayIconChanged != null) {
+                if (this.ShowTrayIconChanged != null)
+                {
                     this.ShowTrayIconChanged(value);
                 }
             }
         }
 
         private bool m_isCloseToTrayEnabled;
-        public bool CloseToTray {
-            get {
+        public bool CloseToTray
+        {
+            get
+            {
                 return this.m_isCloseToTrayEnabled;
             }
-            set {
+            set
+            {
                 this.m_isCloseToTrayEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.CloseToTrayChanged != null) {
+                if (this.CloseToTrayChanged != null)
+                {
                     this.CloseToTrayChanged(value);
                 }
             }
         }
 
         private bool m_isMinimizeToTrayEnabled;
-        public bool MinimizeToTray {
-            get {
+        public bool MinimizeToTray
+        {
+            get
+            {
                 return this.m_isMinimizeToTrayEnabled;
             }
-            set {
+            set
+            {
                 this.m_isMinimizeToTrayEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.MinimizeToTrayChanged != null) {
+                if (this.MinimizeToTrayChanged != null)
+                {
                     this.MinimizeToTrayChanged(value);
                 }
             }
         }
 
         private bool m_isRunPluginsInTrustedSandboxEnabled;
-        public bool RunPluginsInTrustedSandbox {
-            get {
+        public bool RunPluginsInTrustedSandbox
+        {
+            get
+            {
                 return this.m_isRunPluginsInTrustedSandboxEnabled;
             }
-            set {
+            set
+            {
                 this.m_isRunPluginsInTrustedSandboxEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.RunPluginsInTrustedSandboxChanged != null) {
+                if (this.RunPluginsInTrustedSandboxChanged != null)
+                {
                     this.RunPluginsInTrustedSandboxChanged(value);
                 }
             }
         }
 
         private bool m_isAdminMoveMessageEnabled = true;
-        public bool AdminMoveMessage {
-            get {
+        public bool AdminMoveMessage
+        {
+            get
+            {
                 return this.m_isAdminMoveMessageEnabled;
             }
-            set {
+            set
+            {
                 this.m_isAdminMoveMessageEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AdminMoveMessageChanged != null) {
+                if (this.AdminMoveMessageChanged != null)
+                {
                     this.AdminMoveMessageChanged(value);
                 }
             }
         }
-        
+
         // ChatDisplayAdminNameChanged
         private bool m_isChatDisplayAdminNameEnabled = true;
-        public bool ChatDisplayAdminName {
-            get {
+        public bool ChatDisplayAdminName
+        {
+            get
+            {
                 return this.m_isChatDisplayAdminNameEnabled;
             }
-            set {
+            set
+            {
                 this.m_isChatDisplayAdminNameEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.ChatDisplayAdminNameChanged != null) {
+                if (this.ChatDisplayAdminNameChanged != null)
+                {
                     this.ChatDisplayAdminNameChanged(value);
                 }
             }
@@ -259,44 +313,55 @@ namespace PRoCon.Core.Options {
         private bool m_isEnableAdminReasonEnabled = true;
         public bool EnableAdminReason
         {
-            get {
+            get
+            {
                 return this.m_isEnableAdminReasonEnabled;
             }
-            set {
+            set
+            {
                 this.m_isEnableAdminReasonEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.EnableAdminReasonChanged != null) {
+                if (this.EnableAdminReasonChanged != null)
+                {
                     this.EnableAdminReasonChanged(value);
                 }
             }
         }
 
         private bool m_isLayerHideLocalPluginsEnabled = true;
-        public bool LayerHideLocalPlugins {
-            get {
+        public bool LayerHideLocalPlugins
+        {
+            get
+            {
                 return this.m_isLayerHideLocalPluginsEnabled;
             }
-            set {
+            set
+            {
                 this.m_isLayerHideLocalPluginsEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.LayerHideLocalPluginsChanged != null) {
+                if (this.LayerHideLocalPluginsChanged != null)
+                {
                     this.LayerHideLocalPluginsChanged(value);
                 }
             }
         }
 
         private bool m_isLayerHideLocalAccountsEnabled = true;
-        public bool LayerHideLocalAccounts {
-            get {
+        public bool LayerHideLocalAccounts
+        {
+            get
+            {
                 return this.m_isLayerHideLocalAccountsEnabled;
             }
-            set {
+            set
+            {
                 this.m_isLayerHideLocalAccountsEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.LayerHideLocalAccountsChanged != null) {
+                if (this.LayerHideLocalAccountsChanged != null)
+                {
                     this.LayerHideLocalAccountsChanged(value);
                 }
             }
@@ -341,7 +406,7 @@ namespace PRoCon.Core.Options {
                 }
             }
         }
-        
+
         // ShowDICESpecialOptions
         private bool m_isShowDICESpecialOptionsEnabled;
         public bool ShowDICESpecialOptions
@@ -363,15 +428,19 @@ namespace PRoCon.Core.Options {
         }
 
         private bool m_isAllowAllODBCConnectionsEnabled;
-        public bool AllowAllODBCConnections {
-            get {
+        public bool AllowAllODBCConnections
+        {
+            get
+            {
                 return this.m_isAllowAllODBCConnectionsEnabled;
             }
-            set {
+            set
+            {
                 this.m_isAllowAllODBCConnectionsEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AllowAllODBCConnectionsChanged != null) {
+                if (this.AllowAllODBCConnectionsChanged != null)
+                {
                     this.AllowAllODBCConnectionsChanged(value);
                 }
             }
@@ -397,41 +466,51 @@ namespace PRoCon.Core.Options {
         }
 
         private bool m_isAnonymousUsageDataEnabled;
-        public bool AllowAnonymousUsageData {
-            get {
+        public bool AllowAnonymousUsageData
+        {
+            get
+            {
                 return this.m_isAnonymousUsageDataEnabled;
             }
-            set {
+            set
+            {
                 this.m_isAnonymousUsageDataEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.AllowAnonymousUsageDataChanged != null) {
+                if (this.AllowAnonymousUsageDataChanged != null)
+                {
                     this.AllowAnonymousUsageDataChanged(value);
                 }
             }
         }
 
-        public NotificationList<TrustedHostWebsitePort> TrustedHostsWebsitesPorts {
+        public NotificationList<TrustedHostWebsitePort> TrustedHostsWebsitesPorts
+        {
             get;
             private set;
         }
 
-        public NotificationList<StatsLinkNameUrl> StatsLinkNameUrl {
+        public NotificationList<StatsLinkNameUrl> StatsLinkNameUrl
+        {
             get;
             private set;
         }
 
-        public int StatsLinksMaxNum {
+        public int StatsLinksMaxNum
+        {
             get;
             set;
         }
 
         private int m_PluginMaxRuntime_s;
-        public int PluginMaxRuntime_s {
-            get {
+        public int PluginMaxRuntime_s
+        {
+            get
+            {
                 return this.m_PluginMaxRuntime_s;
             }
-            set {
+            set
+            {
                 if (value <= 0) { value = 10; }
                 if (value >= 60) { value = 59; }
                 this.m_PluginMaxRuntime_s = value;
@@ -440,11 +519,14 @@ namespace PRoCon.Core.Options {
         }
 
         private int m_PluginMaxRuntime_m;
-        public int PluginMaxRuntime_m {
-            get {
+        public int PluginMaxRuntime_m
+        {
+            get
+            {
                 return this.m_PluginMaxRuntime_m;
             }
-            set {
+            set
+            {
                 if (value < 0) { value = 0; }
                 if (value >= 60) { value = 59; }
                 this.m_PluginMaxRuntime_m = value;
@@ -453,32 +535,40 @@ namespace PRoCon.Core.Options {
         }
 
         private bool m_isPluginMaxRuntimeLocked;
-        public bool PluginMaxRuntimeLocked {
-            get {
+        public bool PluginMaxRuntimeLocked
+        {
+            get
+            {
                 return m_isPluginMaxRuntimeLocked;
             }
-            set {
+            set
+            {
                 this.m_isPluginMaxRuntimeLocked = value;
             }
         }
 
         private bool m_isUsePluginOldStyleLoadEnabled;
-        public bool UsePluginOldStyleLoad {
-            get {
+        public bool UsePluginOldStyleLoad
+        {
+            get
+            {
                 return this.m_isUsePluginOldStyleLoadEnabled;
             }
-            set {
+            set
+            {
                 this.m_isUsePluginOldStyleLoadEnabled = value;
                 this.m_praApplication.SaveMainConfig();
 
-                if (this.UsePluginOldStyleLoadChanged != null) {
+                if (this.UsePluginOldStyleLoadChanged != null)
+                {
                     this.UsePluginOldStyleLoadChanged(value);
                 }
             }
         }
 
         private bool m_isPluginDebuggingEnabled;
-        public bool EnablePluginDebugging {
+        public bool EnablePluginDebugging
+        {
             get
             {
                 return this.m_isPluginDebuggingEnabled;
@@ -498,15 +588,18 @@ namespace PRoCon.Core.Options {
         public PermissionSet PluginPermissions
         {
 
-            get {
+            get
+            {
 
                 PermissionSet psetPluginPermissions;
 
-                if (this.RunPluginsInTrustedSandbox == true) {
+                if (this.RunPluginsInTrustedSandbox == true)
+                {
 
                     psetPluginPermissions = new PermissionSet(PermissionState.None);
 
-                    try {
+                    try
+                    {
 
                         psetPluginPermissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
                         psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, AppDomain.CurrentDomain.BaseDirectory));
@@ -519,7 +612,8 @@ namespace PRoCon.Core.Options {
                         psetPluginPermissions.AddPermission(new System.Net.DnsPermission(PermissionState.Unrestricted));
 
                         // TO DO: rename to something like "Allow all database connections"
-                        if (this.AllowAllODBCConnections == true) {
+                        if (this.AllowAllODBCConnections == true)
+                        {
                             psetPluginPermissions.AddPermission(new System.Data.Odbc.OdbcPermission(PermissionState.Unrestricted));
                             // Also allow all MySQL connections when ODBC is enabled, allowing the .NET MySQL connector to work with sandbox enabled
                             psetPluginPermissions.AddPermission(new MySql.Data.MySqlClient.MySqlClientPermission(PermissionState.Unrestricted));
@@ -533,35 +627,46 @@ namespace PRoCon.Core.Options {
                         // TO DO: Fixup.
                         psetPluginPermissions.AddPermission(new ReflectionPermission(ReflectionPermissionFlag.RestrictedMemberAccess));
                     }
-                    catch (Exception) {
+                    catch (Exception)
+                    {
 
                     }
 
-                    foreach (TrustedHostWebsitePort trusted in this.TrustedHostsWebsitesPorts) {
+                    foreach (TrustedHostWebsitePort trusted in this.TrustedHostsWebsitesPorts)
+                    {
 
-                        try {
+                        try
+                        {
                             Regex rxHostRegex;
-                            string strSocketHost="*";
-                            if (trusted.HostWebsite == "*" || trusted.HostWebsite == "*.*.*.*") {
+                            string strSocketHost = "*";
+                            if (trusted.HostWebsite == "*" || trusted.HostWebsite == "*.*.*.*")
+                            {
                                 rxHostRegex = new Regex(@".*/.*");
-                            } else {
+                            }
+                            else
+                            {
                                 rxHostRegex = new Regex(trusted.HostWebsite.Replace(".", @"\.") + ".*", RegexOptions.IgnoreCase);
                                 strSocketHost = Regex.Replace(trusted.HostWebsite, "^(.*:\\/\\/)", "", RegexOptions.IgnoreCase);
                             }
                             //psetPluginPermissions.AddPermission(new System.Net.WebPermission(System.Net.NetworkAccess.Connect, new Regex(trusted.HostWebsite.Replace(".", @"\.") + ".*", RegexOptions.IgnoreCase)));
                             psetPluginPermissions.AddPermission(new System.Net.WebPermission(System.Net.NetworkAccess.Connect, rxHostRegex));
-                            if (trusted.Port == (UInt16)0) {
+                            if (trusted.Port == (UInt16)0)
+                            {
                                 psetPluginPermissions.AddPermission(new System.Net.SocketPermission(System.Net.NetworkAccess.Connect, System.Net.TransportType.All, strSocketHost, System.Net.SocketPermission.AllPorts));
-                            } else {
+                            }
+                            else
+                            {
                                 psetPluginPermissions.AddPermission(new System.Net.SocketPermission(System.Net.NetworkAccess.Connect, System.Net.TransportType.All, strSocketHost, trusted.Port));
                             }
                         }
-                        catch (Exception) {
+                        catch (Exception)
+                        {
 
                         }
                     }
                 }
-                else {
+                else
+                {
                     psetPluginPermissions = new PermissionSet(PermissionState.Unrestricted);
                 }
 
@@ -569,7 +674,8 @@ namespace PRoCon.Core.Options {
             }
         }
 
-        public OptionsSettings(PRoConApplication praApplication) {
+        public OptionsSettings(PRoConApplication praApplication)
+        {
             this.m_praApplication = praApplication;
             this.AutoCheckDownloadUpdates = true;
             this.AutoCheckGameConfigsForUpdates = true;

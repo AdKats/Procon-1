@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace PRoCon.Core.Remote.Cache {
-    public class CacheManager : ICacheManager {
+namespace PRoCon.Core.Remote.Cache
+{
+    public class CacheManager : ICacheManager
+    {
         public List<IPacketCacheConfiguration> Configurations { get; set; }
 
         /// <summary>
@@ -22,11 +24,14 @@ namespace PRoCon.Core.Remote.Cache {
         /// </summary>
         public Timer ExpiryCheck { get; set; }
 
-        public CacheManager() {
+        public CacheManager()
+        {
             this.Cache = new Dictionary<String, IPacketCache>();
 
-            this.ExpiryCheck = new Timer(state => {
-                lock (this.CacheLock) {
+            this.ExpiryCheck = new Timer(state =>
+            {
+                lock (this.CacheLock)
+                {
                     List<String> keys = (this.Cache.Where(item => item.Value.Expiry < DateTime.Now).Select(item => item.Key)).ToList();
 
                     keys.ForEach(item => this.Cache.Remove(item));
@@ -40,13 +45,16 @@ namespace PRoCon.Core.Remote.Cache {
         /// <param name="key">The key to cache on</param>
         /// <param name="request">The request being made to the server</param>
         /// <returns>A new cache object if the request was cachable, false otherwise.</returns>
-        protected IPacketCache CacheIfApplicable(String key, Packet request) {
+        protected IPacketCache CacheIfApplicable(String key, Packet request)
+        {
             IPacketCache cache = null;
 
             var config = this.Configurations.FirstOrDefault(c => c.Matching.IsMatch(key));
 
-            if (config != null) {
-                cache = new PacketCache() {
+            if (config != null)
+            {
+                cache = new PacketCache()
+                {
                     Request = request,
                     Expiry = DateTime.Now.Add(config.Ttl)
                 };
@@ -57,23 +65,29 @@ namespace PRoCon.Core.Remote.Cache {
             return cache;
         }
 
-        public IPacketCache Request(Packet request) {
+        public IPacketCache Request(Packet request)
+        {
             IPacketCache cache = null;
 
-            if (request.IsResponse == false) {
+            if (request.IsResponse == false)
+            {
                 var key = request.ToString();
 
-                lock (this.CacheLock) {
+                lock (this.CacheLock)
+                {
                     // Have we got it cached and is it valid?
-                    if (this.Cache.ContainsKey(key) == true) {
-                        if (this.Cache[key].Response != null) {
+                    if (this.Cache.ContainsKey(key) == true)
+                    {
+                        if (this.Cache[key].Response != null)
+                        {
                             // Yes, we do. Return this.
                             cache = this.Cache[key];
                         }
                         // else return null
                     }
                     // No, check if we should cache it.
-                    else {
+                    else
+                    {
                         this.CacheIfApplicable(key, request);
                     }
                 }
@@ -82,12 +96,16 @@ namespace PRoCon.Core.Remote.Cache {
             return cache;
         }
 
-        public void Response(Packet response) {
-            if (response.IsResponse == true) {
-                lock (this.CacheLock) {
+        public void Response(Packet response)
+        {
+            if (response.IsResponse == true)
+            {
+                lock (this.CacheLock)
+                {
                     IPacketCache cache = this.Cache.Where(item => item.Value.Request.SequenceNumber == response.SequenceNumber).Select(item => item.Value).FirstOrDefault();
 
-                    if (cache != null) {
+                    if (cache != null)
+                    {
                         cache.Response = response;
                     }
                 }

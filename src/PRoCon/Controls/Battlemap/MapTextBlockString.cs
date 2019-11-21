@@ -17,32 +17,34 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 
-namespace PRoCon.Controls.Battlemap {
-    public class MapTextBlockString : MapObject {
+namespace PRoCon.Controls.Battlemap
+{
+    public class MapTextBlockString : MapObject
+    {
 
-        public string Text {
+        public string Text
+        {
             get;
             private set;
         }
 
-        public Color TextColor {
+        public Color TextColor
+        {
             get;
             private set;
         }
 
-        public bool NewLine {
+        public bool NewLine
+        {
             get;
             set;
         }
 
-        public MapTextBlockString(string text, Color textColor, bool newLine) {
+        public MapTextBlockString(string text, Color textColor, bool newLine)
+        {
 
             GraphicsPath gpText = new GraphicsPath();
             gpText.AddString(text, new FontFamily("Arial"), 0, 12.0F, new Point(0, 0), StringFormat.GenericTypographic);
@@ -58,27 +60,33 @@ namespace PRoCon.Controls.Battlemap {
         }
 
 
-        protected override void MouseOver(Graphics g) {
+        protected override void MouseOver(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 
-        protected override void MouseLeave(Graphics g) {
+        protected override void MouseLeave(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 
-        protected override void MouseDown(Graphics g) {
+        protected override void MouseDown(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 
-        protected override void MouseUp(Graphics g) {
+        protected override void MouseUp(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 
-        protected override void MouseClicked(Graphics g) {
+        protected override void MouseClicked(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 
-        protected override void NormalPaint(Graphics g) {
+        protected override void NormalPaint(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, this.TextColor);
         }
 

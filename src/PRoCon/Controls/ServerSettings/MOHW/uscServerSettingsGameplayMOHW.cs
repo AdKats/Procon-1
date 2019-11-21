@@ -1,20 +1,19 @@
 ﻿using System;
 //using System.Collections.Generic;
 using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.MOHW {
+namespace PRoCon.Controls.ServerSettings.MOHW
+{
     using Core;
-    using Core.Remote;
     using Core.PlaylistMOHW;
-    public partial class uscServerSettingsGameplayMOHW : uscServerSettingsGameplay {
+    using Core.Remote;
+    public partial class uscServerSettingsGameplayMOHW : uscServerSettingsGameplay
+    {
 
         public uscServerSettingsGameplayMOHW()
-            : base() {
+            : base()
+        {
             InitializeComponent();
 
             this.chkSettingsHardcore.Enabled = false;
@@ -40,12 +39,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
             this.AsyncSettingControls.Add("vars.thirdpersonvehiclecameras", new AsyncStyleSetting(this.picSettingsThirdPersonVehicleCameras, this.chkSettingsThirdPersonVehicleCameras, new Control[] { this.chkSettingsThirdPersonVehicleCameras }, true));
             this.AsyncSettingControls.Add("vars.regeneratehealth", new AsyncStyleSetting(this.picSettingsRegenerateHealth, this.chkSettingsRegenerateHealth, new Control[] { this.chkSettingsRegenerateHealth }, true));
-            
+
             this.AsyncSettingControls.Add("vars.bulletdamage", new AsyncStyleSetting(this.picSettingsBulletDamage, this.numSettingsBulletDamage, new Control[] { this.numSettingsBulletDamage, this.lnkSettingsBulletDamage }, true));
             this.AsyncSettingControls.Add("vars.roundrestartplayercount", new AsyncStyleSetting(this.picSettingsRoundRestartPlayerCount, this.numSettingsRoundRestartPlayerCount, new Control[] { this.numSettingsRoundRestartPlayerCount, this.lnkSettingsRoundRestartPlayerCount }, true));
             this.AsyncSettingControls.Add("vars.roundstartplayercount", new AsyncStyleSetting(this.picSettingsRoundStartPlayerCount, this.numSettingsRoundStartPlayerCount, new Control[] { this.numSettingsRoundStartPlayerCount, this.lnkSettingsRoundStartPlayerCount }, true));
             this.AsyncSettingControls.Add("vars.soldierhealth", new AsyncStyleSetting(this.picSettingsSoldierHealth, this.numSettingsSoldierHealth, new Control[] { this.numSettingsSoldierHealth, this.lnkSettingsSoldierHealth }, true));
-            
+
             this.AsyncSettingControls.Add("vars.playerrespawntime", new AsyncStyleSetting(this.picSettingsPlayerRespawnTime, this.numSettingsPlayerRespawnTime, new Control[] { this.numSettingsPlayerRespawnTime, this.lnkSettingsPlayerRespawnTime }, true));
 
             this.AsyncSettingControls.Add("vars.playlist", new AsyncStyleSetting(this.picSettingsPlaylist, this.cboSettingsPlaylist, new Control[] { this.cboSettingsPlaylist }, true));
@@ -53,7 +52,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             this.AsyncSettingControls.Add("vars.gameModeCounter", new AsyncStyleSetting(this.picSettingsGameModeCounter, this.numSettingsGameModeCounter, new Control[] { this.numSettingsGameModeCounter, this.lnkSettingsGameModeCounter }, true));
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsKillCam.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsKillCam");
@@ -78,7 +78,7 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             this.chkSettingsTeamBalance.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsTeamBalance");
 
             this.chkSettingsRegenerateHealth.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsRegenerateHealth");
-            
+
             this.lblSettingsBulletDamage.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsBulletDamage");
             this.lnkSettingsBulletDamage.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsBulletDamage");
             this.lblSettingsRoundRestartPlayerCount.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsRoundRestartPlayerCount");
@@ -87,8 +87,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             this.lnkSettingsRoundStartPlayerCount.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsRoundStartPlayerCount");
             this.lblSettingsSoldierHealth.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsSoldierHealth");
             this.lnkSettingsSoldierHealth.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsSoldierHealth");
-            
-            
+
+
             this.lblSettingsPlayerRespawnTime.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsPlayerRespawnTime");
             this.lnkSettingsPlayerRespawnTime.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsPlayerRespawnTime");
             this.lblSettingsGameModeCounter.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsGameModeCounter");
@@ -120,21 +120,27 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.TeamBalance += new FrostbiteClient.IsEnabledHandler(m_prcClient_TeamBalance);
                 this.Client.Game.KillCam += new FrostbiteClient.IsEnabledHandler(m_prcClient_KillCam);
 
@@ -174,9 +180,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region Third Person Vehicle Cameras
 
-        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false) {
+        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.thirdpersonvehiclecameras", !this.chkSettingsThirdPersonVehicleCameras.Checked);
 
                     this.Client.Game.SendSetVarsThirdPersonVehicleCamerasPacket(this.chkSettingsThirdPersonVehicleCameras.Checked);
@@ -184,7 +193,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.thirdpersonvehiclecameras", isEnabled, true);
         }
 
@@ -192,9 +202,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region Kill cam
 
-        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false) {
+        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.killcam", !this.chkSettingsKillCam.Checked);
 
                     this.Client.Game.SendSetVarsKillCamPacket(this.chkSettingsKillCam.Checked);
@@ -202,7 +215,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.killcam", isEnabled, true);
         }
 
@@ -210,9 +224,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region Team Balance
 
-        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false) {
+        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.teambalance", !this.chkSettingsTeamBalance.Checked);
 
                     this.Client.Game.SendSetVarsTeamBalancePacket(this.chkSettingsTeamBalance.Checked);
@@ -220,7 +237,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.teambalance", isEnabled, true);
         }
 
@@ -412,12 +430,15 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
         }
         */
         #endregion
-        
+
         #region Buddy Outline
 
-        private void chkSettingsBuddyOutline_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.buddyOutline"].IgnoreEvent == false) {
+        private void chkSettingsBuddyOutline_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.buddyOutline"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.buddyOutline", !this.chkSettingsBuddyOutline.Checked);
 
                     this.Client.Game.SendSetVarsBuddyOutlinePacket(this.chkSettingsBuddyOutline.Checked);
@@ -425,7 +446,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void Game_BuddyOutline(FrostbiteClient sender, bool isEnabled) {
+        private void Game_BuddyOutline(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.buddyOutline", isEnabled, true);
         }
 
@@ -544,9 +566,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region hudGameMode
 
-        private void chkSettingsHudGameMode_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudGameMode"].IgnoreEvent == false) {
+        private void chkSettingsHudGameMode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudGameMode"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hudGameMode", !this.chkSettingsHudGameMode.Checked);
 
                     this.Client.Game.SendSetVarsHudGameModePacket(this.chkSettingsHudGameMode.Checked);
@@ -554,7 +579,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void Game_HudGameMode(FrostbiteClient sender, bool isEnabled) {
+        private void Game_HudGameMode(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hudGameMode", isEnabled, true);
         }
 
@@ -562,9 +588,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region hudHealthAmmo
 
-        private void chkSettingsHudHealthAmmo_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudHealthAmmo"].IgnoreEvent == false) {
+        private void chkSettingsHudHealthAmmo_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudHealthAmmo"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hudHealthAmmo", !this.chkSettingsHudHealthAmmo.Checked);
 
                     this.Client.Game.SendSetVarsHudHealthAmmoPacket(this.chkSettingsHudHealthAmmo.Checked);
@@ -572,7 +601,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void Game_HudHealthAmmo(FrostbiteClient sender, bool isEnabled) {
+        private void Game_HudHealthAmmo(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hudHealthAmmo", isEnabled, true);
         }
 
@@ -602,9 +632,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region hudObiturary
 
-        private void chkSettingsHudObiturary_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudObiturary"].IgnoreEvent == false) {
+        private void chkSettingsHudObiturary_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudObiturary"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hudObiturary", !this.chkSettingsHudObiturary.Checked);
 
                     this.Client.Game.SendSetVarsHudObituraryPacket(this.chkSettingsHudObiturary.Checked);
@@ -612,7 +645,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_HudObiturary(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_HudObiturary(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hudObiturary", isEnabled, true);
         }
 
@@ -620,9 +654,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region hudPointsTracker
 
-        private void chkSettingsHudPointsTracker_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudPointsTracker"].IgnoreEvent == false) {
+        private void chkSettingsHudPointsTracker_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudPointsTracker"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hudPointsTracker", !this.chkSettingsHudPointsTracker.Checked);
 
                     this.Client.Game.SendSetVarsHudPointsTrackerPacket(this.chkSettingsHudPointsTracker.Checked);
@@ -630,7 +667,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_HudPointsTracker(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_HudPointsTracker(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hudPointsTracker", isEnabled, true);
         }
 
@@ -638,9 +676,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         #region hudUnlocks
 
-        private void chkSettingsHudUnlocks_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudUnlocks"].IgnoreEvent == false) {
+        private void chkSettingsHudUnlocks_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hudUnlocks"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hudUnlocks", !this.chkSettingsHudUnlocks.Checked);
 
                     this.Client.Game.SendSetVarsHudUnlocksPacket(this.chkSettingsHudUnlocks.Checked);
@@ -648,7 +689,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             }
         }
 
-        private void m_prcClient_HudUnlocks(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_HudUnlocks(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hudUnlocks", isEnabled, true);
         }
 
@@ -658,8 +700,10 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
 
         private string m_strPreviousSuccessPlaylist;
 
-        private void Game_Playlist(FrostbiteClient sender, string mode) {
-            this.InvokeIfRequired(() => {
+        private void Game_Playlist(FrostbiteClient sender, string mode)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_strPreviousSuccessPlaylist = mode.ToString();
                 this.OnSettingResponse("vars.playlist", mode.ToString(), true);
 
@@ -667,9 +711,12 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             });
         }
 
-        private void lnkSettingsPlaylist_LinkClicked(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.playlist"].IgnoreEvent == false) {
+        private void lnkSettingsPlaylist_LinkClicked(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.playlist"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.playlist", this.cboSettingsPlaylist.SelectedValue.ToString());
                     this.Client.Game.SendSetVarsPlaylistPacket(this.cboSettingsPlaylist.SelectedValue.ToString());
                     this.Client.Game.SendMapListListRoundsPacket();
@@ -678,12 +725,14 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
         }
 
         #endregion
-        
 
 
-        private void btnGameplayPresets_Click(object sender, EventArgs e) {
 
-            if (MessageBox.Show(String.Format("Are you sure you wish to overwrite your current config with the \"{0}\" preset?", this.cboGameplayPresets.SelectedItem), "Confirm update", MessageBoxButtons.YesNo) == DialogResult.Yes) {
+        private void btnGameplayPresets_Click(object sender, EventArgs e)
+        {
+
+            if (MessageBox.Show(String.Format("Are you sure you wish to overwrite your current config with the \"{0}\" preset?", this.cboGameplayPresets.SelectedItem), "Confirm update", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
 
                 bool hudMinimap = true,
                      hudCrosshair = true,
@@ -698,7 +747,8 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
                      buddyOutline = true;
 
 
-                switch (this.cboGameplayPresets.SelectedIndex) {
+                switch (this.cboGameplayPresets.SelectedIndex)
+                {
                     case 0: // just select
                         return;
                     case 1: // Normal
@@ -709,17 +759,17 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
                         this.Client.Game.SendSetVarsPlayerRespawnTimePacket(100);
                         break;
                     case 2: // Immersive
-                         hudMinimap = false;
-                         hudCrosshair = false;
-                         hudExplosiveIcons = true;
-                         hudHealthAmmo = false;
-                         hudObiturary = false;
-                         hudPointsTracker = false;
-                         hudEnemyTag = false;
-                         hudGameMode = true;
-                         hudBuddyInfo = false;
-                         hudUnlocks = true;
-                         buddyOutline = false;
+                        hudMinimap = false;
+                        hudCrosshair = false;
+                        hudExplosiveIcons = true;
+                        hudHealthAmmo = false;
+                        hudObiturary = false;
+                        hudPointsTracker = false;
+                        hudEnemyTag = false;
+                        hudGameMode = true;
+                        hudBuddyInfo = false;
+                        hudUnlocks = true;
+                        buddyOutline = false;
                         break;
                 }
 

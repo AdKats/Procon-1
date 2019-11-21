@@ -18,12 +18,7 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.ServiceProcess;
-using System.Text;
 
 namespace PRoCon.Service
 {
@@ -43,20 +38,23 @@ namespace PRoCon.Service
             //Setting the Evironment back to the Basedirectory
             //because Windows changes it to c://windows/system32 when running as service.
             Environment.CurrentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			System.Console.WriteLine(Environment.CurrentDirectory);
+            System.Console.WriteLine(Environment.CurrentDirectory);
 
             int iValue;
-            if (args != null && args.Length >= 2) {
-                for (int i = 0; i < args.Length; i = i + 2) {
-                    if (String.Compare("-use_core", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true && iValue > 0) {
+            if (args != null && args.Length >= 2)
+            {
+                for (int i = 0; i < args.Length; i = i + 2)
+                {
+                    if (String.Compare("-use_core", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true && iValue > 0)
+                    {
                         System.Diagnostics.Process.GetCurrentProcess().ProcessorAffinity = (System.IntPtr)iValue;
                     }
                 }
             }
 
-            if (PRoConApplication.IsProcessOpen() == false) 
+            if (PRoConApplication.IsProcessOpen() == false)
             {
-                try 
+                try
                 {
                     application = new PRoConApplication(true, args);
                     // Note: The license states usage data must be enabled for procon.console.exe support

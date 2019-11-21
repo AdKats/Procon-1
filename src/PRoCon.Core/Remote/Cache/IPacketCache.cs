@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace PRoCon.Core.Remote.Cache {
-    public interface IPacketCache {
+namespace PRoCon.Core.Remote.Cache
+{
+    public interface IPacketCache
+    {
         /// <summary>
         /// When this cache should expire
         /// </summary>

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Plugin.Commands {
+namespace PRoCon.Core.Plugin.Commands
+{
     [Serializable]
-    public enum ExecutionScope {
+    public enum ExecutionScope
+    {
         None, // It won't be executed by anyone for any reason.. 
         All, // Any player can execute the command
         Account, // Only an account is needed, privileges won't be checked

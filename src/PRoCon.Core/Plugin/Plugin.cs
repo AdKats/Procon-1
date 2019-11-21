@@ -21,8 +21,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Plugin {
-    public class Plugin {
+namespace PRoCon.Core.Plugin
+{
+    public class Plugin
+    {
 
         public string ClassName { get; private set; }
 
@@ -35,7 +37,8 @@ namespace PRoCon.Core.Plugin {
         public Dictionary<string, string> CacheFailCompiledPluginVariables { get; private set; }
 
         // Failed plugin
-        public Plugin(string className) {
+        public Plugin(string className)
+        {
             this.ClassName = className;
             this.CacheFailCompiledPluginVariables = new Dictionary<string, string>();
             this.IsLoaded = false;
@@ -43,7 +46,8 @@ namespace PRoCon.Core.Plugin {
         }
 
         // Loaded plugin
-        public Plugin(string className, IPRoConPluginInterface type) {
+        public Plugin(string className, IPRoConPluginInterface type)
+        {
             this.ClassName = className;
             this.Type = type;
             this.Type.ClassName = this.ClassName;
@@ -53,14 +57,17 @@ namespace PRoCon.Core.Plugin {
             this.RegisteredEvents = new List<string>();
         }
 
-        public void ConditionalInvoke(string methodName, params object[] parameters) {
+        public void ConditionalInvoke(string methodName, params object[] parameters)
+        {
             // if no events have been registered (all events fired) or the event has been registered.
-            if (this.RegisteredEvents != null && (this.RegisteredEvents.Count == 0 || this.RegisteredEvents.Contains(methodName) == true)) {
+            if (this.RegisteredEvents != null && (this.RegisteredEvents.Count == 0 || this.RegisteredEvents.Contains(methodName) == true))
+            {
                 this.Type.Invoke(methodName, parameters);
             }
         }
 
-        public bool CanConditionallyInvoke(String methodName) {
+        public bool CanConditionallyInvoke(String methodName)
+        {
             return this.RegisteredEvents != null && (this.RegisteredEvents.Count == 0 || this.RegisteredEvents.Contains(methodName) == true);
         }
     }

@@ -1,15 +1,18 @@
-﻿using System;
+﻿using PRoCon.Core.Maps;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using PRoCon.Core.Maps;
 
-namespace PRoCon.Core.Remote {
-    public class MOHWClient : BFClient {
+namespace PRoCon.Core.Remote
+{
+    public class MOHWClient : BFClient
+    {
         protected int LastMapListOffset;
         protected int LastReservedSlotsListOffset;
 
-        public MOHWClient(FrostbiteConnection connection) : base(connection) {
+        public MOHWClient(FrostbiteConnection connection) : base(connection)
+        {
             // Geoff Green 08/10/2011 - bug in BF3 OB version E, sent through with capital P.
             //this.m_requestDelegates.Add("PunkBuster.onMessage", this.DispatchPunkBusterOnMessageRequest);
 
@@ -138,12 +141,15 @@ namespace PRoCon.Core.Remote {
             GetPacketsPattern = new Regex(GetPacketsPattern + "|^reservedSlotsList.list", RegexOptions.Compiled);
         }
 
-        public override string GameType {
+        public override string GameType
+        {
             get { return "MOHW"; }
         }
 
-        public override bool HasOpenMaplist {
-            get {
+        public override bool HasOpenMaplist
+        {
+            get
+            {
                 // true, does not lock maplist to a playlist
                 return true;
             }
@@ -153,7 +159,8 @@ namespace PRoCon.Core.Remote {
 
         public List<String> FullReservedSlotsList { get; private set; }
 
-        public override void FetchStartupVariables() {
+        public override void FetchStartupVariables()
+        {
             // base.FetchStartupVariables();
 
             #region Base fetch
@@ -321,34 +328,44 @@ namespace PRoCon.Core.Remote {
 
         #region Overridden Packet Helpers
 
-        public override void SendEventsEnabledPacket(bool isEventsEnabled) {
-            if (IsLoggedIn == true) {
+        public override void SendEventsEnabledPacket(bool isEventsEnabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("admin.eventsEnabled", Packet.Bltos(isEventsEnabled));
             }
         }
 
-        public override void SendHelpPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendHelpPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("admin.help");
             }
         }
 
         #region Map Controls
 
-        public override void SendAdminRestartRoundPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendAdminRestartRoundPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.restartRound");
             }
         }
 
-        public override void SendAdminRunNextRoundPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendAdminRunNextRoundPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.runNextRound");
             }
         }
 
-        public override void SendMapListNextLevelIndexPacket(int index) {
-            if (IsLoggedIn == true) {
+        public override void SendMapListNextLevelIndexPacket(int index)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.setNextMapIndex", index.ToString(CultureInfo.InvariantCulture));
             }
         }
@@ -357,31 +374,41 @@ namespace PRoCon.Core.Remote {
 
         #region Maplist
 
-        public override void SendMapListListRoundsPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendMapListListRoundsPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.list");
             }
         }
 
-        public virtual void SendMapListListRoundsPacket(int startIndex) {
-            if (IsLoggedIn == true) {
-                if (startIndex >= 0) {
+        public virtual void SendMapListListRoundsPacket(int startIndex)
+        {
+            if (IsLoggedIn == true)
+            {
+                if (startIndex >= 0)
+                {
                     BuildSendPacket("mapList.list", startIndex.ToString(CultureInfo.InvariantCulture));
                 }
-                else {
+                else
+                {
                     BuildSendPacket("mapList.list");
                 }
             }
         }
 
-        public override void SendMapListAppendPacket(MaplistEntry map) {
-            if (IsLoggedIn == true) {
+        public override void SendMapListAppendPacket(MaplistEntry map)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.add", map.MapFileName, map.Gamemode, (map.Rounds > 0 ? map.Rounds : 2).ToString(CultureInfo.InvariantCulture));
             }
         }
 
-        public override void SendMapListInsertPacket(MaplistEntry map) {
-            if (IsLoggedIn == true) {
+        public override void SendMapListInsertPacket(MaplistEntry map)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("mapList.add", map.MapFileName, map.Gamemode, (map.Rounds > 0 ? map.Rounds : 2).ToString(CultureInfo.InvariantCulture), map.Index.ToString(CultureInfo.InvariantCulture));
             }
         }
@@ -390,49 +417,65 @@ namespace PRoCon.Core.Remote {
 
         #region Reserved Slot List
 
-        public override void SendReservedSlotsLoadPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendReservedSlotsLoadPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.load");
             }
         }
 
-        public override void SendReservedSlotsListPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendReservedSlotsListPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.list");
             }
         }
 
-        public virtual void SendReservedSlotsListPacket(int startIndex) {
-            if (IsLoggedIn == true) {
-                if (startIndex >= 0) {
+        public virtual void SendReservedSlotsListPacket(int startIndex)
+        {
+            if (IsLoggedIn == true)
+            {
+                if (startIndex >= 0)
+                {
                     BuildSendPacket("reservedSlotsList.list", startIndex.ToString(CultureInfo.InvariantCulture));
                 }
-                else {
+                else
+                {
                     BuildSendPacket("reservedSlotsList.list");
                 }
             }
         }
 
-        public override void SendReservedSlotsAddPlayerPacket(string soldierName) {
-            if (IsLoggedIn == true) {
+        public override void SendReservedSlotsAddPlayerPacket(string soldierName)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.add", soldierName);
             }
         }
 
-        public override void SendReservedSlotsRemovePlayerPacket(string soldierName) {
-            if (IsLoggedIn == true) {
+        public override void SendReservedSlotsRemovePlayerPacket(string soldierName)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.remove", soldierName);
             }
         }
 
-        public override void SendReservedSlotsSavePacket() {
-            if (IsLoggedIn == true) {
+        public override void SendReservedSlotsSavePacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.save");
             }
         }
 
-        public virtual void SendReservedSlotsAggressiveJoinPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public virtual void SendReservedSlotsAggressiveJoinPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("reservedSlotsList.aggressiveJoin", Packet.Bltos(enabled));
             }
         }
@@ -443,82 +486,108 @@ namespace PRoCon.Core.Remote {
 
         #region BF3 & MoHW
 
-        public override void SendSetVarsPlayerLimitPacket(int limit) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsPlayerLimitPacket(int limit)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.maxPlayers", limit.ToString(CultureInfo.InvariantCulture));
             }
         }
 
-        public override void SendGetVarsPlayerLimitPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsPlayerLimitPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.maxPlayers");
             }
         }
 
-        public override void SendSetVarsTeamBalancePacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsTeamBalancePacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.autoBalance", Packet.Bltos(enabled));
             }
         }
 
 
-        public override void SendGetVarsTeamBalancePacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsTeamBalancePacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.autoBalance");
             }
         }
 
-        public override void SendSetVarsThirdPersonVehicleCamerasPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsThirdPersonVehicleCamerasPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.3pCam", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsThirdPersonVehicleCamerasPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsThirdPersonVehicleCamerasPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.3pCam");
             }
         }
 
 
-        public override void SendSetVarsAdminPasswordPacket(string password) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsAdminPasswordPacket(string password)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("admin.password", password);
             }
         }
 
-        public override void SendGetVarsAdminPasswordPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsAdminPasswordPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("admin.password");
             }
         }
 
-        public override void SendSetVarsRoundLockdownCountdownPacket(int limit) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsRoundLockdownCountdownPacket(int limit)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.roundLockdownCountdown", limit.ToString(CultureInfo.InvariantCulture));
             }
         }
 
-        public override void SendGetVarsRoundLockdownCountdownPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsRoundLockdownCountdownPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.roundLockdownCountdown");
             }
         }
 
-        public override void SendSetVarsRoundWarmupTimeoutPacket(int limit) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsRoundWarmupTimeoutPacket(int limit)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.roundWarmupTimeout", limit.ToString(CultureInfo.InvariantCulture));
             }
         }
 
-        public override void SendGetVarsRoundWarmupTimeoutPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsRoundWarmupTimeoutPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.roundWarmupTimeout");
             }
         }
 
-        public virtual void SendPremiumStatusPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public virtual void SendPremiumStatusPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.premiumStatus", Packet.Bltos(enabled));
             }
         }
@@ -528,170 +597,222 @@ namespace PRoCon.Core.Remote {
         #region MoHW only
 
         // VarsHudBuddyOutline
-        public override void SendSetVarsBuddyOutlinePacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsBuddyOutlinePacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.buddyOutline", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsBuddyOutlinePacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsBuddyOutlinePacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.buddyOutline");
             }
         }
 
         // VarsHudBuddyInfo
-        public override void SendSetVarsHudBuddyInfoPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudBuddyInfoPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudBuddyInfo", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudBuddyInfoPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudBuddyInfoPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudBuddyInfo");
             }
         }
 
         // VarsHudClassAbility
-        public override void SendSetVarsHudClassAbilityPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudClassAbilityPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudClassAbility", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudClassAbilityPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudClassAbilityPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudClassAbility");
             }
         }
 
         // VarsHudCrosshair
-        public override void SendSetVarsHudCrosshairPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudCrosshairPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudCrosshair", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudCrosshairPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudCrosshairPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudCrosshair");
             }
         }
 
         // VarsHudEnemyTag
-        public override void SendSetVarsHudEnemyTagPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudEnemyTagPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudEnemyTag", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudEnemyTagPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudEnemyTagPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudEnemyTag");
             }
         }
 
         // VarsHudExplosiveIcons
-        public override void SendSetVarsHudExplosiveIconsPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudExplosiveIconsPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudExplosiveIcons", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudExplosiveIconsPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudExplosiveIconsPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudExplosiveIcons");
             }
         }
 
         // VarsHudGameMode
-        public override void SendSetVarsHudGameModePacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudGameModePacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudGameMode", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudGameModePacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudGameModePacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudGameMode");
             }
         }
 
         // VarsHudHealthAmmo
-        public override void SendSetVarsHudHealthAmmoPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudHealthAmmoPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudHealthAmmo", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudHealthAmmoPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudHealthAmmoPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudHealthAmmo");
             }
         }
 
         // VarsHudMinimapResponse
-        public override void SendSetVarsHudMinimapPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudMinimapPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudMinimap", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudMinimapPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudMinimapPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudMinimap");
             }
         }
 
         // VarsHudObiturary
-        public override void SendSetVarsHudObituraryPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudObituraryPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudObiturary", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudObituraryPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudObituraryPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudObiturary");
             }
         }
 
         // VarsHudPointsTracker
-        public override void SendSetVarsHudPointsTrackerPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudPointsTrackerPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudPointsTracker", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudPointsTrackerPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudPointsTrackerPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudPointsTracker");
             }
         }
 
         // VarsHudUnlocks
-        public override void SendSetVarsHudUnlocksPacket(bool enabled) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsHudUnlocksPacket(bool enabled)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudUnlocks", Packet.Bltos(enabled));
             }
         }
 
-        public override void SendGetVarsHudUnlocksPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsHudUnlocksPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.hudUnlocks");
             }
         }
 
         // VarsPlaylist
-        public override void SendSetVarsPlaylistPacket(string playlist) {
-            if (IsLoggedIn == true) {
+        public override void SendSetVarsPlaylistPacket(string playlist)
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.playlist", playlist);
             }
         }
 
-        public override void SendGetVarsPlaylistPacket() {
-            if (IsLoggedIn == true) {
+        public override void SendGetVarsPlaylistPacket()
+        {
+            if (IsLoggedIn == true)
+            {
                 BuildSendPacket("vars.playlist");
             }
         }
@@ -702,7 +823,8 @@ namespace PRoCon.Core.Remote {
 
         #region Level Vars (Non existent in BF3)
 
-        public override void SendLevelVarsListPacket(LevelVariableContext context) {
+        public override void SendLevelVarsListPacket(LevelVariableContext context)
+        {
             // Do nothing!
         }
 
@@ -712,18 +834,23 @@ namespace PRoCon.Core.Remote {
 
         #region Overridden Response Handlers
 
-        protected override void DispatchPlayerOnJoinRequest(FrostbiteConnection sender, Packet cpRequestPacket) {
+        protected override void DispatchPlayerOnJoinRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
             base.DispatchPlayerOnJoinRequest(sender, cpRequestPacket);
 
-            if (cpRequestPacket.Words.Count >= 3) {
-                if (PlayerAuthenticated != null) {
+            if (cpRequestPacket.Words.Count >= 3)
+            {
+                if (PlayerAuthenticated != null)
+                {
                     this.PlayerAuthenticated(this, cpRequestPacket.Words[1], cpRequestPacket.Words[2]);
                 }
             }
         }
 
-        protected override void DispatchServerInfoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (ServerInfo != null) {
+        protected override void DispatchServerInfoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (ServerInfo != null)
+            {
                 var newServerInfo = new CServerInfo(new List<string>() {
                     "ServerName",
                     "PlayerCount",
@@ -754,18 +881,23 @@ namespace PRoCon.Core.Remote {
             }
         }
 
-        protected override void DispatchPlayerOnKillRequest(FrostbiteConnection sender, Packet cpRequestPacket) {
-            if (PlayerKilled != null) {
+        protected override void DispatchPlayerOnKillRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
+            if (PlayerKilled != null)
+            {
                 bool headshot = false;
-                if (bool.TryParse(cpRequestPacket.Words[4], out headshot) == true) {
+                if (bool.TryParse(cpRequestPacket.Words[4], out headshot) == true)
+                {
                     this.PlayerKilled(this, cpRequestPacket.Words[1], cpRequestPacket.Words[2], cpRequestPacket.Words[3], headshot, new Point3D(0, 0, 0), new Point3D(0, 0, 0));
                 }
             }
         }
 
-        protected override void DispatchPlayerOnSpawnRequest(FrostbiteConnection sender, Packet cpRequestPacket) {
+        protected override void DispatchPlayerOnSpawnRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
             //if (cpRequestPacket.Words.Count >= 9) {
-            if (PlayerSpawned != null) {
+            if (PlayerSpawned != null)
+            {
                 this.PlayerSpawned(this, cpRequestPacket.Words[1], "", new List<string>() {
                     "",
                     "",
@@ -780,14 +912,18 @@ namespace PRoCon.Core.Remote {
         }
 
         // obsolet since R-21 BF3 but back in with MoHW R-6: This can probably be removed once the onChat event is un-lamed.
-        protected override void DispatchPlayerOnChatRequest(FrostbiteConnection sender, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 3) {
-                if (GlobalChat != null) {
+        protected override void DispatchPlayerOnChatRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 3)
+            {
+                if (GlobalChat != null)
+                {
                     this.GlobalChat(this, cpRequestPacket.Words[1], cpRequestPacket.Words[2]);
                 }
 
                 cpRequestPacket.Words.RemoveAt(0);
-                if (Chat != null) {
+                if (Chat != null)
+                {
                     this.Chat(this, cpRequestPacket.Words);
                 }
             }
@@ -805,9 +941,12 @@ namespace PRoCon.Core.Remote {
         }
         */
 
-        protected override void DispatchAdminCurrentLevelResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1 && cpRecievedPacket.Words.Count >= 2) {
-                if (CurrentLevel != null) {
+        protected override void DispatchAdminCurrentLevelResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1 && cpRecievedPacket.Words.Count >= 2)
+            {
+                if (CurrentLevel != null)
+                {
                     this.CurrentLevel(this, cpRecievedPacket.Words[1]);
                 }
             }
@@ -823,7 +962,8 @@ namespace PRoCon.Core.Remote {
         }
         */
 
-        protected override void DispatchAdminSupportedMapsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
+        protected override void DispatchAdminSupportedMapsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
             /*
             if (cpRequestPacket.Words.Count >= 2 && cpRecievedPacket.Words.Count > 1) {
                 if (this.SupportedMaps != null) {
@@ -855,19 +995,24 @@ namespace PRoCon.Core.Remote {
         }
         */
 
-        protected override void DispatchMapListListResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
+        protected override void DispatchMapListListResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
                 // start try for mapList.list offset fetch
                 int iRequestStartOffset = 0;
                 int iNumReturnedMaps = 0;
 
-                if (cpRequestPacket.Words.Count >= 2) {
-                    if (int.TryParse(cpRequestPacket.Words[1], out iRequestStartOffset) == false) {
+                if (cpRequestPacket.Words.Count >= 2)
+                {
+                    if (int.TryParse(cpRequestPacket.Words[1], out iRequestStartOffset) == false)
+                    {
                         iRequestStartOffset = 0;
                     }
                 }
 
-                if (int.TryParse(cpRecievedPacket.Words[0], out iNumReturnedMaps) == false) {
+                if (int.TryParse(cpRecievedPacket.Words[0], out iNumReturnedMaps) == false)
+                {
                     iNumReturnedMaps = 0;
                 }
                 // end
@@ -875,15 +1020,19 @@ namespace PRoCon.Core.Remote {
                 cpRecievedPacket.Words.RemoveAt(0);
                 cpRecievedPacket.Words.RemoveAt(1); // quick hack for additional playlist info parameter (R-5)
 
-                if (iRequestStartOffset == 0) {
+                if (iRequestStartOffset == 0)
+                {
                     FullMapList.Clear();
                     LastMapListOffset = 0;
                 }
-                else {
-                    if (LastMapListOffset < iRequestStartOffset) {
+                else
+                {
+                    if (LastMapListOffset < iRequestStartOffset)
+                    {
                         LastMapListOffset = iRequestStartOffset;
                     }
-                    else {
+                    else
+                    {
                         return;
                     }
                 }
@@ -895,19 +1044,24 @@ namespace PRoCon.Core.Remote {
                 int maps = 0;
                 int parameters = 0;
 
-                if (int.TryParse(cpRecievedPacket.Words[0], out maps) == true && int.TryParse(cpRecievedPacket.Words[1], out parameters) == true) {
-                    for (int mapOffset = 0; mapOffset < maps; mapOffset++) {
+                if (int.TryParse(cpRecievedPacket.Words[0], out maps) == true && int.TryParse(cpRecievedPacket.Words[1], out parameters) == true)
+                {
+                    for (int mapOffset = 0; mapOffset < maps; mapOffset++)
+                    {
                         string mapFileName = "";
                         string gameMode = "";
                         int rounds = 0;
 
-                        for (int parameterOffset = 0; parameterOffset < parameters; parameterOffset++) {
+                        for (int parameterOffset = 0; parameterOffset < parameters; parameterOffset++)
+                        {
                             string data = cpRecievedPacket.Words[2 + (mapOffset * parameters) + parameterOffset];
 
-                            switch (parameterOffset) {
+                            switch (parameterOffset)
+                            {
                                 case 0:
                                     Match match = Regex.Match(data, @"MOHW\/Levels\/MP\/.*?\/(.*)");
-                                    if (match.Success) {
+                                    if (match.Success)
+                                    {
                                         data = match.Groups[1].Value;
                                     }
                                     // orginal
@@ -932,51 +1086,64 @@ namespace PRoCon.Core.Remote {
 
                 #endregion //parse mapList.List output
 
-                if (lstMaplist.Count > 0) {
+                if (lstMaplist.Count > 0)
+                {
                     FullMapList.AddRange(lstMaplist);
                     /* quick MOHW hack mapList.list
                     this.SendMapListListRoundsPacket(iRequestStartOffset + 100);
                 }
                 else { */
                     // original
-                    if (MapListListed != null) {
+                    if (MapListListed != null)
+                    {
                         this.MapListListed(this, FullMapList);
                     }
                 }
             }
         }
 
-        protected override void DispatchMapListAppendResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 4) {
+        protected override void DispatchMapListAppendResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 4)
+            {
                 MaplistEntry mapEntry = null;
 
                 int rounds = 0;
                 int index = -1;
 
-                if (int.TryParse(cpRequestPacket.Words[3], out rounds) == true) {
+                if (int.TryParse(cpRequestPacket.Words[3], out rounds) == true)
+                {
                     mapEntry = new MaplistEntry(cpRequestPacket.Words[2], cpRequestPacket.Words[1], rounds);
                 }
 
-                if (cpRequestPacket.Words.Count >= 5 && int.TryParse(cpRequestPacket.Words[4], out index) == true) {
+                if (cpRequestPacket.Words.Count >= 5 && int.TryParse(cpRequestPacket.Words[4], out index) == true)
+                {
                     mapEntry = new MaplistEntry(cpRequestPacket.Words[2], cpRequestPacket.Words[1], rounds, index);
                 }
 
-                if (MapListMapAppended != null) {
-                    if (index == -1) {
+                if (MapListMapAppended != null)
+                {
+                    if (index == -1)
+                    {
                         this.MapListMapAppended(this, mapEntry);
                     }
-                    else {
+                    else
+                    {
                         this.MapListMapInserted(this, mapEntry);
                     }
                 }
             }
         }
 
-        protected override void DispatchMapListInsertResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 4) {
+        protected override void DispatchMapListInsertResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 4)
+            {
                 int iMapIndex = 0, iRounds = 0;
-                if (int.TryParse(cpRequestPacket.Words[1], out iMapIndex) == true && int.TryParse(cpRequestPacket.Words[3], out iRounds) == true) {
-                    if (MapListMapInserted != null) {
+                if (int.TryParse(cpRequestPacket.Words[1], out iMapIndex) == true && int.TryParse(cpRequestPacket.Words[3], out iRounds) == true)
+                {
+                    if (MapListMapInserted != null)
+                    {
                         this.MapListMapInserted(this, new MaplistEntry(iMapIndex, cpRequestPacket.Words[2], iRounds));
                     }
                 }
@@ -987,12 +1154,16 @@ namespace PRoCon.Core.Remote {
 
         #region reservedSlotsList.list
 
-        protected override void DispatchReservedSlotsListResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
+        protected override void DispatchReservedSlotsListResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
                 int iRequestStartOffset = 0;
 
-                if (cpRequestPacket.Words.Count >= 2) {
-                    if (int.TryParse(cpRequestPacket.Words[1], out iRequestStartOffset) == false) {
+                if (cpRequestPacket.Words.Count >= 2)
+                {
+                    if (int.TryParse(cpRequestPacket.Words[1], out iRequestStartOffset) == false)
+                    {
                         iRequestStartOffset = 0;
                     }
                 }
@@ -1001,15 +1172,19 @@ namespace PRoCon.Core.Remote {
                 {
                     this.lstFullReservedSlotsList.Clear();
                 } */
-                if (iRequestStartOffset == 0) {
+                if (iRequestStartOffset == 0)
+                {
                     FullReservedSlotsList.Clear();
                     LastReservedSlotsListOffset = 0;
                 }
-                else {
-                    if (LastReservedSlotsListOffset < iRequestStartOffset) {
+                else
+                {
+                    if (LastReservedSlotsListOffset < iRequestStartOffset)
+                    {
                         LastReservedSlotsListOffset = iRequestStartOffset;
                     }
-                    else {
+                    else
+                    {
                         return;
                     }
                 }
@@ -1017,7 +1192,8 @@ namespace PRoCon.Core.Remote {
                 cpRecievedPacket.Words.RemoveAt(0);
                 // List<String> lstReservedSlotsList = new List<String>();
 
-                if (cpRecievedPacket.Words.Count > 0) {
+                if (cpRecievedPacket.Words.Count > 0)
+                {
                     FullReservedSlotsList.AddRange(cpRecievedPacket.Words);
                     /* quick MoHW hack reservedSlotsList.list
                     this.SendReservedSlotsListPacket(iRequestStartOffset + 100);
@@ -1025,7 +1201,8 @@ namespace PRoCon.Core.Remote {
                 else
                 { */
                     // original
-                    if (ReservedSlotsList != null) {
+                    if (ReservedSlotsList != null)
+                    {
                         this.ReservedSlotsList(this, FullReservedSlotsList);
                     }
                 }
@@ -1038,13 +1215,18 @@ namespace PRoCon.Core.Remote {
 
         #region BF3 shared
 
-        protected virtual void DispatchVarsBulletDamageResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (BulletDamage != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsBulletDamageResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (BulletDamage != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.BulletDamage(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.BulletDamage(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
@@ -1052,104 +1234,144 @@ namespace PRoCon.Core.Remote {
         }
 
 
-        protected virtual void DispatchVarsSoldierHealthResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (SoldierHealth != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsSoldierHealthResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (SoldierHealth != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.SoldierHealth(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.SoldierHealth(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsPlayerManDownTimeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (PlayerManDownTime != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsPlayerManDownTimeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (PlayerManDownTime != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.PlayerManDownTime(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.PlayerManDownTime(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsRoundRestartPlayerCountResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RoundRestartPlayerCount != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsRoundRestartPlayerCountResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RoundRestartPlayerCount != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RoundRestartPlayerCount(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RoundRestartPlayerCount(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsRoundStartPlayerCountResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RoundStartPlayerCount != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsRoundStartPlayerCountResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RoundStartPlayerCount != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RoundStartPlayerCount(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RoundStartPlayerCount(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsPlayerRespawnTimeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (PlayerRespawnTime != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsPlayerRespawnTimeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (PlayerRespawnTime != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.PlayerRespawnTime(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.PlayerRespawnTime(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsGameModeCounterResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (GameModeCounter != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsGameModeCounterResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (GameModeCounter != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.GameModeCounter(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.GameModeCounter(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsIdleBanRoundsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (IdleBanRounds != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsIdleBanRoundsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (IdleBanRounds != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.IdleBanRounds(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.IdleBanRounds(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsVehicleSpawnAllowedResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (VehicleSpawnAllowed != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsVehicleSpawnAllowedResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (VehicleSpawnAllowed != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.VehicleSpawnAllowed(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.VehicleSpawnAllowed(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
@@ -1157,91 +1379,126 @@ namespace PRoCon.Core.Remote {
         }
 
 
-        protected virtual void DispatchVarsVehicleSpawnDelayResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (VehicleSpawnDelay != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsVehicleSpawnDelayResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (VehicleSpawnDelay != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.VehicleSpawnDelay(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.VehicleSpawnDelay(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsNameTagResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (NameTag != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsNameTagResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (NameTag != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.NameTag(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.NameTag(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsRegenerateHealthResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RegenerateHealth != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsRegenerateHealthResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RegenerateHealth != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RegenerateHealth(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RegenerateHealth(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsOnlySquadLeaderSpawnResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (OnlySquadLeaderSpawn != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsOnlySquadLeaderSpawnResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (OnlySquadLeaderSpawn != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.OnlySquadLeaderSpawn(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.OnlySquadLeaderSpawn(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsUnlockModeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (UnlockMode != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsUnlockModeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (UnlockMode != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.UnlockMode(this, Convert.ToString(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.UnlockMode(this, Convert.ToString(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (Hud != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (Hud != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.Hud(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.Hud(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsServerMessageResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (ServerMessage != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsServerMessageResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (ServerMessage != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.ServerMessage(this, cpRecievedPacket.Words[1]);
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.ServerMessage(this, cpRequestPacket.Words[1]);
                     }
                 }
@@ -1266,169 +1523,234 @@ namespace PRoCon.Core.Remote {
         }
         */
 
-        protected virtual void DispatchVarsBuddyOutlineResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (BuddyOutline != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsBuddyOutlineResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (BuddyOutline != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.BuddyOutline(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.BuddyOutline(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudBuddyInfoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudBuddyInfo != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudBuddyInfoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudBuddyInfo != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudBuddyInfo(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudBuddyInfo(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudClassAbilityResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudClassAbility != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudClassAbilityResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudClassAbility != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudClassAbility(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudClassAbility(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudCrosshairResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudCrosshair != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudCrosshairResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudCrosshair != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudCrosshair(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudCrosshair(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudEnemyTagResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudEnemyTag != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudEnemyTagResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudEnemyTag != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudEnemyTag(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudEnemyTag(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudExplosiveIconsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudExplosiveIcons != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudExplosiveIconsResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudExplosiveIcons != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudExplosiveIcons(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudExplosiveIcons(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudGameModeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudGameMode != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudGameModeResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudGameMode != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudGameMode(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudGameMode(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudHealthAmmoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudHealthAmmo != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudHealthAmmoResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudHealthAmmo != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudHealthAmmo(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudHealthAmmo(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudMinimapResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudMinimap != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudMinimapResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudMinimap != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudMinimap(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudMinimap(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudObituraryResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudObiturary != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudObituraryResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudObiturary != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudObiturary(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudObiturary(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudPointsTrackerResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudPointsTracker != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudPointsTrackerResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudPointsTracker != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudPointsTracker(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudPointsTracker(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsHudUnlocksResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (HudUnlocks != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsHudUnlocksResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (HudUnlocks != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.HudUnlocks(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.HudUnlocks(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (Playlist != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (Playlist != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.Playlist(this, Convert.ToString(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.Playlist(this, Convert.ToString(cpRequestPacket.Words[1]));
                     }
                 }
@@ -1441,13 +1763,18 @@ namespace PRoCon.Core.Remote {
 
         #region ReservedSlotsList.AggressiveJoin
 
-        protected virtual void DispatchReservedSlotsAggressiveJoinResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (ReservedSlotsListAggressiveJoin != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchReservedSlotsAggressiveJoinResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (ReservedSlotsListAggressiveJoin != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.ReservedSlotsListAggressiveJoin(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.ReservedSlotsListAggressiveJoin(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }
@@ -1458,26 +1785,36 @@ namespace PRoCon.Core.Remote {
 
         #region RoundLockdownCountdown & RoundWarmupTimeout
 
-        protected virtual void DispatchVarsRoundLockdownCountdownResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RoundLockdownCountdown != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsRoundLockdownCountdownResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RoundLockdownCountdown != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RoundLockdownCountdown(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RoundLockdownCountdown(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
             }
         }
 
-        protected virtual void DispatchVarsRoundWarmupTimeoutResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RoundWarmupTimeout != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsRoundWarmupTimeoutResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RoundWarmupTimeout != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RoundWarmupTimeout(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RoundWarmupTimeout(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }
@@ -1488,13 +1825,18 @@ namespace PRoCon.Core.Remote {
 
         #region PremiumStatus
 
-        protected virtual void DispatchVarsPremiumStatusResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (PremiumStatus != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected virtual void DispatchVarsPremiumStatusResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (PremiumStatus != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.PremiumStatus(this, Convert.ToBoolean(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.PremiumStatus(this, Convert.ToBoolean(cpRequestPacket.Words[1]));
                     }
                 }

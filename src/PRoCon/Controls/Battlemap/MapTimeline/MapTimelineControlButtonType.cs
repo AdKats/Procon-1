@@ -17,12 +17,10 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PRoCon.Controls.Battlemap.MapTimeline {
-    public enum MapTimelineControlButtonType {
+namespace PRoCon.Controls.Battlemap.MapTimeline
+{
+    public enum MapTimelineControlButtonType
+    {
         None,
         Rewind,
         Play,

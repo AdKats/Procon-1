@@ -18,38 +18,38 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
-namespace PRoCon.Controls.ServerSettings.BF4 {
-    using Core;
+namespace PRoCon.Controls.ServerSettings.BF4
+{
     using Core.Remote;
-    public partial class uscServerSettingsConfigGeneratorBF4 : uscServerSettingsConfigGenerator {
+    public partial class uscServerSettingsConfigGeneratorBF4 : uscServerSettingsConfigGenerator
+    {
         public uscServerSettingsConfigGeneratorBF4()
-            : base() {
+            : base()
+        {
             InitializeComponent();
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.MaxSpectators += new FrostbiteClient.LimitHandler(Game_MaxSpectators);
                 this.Client.Game.FairFight += new FrostbiteClient.IsEnabledHandler(Game_FairFight);
 
@@ -98,47 +98,58 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             });
         }
 
-        protected override void Game_Login(FrostbiteClient sender) {
-            this.InvokeIfRequired(() => {
+        protected override void Game_Login(FrostbiteClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 base.Game_Login(sender);
 
                 this.AppendPunkbusterActivation();
             });
         }
 
-        private void AppendPunkbusterActivation() {
+        private void AppendPunkbusterActivation()
+        {
             this.AppendSetting("punkBuster.activate");
         }
 
-        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit) {
+        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.playerRespawnTime", limit.ToString());
         }
 
-        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundRestartPlayerCount", limit.ToString());
         }
 
-        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundStartPlayerCount", limit.ToString());
         }
 
-        void Game_PlayerManDownTime(FrostbiteClient sender, int limit) {
+        void Game_PlayerManDownTime(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.playerManDownTime", limit.ToString());
         }
 
-        void Game_Hud(FrostbiteClient sender, bool isEnabled) {
+        void Game_Hud(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hud", isEnabled.ToString());
         }
 
-        void Game_SoldierHealth(FrostbiteClient sender, int limit) {
+        void Game_SoldierHealth(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.soldierHealth", limit.ToString());
         }
 
-        void Game_UnlockMode(FrostbiteClient sender, string mode) {
+        void Game_UnlockMode(FrostbiteClient sender, string mode)
+        {
             this.AppendSetting("vars.unlockMode", mode.ToLower());
         }
 
-        void Game_BF4preset(FrostbiteClient sender, string mode, bool isLocked) {
+        void Game_BF4preset(FrostbiteClient sender, string mode, bool isLocked)
+        {
             this.AppendSetting("vars.preset", mode, isLocked.ToString());
         }
 
@@ -152,55 +163,68 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.AppendSetting("vars.onlySquadLeaderSpawn", isEnabled.ToString());
         }
 
-        void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled) {
+        void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.regenerateHealth", isEnabled.ToString());
         }
 
-        void Game_NameTag(FrostbiteClient sender, bool isEnabled) {
+        void Game_NameTag(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.nameTag", isEnabled.ToString());
         }
 
-        void Game_BulletDamage(FrostbiteClient sender, int limit) {
+        void Game_BulletDamage(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.bulletDamage", limit.ToString());
         }
 
-        void Game_VehicleSpawnDelay(FrostbiteClient sender, int limit) {
+        void Game_VehicleSpawnDelay(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.vehicleSpawnDelay", limit.ToString());
         }
 
-        void Game_VehicleSpawnAllowed(FrostbiteClient sender, bool isEnabled) {
+        void Game_VehicleSpawnAllowed(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.vehicleSpawnAllowed", isEnabled.ToString());
         }
 
-        void Client_RankLimit(FrostbiteClient sender, int limit) {
+        void Client_RankLimit(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.rankLimit", limit.ToString());
         }
 
-        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.autoBalance", isEnabled.ToString());
         }
 
-        void Client_KillCam(FrostbiteClient sender, bool isEnabled) {
+        void Client_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.killCam", isEnabled.ToString());
         }
 
-        void Client_MiniMap(FrostbiteClient sender, bool isEnabled) {
+        void Client_MiniMap(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.miniMap", isEnabled.ToString());
         }
 
-        void Client_CrossHair(FrostbiteClient sender, bool isEnabled) {
+        void Client_CrossHair(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.crossHair", isEnabled.ToString());
         }
 
-        void Client_ThreeDSpotting(FrostbiteClient sender, bool isEnabled) {
+        void Client_ThreeDSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.3dSpotting", isEnabled.ToString());
         }
 
-        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.3pCam", isEnabled.ToString());
         }
 
-        void Client_MiniMapSpotting(FrostbiteClient sender, bool isEnabled) {
+        void Client_MiniMapSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.miniMapSpotting", isEnabled.ToString());
         }
 
@@ -224,10 +248,11 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.AppendSetting("vars.maxPlayers", limit.ToString());
         }
 
-        protected override void Client_IdleTimeout(FrostbiteClient sender, int limit) {
+        protected override void Client_IdleTimeout(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.idleTimeout", limit.ToString());
         }
-        
+
         void Game_IdleBanRounds(FrostbiteClient sender, int limit)
         {
             this.AppendSetting("vars.idleBanRounds", limit.ToString());
@@ -263,34 +288,43 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.AppendSetting("vars.maxSpectators", limit.ToString());
         }
 
-        void Game_IsHitIndicator(FrostbiteClient sender, bool isEnabled) {
+        void Game_IsHitIndicator(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hitIndicatorsEnabled", isEnabled.ToString());
         }
 
         // todo this may be wrong. I don't know if the value is readonly even in the startup cfg.
-        void Game_ServerType(FrostbiteClient sender, string value) {
+        void Game_ServerType(FrostbiteClient sender, string value)
+        {
             this.AppendSetting("vars.serverType", value);
         }
 
-        void Game_IsCommander(FrostbiteClient sender, bool isEnabled) {
+        void Game_IsCommander(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.commander", isEnabled.ToString());
         }
 
-        void Game_AlwaysAllowSpectators(FrostbiteClient sender, bool isEnabled) {
+        void Game_AlwaysAllowSpectators(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.alwaysAllowSpectators", isEnabled.ToString());
         }
 
         void Game_FairFight(FrostbiteClient sender, bool isEnabled)
         {
-            if (isEnabled == true) {
+            if (isEnabled == true)
+            {
                 this.AppendSetting("fairFight.activate");
-            } else {
+            }
+            else
+            {
                 this.AppendSetting("fairFight.deactivate");
             }
         }
 
-        void Game_TeamFactionOverride(FrostbiteClient sender, int teamId, int faction) {
-            switch (teamId) {
+        void Game_TeamFactionOverride(FrostbiteClient sender, int teamId, int faction)
+        {
+            switch (teamId)
+            {
                 case 1:
                     this.AppendSetting("vars.teamFactionOverride 1", faction.ToString());
                     break;

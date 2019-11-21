@@ -18,21 +18,25 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Text;
 using System.Net;
+using System.Text;
 
-namespace PRoCon.Core.HttpServer {
+namespace PRoCon.Core.HttpServer
+{
     using PRoCon.Core.HttpServer.Cache;
 
     [Serializable]
-    public class HttpWebServerResponseData {
+    public class HttpWebServerResponseData
+    {
 
-        public HttpWebServerCacheSettings Cache {
+        public HttpWebServerCacheSettings Cache
+        {
             get;
             private set;
         }
 
-        public string HttpVersion {
+        public string HttpVersion
+        {
             get;
             set;
         }
@@ -41,22 +45,26 @@ namespace PRoCon.Core.HttpServer {
         /// You shouldn't ever need to reply with anything but 200 OK
         /// instead you should include an error response in your JSON output
         /// </summary>
-        public string StatusCode {
+        public string StatusCode
+        {
             get;
             set;
         }
 
-        public WebHeaderCollection Headers {
+        public WebHeaderCollection Headers
+        {
             get;
             private set;
         }
 
-        public string Document {
+        public string Document
+        {
             get;
             set;
         }
 
-        public HttpWebServerResponseData(string document) {
+        public HttpWebServerResponseData(string document)
+        {
 
             this.Headers = new WebHeaderCollection();
             this.HttpVersion = "1.1";
@@ -73,13 +81,15 @@ namespace PRoCon.Core.HttpServer {
             this.Document = document;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
 
             StringBuilder builder = new StringBuilder();
 
             builder.AppendFormat("HTTP/{0} {1}\r\n", this.HttpVersion, this.StatusCode);
 
-            foreach (string header in this.Headers.AllKeys) {
+            foreach (string header in this.Headers.AllKeys)
+            {
                 builder.AppendFormat("{0}: {1}\r\n", header, this.Headers[header]);
             }
 

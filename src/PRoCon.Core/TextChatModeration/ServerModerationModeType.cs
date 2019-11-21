@@ -20,9 +20,11 @@
 
 using System;
 
-namespace PRoCon.Core.TextChatModeration {
+namespace PRoCon.Core.TextChatModeration
+{
     [Serializable]
-    public enum ServerModerationModeType {
+    public enum ServerModerationModeType
+    {
         None,
         Free,
         Moderated,

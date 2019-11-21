@@ -1,5 +1,7 @@
-﻿namespace PRoCon.Core.Events {
-    public enum CapturableEvents {
+﻿namespace PRoCon.Core.Events
+{
+    public enum CapturableEvents
+    {
         // BFBC2 Server events
         PlayerJoin,
         PlayerLeave,

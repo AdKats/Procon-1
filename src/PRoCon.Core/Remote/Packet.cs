@@ -19,15 +19,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 
-namespace PRoCon.Core.Remote {
-    public class Packet : ICloneable {
+namespace PRoCon.Core.Remote
+{
+    public class Packet : ICloneable
+    {
 
         public static readonly int PacketHeaderSize = 12;
-        
+
         public bool OriginatedFromServer { get; private set; }
 
         public bool IsResponse { get; private set; }
@@ -42,7 +44,8 @@ namespace PRoCon.Core.Remote {
 
 
         // Used if we have recieved a packet and need it decoded..
-        public Packet(byte[] rawPacket) {
+        public Packet(byte[] rawPacket)
+        {
             this.NullPacket();
 
             this.Stamp = DateTime.Now;
@@ -51,7 +54,8 @@ namespace PRoCon.Core.Remote {
         }
 
         // Used if we'll be using EncodePacket to send to the server.
-        public Packet(bool isOriginatedFromServer, bool isResponse, UInt32 sequenceNumber, List<string> words) {
+        public Packet(bool isOriginatedFromServer, bool isResponse, UInt32 sequenceNumber, List<string> words)
+        {
             this.OriginatedFromServer = isOriginatedFromServer;
             this.IsResponse = isResponse;
             this.SequenceNumber = sequenceNumber;
@@ -59,13 +63,15 @@ namespace PRoCon.Core.Remote {
 
             this.Stamp = DateTime.Now;
         }
-        
+
         public Packet(bool isOriginatedFromServer, bool isResponse, UInt32 sequenceNumber, string commandString)
-            : this(isOriginatedFromServer, isResponse, sequenceNumber, Packet.Wordify(commandString)) {
+            : this(isOriginatedFromServer, isResponse, sequenceNumber, Packet.Wordify(commandString))
+        {
 
         }
 
-        private void NullPacket() {
+        private void NullPacket()
+        {
             this.OriginatedFromServer = false;
             this.IsResponse = false;
             this.SequenceNumber = 0;
@@ -75,60 +81,77 @@ namespace PRoCon.Core.Remote {
 
         // Veeerrryy basic replacment for CommandLineToArgvW, since
         // I wasn't using anything that advanced in it anyway.
-        public static List<String> Wordify(String command) {
+        public static List<String> Wordify(String command)
+        {
             List<String> list = new List<String>();
 
             String fullWord = String.Empty;
             int quoteStack = 0;
             bool escaped = false;
 
-            foreach (char c in command) {
+            foreach (char c in command)
+            {
 
-                if (c == ' ') {
-                    if (quoteStack == 0) {
+                if (c == ' ')
+                {
+                    if (quoteStack == 0)
+                    {
                         list.Add(fullWord);
                         fullWord = String.Empty;
                     }
-                    else {
+                    else
+                    {
                         fullWord += ' ';
                     }
                 }
-                else if (c == 'n' && escaped == true) {
+                else if (c == 'n' && escaped == true)
+                {
                     fullWord += '\n';
                     escaped = false;
                 }
-                else if (c == 'r' && escaped == true) {
+                else if (c == 'r' && escaped == true)
+                {
                     fullWord += '\r';
                     escaped = false;
                 }
-                else if (c == 't' && escaped == true) {
+                else if (c == 't' && escaped == true)
+                {
                     fullWord += '\t';
                     escaped = false;
                 }
-                else if (c == '"') {
-                    if (escaped == false) {
-                        if (quoteStack == 0) {
+                else if (c == '"')
+                {
+                    if (escaped == false)
+                    {
+                        if (quoteStack == 0)
+                        {
                             quoteStack++;
                         }
-                        else {
+                        else
+                        {
                             quoteStack--;
                         }
                     }
-                    else {
+                    else
+                    {
                         fullWord += '"';
                         escaped = false;
                     }
                 }
-                else if (c == '\\') {
-                    if (escaped == true) {
+                else if (c == '\\')
+                {
+                    if (escaped == true)
+                    {
                         fullWord += '\\';
                         escaped = false;
                     }
-                    else {
+                    else
+                    {
                         escaped = true;
                     }
                 }
-                else {
+                else
+                {
                     fullWord += c;
                     escaped = false;
                 }
@@ -139,30 +162,36 @@ namespace PRoCon.Core.Remote {
             return list;
         }
 
-        public static string Bltos(bool blBoolean) {
+        public static string Bltos(bool blBoolean)
+        {
             return (blBoolean == true ? "true" : "false");
         }
 
-        public static UInt32 DecodePacketSize(byte[] rawPacket) {
+        public static UInt32 DecodePacketSize(byte[] rawPacket)
+        {
             UInt32 ui32ReturnPacketSize = 0;
 
-            if (rawPacket.Length >= Packet.PacketHeaderSize) {
+            if (rawPacket.Length >= Packet.PacketHeaderSize)
+            {
                 ui32ReturnPacketSize = BitConverter.ToUInt32(rawPacket, 4);
             }
 
             return ui32ReturnPacketSize;
         }
 
-        public byte[] EncodePacket() {
+        public byte[] EncodePacket()
+        {
 
             // Construct the header uint32
             UInt32 ui32Header = this.SequenceNumber & 0x3fffffff;
 
-            if (this.OriginatedFromServer == true) {
+            if (this.OriginatedFromServer == true)
+            {
                 ui32Header += 0x80000000;
             }
 
-            if (this.IsResponse == true) {
+            if (this.IsResponse == true)
+            {
                 ui32Header += 0x40000000;
             }
 
@@ -172,12 +201,14 @@ namespace PRoCon.Core.Remote {
 
             // Encode each word (WordLength, Word Bytes, Null Byte)
             byte[] encodedWords = new byte[] { };
-            foreach (string word in this.Words) {
+            foreach (string word in this.Words)
+            {
 
                 string strWord = word;
 
                 // Truncate words over 64 kbs (though the string is Unicode it gets converted below so this does make sense)
-                if (strWord.Length > UInt16.MaxValue - 1) {
+                if (strWord.Length > UInt16.MaxValue - 1)
+                {
                     strWord = strWord.Substring(0, UInt16.MaxValue - 1);
                 }
 
@@ -209,7 +240,8 @@ namespace PRoCon.Core.Remote {
             return encodedPacket;
         }
 
-        public void DecodePacket(byte[] rawPacket) {
+        public void DecodePacket(byte[] rawPacket)
+        {
 
             this.NullPacket();
 
@@ -224,7 +256,8 @@ namespace PRoCon.Core.Remote {
 
             int iWordOffset = 0;
 
-            for (UInt32 ui32WordCount = 0; ui32WordCount < ui32Words; ui32WordCount++) {
+            for (UInt32 ui32WordCount = 0; ui32WordCount < ui32Words; ui32WordCount++)
+            {
                 UInt32 ui32WordLength = BitConverter.ToUInt32(rawPacket, Packet.PacketHeaderSize + iWordOffset);
 
                 this.Words.Add(Encoding.UTF8.GetString(rawPacket, Packet.PacketHeaderSize + iWordOffset + 4, (int)ui32WordLength));
@@ -233,12 +266,14 @@ namespace PRoCon.Core.Remote {
             }
         }
 
-        public static string Compress(string text) {
+        public static string Compress(string text)
+        {
 
             byte[] buffer = Encoding.UTF8.GetBytes(text);
             MemoryStream ms = new MemoryStream();
 
-            using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true)) {
+            using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true))
+            {
                 zip.Write(buffer, 0, buffer.Length);
             }
 
@@ -258,11 +293,13 @@ namespace PRoCon.Core.Remote {
             return Convert.ToBase64String(gzBuffer);
         }
 
-        public static string Decompress(string compressedText) {
+        public static string Decompress(string compressedText)
+        {
 
             byte[] gzBuffer = Convert.FromBase64String(compressedText);
 
-            using (MemoryStream ms = new MemoryStream()) {
+            using (MemoryStream ms = new MemoryStream())
+            {
 
                 int msgLength = BitConverter.ToInt32(gzBuffer, 0);
                 ms.Write(gzBuffer, 4, gzBuffer.Length - 4);
@@ -270,7 +307,8 @@ namespace PRoCon.Core.Remote {
                 byte[] buffer = new byte[msgLength];
 
                 ms.Position = 0;
-                using (GZipStream zip = new GZipStream(ms, CompressionMode.Decompress)) {
+                using (GZipStream zip = new GZipStream(ms, CompressionMode.Decompress))
+                {
                     zip.Read(buffer, 0, buffer.Length);
                 }
 
@@ -278,27 +316,33 @@ namespace PRoCon.Core.Remote {
             }
         }
 
-        public string ToDebugString() {
+        public string ToDebugString()
+        {
 
             string strReturn = String.Empty;
 
-            for (int i = 0; i < this.Words.Count; i++) {
-                if (i > 0) {
+            for (int i = 0; i < this.Words.Count; i++)
+            {
+                if (i > 0)
+                {
                     strReturn += " ";
                 }
-                
+
                 strReturn += String.Format("[{0}-{1}]", i, this.Words[i]);
             }
 
             return strReturn;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
 
             string strReturn = String.Empty;
 
-            for (int i = 0; i < this.Words.Count; i++) {
-                if (i > 0) {
+            for (int i = 0; i < this.Words.Count; i++)
+            {
+                if (i > 0)
+                {
                     strReturn += " ";
                 }
 
@@ -308,7 +352,8 @@ namespace PRoCon.Core.Remote {
             return strReturn;
         }
 
-        public object Clone() {
+        public object Clone()
+        {
             return new Packet(this.OriginatedFromServer, this.IsResponse, this.SequenceNumber, new List<string>(this.Words));
         }
     }

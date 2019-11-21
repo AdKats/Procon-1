@@ -20,37 +20,40 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.IO;
 
-namespace PRoCon.Controls.Battlemap.MapImagePacks {
+namespace PRoCon.Controls.Battlemap.MapImagePacks
+{
     using Core;
-    using Core.Localization;
-    using Core.Remote;
 
-    public class MapImagePack {
+    public class MapImagePack
+    {
         public delegate void MapLoadedHandler();
         public event MapLoadedHandler MapLoaded;
 
-        public CLocalization MapImagePackDataFile {
+        public CLocalization MapImagePackDataFile
+        {
             get;
             private set;
         }
 
-        public string MapImagePackPath {
+        public string MapImagePackPath
+        {
             get;
             private set;
         }
 
-        public Point MapOrigin {
+        public Point MapOrigin
+        {
             get;
             set;
         }
 
-        public PointF MapScale {
+        public PointF MapScale
+        {
             get;
             set;
         }
@@ -59,22 +62,27 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
         /// Defaults to 2048 for backwards compatability.  This value can be left out (MapFileName.PixelResolution)
         /// or included if a map is larger than 2048px.
         /// </summary>
-        public int MapPixelResolution {
+        public int MapPixelResolution
+        {
             get;
             private set;
         }
 
-        public bool Readonly {
+        public bool Readonly
+        {
             get;
             private set;
         }
 
         private float m_flMapRotation;
-        public float MapRotation {
-            get {
+        public float MapRotation
+        {
+            get
+            {
                 return this.m_flMapRotation;
             }
-            set {
+            set
+            {
                 this.m_flMapRotation = value;
 
                 //if (this.DeathIconImage != null) {
@@ -98,7 +106,8 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             }
         }
 
-        public Image MapImage {
+        public Image MapImage
+        {
             get;
             private set;
         }
@@ -108,14 +117,16 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
         //    private set;
         //}
 
-        public string LoadedMapFileName {
+        public string LoadedMapFileName
+        {
             get;
             private set;
         }
 
         private Dictionary<string, Image> m_dicLoadedIcons;
 
-        public MapImagePack(string strMapImagePackPath, CLocalization clocMapImagePack) {
+        public MapImagePack(string strMapImagePackPath, CLocalization clocMapImagePack)
+        {
             this.m_dicLoadedIcons = new Dictionary<string, Image>();
 
             this.MapImagePackPath = strMapImagePackPath;
@@ -130,14 +141,17 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             //this.DeathIconImage = this.LoadImage("Death");
         }
 
-        public Image GetIcon(string strImageKey) {
+        public Image GetIcon(string strImageKey)
+        {
 
             Image returnIcon = null;
 
-            if (this.m_dicLoadedIcons.ContainsKey(strImageKey) == true) {
+            if (this.m_dicLoadedIcons.ContainsKey(strImageKey) == true)
+            {
                 returnIcon = this.m_dicLoadedIcons[strImageKey];
             }
-            else {
+            else
+            {
                 // Create an entry, even if it is null.
                 returnIcon = this.LoadImage(strImageKey, "Image");
                 this.m_dicLoadedIcons.Add(strImageKey, returnIcon);
@@ -146,35 +160,41 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             return returnIcon;
         }
 
-        private Image LoadImage(string strImageKey, string type) {
+        private Image LoadImage(string strImageKey, string type)
+        {
 
             Image imgReturn = null;
 
             string strImagePath = Path.Combine(this.MapImagePackPath, MapImagePackDataFile.GetLocalized(String.Format("{0}.{1}", strImageKey, type)));
-            if (File.Exists(strImagePath) == true) {
+            if (File.Exists(strImagePath) == true)
+            {
                 imgReturn = new Bitmap(strImagePath);
             }
-            else {
+            else
+            {
                 imgReturn = null;
             }
 
             return imgReturn;
         }
 
-        public void UnloadMapImage() {
+        public void UnloadMapImage()
+        {
 
             Image mapImage = this.MapImage;
 
             this.MapImage = new Bitmap(1, 1);
 
-            if (mapImage != null) {
+            if (mapImage != null)
+            {
                 mapImage.Dispose();
                 mapImage = null;
                 GC.Collect();
             }
         }
 
-        public void LoadMap(string strMapFileName, bool loadImage) {
+        public void LoadMap(string strMapFileName, bool loadImage)
+        {
 
             int iOriginX = 0, iOriginY = 0, pixelResolution = 2048;
             float flScaleX = 1.0F, flScaleY = 1.0F, flRotation = 0.0F;
@@ -184,10 +204,12 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             bool.TryParse(this.MapImagePackDataFile.GetLocalized("file.readonly"), out isReadonly);
             int.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.Translate.X", strMapFileName.ToLower())), NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out iOriginX);
             int.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.Translate.Y", strMapFileName.ToLower())), NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out iOriginY);
-            if (float.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.ScaleX", strMapFileName.ToLower())), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out flScaleX) == false) {
+            if (float.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.ScaleX", strMapFileName.ToLower())), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out flScaleX) == false)
+            {
                 flScaleX = 1.0F;
             }
-            if (float.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.ScaleY", strMapFileName.ToLower())), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out flScaleY) == false) {
+            if (float.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.ScaleY", strMapFileName.ToLower())), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out flScaleY) == false)
+            {
                 flScaleY = 1.0F;
             }
 
@@ -197,11 +219,13 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
 
             float.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.Rotation", strMapFileName.ToLower())), NumberStyles.Float, CultureInfo.InvariantCulture.NumberFormat, out flRotation);
 
-            if (int.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.PixelResolution", strMapFileName.ToLower())), NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out pixelResolution) == true) {
+            if (int.TryParse(this.MapImagePackDataFile.GetLocalized(String.Format("{0}.PixelResolution", strMapFileName.ToLower())), NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out pixelResolution) == true)
+            {
                 this.MapPixelResolution = pixelResolution;
             }
             // else keep default of 2048
-            else {
+            else
+            {
                 this.MapPixelResolution = 2048;
             }
 
@@ -226,12 +250,14 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
 
             this.UnloadMapImage();
 
-            if (loadImage == true) {
+            if (loadImage == true)
+            {
                 this.MapImage = this.LoadImage(strMapFileName.ToLower(), "Image");
 
                 Image overlay = this.LoadImage(strMapFileName.ToLower(), "Overlay");
 
-                if (overlay != null) {
+                if (overlay != null)
+                {
                     Bitmap newMapImage = new Bitmap(this.MapImage);
 
                     Graphics g = Graphics.FromImage(newMapImage);
@@ -258,7 +284,7 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             //    if (this.MapImage.Width <= 2048 && this.MapImage.Height <= 2048) {
 
             //        float zoomRatio = Math.Max(this.MapImage.Width, this.MapImage.Height) / 2048.0F;
-               
+
             //        this.MapScale = new PointF(flScaleX * zoomRatio, flScaleY * zoomRatio);
 
             //        this.MapOrigin = new Point((int)((float)iOriginX * zoomRatio), (int)((float)iOriginY * zoomRatio));
@@ -267,15 +293,18 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
 
             // END REMOVE AFTER LEGACY UPDATE
 
-            if (this.MapLoaded != null) {
+            if (this.MapLoaded != null)
+            {
                 this.MapLoaded();
             }
         }
 
-        public Image CompensateImageRotation(Image imgSource) {
+        public Image CompensateImageRotation(Image imgSource)
+        {
             Bitmap bmRotatedImage = null;
 
-            if (imgSource != null) {
+            if (imgSource != null)
+            {
                 bmRotatedImage = new Bitmap(imgSource.Width, imgSource.Height);
                 Graphics g = Graphics.FromImage(bmRotatedImage);
                 Matrix m = new Matrix();
@@ -289,14 +318,18 @@ namespace PRoCon.Controls.Battlemap.MapImagePacks {
             return bmRotatedImage;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             string strText = String.Empty;
 
-            if (this.MapImagePackDataFile != null) {
-                if (this.MapImagePackDataFile.LocalizedExists("file.name") == true) {
+            if (this.MapImagePackDataFile != null)
+            {
+                if (this.MapImagePackDataFile.LocalizedExists("file.name") == true)
+                {
                     strText = this.MapImagePackDataFile.GetLocalized("file.name");
                 }
-                else {
+                else
+                {
                     strText = Path.Combine(this.MapImagePackDataFile.FilePath, this.MapImagePackDataFile.FileName);
                 }
             }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Controls.Data {
-    public interface ISource {
+namespace PRoCon.Controls.Data
+{
+    public interface ISource
+    {
         /// <summary>
         /// The total number of items at the source.
         /// </summary>

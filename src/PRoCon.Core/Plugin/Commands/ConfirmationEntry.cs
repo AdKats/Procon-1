@@ -17,39 +17,43 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+namespace PRoCon.Core.Plugin.Commands
+{
+    public class ConfirmationEntry
+    {
 
-namespace PRoCon.Core.Plugin.Commands {
-    public class ConfirmationEntry {
-
-        public string Speaker {
+        public string Speaker
+        {
             get;
             private set;
         }
 
-        public string Message {
+        public string Message
+        {
             get;
             private set;
         }
 
-        public MatchCommand MatchedCommand {
+        public MatchCommand MatchedCommand
+        {
             get;
             private set;
         }
 
-        public CapturedCommand ConfirmationDetails {
+        public CapturedCommand ConfirmationDetails
+        {
             get;
             private set;
         }
 
-        public CPlayerSubset MessageScope {
+        public CPlayerSubset MessageScope
+        {
             get;
             private set;
         }
 
-        public ConfirmationEntry(string speaker, string message, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subset) {
+        public ConfirmationEntry(string speaker, string message, MatchCommand mtcCommand, CapturedCommand capCommand, CPlayerSubset subset)
+        {
             this.Speaker = speaker;
             this.Message = message;
             this.MatchedCommand = mtcCommand;

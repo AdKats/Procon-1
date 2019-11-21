@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Remote.Layer {
-    public interface ILayerPacketDispatcher {
+namespace PRoCon.Core.Remote.Layer
+{
+    public interface ILayerPacketDispatcher
+    {
         /// <summary>
         /// The unique incoming ip:port of the remote point
         /// </summary>

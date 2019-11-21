@@ -18,16 +18,18 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using PRoCon.Core;
 using PRoCon.Core.Remote;
 using PRoCon.Forms;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
-namespace PRoCon.Controls {
-    public partial class uscConsolePanel : UserControl {
+namespace PRoCon.Controls
+{
+    public partial class uscConsolePanel : UserControl
+    {
 
         private frmMain m_frmMainWindow;
         private uscServerConnection m_uscParent;
@@ -55,7 +57,8 @@ namespace PRoCon.Controls {
 
         private Regex m_regRemoveCaretCodes;
 
-        public uscConsolePanel() {
+        public uscConsolePanel()
+        {
             InitializeComponent();
 
             this.m_clocLanguage = null;
@@ -69,8 +72,10 @@ namespace PRoCon.Controls {
             this.rtbPunkbusterBox.Flushed += new Action<object, EventArgs>(rtbPunkbusterBox_Flushed);
         }
 
-        private void uscConsolePanel_Load(object sender, EventArgs e) {
-            if (this.m_prcClient != null && this.m_prcClient.Console != null) {
+        private void uscConsolePanel_Load(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null && this.m_prcClient.Console != null)
+            {
                 this.m_prcClient.Console.DisplayConnection = this.m_prcClient.Console.DisplayConnection;
                 this.m_prcClient.Console.DisplayPunkbuster = this.m_prcClient.Console.DisplayPunkbuster;
                 this.m_prcClient.Console.LogDebugDetails = this.m_prcClient.Console.LogDebugDetails;
@@ -80,7 +85,8 @@ namespace PRoCon.Controls {
             }
         }
 
-        public void Initialize(frmMain frmMainWindow, uscServerConnection uscParent) {
+        public void Initialize(frmMain frmMainWindow, uscServerConnection uscParent)
+        {
             this.m_uscParent = uscParent;
             this.m_frmMainWindow = frmMainWindow;
 
@@ -90,19 +96,25 @@ namespace PRoCon.Controls {
 
         }
 
-        public void SetConnection(PRoConClient prcClient) {
-            if ((this.m_prcClient = prcClient) != null) {
-                if (this.m_prcClient.Game != null) {
+        public void SetConnection(PRoConClient prcClient)
+        {
+            if ((this.m_prcClient = prcClient) != null)
+            {
+                if (this.m_prcClient.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.m_prcClient.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_prcClient.Console.WriteConsole += new PRoCon.Core.Logging.Loggable.WriteConsoleHandler(Console_WriteConsole);
                 this.m_prcClient.Console.LogEventsConnectionChanged += new PRoCon.Core.Consoles.ConnectionConsole.IsEnabledHandler(Console_LogEventsConnectionChanged);
                 this.m_prcClient.Console.DisplayConnectionChanged += new PRoCon.Core.Consoles.ConnectionConsole.IsEnabledHandler(Console_DisplayConnectionChanged);
@@ -119,18 +131,22 @@ namespace PRoCon.Controls {
             });
         }
 
-        void Game_Help(FrostbiteClient sender, List<string> lstCommands) {
-            this.InvokeIfRequired(() => {
+        void Game_Help(FrostbiteClient sender, List<string> lstCommands)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.txtConsoleCommand.AutoCompleteCustomSource.Clear();
                 this.txtConsoleCommand.AutoCompleteCustomSource.AddRange(lstCommands.ToArray());
             });
         }
 
-        public void SetColour(string strVariable, string strValue) {
+        public void SetColour(string strVariable, string strValue)
+        {
             this.rtbConsoleBox.SetColour(strVariable, strValue);
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             this.m_clocLanguage = clocLanguage;
 
             this.tabConsole.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.tabConsole", null);
@@ -147,8 +163,10 @@ namespace PRoCon.Controls {
 
         public event uscServerConnection.OnTabChangeDelegate OnTabChange;
 
-        private void tbcConsoles_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.OnTabChange != null) {
+        private void tbcConsoles_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.OnTabChange != null)
+            {
                 Stack<string> stkTabIndexes = new Stack<string>();
                 stkTabIndexes.Push(tbcConsoles.SelectedTab.Name);
 
@@ -156,21 +174,28 @@ namespace PRoCon.Controls {
             }
         }
 
-        public void SetTabIndexes(Stack<string> stkTabIndexes) {
-            if (tbcConsoles.TabPages.ContainsKey(stkTabIndexes.Peek()) == true) {
+        public void SetTabIndexes(Stack<string> stkTabIndexes)
+        {
+            if (tbcConsoles.TabPages.ContainsKey(stkTabIndexes.Peek()) == true)
+            {
                 this.tbcConsoles.SelectedTab = tbcConsoles.TabPages[stkTabIndexes.Pop()];
             }
         }
 
-        private void Console_WriteConsole(DateTime dtLoggedTime, string strLoggedText) {
-            if (this.chkEnableOutput.Checked == true) {
+        private void Console_WriteConsole(DateTime dtLoggedTime, string strLoggedText)
+        {
+            if (this.chkEnableOutput.Checked == true)
+            {
                 this.rtbConsoleBox.AppendText(String.Format("[{0}] {1}{2}", dtLoggedTime.ToString("HH:mm:ss"), strLoggedText, "\n"));
             }
         }
 
-        private void rtbConsoleBox_Flushed(object sender, EventArgs args) {
-            if (this.rtbConsoleBox.Focused == false) {
-                if (this.m_prcClient.Console.ConScrolling == true) {
+        private void rtbConsoleBox_Flushed(object sender, EventArgs args)
+        {
+            if (this.rtbConsoleBox.Focused == false)
+            {
+                if (this.m_prcClient.Console.ConScrolling == true)
+                {
                     this.rtbConsoleBox.ScrollToCaret();
                 }
             }
@@ -178,15 +203,20 @@ namespace PRoCon.Controls {
             this.rtbConsoleBox.TrimLines(this.m_prcClient.Variables.GetVariable<int>("MAX_CONSOLE_LINES", 75));
         }
 
-        private void PunkbusterConsole_WriteConsole(DateTime dtLoggedTime, string strLoggedText) {
-            if (this.chkEnablePunkbusterOutput.Checked == true) {
+        private void PunkbusterConsole_WriteConsole(DateTime dtLoggedTime, string strLoggedText)
+        {
+            if (this.chkEnablePunkbusterOutput.Checked == true)
+            {
                 this.rtbPunkbusterBox.AppendText(String.Format("{0}{1}", strLoggedText, "\n"));
             }
         }
 
-        private void rtbPunkbusterBox_Flushed(object sender, EventArgs args) {
-            if (this.rtbPunkbusterBox.Focused == false) {
-                if (this.m_prcClient.Console.PBScrolling == true) {
+        private void rtbPunkbusterBox_Flushed(object sender, EventArgs args)
+        {
+            if (this.rtbPunkbusterBox.Focused == false)
+            {
+                if (this.m_prcClient.Console.PBScrolling == true)
+                {
                     this.rtbPunkbusterBox.ScrollToCaret();
                 }
             }
@@ -194,10 +224,13 @@ namespace PRoCon.Controls {
             this.rtbPunkbusterBox.TrimLines(this.m_prcClient.Variables.GetVariable<int>("MAX_PUNKBUSTERCONSOLE_LINES", 200));
         }
 
-        private void btnPunkbusterSend_Click(object sender, EventArgs e) {
-            if (this.SendListCommand != null) {
+        private void btnPunkbusterSend_Click(object sender, EventArgs e)
+        {
+            if (this.SendListCommand != null)
+            {
                 this.m_llPunkbusterCommandsHistory.AddFirst(this.txtPunkbusterCommand.Text);
-                if (this.m_llPunkbusterCommandsHistory.Count > 20) {
+                if (this.m_llPunkbusterCommandsHistory.Count > 20)
+                {
                     this.m_llPunkbusterCommandsHistory.RemoveLast();
                 }
                 this.m_llPunkbusterCommandsHistoryCurrentNode = null;
@@ -209,14 +242,17 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void txtPunkbusterCommand_KeyDown(object sender, KeyEventArgs e) {
+        private void txtPunkbusterCommand_KeyDown(object sender, KeyEventArgs e)
+        {
 
-            if (this.SendListCommand != null && e.KeyData == Keys.Enter) {
+            if (this.SendListCommand != null && e.KeyData == Keys.Enter)
+            {
 
                 this.SendListCommand(new List<string>() { "punkBuster.pb_sv_command", this.txtPunkbusterCommand.Text });
 
                 this.m_llPunkbusterCommandsHistory.AddFirst(this.txtPunkbusterCommand.Text);
-                if (this.m_llPunkbusterCommandsHistory.Count > 20) {
+                if (this.m_llPunkbusterCommandsHistory.Count > 20)
+                {
                     this.m_llPunkbusterCommandsHistory.RemoveLast();
                 }
                 this.m_llPunkbusterCommandsHistoryCurrentNode = null;
@@ -226,25 +262,30 @@ namespace PRoCon.Controls {
                 e.SuppressKeyPress = true;
             }
 
-            if (e.KeyData == Keys.Up) {
+            if (e.KeyData == Keys.Up)
+            {
                 e.SuppressKeyPress = true;
 
-                if (this.m_llPunkbusterCommandsHistoryCurrentNode == null && this.m_llPunkbusterCommandsHistory.First != null) {
+                if (this.m_llPunkbusterCommandsHistoryCurrentNode == null && this.m_llPunkbusterCommandsHistory.First != null)
+                {
                     this.m_llPunkbusterCommandsHistoryCurrentNode = this.m_llPunkbusterCommandsHistory.First;
                     this.txtPunkbusterCommand.Text = this.m_llPunkbusterCommandsHistoryCurrentNode.Value;
 
                     this.txtPunkbusterCommand.Select(this.txtPunkbusterCommand.Text.Length, 0);
                 }
-                else if (this.m_llPunkbusterCommandsHistoryCurrentNode != null && this.m_llPunkbusterCommandsHistoryCurrentNode.Next != null) {
+                else if (this.m_llPunkbusterCommandsHistoryCurrentNode != null && this.m_llPunkbusterCommandsHistoryCurrentNode.Next != null)
+                {
                     this.m_llPunkbusterCommandsHistoryCurrentNode = this.m_llPunkbusterCommandsHistoryCurrentNode.Next;
                     this.txtPunkbusterCommand.Text = this.m_llPunkbusterCommandsHistoryCurrentNode.Value;
 
                     this.txtPunkbusterCommand.Select(this.txtConsoleCommand.Text.Length, 0);
                 }
             }
-            else if (e.KeyData == Keys.Down) {
+            else if (e.KeyData == Keys.Down)
+            {
 
-                if (this.m_llPunkbusterCommandsHistoryCurrentNode != null && this.m_llPunkbusterCommandsHistoryCurrentNode.Previous != null) {
+                if (this.m_llPunkbusterCommandsHistoryCurrentNode != null && this.m_llPunkbusterCommandsHistoryCurrentNode.Previous != null)
+                {
                     this.m_llPunkbusterCommandsHistoryCurrentNode = this.m_llPunkbusterCommandsHistoryCurrentNode.Previous;
                     this.txtPunkbusterCommand.Text = this.m_llPunkbusterCommandsHistoryCurrentNode.Value;
 
@@ -257,10 +298,13 @@ namespace PRoCon.Controls {
         }
 
 
-        private void btnConsoleSend_Click(object sender, EventArgs e) {
-            if (this.SendCommand != null) {
+        private void btnConsoleSend_Click(object sender, EventArgs e)
+        {
+            if (this.SendCommand != null)
+            {
                 this.m_llCommandsHistory.AddFirst(this.txtConsoleCommand.Text);
-                if (this.m_llCommandsHistory.Count > 20) {
+                if (this.m_llCommandsHistory.Count > 20)
+                {
                     this.m_llCommandsHistory.RemoveLast();
                 }
                 this.m_llCommandsHistoryCurrentNode = null;
@@ -272,14 +316,17 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void txtConsoleCommand_KeyDown(object sender, KeyEventArgs e) {
+        private void txtConsoleCommand_KeyDown(object sender, KeyEventArgs e)
+        {
 
-            if (this.SendCommand != null && e.KeyData == Keys.Enter) {
-            
+            if (this.SendCommand != null && e.KeyData == Keys.Enter)
+            {
+
                 this.SendCommand(this.txtConsoleCommand.Text);
 
                 this.m_llCommandsHistory.AddFirst(this.txtConsoleCommand.Text);
-                if (this.m_llCommandsHistory.Count > 20) {
+                if (this.m_llCommandsHistory.Count > 20)
+                {
                     this.m_llCommandsHistory.RemoveLast();
                 }
                 this.m_llCommandsHistoryCurrentNode = null;
@@ -289,25 +336,30 @@ namespace PRoCon.Controls {
                 e.SuppressKeyPress = true;
             }
 
-            if (e.KeyData == Keys.Up) {
+            if (e.KeyData == Keys.Up)
+            {
                 e.SuppressKeyPress = true;
 
-                if (this.m_llCommandsHistoryCurrentNode == null && this.m_llCommandsHistory.First != null) {
+                if (this.m_llCommandsHistoryCurrentNode == null && this.m_llCommandsHistory.First != null)
+                {
                     this.m_llCommandsHistoryCurrentNode = this.m_llCommandsHistory.First;
                     this.txtConsoleCommand.Text = this.m_llCommandsHistoryCurrentNode.Value;
 
                     this.txtConsoleCommand.Select(this.txtConsoleCommand.Text.Length, 0);
                 }
-                else if (this.m_llCommandsHistoryCurrentNode != null && this.m_llCommandsHistoryCurrentNode.Next != null) {
+                else if (this.m_llCommandsHistoryCurrentNode != null && this.m_llCommandsHistoryCurrentNode.Next != null)
+                {
                     this.m_llCommandsHistoryCurrentNode = this.m_llCommandsHistoryCurrentNode.Next;
                     this.txtConsoleCommand.Text = this.m_llCommandsHistoryCurrentNode.Value;
 
                     this.txtConsoleCommand.Select(this.txtConsoleCommand.Text.Length, 0);
                 }
             }
-            else if (e.KeyData == Keys.Down) {
+            else if (e.KeyData == Keys.Down)
+            {
 
-                if (this.m_llCommandsHistoryCurrentNode != null && this.m_llCommandsHistoryCurrentNode.Previous != null) {
+                if (this.m_llCommandsHistoryCurrentNode != null && this.m_llCommandsHistoryCurrentNode.Previous != null)
+                {
                     this.m_llCommandsHistoryCurrentNode = this.m_llCommandsHistoryCurrentNode.Previous;
                     this.txtConsoleCommand.Text = this.m_llCommandsHistoryCurrentNode.Value;
 
@@ -318,64 +370,82 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void chkEnableOutput_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkEnableOutput_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.DisplayConnection = this.chkEnableOutput.Checked;
             }
         }
 
-        private void Console_DisplayConnectionChanged(bool isEnabled) {
+        private void Console_DisplayConnectionChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkEnableOutput.Checked = isEnabled; });
         }
 
 
-        private void chkEnablePunkbusterOutput_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkEnablePunkbusterOutput_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.DisplayPunkbuster = this.chkEnablePunkbusterOutput.Checked;
             }
         }
 
-        void Console_DisplayPunkbusterChanged(bool isEnabled) {
+        void Console_DisplayPunkbusterChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkEnablePunkbusterOutput.Checked = isEnabled; });
         }
 
-        private void chkConEnableScrolling_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkConEnableScrolling_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.ConScrolling = this.chkConEnableScrolling.Checked;
             }
         }
 
-        void Console_ConEnableScrollingChanged(bool isEnabled) {
+        void Console_ConEnableScrollingChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkConEnableScrolling.Checked = isEnabled; });
         }
 
-        private void chkPBEnableScrolling_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkPBEnableScrolling_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.PBScrolling = this.chkPBEnableScrolling.Checked;
             }
         }
 
-        void Console_PBEnableScrollingChanged(bool isEnabled) {
+        void Console_PBEnableScrollingChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkPBEnableScrolling.Checked = isEnabled; });
         }
 
-        private void chkDebug_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkDebug_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.LogDebugDetails = this.chkDebug.Checked;
             }
         }
 
-        private void Console_LogDebugDetailsChanged(bool isEnabled) {
+        private void Console_LogDebugDetailsChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkDebug.Checked = isEnabled; });
         }
 
-        private void chkEvents_CheckedChanged(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void chkEvents_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.Console.LogEventsConnection = this.chkEvents.Checked;
             }
         }
 
-        private void Console_LogEventsConnectionChanged(bool isEnabled) {
+        private void Console_LogEventsConnectionChanged(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkEvents.Checked = isEnabled; });
         }
     }

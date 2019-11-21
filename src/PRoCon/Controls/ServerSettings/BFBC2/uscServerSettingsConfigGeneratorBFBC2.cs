@@ -18,38 +18,38 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
-namespace PRoCon.Controls.ServerSettings.BFBC2 {
-    using Core;
+namespace PRoCon.Controls.ServerSettings.BFBC2
+{
     using Core.Remote;
-    public partial class uscServerSettingsConfigGeneratorBFBC2 : uscServerSettingsConfigGenerator {
+    public partial class uscServerSettingsConfigGeneratorBFBC2 : uscServerSettingsConfigGenerator
+    {
         public uscServerSettingsConfigGeneratorBFBC2()
-            : base() {
+            : base()
+        {
             InitializeComponent();
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.RankLimit += new FrostbiteClient.LimitHandler(Client_RankLimit);
                 this.Client.Game.TeamBalance += new FrostbiteClient.IsEnabledHandler(Client_TeamBalance);
                 this.Client.Game.KillCam += new FrostbiteClient.IsEnabledHandler(Client_KillCam);
@@ -61,35 +61,43 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             });
         }
 
-        void Client_RankLimit(FrostbiteClient sender, int limit) {
+        void Client_RankLimit(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.rankLimit", limit.ToString());
         }
 
-        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.teamBalance", isEnabled.ToString());
         }
 
-        void Client_KillCam(FrostbiteClient sender, bool isEnabled) {
+        void Client_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.killCam", isEnabled.ToString());
         }
 
-        void Client_MiniMap(FrostbiteClient sender, bool isEnabled) {
+        void Client_MiniMap(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.miniMap", isEnabled.ToString());
         }
 
-        void Client_CrossHair(FrostbiteClient sender, bool isEnabled) {
+        void Client_CrossHair(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.crossHair", isEnabled.ToString());
         }
 
-        void Client_ThreeDSpotting(FrostbiteClient sender, bool isEnabled) {
+        void Client_ThreeDSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.3dSpotting", isEnabled.ToString());
         }
 
-        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.thirdPersonVehicleCameras", isEnabled.ToString());
         }
 
-        void Client_MiniMapSpotting(FrostbiteClient sender, bool isEnabled) {
+        void Client_MiniMapSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.miniMapSpotting", isEnabled.ToString());
         }
     }

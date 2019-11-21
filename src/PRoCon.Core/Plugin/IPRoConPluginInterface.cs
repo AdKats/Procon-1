@@ -21,8 +21,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Plugin {
-    public interface IPRoConPluginInterface {
+namespace PRoCon.Core.Plugin
+{
+    public interface IPRoConPluginInterface
+    {
 
         String ClassName { get; set; }
 

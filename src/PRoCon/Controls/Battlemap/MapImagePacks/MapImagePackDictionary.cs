@@ -18,39 +18,40 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon.Controls.Battlemap.MapImagePacks {
-    using Core;
-    using Core.Remote;
-
-    public class MapImagePackDictionary : KeyedCollection<string, MapImagePack> {
+namespace PRoCon.Controls.Battlemap.MapImagePacks
+{
+    public class MapImagePackDictionary : KeyedCollection<string, MapImagePack>
+    {
 
         public delegate void ImagePackAlteredHandler(MapImagePack item);
         public event ImagePackAlteredHandler ImagePackAdded;
         public event ImagePackAlteredHandler ImagePackRemoved;
 
-        protected override string GetKeyForItem(MapImagePack item) {
+        protected override string GetKeyForItem(MapImagePack item)
+        {
             return item.MapImagePackPath;
         }
 
-        protected override void InsertItem(int index, MapImagePack item) {
+        protected override void InsertItem(int index, MapImagePack item)
+        {
             base.InsertItem(index, item);
 
-            if (this.ImagePackAdded != null) {
+            if (this.ImagePackAdded != null)
+            {
                 this.ImagePackAdded(item);
             }
         }
 
-        protected override void RemoveItem(int index) {
+        protected override void RemoveItem(int index)
+        {
             MapImagePack clocRemoved = this[index];
 
             base.RemoveItem(index);
 
-            if (this.ImagePackRemoved != null) {
+            if (this.ImagePackRemoved != null)
+            {
                 this.ImagePackRemoved(clocRemoved);
             }
         }

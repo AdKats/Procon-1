@@ -1,6 +1,9 @@
-﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers {
-    public class MohPacketDispatcher : LayerPacketDispatcher {
-        public MohPacketDispatcher(ILayerConnection connection) : base(connection) {
+﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers
+{
+    public class MohPacketDispatcher : LayerPacketDispatcher
+    {
+        public MohPacketDispatcher(ILayerConnection connection) : base(connection)
+        {
             this.RequestDelegates.Add("vars.clanTeams", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.noAmmoPickups", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.noCrosshairs", this.DispatchVarsRequest);
@@ -16,7 +19,7 @@
             this.RequestDelegates.Add("vars.tdmScoreCounterMaxScore", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.roundStartTimerPlayersLimit", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.roundStartTimerDelay", this.DispatchVarsRequest);
-            
+
             this.RequestDelegates.Add("reservedSpectateSlots.configFile", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSpectateSlots.load", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSpectateSlots.save", this.DispatchAlterReservedSlotsListRequest);

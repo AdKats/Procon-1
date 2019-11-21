@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace PRoCon.Core.Remote.Layer {
-    public interface ILayerClient {
+namespace PRoCon.Core.Remote.Layer
+{
+    public interface ILayerClient
+    {
         /// <summary>
         /// The username the client has authenticated with. See IsLoggedIn.
         /// </summary>

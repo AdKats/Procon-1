@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Events {
-    using Core.Players;
+namespace PRoCon.Core.Events
+{
     using Core.Logging;
-    using Core.Remote;
+    using Core.Players;
     using Core.Plugin;
-    public class EventCaptures : Loggable {
+    using Core.Remote;
+    public class EventCaptures : Loggable
+    {
         //private NotificationList<CapturableEvents> m_lstCapturedEvents;
 
         private PRoConClient m_prcClient;
@@ -24,25 +25,31 @@ namespace PRoCon.Core.Events {
         public delegate void ScrollingEnabledChangeHandler(bool isEnabled);
         public event ScrollingEnabledChangeHandler ScrollingEnabledChange;
 
-        public NotificationList<CapturableEvents> CapturedEvents {
+        public NotificationList<CapturableEvents> CapturedEvents
+        {
             get;
             private set;
         }
 
-        public Queue<CapturedEvent> LogEntries {
+        public Queue<CapturedEvent> LogEntries
+        {
             get;
             private set;
         }
 
         private bool m_isOptionsVisible;
-        public bool OptionsVisible {
-            get {
+        public bool OptionsVisible
+        {
+            get
+            {
                 return this.m_isOptionsVisible;
             }
-            set {
+            set
+            {
                 this.m_isOptionsVisible = value;
 
-                if (this.OptionsVisibleChange != null) {
+                if (this.OptionsVisibleChange != null)
+                {
                     this.OptionsVisibleChange(this.m_isOptionsVisible);
                 }
             }
@@ -51,14 +58,18 @@ namespace PRoCon.Core.Events {
         public bool IsListModified { get; private set; }
 
         private int m_iMaximumDisplayedEvents;
-        public int MaximumDisplayedEvents {
-            get {
+        public int MaximumDisplayedEvents
+        {
+            get
+            {
                 return this.m_iMaximumDisplayedEvents;
             }
-            set {
+            set
+            {
                 this.m_iMaximumDisplayedEvents = value;
 
-                if (this.MaximumDisplayedEventsChange != null) {
+                if (this.MaximumDisplayedEventsChange != null)
+                {
                     this.MaximumDisplayedEventsChange(this.m_iMaximumDisplayedEvents);
                 }
             }
@@ -66,62 +77,78 @@ namespace PRoCon.Core.Events {
 
         private bool m_blScrollingEnabled;
 
-        public bool ScrollingEnabled {
+        public bool ScrollingEnabled
+        {
             get { return this.m_blScrollingEnabled; }
-            set {
+            set
+            {
                 this.m_blScrollingEnabled = value;
 
-                if (this.ScrollingEnabledChange != null) {
+                if (this.ScrollingEnabledChange != null)
+                {
                     this.ScrollingEnabledChange(this.m_blScrollingEnabled);
                 }
             }
         }
 
-        public List<string> Settings {
-            get {
+        public List<string> Settings
+        {
+            get
+            {
                 List<string> lstReturnSettings = new List<string>();
                 lstReturnSettings.Add(this.OptionsVisible.ToString());
                 lstReturnSettings.Add(this.MaximumDisplayedEvents.ToString());
                 lstReturnSettings.Add(this.IsListModified.ToString());
                 lstReturnSettings.Add(this.ScrollingEnabled.ToString());
 
-                if (this.IsListModified == true) {
-                    foreach (CapturableEvents ceEvent in this.CapturedEvents) {
+                if (this.IsListModified == true)
+                {
+                    foreach (CapturableEvents ceEvent in this.CapturedEvents)
+                    {
                         lstReturnSettings.Add(ceEvent.ToString());
                     }
                 }
 
                 return lstReturnSettings;
             }
-            set {
+            set
+            {
                 int iMaximumCaptures = 200;
                 bool isCollapsed = false;
                 bool isModified = false;
                 bool scrollingEnabled = false;
 
-                if (value.Count > 0) {
+                if (value.Count > 0)
+                {
 
-                    if (value.Count >= 1 && bool.TryParse(value[0], out isCollapsed) == true) {
+                    if (value.Count >= 1 && bool.TryParse(value[0], out isCollapsed) == true)
+                    {
                         this.OptionsVisible = isCollapsed;
                     }
 
-                    if (value.Count >= 2 && int.TryParse(value[1], out iMaximumCaptures) == true) {
+                    if (value.Count >= 2 && int.TryParse(value[1], out iMaximumCaptures) == true)
+                    {
                         this.MaximumDisplayedEvents = iMaximumCaptures;
                     }
 
-                    if (value.Count >= 3 && bool.TryParse(value[2], out isModified) == true) {
+                    if (value.Count >= 3 && bool.TryParse(value[2], out isModified) == true)
+                    {
                         this.IsListModified = isModified;
                     }
 
-                    if (value.Count >= 4 && bool.TryParse(value[3], out scrollingEnabled) == true) {
+                    if (value.Count >= 4 && bool.TryParse(value[3], out scrollingEnabled) == true)
+                    {
                         this.ScrollingEnabled = scrollingEnabled;
                     }
 
-                    if (this.IsListModified == true) {
+                    if (this.IsListModified == true)
+                    {
                         this.CapturedEvents.Clear();
 
-                        for (int i = 4; i < value.Count; i++) {
-                            if (Enum.IsDefined(typeof(CapturableEvents), value[i]) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), value[i])) == false) {
+                        for (int i = 4; i < value.Count; i++)
+                        {
+                            if (Enum.IsDefined(typeof(CapturableEvents), value[i]) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), value[i])) == false)
+                            {
                                 this.CapturedEvents.Add((CapturableEvents)Enum.Parse(typeof(CapturableEvents), value[i]));
                             }
                         }
@@ -130,10 +157,12 @@ namespace PRoCon.Core.Events {
             }
         }
 
-        public EventCaptures(PRoConClient prcClient) {
+        public EventCaptures(PRoConClient prcClient)
+        {
             this.CapturedEvents = new NotificationList<CapturableEvents>();
 
-            foreach (CapturableEvents item in Enum.GetValues(typeof(CapturableEvents))) {
+            foreach (CapturableEvents item in Enum.GetValues(typeof(CapturableEvents)))
+            {
                 this.CapturedEvents.Add(item);
             }
 
@@ -145,7 +174,8 @@ namespace PRoCon.Core.Events {
             this.m_isOptionsVisible = false;
             this.m_iMaximumDisplayedEvents = 200;
 
-            if ((this.m_prcClient = prcClient) != null) {
+            if ((this.m_prcClient = prcClient) != null)
+            {
                 this.FileHostNamePort = this.m_prcClient.FileHostNamePort;
                 this.LoggingStartedPrefix = "Events logging started";
                 this.LoggingStoppedPrefix = "Events logging stopped";
@@ -189,39 +219,51 @@ namespace PRoCon.Core.Events {
             }
         }
 
-        private void CapturedEvents_ItemRemoved(int iIndex, CapturableEvents item) {
-            this.IsListModified = true;    
-        }
-
-        private void CapturedEvents_ItemAdded(int iIndex, CapturableEvents item) {
+        private void CapturedEvents_ItemRemoved(int iIndex, CapturableEvents item)
+        {
             this.IsListModified = true;
         }
 
-        private void Game_PlayerMovedByAdmin(FrostbiteClient sender, string soldierName, int destinationTeamId, int destinationSquadId, bool forceKilled) {
+        private void CapturedEvents_ItemAdded(int iIndex, CapturableEvents item)
+        {
+            this.IsListModified = true;
+        }
+
+        private void Game_PlayerMovedByAdmin(FrostbiteClient sender, string soldierName, int destinationTeamId, int destinationSquadId, bool forceKilled)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerMovedByAdmin, soldierName);
         }
 
-        private void Game_PlayerKilledByAdmin(FrostbiteClient sender, string soldierName) {
+        private void Game_PlayerKilledByAdmin(FrostbiteClient sender, string soldierName)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerKilledByAdmin, soldierName);
         }
 
-        private void Game_PlayerKickedByAdmin(FrostbiteClient sender, string strSoldierName, string strReason) {
+        private void Game_PlayerKickedByAdmin(FrostbiteClient sender, string strSoldierName, string strReason)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerKickedByAdmin, strSoldierName, strReason);
         }
 
-        private void m_prcClient_PlayerChangedSquad(FrostbiteClient sender, string strSoldierName, int iTeamID, int iSquadID) {
-            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true) {
-                if (this.m_prcClient.PlayerList[strSoldierName].SquadID > 0) {
-                    if (iSquadID > 0) {
+        private void m_prcClient_PlayerChangedSquad(FrostbiteClient sender, string strSoldierName, int iTeamID, int iSquadID)
+        {
+            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true)
+            {
+                if (this.m_prcClient.PlayerList[strSoldierName].SquadID > 0)
+                {
+                    if (iSquadID > 0)
+                    {
                         this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedSquads, strSoldierName, this.m_prcClient.Language.GetLocalized("global.Squad" + this.m_prcClient.PlayerList[strSoldierName].SquadID.ToString()), this.m_prcClient.Language.GetLocalized("global.Squad" + iSquadID.ToString()));
                     }
-                    else {
+                    else
+                    {
                         this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedSquads, strSoldierName, this.m_prcClient.Language.GetLocalized("global.Squad" + this.m_prcClient.PlayerList[strSoldierName].SquadID.ToString()), "None");
                     }
                 }
-                else {
+                else
+                {
                     // TO DO: Localize None
-                    if (iSquadID > 0) {
+                    if (iSquadID > 0)
+                    {
                         this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedSquads, strSoldierName, "None", this.m_prcClient.Language.GetLocalized("global.Squad" + iSquadID.ToString()));
                     }
                     // else - Changed from None to None.
@@ -229,17 +271,21 @@ namespace PRoCon.Core.Events {
             }
         }
 
-        private void m_prcClient_PlayerChangedTeam(FrostbiteClient sender, string strSoldierName, int iTeamID, int iSquadID) {
-            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true) {
+        private void m_prcClient_PlayerChangedTeam(FrostbiteClient sender, string strSoldierName, int iTeamID, int iSquadID)
+        {
+            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true)
+            {
                 this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedTeams, strSoldierName, this.m_prcClient.GetLocalizedTeamName(this.m_prcClient.PlayerList[strSoldierName].TeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode), this.m_prcClient.GetLocalizedTeamName(iTeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode));
             }
         }
 
-        private void m_prcClient_PluginsCompiled(PRoConClient sender) {
+        private void m_prcClient_PluginsCompiled(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.PluginsCompiled);
         }
 
-        private void m_prcClient_RecompilingPlugins(PRoConClient sender) {
+        private void m_prcClient_RecompilingPlugins(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.RecompilingPlugins);
 
             this.m_prcClient.PluginsManager.PluginLoaded += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginLoaded);
@@ -247,7 +293,8 @@ namespace PRoCon.Core.Events {
             this.m_prcClient.PluginsManager.PluginEnabled += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginEnabled);
         }
 
-        private void m_prcClient_CompilingPlugins(PRoConClient sender) {
+        private void m_prcClient_CompilingPlugins(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.CompilingPlugins);
 
             this.m_prcClient.PluginsManager.PluginLoaded += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginLoaded);
@@ -255,97 +302,124 @@ namespace PRoCon.Core.Events {
             this.m_prcClient.PluginsManager.PluginEnabled += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginEnabled);
         }
 
-        private void Plugins_PluginEnabled(string strClassName) {
+        private void Plugins_PluginEnabled(string strClassName)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.PluginEnabled, strClassName);
         }
 
-        private void Plugins_PluginDisabled(string strClassName) {
+        private void Plugins_PluginDisabled(string strClassName)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.PluginDisabled, strClassName);
         }
 
-        private void Plugins_PluginLoaded(string strClassName) {
+        private void Plugins_PluginLoaded(string strClassName)
+        {
             this.ProcessEvent(EventType.Plugins, CapturableEvents.PluginLoaded, strClassName);
         }
 
-        private void m_prcClient_BanListRemove(FrostbiteClient sender, CBanInfo cbiRemovedBan) {
-            if (String.Compare(cbiRemovedBan.IdType, "name", true) == 0) {
+        private void m_prcClient_BanListRemove(FrostbiteClient sender, CBanInfo cbiRemovedBan)
+        {
+            if (String.Compare(cbiRemovedBan.IdType, "name", true) == 0)
+            {
                 this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerUnbanned, cbiRemovedBan.SoldierName);
             }
-            else if (String.Compare(cbiRemovedBan.IdType, "ip", true) == 0) {
+            else if (String.Compare(cbiRemovedBan.IdType, "ip", true) == 0)
+            {
                 this.ProcessEvent(EventType.Banlist, CapturableEvents.IPUnbanned, cbiRemovedBan.IpAddress);
             }
-            else if (String.Compare(cbiRemovedBan.IdType, "guid", true) == 0) {
+            else if (String.Compare(cbiRemovedBan.IdType, "guid", true) == 0)
+            {
                 this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDUnbanned, cbiRemovedBan.Guid);
             }
         }
 
-        private void m_prcClient_BanListAdd(FrostbiteClient sender, CBanInfo cbiAddedBan) {
+        private void m_prcClient_BanListAdd(FrostbiteClient sender, CBanInfo cbiAddedBan)
+        {
 
             string target = String.Empty;
 
-            if (String.Compare(cbiAddedBan.IdType, "name", true) == 0) {
+            if (String.Compare(cbiAddedBan.IdType, "name", true) == 0)
+            {
 
                 target = cbiAddedBan.SoldierName;
-                if (cbiAddedBan.Reason.Length > 0) {
+                if (cbiAddedBan.Reason.Length > 0)
+                {
                     target += " [" + cbiAddedBan.Reason + "]";
                 }
 
-                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent) {
+                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerPermanentBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerRoundBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
-            else if (String.Compare(cbiAddedBan.IdType, "ip", true) == 0) {
+            else if (String.Compare(cbiAddedBan.IdType, "ip", true) == 0)
+            {
 
                 target = cbiAddedBan.IpAddress;
-                if (cbiAddedBan.Reason.Length > 0) {
+                if (cbiAddedBan.Reason.Length > 0)
+                {
                     target += " [" + cbiAddedBan.Reason + "]";
                 }
 
-                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent) {
+                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.IPPermanentBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.IPRoundBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.IPTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
-            else if (String.Compare(cbiAddedBan.IdType, "guid", true) == 0) {
+            else if (String.Compare(cbiAddedBan.IdType, "guid", true) == 0)
+            {
 
                 target = cbiAddedBan.Guid;
-                if (cbiAddedBan.Reason.Length > 0) {
+                if (cbiAddedBan.Reason.Length > 0)
+                {
                     target += " [" + cbiAddedBan.Reason + "]";
                 }
 
-                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent) {
+                if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Permanent)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDPermanentBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Round)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDRoundBanned, target);
                 }
-                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
+                else if (cbiAddedBan.BanLength.Subset == TimeoutSubset.TimeoutSubsetType.Seconds)
+                {
                     this.ProcessEvent(EventType.Banlist, CapturableEvents.GUIDTimedBanned, target, (cbiAddedBan.BanLength.Timeout / 60).ToString());
                 }
             }
         }
 
-        private void m_prcClient_PlayerUnbanned(PRoConClient sender, CBanInfo cbiUnbannedPlayer) {
+        private void m_prcClient_PlayerUnbanned(PRoConClient sender, CBanInfo cbiUnbannedPlayer)
+        {
 
-            if (String.Compare(cbiUnbannedPlayer.IdType, "pbguid") == 0) {
+            if (String.Compare(cbiUnbannedPlayer.IdType, "pbguid") == 0)
+            {
                 this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerUnbanned, cbiUnbannedPlayer.Guid);
             }
 
         }
 
-        private void m_prcClient_PlayerKilled(PRoConClient sender, Kill kKillerVictimDetails) {
-            if (String.Compare(kKillerVictimDetails.Killer.SoldierName, kKillerVictimDetails.Victim.SoldierName) != 0) {
+        private void m_prcClient_PlayerKilled(PRoConClient sender, Kill kKillerVictimDetails)
+        {
+            if (String.Compare(kKillerVictimDetails.Killer.SoldierName, kKillerVictimDetails.Victim.SoldierName) != 0)
+            {
 
                 string WeaponType = String.Empty;
                 if (kKillerVictimDetails.DamageType.Length > 0 && kKillerVictimDetails.Headshot == true)
@@ -357,77 +431,96 @@ namespace PRoCon.Core.Events {
                     WeaponType = String.Format("[{0}]", this.m_prcClient.Language.GetLocalized(String.Format("global.Weapons.{0}", kKillerVictimDetails.DamageType.ToLower())));
                 }
 
-                if (this.m_prcClient.PlayerList.Contains(kKillerVictimDetails.Killer) == true && this.m_prcClient.PlayerList.Contains(kKillerVictimDetails.Victim) == true) {
+                if (this.m_prcClient.PlayerList.Contains(kKillerVictimDetails.Killer) == true && this.m_prcClient.PlayerList.Contains(kKillerVictimDetails.Victim) == true)
+                {
 
-                    if (kKillerVictimDetails.Killer.TeamID == kKillerVictimDetails.Victim.TeamID) {
+                    if (kKillerVictimDetails.Killer.TeamID == kKillerVictimDetails.Victim.TeamID)
+                    {
                         this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerTeamKilled, kKillerVictimDetails.Killer.SoldierName, kKillerVictimDetails.Victim.SoldierName);
                     }
-                    else {
+                    else
+                    {
                         this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerKilled, kKillerVictimDetails.Killer.SoldierName, kKillerVictimDetails.Victim.SoldierName, WeaponType);
                     }
                 }
-                else {
+                else
+                {
                     this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerKilled, kKillerVictimDetails.Killer.SoldierName, kKillerVictimDetails.Victim.SoldierName, WeaponType);
                 }
             }
-            else {
+            else
+            {
                 this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSuicide, kKillerVictimDetails.Killer.SoldierName);
             }
         }
 
-        private void m_prcClient_PlayerLeft(FrostbiteClient sender, string playerName, CPlayerInfo cpiPlayer) {
+        private void m_prcClient_PlayerLeft(FrostbiteClient sender, string playerName, CPlayerInfo cpiPlayer)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerLeave, playerName);
         }
 
-        private void m_prcClient_PlayerJoin(FrostbiteClient sender, string playerName) {
+        private void m_prcClient_PlayerJoin(FrostbiteClient sender, string playerName)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerJoin, playerName);
         }
 
-        private void m_prcClient_PlayerDisconnected(FrostbiteClient sender, string playerName, string reason) {
+        private void m_prcClient_PlayerDisconnected(FrostbiteClient sender, string playerName, string reason)
+        {
             this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerDisconnected, playerName, m_prcClient.Language.GetDefaultLocalized(reason, String.Format("uscChatPanel.{0}", reason)));
         }
 
-        private void m_prcClient_CommandLoginFailure(PRoConClient sender, string strError) {
+        private void m_prcClient_CommandLoginFailure(PRoConClient sender, string strError)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.LoginFailure);
         }
 
-        private void m_prcClient_CommandLogout(PRoConClient sender) {
+        private void m_prcClient_CommandLogout(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.LoggedOut);
         }
 
-        private void m_prcClient_CommandLogin(PRoConClient sender) {
+        private void m_prcClient_CommandLogin(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.LoggedIn);
         }
 
-        private void m_prcClient_ConnectionClosed(PRoConClient sender) {
+        private void m_prcClient_ConnectionClosed(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.Disconnected);
         }
 
-        private void m_prcClient_SocketException(PRoConClient sender, System.Net.Sockets.SocketException se) {
+        private void m_prcClient_SocketException(PRoConClient sender, System.Net.Sockets.SocketException se)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.LostConnection);
         }
 
-        private void m_prcClient_ConnectionFailure(PRoConClient sender, Exception exception) {
+        private void m_prcClient_ConnectionFailure(PRoConClient sender, Exception exception)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.LostConnection);
         }
 
-        private void m_prcClient_CommandConnectSuccess(PRoConClient sender) {
+        private void m_prcClient_CommandConnectSuccess(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.Connected, this.m_prcClient.HostName, this.m_prcClient.Port.ToString());
         }
 
-        private void m_prcClient_CommandConnectAttempt(PRoConClient sender) {
+        private void m_prcClient_CommandConnectAttempt(PRoConClient sender)
+        {
             this.ProcessEvent(EventType.Connection, CapturableEvents.AttemptingConnection, this.m_prcClient.HostName, this.m_prcClient.Port.ToString());
         }
 
-        private void m_prcClient_PlayerKicked(FrostbiteClient sender, string strSoldierName, string strReason) {
+        private void m_prcClient_PlayerKicked(FrostbiteClient sender, string strSoldierName, string strReason)
+        {
             this.ProcessEvent(EventType.Banlist, CapturableEvents.PlayerKicked, strSoldierName, strReason);
         }
 
-        private void m_prcClient_LevelStarted(FrostbiteClient sender) {
+        private void m_prcClient_LevelStarted(FrostbiteClient sender)
+        {
             this.ProcessEvent(EventType.Map, CapturableEvents.LevelStarted);
         }
 
-        private void m_prcClient_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal) {
+        private void m_prcClient_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal)
+        {
             this.ProcessEvent(EventType.Map, CapturableEvents.LevelLoading, mapFileName);
         }
 
@@ -439,31 +532,38 @@ namespace PRoCon.Core.Events {
         public void ProcessEvent(CapturedEvent capture)
         {
 
-            if (this.CapturedEvents.Contains(capture.Event) == true) {
+            if (this.CapturedEvents.Contains(capture.Event) == true)
+            {
                 capture.LoggedTime = capture.LoggedTime.ToUniversalTime().AddHours(m_prcClient.Game.UtcOffset).ToLocalTime();
-                if (this.Logging == true) {
+                if (this.Logging == true)
+                {
                     this.WriteLogLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}", capture.EventType.ToString(), capture.LoggedTime.ToString("MM/dd/yyyy HH:mm:ss"), capture.InstigatingAdmin, capture.Event.ToString(), capture.EventText.Replace("{", "{{").Replace("}", "}}")));
                 }
 
                 this.LogEntries.Enqueue(capture);
 
-                while (this.LogEntries.Count > 100) {
+                while (this.LogEntries.Count > 100)
+                {
                     this.LogEntries.Dequeue();
                 }
 
-                if (this.LoggedEvent != null) {
+                if (this.LoggedEvent != null)
+                {
                     this.LoggedEvent(capture);
                 }
             }
         }
 
-        public void ProcessEvent(EventType etType, CapturableEvents ceEvent, params string[] a_strMessageParams) {
-            if (this.CapturedEvents.Contains(ceEvent) == true) {
+        public void ProcessEvent(EventType etType, CapturableEvents ceEvent, params string[] a_strMessageParams)
+        {
+            if (this.CapturedEvents.Contains(ceEvent) == true)
+            {
 
                 DateTime dtLoggedTime = DateTime.Now; // UtcNow.AddHours(m_prcClient.Game.UTCoffset).ToLocalTime();
                 string strEventText = String.Empty;
 
-                if (this.m_prcClient.Language.LocalizedExists("uscEvents.lsvEvents." + ceEvent.ToString()) == true) {
+                if (this.m_prcClient.Language.LocalizedExists("uscEvents.lsvEvents." + ceEvent.ToString()) == true)
+                {
                     strEventText = this.m_prcClient.Language.GetLocalized("uscEvents.lsvEvents." + ceEvent.ToString(), a_strMessageParams);
                 }
 

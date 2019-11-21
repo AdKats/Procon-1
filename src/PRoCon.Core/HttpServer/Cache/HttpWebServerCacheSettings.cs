@@ -19,21 +19,26 @@
 
 using System;
 
-namespace PRoCon.Core.HttpServer.Cache {
+namespace PRoCon.Core.HttpServer.Cache
+{
     [Serializable]
-    public class HttpWebServerCacheSettings {
+    public class HttpWebServerCacheSettings
+    {
 
-        public HttpWebServerCacheType CacheType {
+        public HttpWebServerCacheType CacheType
+        {
             get;
             set;
         }
 
-        public DateTime TrashTime {
+        public DateTime TrashTime
+        {
             get;
             set;
         }
 
-        public HttpWebServerCacheSettings() {
+        public HttpWebServerCacheSettings()
+        {
             this.CacheType = HttpWebServerCacheType.Cache;
             this.TrashTime = DateTime.Now.AddSeconds(30.0D);
         }

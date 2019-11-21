@@ -17,9 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
 
-    public enum LevelVariableContextType {
+    public enum LevelVariableContextType
+    {
         None,
         All,
         GameMode,

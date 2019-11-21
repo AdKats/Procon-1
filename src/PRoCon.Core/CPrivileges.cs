@@ -29,7 +29,7 @@ namespace PRoCon.Core
         public CPrivileges()
         {
             // Set this class to have the lowest privileges flags.
-            this.PrivilegesFlags = (UInt32) (Privileges.CannotIssueProconCommands |
+            this.PrivilegesFlags = (UInt32)(Privileges.CannotIssueProconCommands |
                                              Privileges.CannotIssuePunkbusterCommands |
                                              Privileges.CannotPunishPlayers);
         }
@@ -45,7 +45,7 @@ namespace PRoCon.Core
         {
             get
             {
-                return (UInt32) (Privileges.CanLogin |
+                return (UInt32)(Privileges.CanLogin |
                                  Privileges.CanAlterServerSettings |
                                  Privileges.CanUseMapFunctions |
                                  Privileges.CanPermanentlyBanPlayers |
@@ -177,15 +177,18 @@ namespace PRoCon.Core
             get { return ((this.PrivilegesFlags & 0x8000) == 0x8000); }
         }
 
-        public bool CanEditMapZones {
+        public bool CanEditMapZones
+        {
             get { return ((this.PrivilegesFlags & 0x80000) == 0x80000); }
         }
 
-        public bool CanEditTextChatModerationList {
+        public bool CanEditTextChatModerationList
+        {
             get { return ((this.PrivilegesFlags & 0x100000) == 0x100000); }
         }
 
-        public bool CanShutdownServer {
+        public bool CanShutdownServer
+        {
             get { return ((this.PrivilegesFlags & 0x200000) == 0x200000); }
         }
 
@@ -235,14 +238,16 @@ namespace PRoCon.Core
             }
         }
 
-        public bool Has(Privileges flags) {
+        public bool Has(Privileges flags)
+        {
 
             bool hasPrivileges = false;
 
             CPrivileges cpriv = new CPrivileges((UInt32)flags);
             cpriv.SetLowestPrivileges(this);
 
-            if ((cpriv.PrivilegesFlags & (UInt32)flags) == (UInt32)flags) {
+            if ((cpriv.PrivilegesFlags & (UInt32)flags) == (UInt32)flags)
+            {
                 hasPrivileges = true;
             }
 
@@ -317,7 +322,7 @@ namespace PRoCon.Core
                                       ? Privileges.CanShutdownServer
                                       : 0;
 
-            this.PrivilegesFlags = (UInt32) newPrivilegesFlags;
+            this.PrivilegesFlags = (UInt32)newPrivilegesFlags;
         }
     }
 }

@@ -53,7 +53,8 @@ namespace PRoCon.Core
 
         public string PublicLevelName { get; private set; }
 
-        public int DefaultSquadID {
+        public int DefaultSquadID
+        {
             get;
             private set;
         }

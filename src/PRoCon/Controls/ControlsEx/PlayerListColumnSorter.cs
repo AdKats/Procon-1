@@ -18,39 +18,43 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Collections;
-using System.Design;
 
 
-namespace PRoCon.Controls.ControlsEx {
+namespace PRoCon.Controls.ControlsEx
+{
 
-    public class PlayerListColumnSorter : ListViewColumnSorter, IComparer {
+    public class PlayerListColumnSorter : ListViewColumnSorter, IComparer
+    {
 
-        public Regex TotalsAveragesChecker {
+        public Regex TotalsAveragesChecker
+        {
             get;
             private set;
         }
 
         public PlayerListColumnSorter()
-            : base() {
+            : base()
+        {
             this.TotalsAveragesChecker = new Regex("procon.playerlist.(totals|averages)[0-9]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
-        public new int Compare(object x, object y) {
+        public new int Compare(object x, object y)
+        {
             ListViewItem listviewX = (ListViewItem)x, listviewY = (ListViewItem)y;
 
-            if (this.TotalsAveragesChecker.IsMatch(listviewY.Name) == true) {
+            if (this.TotalsAveragesChecker.IsMatch(listviewY.Name) == true)
+            {
                 return -1;
             }
-            else if (this.TotalsAveragesChecker.IsMatch(listviewX.Name) == true) {
+            else if (this.TotalsAveragesChecker.IsMatch(listviewX.Name) == true)
+            {
                 return 1;
             }
-            else {
+            else
+            {
                 return base.Compare(x, y);
             }
         }

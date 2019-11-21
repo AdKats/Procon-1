@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace PRoCon.Core.Remote.Cache {
-    public interface IPacketCacheConfiguration {
+namespace PRoCon.Core.Remote.Cache
+{
+    public interface IPacketCacheConfiguration
+    {
         /// <summary>
         /// How long this packet should live before being destroyed
         /// </summary>

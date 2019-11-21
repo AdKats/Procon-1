@@ -22,67 +22,85 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PRoCon.Core.Plugin {
-    public class PluginDictionary : KeyedCollection<string, Plugin> {
+namespace PRoCon.Core.Plugin
+{
+    public class PluginDictionary : KeyedCollection<string, Plugin>
+    {
 
-        public List<string> EnabledClassNames {
-            get {
+        public List<string> EnabledClassNames
+        {
+            get
+            {
                 return this.Where(plugin => plugin.IsEnabled == true).Select(plugin => plugin.ClassName).ToList();
             }
         }
 
-        public List<string> LoadedClassNames {
-            get {
+        public List<string> LoadedClassNames
+        {
+            get
+            {
                 return this.Where(plugin => plugin.IsLoaded == true).Select(plugin => plugin.ClassName).ToList();
             }
         }
 
-        public bool IsEnabled(string className) {
+        public bool IsEnabled(string className)
+        {
             bool isEnabled = false;
 
-            if (this.Contains(className) == true) {
+            if (this.Contains(className) == true)
+            {
                 isEnabled = this[className].IsEnabled;
             }
 
             return isEnabled;
         }
 
-        public bool IsLoaded(string className) {
+        public bool IsLoaded(string className)
+        {
             bool isLoaded = false;
 
-            if (this.Contains(className) == true) {
+            if (this.Contains(className) == true)
+            {
                 isLoaded = this[className].IsLoaded;
             }
 
             return isLoaded;
         }
 
-        protected override string GetKeyForItem(Plugin item) {
+        protected override string GetKeyForItem(Plugin item)
+        {
             return item.ClassName;
         }
 
-        public void AddLoadedPlugin(string className, IPRoConPluginInterface type) {
-            if (this.Contains(className) == false) {
+        public void AddLoadedPlugin(string className, IPRoConPluginInterface type)
+        {
+            if (this.Contains(className) == false)
+            {
                 this.Add(new Plugin(className, type));
             }
-            else {
+            else
+            {
                 this.SetItem(this.IndexOf(this[className]), new Plugin(className, type));
             }
         }
 
-        public void SetCachedPluginVariable(string className, string variable, string value) {
+        public void SetCachedPluginVariable(string className, string variable, string value)
+        {
 
-            if (this.Contains(className) == false) {
+            if (this.Contains(className) == false)
+            {
                 this.Add(new Plugin(className));
             }
 
-            if (this[className].CacheFailCompiledPluginVariables.ContainsKey(variable) == true) {
+            if (this[className].CacheFailCompiledPluginVariables.ContainsKey(variable) == true)
+            {
                 this[className].CacheFailCompiledPluginVariables[variable] = value;
             }
-            else {
+            else
+            {
                 this[className].CacheFailCompiledPluginVariables.Add(variable, value);
             }
         }
-        
+
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace PRoCon.Core.Remote.Cache {
-    public interface ICacheManager {
+namespace PRoCon.Core.Remote.Cache
+{
+    public interface ICacheManager
+    {
         /// <summary>
         /// What packets to capture 
         /// </summary>

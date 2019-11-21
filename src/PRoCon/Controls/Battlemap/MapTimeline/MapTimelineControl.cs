@@ -19,17 +19,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap.MapTimeline {
-    using Core;
+namespace PRoCon.Controls.Battlemap.MapTimeline
+{
     using Controls.Battlemap;
     using Controls.Battlemap.KillDisplay;
+    using Core;
 
-    public class MapTimelineControl : MapObject {
+    public class MapTimelineControl : MapObject
+    {
 
         private DateTime m_dtMouseLeftFadeout;
 
@@ -37,40 +38,52 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
 
         private float m_flControlChangeSpeed;
 
-        protected List<MapObject> TimelineButtons {
+        protected List<MapObject> TimelineButtons
+        {
             get;
             private set;
         }
 
-        public bool IsSeekerSelected {
-            get {
+        public bool IsSeekerSelected
+        {
+            get
+            {
                 return this.m_mtsSeek.IsSeekButtonSelected;
             }
         }
 
-        public bool IsSeekerMouseOvered {
-            get {
+        public bool IsSeekerMouseOvered
+        {
+            get
+            {
                 return this.m_mtsSeek.IsMouseOver;
             }
         }
 
-        public float SeekerPosition {
-            get {
+        public float SeekerPosition
+        {
+            get
+            {
                 return this.m_mtsSeek.SeekerPosition;
             }
         }
 
-        public MapTimelineControlButtonType SelectedButtonType {
+        public MapTimelineControlButtonType SelectedButtonType
+        {
             get;
             private set;
         }
 
-        public new bool IsMouseOver {
-            get {
+        public new bool IsMouseOver
+        {
+            get
+            {
                 bool blMouseOverButton = false;
 
-                foreach (MapTimelineControlButton mtbButton in this.TimelineButtons) {
-                    if ((blMouseOverButton = mtbButton.IsMouseOver) == true) {
+                foreach (MapTimelineControlButton mtbButton in this.TimelineButtons)
+                {
+                    if ((blMouseOverButton = mtbButton.IsMouseOver) == true)
+                    {
                         break;
                     }
                 }
@@ -79,24 +92,29 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             }
         }
 
-        private float TimelineOpacity {
-            get {
+        private float TimelineOpacity
+        {
+            get
+            {
                 float flOpacity = 0.0F;
                 //TimeSpan tsDifference = DateTime.Now - this.m_dtMouseLeftFadeout;
 
                 //double dblTotalMilliseconds = tsDifference.TotalMilliseconds;
                 double dblTotalMilliseconds = (DateTime.Now.Ticks - this.m_dtMouseLeftFadeout.Ticks) / TimeSpan.TicksPerMillisecond;
 
-                if (this.m_dtMouseLeftFadeout > DateTime.Now) {
+                if (this.m_dtMouseLeftFadeout > DateTime.Now)
+                {
                     dblTotalMilliseconds = Math.Abs((this.m_dtMouseLeftFadeout.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond);
                     //tsDifference = this.m_dtMouseLeftFadeout - DateTime.Now;
                     //dblTotalMilliseconds = Math.Abs(tsDifference.TotalMilliseconds);
                 }
 
-                if (dblTotalMilliseconds < 1000) {
+                if (dblTotalMilliseconds < 1000)
+                {
                     flOpacity = 1.0F;
                 }
-                else if (dblTotalMilliseconds < 2000) {
+                else if (dblTotalMilliseconds < 2000)
+                {
                     flOpacity = (2000 - (float)dblTotalMilliseconds) / 2000 * 2.0F;
                 }
 
@@ -104,7 +122,8 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             }
         }
 
-        public MapTimelineControl() {
+        public MapTimelineControl()
+        {
 
             this.m_mtsSeek = new MapTimelineSeekButton();
 
@@ -142,27 +161,36 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             this.m_flControlChangeSpeed = 2.0F;
         }
 
-        private void mtbButton_TimelineControlButtonClicked(MapTimelineControlButton sender, MapTimelineControlButtonType ButtonType) {
+        private void mtbButton_TimelineControlButtonClicked(MapTimelineControlButton sender, MapTimelineControlButtonType ButtonType)
+        {
 
-            if (this.SelectedButtonType == ButtonType && ButtonType == MapTimelineControlButtonType.FastForward) {
-                if (this.m_flControlChangeSpeed < 512.0F) {
+            if (this.SelectedButtonType == ButtonType && ButtonType == MapTimelineControlButtonType.FastForward)
+            {
+                if (this.m_flControlChangeSpeed < 512.0F)
+                {
                     this.m_flControlChangeSpeed = this.m_flControlChangeSpeed * 2.0F;
                 }
             }
-            else if (this.SelectedButtonType == ButtonType && ButtonType == MapTimelineControlButtonType.Rewind) {
-                if (this.m_flControlChangeSpeed < 512.0F) {
+            else if (this.SelectedButtonType == ButtonType && ButtonType == MapTimelineControlButtonType.Rewind)
+            {
+                if (this.m_flControlChangeSpeed < 512.0F)
+                {
                     this.m_flControlChangeSpeed = this.m_flControlChangeSpeed * 2.0F;
                 }
             }
-            else if (ButtonType == MapTimelineControlButtonType.FastForward || ButtonType == MapTimelineControlButtonType.Rewind) {
+            else if (ButtonType == MapTimelineControlButtonType.FastForward || ButtonType == MapTimelineControlButtonType.Rewind)
+            {
                 this.m_flControlChangeSpeed = 2.0F;
             }
 
-            foreach (MapTimelineControlButton mtbButton in this.TimelineButtons) {
-                if (mtbButton == sender) {
+            foreach (MapTimelineControlButton mtbButton in this.TimelineButtons)
+            {
+                if (mtbButton == sender)
+                {
                     mtbButton.ForegroundColour = Color.LightSeaGreen;
                 }
-                else {
+                else
+                {
                     mtbButton.ForegroundColour = Color.White;
                 }
             }
@@ -171,47 +199,60 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
         }
 
         private DateTime m_dtLastTick = DateTime.MinValue;
-        public void SeekerPositionTick() {
+        public void SeekerPositionTick()
+        {
 
-            if (this.m_dtLastTick != DateTime.MinValue) {
+            if (this.m_dtLastTick != DateTime.MinValue)
+            {
 
                 TimeSpan tsLastTick = DateTime.Now - this.m_dtLastTick;
 
-                if (this.SelectedButtonType == MapTimelineControlButtonType.Pause) {
+                if (this.SelectedButtonType == MapTimelineControlButtonType.Pause)
+                {
                     // Go back however much time has past since last tick.
                     this.m_mtsSeek.SeekerPosition -= (float)(tsLastTick.TotalSeconds / 3600.0D);
                 }
-                else if (this.SelectedButtonType == MapTimelineControlButtonType.Rewind) {
+                else if (this.SelectedButtonType == MapTimelineControlButtonType.Rewind)
+                {
                     // Go back 2x however much time has past since last tick.
                     this.m_mtsSeek.SeekerPosition -= this.m_flControlChangeSpeed * (float)(tsLastTick.TotalSeconds / 3600.0D);
                 }
-                else if (this.SelectedButtonType == MapTimelineControlButtonType.FastForward) {
+                else if (this.SelectedButtonType == MapTimelineControlButtonType.FastForward)
+                {
                     // Go forward 2x however much time has past since last tick.
                     this.m_mtsSeek.SeekerPosition += (this.m_flControlChangeSpeed / 2.0F) * (float)(tsLastTick.TotalSeconds / 3600.0D);
                 }
 
-                if (this.m_mtsSeek.SeekerPosition > 1.0F) {
+                if (this.m_mtsSeek.SeekerPosition > 1.0F)
+                {
                     this.m_mtsSeek.SeekerPosition = 1.0F;
                     this.SelectedButtonType = MapTimelineControlButtonType.Play;
 
-                    foreach (MapTimelineControlButton mtbButton in this.TimelineButtons) {
-                        if (mtbButton.ButtonType == MapTimelineControlButtonType.Play) {
+                    foreach (MapTimelineControlButton mtbButton in this.TimelineButtons)
+                    {
+                        if (mtbButton.ButtonType == MapTimelineControlButtonType.Play)
+                        {
                             mtbButton.ForegroundColour = Color.LightSeaGreen;
                         }
-                        else {
+                        else
+                        {
                             mtbButton.ForegroundColour = Color.White;
                         }
                     }
                 }
-                else if (this.m_mtsSeek.SeekerPosition < 0.0F) {
+                else if (this.m_mtsSeek.SeekerPosition < 0.0F)
+                {
                     this.m_mtsSeek.SeekerPosition = 0.0F;
                     this.SelectedButtonType = MapTimelineControlButtonType.Play;
 
-                    foreach (MapTimelineControlButton mtbButton in this.TimelineButtons) {
-                        if (mtbButton.ButtonType == MapTimelineControlButtonType.Play) {
+                    foreach (MapTimelineControlButton mtbButton in this.TimelineButtons)
+                    {
+                        if (mtbButton.ButtonType == MapTimelineControlButtonType.Play)
+                        {
                             mtbButton.ForegroundColour = Color.LightSeaGreen;
                         }
-                        else {
+                        else
+                        {
                             mtbButton.ForegroundColour = Color.White;
                         }
                     }
@@ -221,7 +262,8 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             this.m_dtLastTick = DateTime.Now;
         }
 
-        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons, Dictionary<Kill, KillDisplayDetails> dicKills, List<BattlemapRoundChange> lstRounds, KillDisplayColours colours, Dictionary<int, Color> teamColours) {
+        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons, Dictionary<Kill, KillDisplayDetails> dicKills, List<BattlemapRoundChange> lstRounds, KillDisplayColours colours, Dictionary<int, Color> teamColours)
+        {
             GraphicsPath gpTimelineOutline = new GraphicsPath();
 
             gpTimelineOutline.AddLines(new Point[] { new Point(5, 0), new Point(0, 5), new Point(0, 15), new Point((int)g.ClipBounds.Width - 280, 15), new Point((int)g.ClipBounds.Width - 280, 5), new Point((int)g.ClipBounds.Width - 275, 0) });
@@ -241,11 +283,13 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
 
             MapTextBlock timeList = new MapTextBlock();
 
-            foreach (BattlemapRoundChange RoundChange in new List<BattlemapRoundChange>(lstRounds)) {
+            foreach (BattlemapRoundChange RoundChange in new List<BattlemapRoundChange>(lstRounds))
+            {
                 float flOffsetXs = (this.HotSpot.Width - 5.0F) - ((float)((DateTime.Now.Ticks - RoundChange.ChangeTime.Ticks) / TimeSpan.TicksPerSecond) / 3600.0F) * (this.HotSpot.Width - 5.0F);
                 RectangleF recChangePosition = new RectangleF(flOffsetXs + this.m_pntDrawOffset.X - 2.0F, this.m_pntDrawOffset.Y, 4.0F, 20.0F);
 
-                if (flOffsetXs >= 0.0F) {
+                if (flOffsetXs >= 0.0F)
+                {
                     GraphicsPath gpChangeTime = new GraphicsPath();
                     gpChangeTime.AddLine(new PointF(flOffsetXs, 5), new PointF(flOffsetXs, 12));
                     gpChangeTime.Widen(this.m_pOneWidth);
@@ -253,7 +297,8 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
                     this.DrawBwShape(g, gpChangeTime, this.TimelineOpacity, 4.0F, Color.Black, Color.RoyalBlue);
                     gpChangeTime.Dispose();
 
-                    if (recChangePosition.Contains(new PointF(pntMouseLocation.X, pntMouseLocation.Y)) == true) {
+                    if (recChangePosition.Contains(new PointF(pntMouseLocation.X, pntMouseLocation.Y)) == true)
+                    {
                         //strMouseOverKillList += String.Format("Round change {0}\r\n", RoundChange.Map.PublicLevelName);
 
                         timeList.Strings.Add(new MapTextBlockString(String.Format("Round change {0}", RoundChange.Map.PublicLevelName), Color.Pink, true));
@@ -265,12 +310,14 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
                 }
             }
 
-            foreach (KeyValuePair<Kill, KillDisplayDetails> kvpKill in new Dictionary<Kill, KillDisplayDetails>(dicKills)) {
+            foreach (KeyValuePair<Kill, KillDisplayDetails> kvpKill in new Dictionary<Kill, KillDisplayDetails>(dicKills))
+            {
 
                 float flOffsetXs = (this.HotSpot.Width - 5.0F) - ((float)((DateTime.Now.Ticks - kvpKill.Key.TimeOfDeath.Ticks) / TimeSpan.TicksPerSecond) / 3600.0F) * (this.HotSpot.Width - 5.0F);
                 RectangleF recKillPosition = new RectangleF(flOffsetXs + this.m_pntDrawOffset.X - 2.0F, this.m_pntDrawOffset.Y, 4.0F, 20.0F);
 
-                if (recKillPosition.Contains(new PointF(pntMouseLocation.X + 5.0F, pntMouseLocation.Y)) == true) {
+                if (recKillPosition.Contains(new PointF(pntMouseLocation.X + 5.0F, pntMouseLocation.Y)) == true)
+                {
                     GraphicsPath gpKillTime = new GraphicsPath();
                     gpKillTime.AddLine(new PointF(flOffsetXs, 10), new PointF(flOffsetXs, 12));
                     gpKillTime.Widen(this.m_pOneWidth);
@@ -281,18 +328,22 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
                     Color killerColour = Color.White;
                     Color victimColour = Color.White;
 
-                    if (colours == KillDisplayColours.EnemyColours) {
+                    if (colours == KillDisplayColours.EnemyColours)
+                    {
                         killerColour = ControlPaint.Light(Color.SeaGreen);
                         victimColour = ControlPaint.LightLight(Color.Black);
                     }
-                    else if (colours == KillDisplayColours.TeamColours) {
-                        if (teamColours.ContainsKey(kvpKill.Key.Killer.TeamID) == true && teamColours.ContainsKey(kvpKill.Key.Victim.TeamID) == true) {
+                    else if (colours == KillDisplayColours.TeamColours)
+                    {
+                        if (teamColours.ContainsKey(kvpKill.Key.Killer.TeamID) == true && teamColours.ContainsKey(kvpKill.Key.Victim.TeamID) == true)
+                        {
                             killerColour = ControlPaint.Light(teamColours[kvpKill.Key.Killer.TeamID]);
                             victimColour = ControlPaint.Light(teamColours[kvpKill.Key.Victim.TeamID]);
                         }
                     }
 
-                    if (kvpKill.Key.Killer.ClanTag.Length > 0) {
+                    if (kvpKill.Key.Killer.ClanTag.Length > 0)
+                    {
                         timeList.Strings.Add(new MapTextBlockString(String.Format("[{0}] ", kvpKill.Key.Killer.ClanTag), killerColour, false));
                     }
 
@@ -300,7 +351,8 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
 
                     timeList.Strings.Add(new MapTextBlockString(String.Format("[{0}] ", kvpKill.Key.DamageType), Color.WhiteSmoke, false));
 
-                    if (kvpKill.Key.Victim.ClanTag.Length > 0) {
+                    if (kvpKill.Key.Victim.ClanTag.Length > 0)
+                    {
                         timeList.Strings.Add(new MapTextBlockString(String.Format("[{0}] ", kvpKill.Key.Victim.ClanTag), victimColour, false));
                     }
                     timeList.Strings.Add(new MapTextBlockString(kvpKill.Key.Victim.SoldierName, victimColour, true));
@@ -309,13 +361,15 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
                 }
             }
 
-            if (timeList.Strings.Count > 0) {
+            if (timeList.Strings.Count > 0)
+            {
 
                 RectangleF recText = timeList.GetBounds();
 
                 PointF timeListOffset = new PointF(pntDrawOffset.X + flMouseOffsetX - recText.Width / 2.0F, pntDrawOffset.Y - recText.Height);
 
-                if (timeListOffset.X + recText.Width > g.ClipBounds.Width) {
+                if (timeListOffset.X + recText.Width > g.ClipBounds.Width)
+                {
                     timeListOffset.X = g.ClipBounds.Width - recText.Width;
                 }
 
@@ -331,12 +385,15 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             timeList.Dispose();
         }
 
-        protected override void MouseOver(Graphics g) {
+        protected override void MouseOver(Graphics g)
+        {
 
-            if (this.m_dtMouseLeftFadeout.AddSeconds(1.4D) < DateTime.Now) {
+            if (this.m_dtMouseLeftFadeout.AddSeconds(1.4D) < DateTime.Now)
+            {
                 this.m_dtMouseLeftFadeout = DateTime.Now.AddSeconds(1.4D);
             }
-            else {
+            else
+            {
                 this.m_dtMouseLeftFadeout = DateTime.Now;
             }
 
@@ -344,32 +401,40 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             this.DrawButtons(g);
         }
 
-        protected override void MouseLeave(Graphics g) {
+        protected override void MouseLeave(Graphics g)
+        {
             this.DrawBwShape(g, this.TimelineOpacity, 4.0F, Color.Black, Color.White);
             this.DrawButtons(g);
         }
 
-        protected override void MouseDown(Graphics g) {
-            if (base.IsMouseOver == true) {
+        protected override void MouseDown(Graphics g)
+        {
+            if (base.IsMouseOver == true)
+            {
                 this.MouseOver(g);
             }
-            else {
+            else
+            {
                 this.DrawBwShape(g, this.TimelineOpacity, 4.0F, Color.Black, Color.White);
                 this.DrawButtons(g);
             }
         }
 
-        protected override void MouseUp(Graphics g) {
+        protected override void MouseUp(Graphics g)
+        {
             this.DrawBwShape(g, this.TimelineOpacity, 4.0F, Color.Black, Color.White);
         }
 
-        protected override void MouseClicked(Graphics g) {
+        protected override void MouseClicked(Graphics g)
+        {
             this.DrawBwShape(g, this.TimelineOpacity, 4.0F, Color.Black, Color.White);
             this.DrawButtons(g);
         }
 
-        protected override void NormalPaint(Graphics g) {
-            if (this.IsSeekerSelected == true) {
+        protected override void NormalPaint(Graphics g)
+        {
+            if (this.IsSeekerSelected == true)
+            {
                 this.m_dtMouseLeftFadeout = DateTime.Now;
             }
 
@@ -377,11 +442,13 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             this.DrawButtons(g);
         }
 
-        private void DrawButtons(Graphics g) {
+        private void DrawButtons(Graphics g)
+        {
             int iTimelineControlsWidth = this.TimelineButtons.Count * 20;
             int iTimelineOffsetX = (int)this.m_pntDrawOffset.X + (int)this.HotSpot.Width / 2 - iTimelineControlsWidth / 2;
 
-            foreach (MapTimelineControlButton mtbButton in this.TimelineButtons) {
+            foreach (MapTimelineControlButton mtbButton in this.TimelineButtons)
+            {
                 mtbButton.ButtonOpacity = this.TimelineOpacity;
                 mtbButton.Draw(g, new Point(iTimelineOffsetX, (int)g.ClipBounds.Height - 28), this.m_pntMousePosition, this.m_MouseButtons);
                 iTimelineOffsetX += 20;
@@ -390,20 +457,25 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             GraphicsPath gpPlaySpeed = new GraphicsPath();
             string strPlaySpeedText = String.Empty;
 
-            if (this.SelectedButtonType == MapTimelineControlButtonType.Pause) {
+            if (this.SelectedButtonType == MapTimelineControlButtonType.Pause)
+            {
                 strPlaySpeedText = "0.0x";
             }
-            else if (this.SelectedButtonType == MapTimelineControlButtonType.Play) {
+            else if (this.SelectedButtonType == MapTimelineControlButtonType.Play)
+            {
                 strPlaySpeedText = "1.0x";
             }
-            else if (this.SelectedButtonType == MapTimelineControlButtonType.Rewind) {
+            else if (this.SelectedButtonType == MapTimelineControlButtonType.Rewind)
+            {
                 strPlaySpeedText = String.Format("-{0:0.0}x", this.m_flControlChangeSpeed);
             }
-            else if (this.SelectedButtonType == MapTimelineControlButtonType.FastForward) {
+            else if (this.SelectedButtonType == MapTimelineControlButtonType.FastForward)
+            {
                 strPlaySpeedText = String.Format("{0:0.0}x", this.m_flControlChangeSpeed);
             }
 
-            if (strPlaySpeedText.Length > 0) {
+            if (strPlaySpeedText.Length > 0)
+            {
                 gpPlaySpeed.AddString(strPlaySpeedText, new FontFamily("Arial"), 0, 12, new Point(iTimelineOffsetX - (int)this.m_pntDrawOffset.X, 26), StringFormat.GenericTypographic);
                 this.DrawBwShape(g, gpPlaySpeed, this.TimelineOpacity, 4.0F, Color.Black, Color.White);
             }

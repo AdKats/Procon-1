@@ -1,17 +1,19 @@
-﻿using System;
+﻿using PRoCon.Controls.ControlsEx;
+using PRoCon.Controls.Data;
+using PRoCon.Core;
+using PRoCon.Core.Remote;
+using PRoCon.Forms;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using PRoCon.Controls.ControlsEx;
-using PRoCon.Controls.Data;
-using PRoCon.Core;
-using PRoCon.Core.Remote;
-using PRoCon.Forms;
 
-namespace PRoCon.Controls {
-    public partial class uscListControlPanel : UserControl {
+namespace PRoCon.Controls
+{
+    public partial class uscListControlPanel : UserControl
+    {
 
         private frmMain m_frmMain;
         private uscServerConnection m_uscConnectionPanel;
@@ -30,14 +32,14 @@ namespace PRoCon.Controls {
         //public delegate void SendCommandDelegate(List<string> lstCommand);
         //public event SendCommandDelegate SendCommand;
 
-       // private int m_iReselectShufflingMapIndex = 0;
+        // private int m_iReselectShufflingMapIndex = 0;
 
         private bool m_blSettingAppendingReservedPlayer;
         private bool m_blSettingRemovingReservedPlayer;
-        
+
         private bool m_blSettingAppendingSpectatorPlayer;
         private bool m_blSettingRemovingSpectatorPlayer;
-        
+
         //private bool m_blSettingAppendingSingleMap;
         //private bool m_blSettingNewPlaylist;
 
@@ -73,23 +75,24 @@ namespace PRoCon.Controls {
             }
         }
         */
-        public uscListControlPanel() {
+        public uscListControlPanel()
+        {
             InitializeComponent();
 
             this.SetStyle(ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            this.SetStyle(ControlStyles.DoubleBuffer, true); 
+            this.SetStyle(ControlStyles.DoubleBuffer, true);
 
             this.m_regIP = new Regex(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled);
             this.m_regPbGUID = new Regex("^[A-Fa-f0-9]{32}$", RegexOptions.Compiled);
             this.m_regBc2GUID = new Regex("^(?:E|e)(?:A|a)_[A-Fa-f0-9]{32}$", RegexOptions.Compiled);
-            
+
             this.m_lvwReservedSlotsColumnSorter = new ListViewColumnSorter();
             this.lsvReservedList.ListViewItemSorter = this.m_lvwReservedSlotsColumnSorter;
 
             this.m_lvwSpectatorSlotsColumnSorter = new ListViewColumnSorter();
             this.lsvSpectatorList.ListViewItemSorter = this.m_lvwSpectatorSlotsColumnSorter;
-            
+
             this.m_lvwBanlistColumnSorter = new ListViewColumnSorter();
             this.lsvBanlist.ListViewItemSorter = this.m_lvwBanlistColumnSorter;
 
@@ -105,9 +108,9 @@ namespace PRoCon.Controls {
             this.m_blSettingRemovingSpectatorPlayer = false;
 
             this.m_dicAsyncSettingControls = new Dictionary<string, AsyncStyleSetting>();
-            
+
             // Reservedlist updates
-            this.m_dicAsyncSettingControls.Add("local.reservedlist.list", new AsyncStyleSetting(this.picReservedList, this.lsvReservedList, new Control[] { this.btnReservedSlotsListRefresh }, true)); 
+            this.m_dicAsyncSettingControls.Add("local.reservedlist.list", new AsyncStyleSetting(this.picReservedList, this.lsvReservedList, new Control[] { this.btnReservedSlotsListRefresh }, true));
             this.m_dicAsyncSettingControls.Add("local.reservedlist.append", new AsyncStyleSetting(this.picReservedAddSoldierName, this.lsvReservedList, new Control[] { this.lblReservedAddSoldierName, this.txtReservedAddSoldierName, this.lnkReservedAddSoldierName }, true));
             this.m_dicAsyncSettingControls.Add("local.reservedlist.remove", new AsyncStyleSetting(this.picReservedList, this.lsvReservedList, new Control[] { this.btnReservedRemoveSoldier }, true));
 
@@ -127,27 +130,32 @@ namespace PRoCon.Controls {
 
             this.m_spPrivileges = new CPrivileges(CPrivileges.FullPrivilegesFlags);
 
-            this.BansSource = new BansSource {
+            this.BansSource = new BansSource
+            {
                 Take = this.pagination1.ItemsPerPage = 30
             };
             this.pagination1.Source = this.BansSource;
             this.BansSource.Changed += BansSourceOnChanged;
         }
 
-        public void m_prcClient_ProconPrivileges(PRoConClient sender, CPrivileges spPrivs) {
-            this.InvokeIfRequired(() => {
+        public void m_prcClient_ProconPrivileges(PRoConClient sender, CPrivileges spPrivs)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_spPrivileges = spPrivs;
 
                 this.m_dicAsyncSettingControls["local.reservedlist.append"].m_blReEnableControls = this.m_spPrivileges.CanEditReservedSlotsList;
                 this.m_dicAsyncSettingControls["local.reservedlist.remove"].m_blReEnableControls = this.m_spPrivileges.CanEditReservedSlotsList;
-                if (this.lsvReservedList.SelectedItems.Count > 0) {
+                if (this.lsvReservedList.SelectedItems.Count > 0)
+                {
                     this.btnReservedRemoveSoldier.Enabled = this.m_spPrivileges.CanEditReservedSlotsList;
                 } // ELSE It'll already be disabled 
                 this.lnkReservedAddSoldierName.Enabled = this.m_spPrivileges.CanEditReservedSlotsList;
 
                 this.m_dicAsyncSettingControls["local.spectatorlist.append"].m_blReEnableControls = this.m_spPrivileges.CanEditReservedSlotsList;
                 this.m_dicAsyncSettingControls["local.spectatorlist.remove"].m_blReEnableControls = this.m_spPrivileges.CanEditReservedSlotsList;
-                if (this.lsvSpectatorList.SelectedItems.Count > 0) {
+                if (this.lsvSpectatorList.SelectedItems.Count > 0)
+                {
                     this.btnSpectatorRemoveSoldier.Enabled = this.m_spPrivileges.CanEditReservedSlotsList;
                 } // ELSE It'll already be disabled 
                 this.lnkSpectatorAddSoldierName.Enabled = this.m_spPrivileges.CanEditReservedSlotsList;
@@ -156,18 +164,21 @@ namespace PRoCon.Controls {
                 this.m_dicAsyncSettingControls["local.banlist.unban"].m_blReEnableControls = this.m_spPrivileges.CanEditBanList;
                 this.btnBanlistClearBanlist.Enabled = this.m_spPrivileges.CanEditBanList;
 
-                if (this.lsvBanlist.SelectedItems.Count > 0) {
+                if (this.lsvBanlist.SelectedItems.Count > 0)
+                {
                     this.btnBanlistUnban.Enabled = this.m_spPrivileges.CanEditBanList;
                 } // ELSE It'll already be disabled 
 
                 // Manual banning..
                 this.rdoBanlistPbGUID.Enabled = this.rdoBanlistPermanent.Enabled = this.m_spPrivileges.CanPermanentlyBanPlayers;
 
-                if (this.rdoBanlistPbGUID.Checked == true && this.rdoBanlistPbGUID.Enabled == false) {
+                if (this.rdoBanlistPbGUID.Checked == true && this.rdoBanlistPbGUID.Enabled == false)
+                {
                     this.rdoBanlistName.Checked = true;
                 }
 
-                if (this.rdoBanlistPermanent.Checked == true && this.rdoBanlistPermanent.Enabled == false) {
+                if (this.rdoBanlistPermanent.Checked == true && this.rdoBanlistPermanent.Enabled == false)
+                {
                     this.rdoBanlistTemporary.Checked = true;
                 }
 
@@ -175,7 +186,8 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void Initialize(frmMain frmMainWindow, uscServerConnection uscConnectionPanel) {
+        public void Initialize(frmMain frmMainWindow, uscServerConnection uscConnectionPanel)
+        {
             this.m_frmMain = frmMainWindow;
             this.m_uscConnectionPanel = uscConnectionPanel;
 
@@ -215,8 +227,10 @@ namespace PRoCon.Controls {
             this.uscTextChatModerationListcs1.Initialize(frmMainWindow);
         }
 
-        private void uscListControlPanel_Load(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void uscListControlPanel_Load(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 //this.RefreshLocalMaplist();
 
                 if (this.m_prcClient.GameType == "BF3" || this.m_prcClient.GameType == "BF4" || this.m_prcClient.GameType == "MOHW")
@@ -228,11 +242,13 @@ namespace PRoCon.Controls {
                     this.SendCommand("mapList.list", "rounds");
                 }
 
-                if (this.m_prcClient.GameType == "BF3" || this.m_prcClient.GameType == "MOHW") {
+                if (this.m_prcClient.GameType == "BF3" || this.m_prcClient.GameType == "MOHW")
+                {
                     this.tabSpectatorSlots.Enabled = false;
                 }
-                
-                if (this.m_prcClient.GameType == "MOH") {
+
+                if (this.m_prcClient.GameType == "MOH")
+                {
                     this.tabReservedSlots.Enabled = false;
                     this.tabSpectatorSlots.Enabled = false;
                     this.lblMohNotice.Visible = true;
@@ -240,12 +256,16 @@ namespace PRoCon.Controls {
             }
         }
 
-        public void SetConnection(PRoConClient prcClient) {
-            if ((this.m_prcClient = prcClient) != null) {
-                if (this.m_prcClient.Game != null) {
+        public void SetConnection(PRoConClient prcClient)
+        {
+            if ((this.m_prcClient = prcClient) != null)
+            {
+                if (this.m_prcClient.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.m_prcClient.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
 
@@ -254,8 +274,10 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_prcClient.Game.ReservedSlotsSave += new FrostbiteClient.EmptyParamterHandler(this.OnReservedSlotsSave);
                 this.m_prcClient.Game.ReservedSlotsList += new FrostbiteClient.ReservedSlotsListHandler(this.OnReservedSlotsList);
                 this.m_prcClient.Game.ReservedSlotsPlayerAdded += new FrostbiteClient.ReservedSlotsPlayerHandler(this.OnReservedSlotsPlayerAdded);
@@ -283,33 +305,40 @@ namespace PRoCon.Controls {
                 this.m_prcClient.ListSettings.ManualBansVisible = this.m_prcClient.ListSettings.ManualBansVisible;
 
                 this.cboBanlistReason.Items.Clear();
-                foreach (string strReason in this.m_prcClient.Reasons) {
+                foreach (string strReason in this.m_prcClient.Reasons)
+                {
                     this.Reasons_ItemAdded(0, strReason);
                 }
 
-                if (this.m_prcClient.FullVanillaBanList != null) {
+                if (this.m_prcClient.FullVanillaBanList != null)
+                {
                     this.OnBanList(this.m_prcClient, this.m_prcClient.FullVanillaBanList);
                 }
 
-                if (this.m_prcClient.ReservedSlotList != null) {
+                if (this.m_prcClient.ReservedSlotList != null)
+                {
                     this.OnReservedSlotsList(this.m_prcClient.Game, new List<string>(this.m_prcClient.ReservedSlotList));
                 }
 
-                if (this.m_prcClient.SpectatorList != null) {
+                if (this.m_prcClient.SpectatorList != null)
+                {
                     this.OnSpectatorSlotsList(this.m_prcClient.Game, new List<string>(this.m_prcClient.SpectatorList));
                 }
 
-                if (sender.Game is BFHLClient || sender.Game is BF4Client || sender.Game is BF3Client || sender.Game is MOHWClient) {
+                if (sender.Game is BFHLClient || sender.Game is BF4Client || sender.Game is BF3Client || sender.Game is MOHWClient)
+                {
                     this.tbcLists.TabPages.Remove(this.tabTextChatModeration);
                 }
 
-                if (!(sender.Game is BFHLClient) && !(sender.Game is BF4Client)) {
+                if (!(sender.Game is BFHLClient) && !(sender.Game is BF4Client))
+                {
                     this.tbcLists.TabPages.Remove(this.tabSpectatorSlots);
                 }
             });
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             //this.m_prcClient.Language = clocLanguage;
 
             // private string[] m_astrTimeDescriptionsShort = new string[] { "y ", "y ", "M ", "M ", "w ", "w ", "d ", "d ", "h ", "h ", "m ", "m ", "s ", "s " };
@@ -395,8 +424,10 @@ namespace PRoCon.Controls {
         //public delegate void OnTabChangeDelegate(object sender, Stack<string> stkTabIndexes);
         public event uscServerConnection.OnTabChangeDelegate OnTabChange;
 
-        private void tbcLists_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.OnTabChange != null) {
+        private void tbcLists_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.OnTabChange != null)
+            {
                 Stack<string> stkTabIndexes = new Stack<string>();
                 stkTabIndexes.Push(tbcLists.SelectedTab.Name);
 
@@ -404,41 +435,53 @@ namespace PRoCon.Controls {
             }
         }
 
-        public void SetTabIndexes(Stack<string> stkTabIndexes) {
-            if (tbcLists.TabPages.ContainsKey(stkTabIndexes.Peek()) == true) {
+        public void SetTabIndexes(Stack<string> stkTabIndexes)
+        {
+            if (tbcLists.TabPages.ContainsKey(stkTabIndexes.Peek()) == true)
+            {
                 this.tbcLists.SelectedTab = tbcLists.TabPages[stkTabIndexes.Pop()];
             }
         }
 
-        private void SendCommand(params string[] a_strCommand) {
-            if (this.m_prcClient != null) {
+        private void SendCommand(params string[] a_strCommand)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.SendRequest(new List<string>(a_strCommand));
             }
         }
 
         #region Settings Animator
 
-        private void SetControlValue(Control ctrlTarget, object objValue) {
+        private void SetControlValue(Control ctrlTarget, object objValue)
+        {
 
-            if (objValue != null) {
-                if (ctrlTarget is TextBox) {
+            if (objValue != null)
+            {
+                if (ctrlTarget is TextBox)
+                {
                     ((TextBox)ctrlTarget).Text = (string)objValue;
                 }
-                else if (ctrlTarget is CheckBox) {
+                else if (ctrlTarget is CheckBox)
+                {
                     ((CheckBox)ctrlTarget).Checked = (bool)objValue;
                 }
-                else if (ctrlTarget is NumericUpDown) {
+                else if (ctrlTarget is NumericUpDown)
+                {
                     ((NumericUpDown)ctrlTarget).Value = (decimal)objValue;
                 }
-                else if (ctrlTarget is Label) {
+                else if (ctrlTarget is Label)
+                {
                     ((Label)ctrlTarget).Text = (string)objValue;
                 }
             }
         }
 
-        private void WaitForSettingResponse(string strResponseCommand) {
+        private void WaitForSettingResponse(string strResponseCommand)
+        {
 
-            if (this.m_dicAsyncSettingControls.ContainsKey(strResponseCommand) == true) {
+            if (this.m_dicAsyncSettingControls.ContainsKey(strResponseCommand) == true)
+            {
                 //this.m_dicAsyncSettingControls[strResponseCommand].m_objOriginalValue = String.Empty;
                 this.m_dicAsyncSettingControls[strResponseCommand].m_picStatus.Image = this.m_frmMain.picAjaxStyleLoading.Image;
                 this.m_dicAsyncSettingControls[strResponseCommand].m_iTimeout = AsyncStyleSetting.INT_ANIMATEDSETTING_TIMEOUT_TICKS;
@@ -446,27 +489,36 @@ namespace PRoCon.Controls {
                 this.tmrTimeoutCheck.Enabled = true;
 
 
-                foreach (Control ctrlEnable in this.m_dicAsyncSettingControls[strResponseCommand].ma_ctrlEnabledInputs) {
-                    if (ctrlEnable is TextBox) {
+                foreach (Control ctrlEnable in this.m_dicAsyncSettingControls[strResponseCommand].ma_ctrlEnabledInputs)
+                {
+                    if (ctrlEnable is TextBox)
+                    {
                         ((TextBox)ctrlEnable).ReadOnly = true;
                     }
-                    else {
+                    else
+                    {
                         ctrlEnable.Enabled = false;
                     }
                 }
             }
         }
 
-        public void OnSettingResponse(string strResponseCommand, bool blSuccess) {
+        public void OnSettingResponse(string strResponseCommand, bool blSuccess)
+        {
 
-            if (this.m_dicAsyncSettingControls.ContainsKey(strResponseCommand) == true) {
+            if (this.m_dicAsyncSettingControls.ContainsKey(strResponseCommand) == true)
+            {
 
-                if (this.m_dicAsyncSettingControls[strResponseCommand].m_blReEnableControls == true) {
-                    foreach (Control ctrlEnable in this.m_dicAsyncSettingControls[strResponseCommand].ma_ctrlEnabledInputs) {
-                        if (ctrlEnable is TextBox) {
+                if (this.m_dicAsyncSettingControls[strResponseCommand].m_blReEnableControls == true)
+                {
+                    foreach (Control ctrlEnable in this.m_dicAsyncSettingControls[strResponseCommand].ma_ctrlEnabledInputs)
+                    {
+                        if (ctrlEnable is TextBox)
+                        {
                             ((TextBox)ctrlEnable).ReadOnly = false;
                         }
-                        else {
+                        else
+                        {
                             ctrlEnable.Enabled = true;
                         }
                     }
@@ -474,12 +526,14 @@ namespace PRoCon.Controls {
 
                 this.m_dicAsyncSettingControls[strResponseCommand].IgnoreEvent = true;
 
-                if (blSuccess == true) {
+                if (blSuccess == true)
+                {
                     this.m_dicAsyncSettingControls[strResponseCommand].m_picStatus.Image = this.m_frmMain.picAjaxStyleSuccess.Image;
                     this.m_dicAsyncSettingControls[strResponseCommand].m_iTimeout = AsyncStyleSetting.INT_ANIMATEDSETTING_SHOWRESULT_TICKS;
                     this.m_dicAsyncSettingControls[strResponseCommand].m_blSuccess = true;
                 }
-                else {
+                else
+                {
                     this.m_dicAsyncSettingControls[strResponseCommand].m_picStatus.Image = this.m_frmMain.picAjaxStyleFail.Image;
                     this.m_dicAsyncSettingControls[strResponseCommand].m_iTimeout = AsyncStyleSetting.INT_ANIMATEDSETTING_SHOWRESULT_TICKS;
                     this.m_dicAsyncSettingControls[strResponseCommand].m_blSuccess = false;
@@ -492,11 +546,14 @@ namespace PRoCon.Controls {
         }
 
 
-        private int CountTicking() {
+        private int CountTicking()
+        {
             int i = 0;
 
-            foreach (KeyValuePair<string, AsyncStyleSetting> kvpAsync in this.m_dicAsyncSettingControls) {
-                if (kvpAsync.Value.m_iTimeout >= 0) {
+            foreach (KeyValuePair<string, AsyncStyleSetting> kvpAsync in this.m_dicAsyncSettingControls)
+            {
+                if (kvpAsync.Value.m_iTimeout >= 0)
+                {
                     i++;
                 }
             }
@@ -504,27 +561,36 @@ namespace PRoCon.Controls {
             return i;
         }
 
-        private void tmrSettingsAnimator_Tick(object sender, EventArgs e) {
+        private void tmrSettingsAnimator_Tick(object sender, EventArgs e)
+        {
             //if (((from o in this.m_dicAsyncSettingControls where o.Value.m_iTimeout >= 0 select o).Count()) > 0) {
-            if (this.CountTicking() > 0) {
-                foreach (KeyValuePair<string, AsyncStyleSetting> kvpAsyncSetting in this.m_dicAsyncSettingControls) {
+            if (this.CountTicking() > 0)
+            {
+                foreach (KeyValuePair<string, AsyncStyleSetting> kvpAsyncSetting in this.m_dicAsyncSettingControls)
+                {
 
                     kvpAsyncSetting.Value.m_iTimeout--;
-                    if (kvpAsyncSetting.Value.m_iTimeout == 0 && kvpAsyncSetting.Value.m_blSuccess == false) {
+                    if (kvpAsyncSetting.Value.m_iTimeout == 0 && kvpAsyncSetting.Value.m_blSuccess == false)
+                    {
                         kvpAsyncSetting.Value.m_picStatus.Image = this.m_frmMain.picAjaxStyleFail.Image;
                         kvpAsyncSetting.Value.m_iTimeout = AsyncStyleSetting.INT_ANIMATEDSETTING_SHOWRESULT_TICKS;
 
                         kvpAsyncSetting.Value.m_blSuccess = true;
                     }
-                    else if (kvpAsyncSetting.Value.m_iTimeout == 0 && kvpAsyncSetting.Value.m_blSuccess == true) {
+                    else if (kvpAsyncSetting.Value.m_iTimeout == 0 && kvpAsyncSetting.Value.m_blSuccess == true)
+                    {
                         kvpAsyncSetting.Value.m_picStatus.Image = null;
 
-                        if (kvpAsyncSetting.Value.m_blReEnableControls == true) {
-                            foreach (Control ctrlEnable in kvpAsyncSetting.Value.ma_ctrlEnabledInputs) {
-                                if (ctrlEnable is TextBox) {
+                        if (kvpAsyncSetting.Value.m_blReEnableControls == true)
+                        {
+                            foreach (Control ctrlEnable in kvpAsyncSetting.Value.ma_ctrlEnabledInputs)
+                            {
+                                if (ctrlEnable is TextBox)
+                                {
                                     ((TextBox)ctrlEnable).ReadOnly = false;
                                 }
-                                else {
+                                else
+                                {
                                     ctrlEnable.Enabled = true;
                                 }
                             }
@@ -532,7 +598,8 @@ namespace PRoCon.Controls {
                     }
                 }
             }
-            else {
+            else
+            {
                 this.tmrTimeoutCheck.Enabled = false;
             }
         }
@@ -541,12 +608,16 @@ namespace PRoCon.Controls {
 
         #region Reserved Slots
 
-        public void OnReservedSlotsList(FrostbiteClient sender, List<string> lstSoldierNames) {
-            this.InvokeIfRequired(() => {
+        public void OnReservedSlotsList(FrostbiteClient sender, List<string> lstSoldierNames)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.lsvReservedList.BeginUpdate();
                 this.lsvReservedList.Items.Clear();
-                foreach (string strSoldierName in lstSoldierNames) {
-                    if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == false) {
+                foreach (string strSoldierName in lstSoldierNames)
+                {
+                    if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == false)
+                    {
 
                         ListViewItem lsvNewSoldier = new ListViewItem(strSoldierName);
                         lsvNewSoldier.Name = strSoldierName;
@@ -558,17 +629,23 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void OnReservedSlotsPlayerRemoved(FrostbiteClient sender, string strSoldierName) {
-            this.InvokeIfRequired(() => {
-                if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == true) {
+        public void OnReservedSlotsPlayerRemoved(FrostbiteClient sender, string strSoldierName)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == true)
+                {
                     this.lsvReservedList.Items.RemoveByKey(strSoldierName);
                 }
             });
         }
 
-        public void OnReservedSlotsPlayerAdded(FrostbiteClient sender, string strSoldierName) {
-            this.InvokeIfRequired(() => {
-                if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == false) {
+        public void OnReservedSlotsPlayerAdded(FrostbiteClient sender, string strSoldierName)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.lsvReservedList.Items.ContainsKey(strSoldierName) == false)
+                {
 
                     ListViewItem lsvNewSoldier = new ListViewItem(strSoldierName);
                     lsvNewSoldier.Name = strSoldierName;
@@ -578,22 +655,28 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void OnReservedSlotsSave(FrostbiteClient sender) {
-            this.InvokeIfRequired(() => {
-                if (this.m_blSettingAppendingReservedPlayer == true) {
+        public void OnReservedSlotsSave(FrostbiteClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.m_blSettingAppendingReservedPlayer == true)
+                {
                     this.OnSettingResponse("local.reservedlist.append", true);
                     this.m_blSettingAppendingReservedPlayer = false;
                 }
-                else if (this.m_blSettingRemovingReservedPlayer == true) {
+                else if (this.m_blSettingRemovingReservedPlayer == true)
+                {
                     this.OnSettingResponse("local.reservedlist.remove", true);
                     this.m_blSettingRemovingReservedPlayer = false;
                 }
             });
         }
 
-        private void lnkReservedAddSoldierName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkReservedAddSoldierName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
-            if (this.txtReservedAddSoldierName.Text.Length > 0) {
+            if (this.txtReservedAddSoldierName.Text.Length > 0)
+            {
                 this.m_blSettingAppendingReservedPlayer = true;
                 this.WaitForSettingResponse("local.reservedlist.append");
 
@@ -608,17 +691,21 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void lsvReservedList_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lsvReservedList_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (this.lsvReservedList.SelectedItems.Count > 0 && this.lsvReservedList.FocusedItem != null) {
+            if (this.lsvReservedList.SelectedItems.Count > 0 && this.lsvReservedList.FocusedItem != null)
+            {
                 this.btnReservedRemoveSoldier.Enabled = true && this.m_spPrivileges.CanEditReservedSlotsList;
             }
 
         }
 
-        private void btnReservedRemoveSoldier_Click(object sender, EventArgs e) {
+        private void btnReservedRemoveSoldier_Click(object sender, EventArgs e)
+        {
 
-            if (this.lsvReservedList.SelectedItems.Count > 0) {
+            if (this.lsvReservedList.SelectedItems.Count > 0)
+            {
 
                 this.m_blSettingRemovingReservedPlayer = true;
                 this.WaitForSettingResponse("local.reservedlist.remove");
@@ -631,35 +718,45 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void txtReservedAddSoldierName_TextChanged(object sender, EventArgs e) {
+        private void txtReservedAddSoldierName_TextChanged(object sender, EventArgs e)
+        {
 
-            if (this.txtReservedAddSoldierName.Text.Length > 0) {
+            if (this.txtReservedAddSoldierName.Text.Length > 0)
+            {
                 this.lnkReservedAddSoldierName.Enabled = true && this.m_spPrivileges.CanEditReservedSlotsList;
             }
-            else {
+            else
+            {
                 this.lnkReservedAddSoldierName.Enabled = false;
             }
         }
 
-        private void txtReservedAddSoldierName_KeyDown(object sender, KeyEventArgs e) {
-            if (this.txtReservedAddSoldierName.Text.Length > 0 && e.KeyData == Keys.Enter) {
+        private void txtReservedAddSoldierName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (this.txtReservedAddSoldierName.Text.Length > 0 && e.KeyData == Keys.Enter)
+            {
                 this.lnkReservedAddSoldierName_LinkClicked(this, null);
                 e.SuppressKeyPress = true;
             }
         }
 
-        private void lsvReservedList_ColumnClick(object sender, ColumnClickEventArgs e) {
+        private void lsvReservedList_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
             // Determine if clicked column is already the column that is being sorted.
-            if (e.Column == this.m_lvwReservedSlotsColumnSorter.SortColumn) {
+            if (e.Column == this.m_lvwReservedSlotsColumnSorter.SortColumn)
+            {
                 // Reverse the current sort direction for this column.
-                if (this.m_lvwReservedSlotsColumnSorter.Order == SortOrder.Ascending) {
+                if (this.m_lvwReservedSlotsColumnSorter.Order == SortOrder.Ascending)
+                {
                     this.m_lvwReservedSlotsColumnSorter.Order = SortOrder.Descending;
                 }
-                else {
+                else
+                {
                     this.m_lvwReservedSlotsColumnSorter.Order = SortOrder.Ascending;
                 }
             }
-            else {
+            else
+            {
                 // Set the column number that is to be sorted; default to ascending.
                 this.m_lvwReservedSlotsColumnSorter.SortColumn = e.Column;
                 this.m_lvwReservedSlotsColumnSorter.Order = SortOrder.Ascending;
@@ -679,12 +776,16 @@ namespace PRoCon.Controls {
 
         #region Spectator Slots
 
-        public void OnSpectatorSlotsList(FrostbiteClient sender, List<string> lstSoldierNames) {
-            this.InvokeIfRequired(() => {
+        public void OnSpectatorSlotsList(FrostbiteClient sender, List<string> lstSoldierNames)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.lsvSpectatorList.BeginUpdate();
                 this.lsvSpectatorList.Items.Clear();
-                foreach (string strSoldierName in lstSoldierNames) {
-                    if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == false) {
+                foreach (string strSoldierName in lstSoldierNames)
+                {
+                    if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == false)
+                    {
 
                         ListViewItem lsvNewSoldier = new ListViewItem(strSoldierName);
                         lsvNewSoldier.Name = strSoldierName;
@@ -696,17 +797,23 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void OnSpectatorSlotsPlayerRemoved(FrostbiteClient sender, string strSoldierName) {
-            this.InvokeIfRequired(() => {
-                if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == true) {
+        public void OnSpectatorSlotsPlayerRemoved(FrostbiteClient sender, string strSoldierName)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == true)
+                {
                     this.lsvSpectatorList.Items.RemoveByKey(strSoldierName);
                 }
             });
         }
 
-        public void OnSpectatorSlotsPlayerAdded(FrostbiteClient sender, string strSoldierName) {
-            this.InvokeIfRequired(() => {
-                if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == false) {
+        public void OnSpectatorSlotsPlayerAdded(FrostbiteClient sender, string strSoldierName)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.lsvSpectatorList.Items.ContainsKey(strSoldierName) == false)
+                {
 
                     ListViewItem lsvNewSoldier = new ListViewItem(strSoldierName);
                     lsvNewSoldier.Name = strSoldierName;
@@ -716,13 +823,17 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void OnSpectatorSlotsSave(FrostbiteClient sender) {
-            this.InvokeIfRequired(() => {
-                if (this.m_blSettingAppendingSpectatorPlayer == true) {
+        public void OnSpectatorSlotsSave(FrostbiteClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.m_blSettingAppendingSpectatorPlayer == true)
+                {
                     this.OnSettingResponse("local.spectatorlist.append", true);
                     this.m_blSettingAppendingSpectatorPlayer = false;
                 }
-                else if (this.m_blSettingRemovingSpectatorPlayer == true) {
+                else if (this.m_blSettingRemovingSpectatorPlayer == true)
+                {
                     this.OnSettingResponse("local.spectatorlist.remove", true);
                     this.m_blSettingRemovingSpectatorPlayer = false;
                 }
@@ -831,16 +942,19 @@ namespace PRoCon.Controls {
 
         #endregion
 
-        
+
         #region Banlist
 
-        private void Reasons_ItemRemoved(int iIndex, string item) {
-            if (this.cboBanlistReason.Items.Contains(item) == true) {
+        private void Reasons_ItemRemoved(int iIndex, string item)
+        {
+            if (this.cboBanlistReason.Items.Contains(item) == true)
+            {
                 this.cboBanlistReason.Items.Remove(item);
             }
         }
 
-        private void Reasons_ItemAdded(int iIndex, string item) {
+        private void Reasons_ItemAdded(int iIndex, string item)
+        {
             this.cboBanlistReason.Items.Add(item);
         }
 
@@ -852,7 +966,8 @@ namespace PRoCon.Controls {
         }
         */
 
-        public string SecondsToText(UInt32 iSeconds, string[] a_strTimeDescriptions) {
+        public string SecondsToText(UInt32 iSeconds, string[] a_strTimeDescriptions)
+        {
             string strReturn = String.Empty;
 
             double dblSeconds = iSeconds;
@@ -863,27 +978,35 @@ namespace PRoCon.Controls {
             double dblMonths = (dblWeeks / 4);
             double dblYears = (dblMonths / 12);
 
-            if ((Int32)dblYears > 0) {
+            if ((Int32)dblYears > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblYears) + (((Int32)dblYears) == 1 ? a_strTimeDescriptions[0] : a_strTimeDescriptions[1]);
             }
-            if ((Int32)dblMonths % 12 > 0) {
+            if ((Int32)dblMonths % 12 > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblMonths) % 12 + (((Int32)dblMonths % 12) == 1 ? a_strTimeDescriptions[2] : a_strTimeDescriptions[3]);
             }
-            if ((Int32)dblWeeks % 4 > 0) {
+            if ((Int32)dblWeeks % 4 > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblWeeks) % 4 + (((Int32)dblWeeks % 4) == 1 ? a_strTimeDescriptions[4] : a_strTimeDescriptions[5]);
             }
-            if ((Int32)dblDays % 7 > 0) {
+            if ((Int32)dblDays % 7 > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblDays) % 7 + (((Int32)dblDays % 7) == 1 ? a_strTimeDescriptions[6] : a_strTimeDescriptions[7]);
             }
-            if ((Int32)dblHours % 24 > 0) {
+            if ((Int32)dblHours % 24 > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblHours) % 24 + (((Int32)dblHours % 24) == 1 ? a_strTimeDescriptions[8] : a_strTimeDescriptions[9]);
             }
-            if ((Int32)dblMinutes % 60 > 0) {
+            if ((Int32)dblMinutes % 60 > 0)
+            {
                 strReturn += String.Empty + ((Int32)dblMinutes) % 60 + (((Int32)dblMinutes % 60) == 1 ? a_strTimeDescriptions[10] : a_strTimeDescriptions[11]);
             }
 
-            if (iSeconds < 60) {
-                if ((Int32)dblSeconds % 60 > 0) {
+            if (iSeconds < 60)
+            {
+                if ((Int32)dblSeconds % 60 > 0)
+                {
                     strReturn += String.Empty + ((Int32)dblSeconds) % 60 + (((Int32)dblSeconds % 60) == 1 ? a_strTimeDescriptions[12] : a_strTimeDescriptions[13]);
                 }
             }
@@ -891,7 +1014,8 @@ namespace PRoCon.Controls {
             return strReturn;
         }
 
-        private ListViewItem CreateBlankBanEntry(string strName) {
+        private ListViewItem CreateBlankBanEntry(string strName)
+        {
             ListViewItem lviNewBanEntry = new ListViewItem();
             lviNewBanEntry.Name = strName;
             lviNewBanEntry.Text = String.Empty;
@@ -941,30 +1065,37 @@ namespace PRoCon.Controls {
             return lviNewBanEntry;
         }
 
-        private string GetFriendlyTypeName(string strType) {
+        private string GetFriendlyTypeName(string strType)
+        {
             string strFriendlyTypeName = String.Empty;
 
-            if (String.Compare(strType, "name", true) == 0) {
+            if (String.Compare(strType, "name", true) == 0)
+            {
                 strFriendlyTypeName = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colType.Name", null);
             }
-            else if (String.Compare(strType, "ip", true) == 0) {
+            else if (String.Compare(strType, "ip", true) == 0)
+            {
                 strFriendlyTypeName = "IpAddress";
             }
-            else if (String.Compare(strType, "guid", true) == 0) {
+            else if (String.Compare(strType, "guid", true) == 0)
+            {
                 strFriendlyTypeName = "Guid";
             }
-            else if (String.Compare(strType, "pbguid", true) == 0) {
+            else if (String.Compare(strType, "pbguid", true) == 0)
+            {
                 strFriendlyTypeName = "PB Guid";
             }
 
             return strFriendlyTypeName;
         }
 
-        private ListViewItem CreateBanEntry(CBanInfo cbiPlayerBan) {
+        private ListViewItem CreateBanEntry(CBanInfo cbiPlayerBan)
+        {
 
             ListViewItem lviNewBanEntry = null;
 
-            if (String.Compare("name", cbiPlayerBan.IdType, true) == 0 || String.Compare("persona", cbiPlayerBan.IdType, true) == 0) {
+            if (String.Compare("name", cbiPlayerBan.IdType, true) == 0 || String.Compare("persona", cbiPlayerBan.IdType, true) == 0)
+            {
                 lviNewBanEntry = this.CreateBlankBanEntry(String.Format("{0}\r\n\r\n", cbiPlayerBan.SoldierName));
                 lviNewBanEntry.Text = cbiPlayerBan.Offset.HasValue == true ? (cbiPlayerBan.Offset.Value + 1).ToString(CultureInfo.InvariantCulture) : "-";
 
@@ -978,7 +1109,8 @@ namespace PRoCon.Controls {
 
                 lviNewBanEntry.SubItems["reason"].Text = cbiPlayerBan.Reason;
             }
-            else if (String.Compare("ip", cbiPlayerBan.IdType, true) == 0) {
+            else if (String.Compare("ip", cbiPlayerBan.IdType, true) == 0)
+            {
 
                 lviNewBanEntry = this.CreateBlankBanEntry(String.Format("\r\n{0}\r\n", cbiPlayerBan.IpAddress));
                 lviNewBanEntry.Text = cbiPlayerBan.Offset.HasValue == true ? (cbiPlayerBan.Offset.Value + 1).ToString(CultureInfo.InvariantCulture) : "-";
@@ -995,7 +1127,8 @@ namespace PRoCon.Controls {
                 lviNewBanEntry.SubItems["reason"].Text = cbiPlayerBan.Reason;
 
             }
-            else if (String.Compare("guid", cbiPlayerBan.IdType, true) == 0) {
+            else if (String.Compare("guid", cbiPlayerBan.IdType, true) == 0)
+            {
 
                 lviNewBanEntry = this.CreateBlankBanEntry(String.Format("\r\n\r\n{0}", cbiPlayerBan.Guid));
                 lviNewBanEntry.Text = cbiPlayerBan.Offset.HasValue == true ? (cbiPlayerBan.Offset.Value + 1).ToString(CultureInfo.InvariantCulture) : "-";
@@ -1013,7 +1146,8 @@ namespace PRoCon.Controls {
                 lviNewBanEntry.SubItems["reason"].Text = cbiPlayerBan.Reason;
             }
 
-            else if (String.Compare("pbguid", cbiPlayerBan.IdType, true) == 0) {
+            else if (String.Compare("pbguid", cbiPlayerBan.IdType, true) == 0)
+            {
 
                 lviNewBanEntry = this.CreateBlankBanEntry(String.Format("\r\n\r\n{0}", cbiPlayerBan.Guid));
                 lviNewBanEntry.SubItems["name"].Text = cbiPlayerBan.SoldierName;
@@ -1032,13 +1166,17 @@ namespace PRoCon.Controls {
             return lviNewBanEntry;
         }
 
-        public void RemoveDeletedBans(IEnumerable<CBanInfo> bans) {
+        public void RemoveDeletedBans(IEnumerable<CBanInfo> bans)
+        {
 
-            for (int i = 0; i < this.lsvBanlist.Items.Count; i++) {
+            for (int i = 0; i < this.lsvBanlist.Items.Count; i++)
+            {
                 bool blFoundBan = false;
-                foreach (CBanInfo cbiBan in bans) {
+                foreach (CBanInfo cbiBan in bans)
+                {
 
-                    switch ((string)this.lsvBanlist.Items[i].SubItems["type"].Tag) {
+                    switch ((string)this.lsvBanlist.Items[i].SubItems["type"].Tag)
+                    {
                         case "name":
                         case "persona":
                             blFoundBan = (String.Compare(this.lsvBanlist.Items[i].Name, String.Format("{0}\r\n\r\n", cbiBan.SoldierName)) == 0);
@@ -1054,12 +1192,14 @@ namespace PRoCon.Controls {
                             break;
                     }
 
-                    if (blFoundBan == true) {
+                    if (blFoundBan == true)
+                    {
                         break;
                     }
                 }
 
-                if (blFoundBan == false) {
+                if (blFoundBan == false)
+                {
                     this.lsvBanlist.Items.Remove(this.lsvBanlist.Items[i]);
                     i--;
                 }
@@ -1067,30 +1207,38 @@ namespace PRoCon.Controls {
         }
 
 
-        private void BansSourceOnChanged() {
-            this.InvokeIfRequired(() => {
+        private void BansSourceOnChanged()
+        {
+            this.InvokeIfRequired(() =>
+            {
                 IEnumerable<CBanInfo> bans = this.BansSource.Fetch<CBanInfo>();
 
                 this.lsvBanlist.BeginUpdate();
 
-                foreach (CBanInfo cbiBan in bans) {
+                foreach (CBanInfo cbiBan in bans)
+                {
 
                     string strKey = String.Empty;
 
-                    if (String.Compare(cbiBan.IdType, "name") == 0 || String.Compare(cbiBan.IdType, "persona") == 0) {
+                    if (String.Compare(cbiBan.IdType, "name") == 0 || String.Compare(cbiBan.IdType, "persona") == 0)
+                    {
                         strKey = String.Format("{0}\r\n\r\n", cbiBan.SoldierName);
                     }
-                    else if (String.Compare(cbiBan.IdType, "ip") == 0) {
+                    else if (String.Compare(cbiBan.IdType, "ip") == 0)
+                    {
                         strKey = String.Format("\r\n{0}\r\n", cbiBan.IpAddress);
                     }
-                    else if (String.Compare(cbiBan.IdType, "guid") == 0 || String.Compare(cbiBan.IdType, "pbguid") == 0) {
+                    else if (String.Compare(cbiBan.IdType, "guid") == 0 || String.Compare(cbiBan.IdType, "pbguid") == 0)
+                    {
                         strKey = String.Format("\r\n\r\n{0}", cbiBan.Guid);
                     }
 
-                    if (this.lsvBanlist.Items.ContainsKey(strKey) == false) {
+                    if (this.lsvBanlist.Items.ContainsKey(strKey) == false)
+                    {
                         this.lsvBanlist.Items.Add(this.CreateBanEntry(cbiBan));
                     }
-                    else {
+                    else
+                    {
                         ListViewItem lviBanEntry = this.lsvBanlist.Items[strKey];
                         lviBanEntry.Text = cbiBan.Offset.HasValue == true ? (cbiBan.Offset.Value + 1).ToString(CultureInfo.InvariantCulture) : "-";
                         lviBanEntry.SubItems["name"].Text = cbiBan.SoldierName;
@@ -1103,7 +1251,8 @@ namespace PRoCon.Controls {
 
                 this.RemoveDeletedBans(bans);
 
-                for (int i = 0; i < this.lsvBanlist.Columns.Count; i++) {
+                for (int i = 0; i < this.lsvBanlist.Columns.Count; i++)
+                {
                     this.lsvBanlist.Columns[i].Width = -2;
                 }
 
@@ -1113,54 +1262,68 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void BansFilter_TextChanged(object sender, EventArgs e) {
+        private void BansFilter_TextChanged(object sender, EventArgs e)
+        {
             this.BansSource.Filter = this.BansFilter.Text;
         }
 
-        public void OnBanList(PRoConClient sender, List<CBanInfo> lstBans) {
+        public void OnBanList(PRoConClient sender, List<CBanInfo> lstBans)
+        {
             this.InvokeIfRequired(() => this.BansSource.Set(lstBans));
         }
 
-        private void m_prcClient_PunkbusterPlayerUnbanned(PRoConClient sender, CBanInfo unbanned) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_PunkbusterPlayerUnbanned(PRoConClient sender, CBanInfo unbanned)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.BansSource.Remove(unbanned);
 
                 this.OnSettingResponse("local.banlist.unban", true);
             });
         }
 
-        public void OnUnban(FrostbiteClient sender, CBanInfo unbanned) {
-            this.InvokeIfRequired(() => { 
+        public void OnUnban(FrostbiteClient sender, CBanInfo unbanned)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.BansSource.Remove(unbanned);
 
                 this.OnSettingResponse("local.banlist.unban", true);
             });
         }
 
-        private void tmrRefreshBanlist_Tick(object sender, EventArgs e) {
+        private void tmrRefreshBanlist_Tick(object sender, EventArgs e)
+        {
             this.lsvBanlist.BeginUpdate();
 
-            foreach (ListViewItem lviBanEntry in this.lsvBanlist.Items) {
+            foreach (ListViewItem lviBanEntry in this.lsvBanlist.Items)
+            {
 
-                if (lviBanEntry.SubItems["timeremaining"].Tag != null) {
+                if (lviBanEntry.SubItems["timeremaining"].Tag != null)
+                {
 
                     TimeoutSubset ctsTimeout = (TimeoutSubset)lviBanEntry.SubItems["timeremaining"].Tag;
 
-                    if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Permanent) {
+                    if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Permanent)
+                    {
                         lviBanEntry.SubItems["timeremaining"].Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Permanent", null);
                     }
-                    else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Round) {
+                    else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Round)
+                    {
                         lviBanEntry.SubItems["timeremaining"].Text =
-							ctsTimeout.Timeout + " " + this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Round", null);
+                            ctsTimeout.Timeout + " " + this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Round", null);
                     }
-                    else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Seconds) {
+                    else if (ctsTimeout.Subset == TimeoutSubset.TimeoutSubsetType.Seconds)
+                    {
 
-                        if (ctsTimeout.Timeout > 0) {
+                        if (ctsTimeout.Timeout > 0)
+                        {
                             lviBanEntry.SubItems["timeremaining"].Text = this.SecondsToText((UInt32)ctsTimeout.Timeout, this.ma_strTimeDescriptionsShort);
 
                             ctsTimeout.Timeout -= (this.tmrRefreshBanlist.Interval / 1000);
                         }
-                        else {
+                        else
+                        {
                             // I was going to remove it here but I want it to display unbanned until next banList update.
                             lviBanEntry.SubItems["timeremaining"].Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Unbanned", null);
                         }
@@ -1171,41 +1334,52 @@ namespace PRoCon.Controls {
             this.lsvBanlist.EndUpdate();
         }
 
-        public void OnPbGuidUnban(CBanInfo unbanned) {
-            this.InvokeIfRequired(() => {
+        public void OnPbGuidUnban(CBanInfo unbanned)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.BansSource.Remove(unbanned);
-            
+
                 this.OnSettingResponse("local.banlist.unban", true);
             });
         }
 
-        public void OnPbGuidBan(PRoConClient sender, CBanInfo ban) {
+        public void OnPbGuidBan(PRoConClient sender, CBanInfo ban)
+        {
             this.InvokeIfRequired(() => this.BansSource.Append(ban));
         }
 
-        public void Game_BanListAdd(FrostbiteClient sender, CBanInfo ban) {
+        public void Game_BanListAdd(FrostbiteClient sender, CBanInfo ban)
+        {
             this.InvokeIfRequired(() => this.BansSource.Append(ban));
         }
-        
-        private void unbanToolStripMenuItem_Click(object sender, EventArgs e) {
+
+        private void unbanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             this.btnBanlistUnban_Click(sender, e);
         }
 
-        private void btnBanlistUnban_Click(object sender, EventArgs e) {
+        private void btnBanlistUnban_Click(object sender, EventArgs e)
+        {
 
-            if (this.lsvBanlist.SelectedItems.Count > 0) {
+            if (this.lsvBanlist.SelectedItems.Count > 0)
+            {
                 this.WaitForSettingResponse("local.banlist.unban");
 
-                if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "name") == 0 || String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "persona") == 0) {
+                if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "name") == 0 || String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "persona") == 0)
+                {
                     this.SendCommand("banList.remove", "name", this.lsvBanlist.SelectedItems[0].SubItems["name"].Text);
                 }
-                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "ip") == 0) {
+                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "ip") == 0)
+                {
                     this.SendCommand("banList.remove", "ip", this.lsvBanlist.SelectedItems[0].SubItems["ip"].Text);
                 }
-                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "guid") == 0) {
+                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "guid") == 0)
+                {
                     this.SendCommand("banList.remove", "guid", this.lsvBanlist.SelectedItems[0].SubItems["guid"].Text);
                 }
-                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "pbguid") == 0) {
+                else if (String.Compare((string)this.lsvBanlist.SelectedItems[0].SubItems["type"].Tag, "pbguid") == 0)
+                {
                     this.SendCommand("punkBuster.pb_sv_command", String.Format("pb_sv_unbanguid {0}", this.lsvBanlist.SelectedItems[0].SubItems["guid"].Text));
                     this.SendCommand("punkBuster.pb_sv_command", "pb_sv_updbanfile");
                     this.SendCommand("punkBuster.pb_sv_command", "pb_sv_banempty");
@@ -1216,29 +1390,37 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void lsvBanlist_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lsvBanlist_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (this.lsvBanlist.SelectedItems.Count > 0) {
+            if (this.lsvBanlist.SelectedItems.Count > 0)
+            {
                 this.btnBanlistUnban.Enabled = true && this.m_spPrivileges.CanEditBanList;
             }
-            else if (this.lsvBanlist.FocusedItem != null) {
+            else if (this.lsvBanlist.FocusedItem != null)
+            {
                 this.btnBanlistUnban.Enabled = false;
             }
 
         }
 
-        private void lsvBanlist_ColumnClick(object sender, ColumnClickEventArgs e) {
+        private void lsvBanlist_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
             // Determine if clicked column is already the column that is being sorted.
-            if (e.Column == this.m_lvwBanlistColumnSorter.SortColumn) {
+            if (e.Column == this.m_lvwBanlistColumnSorter.SortColumn)
+            {
                 // Reverse the current sort direction for this column.
-                if (this.m_lvwBanlistColumnSorter.Order == SortOrder.Ascending) {
+                if (this.m_lvwBanlistColumnSorter.Order == SortOrder.Ascending)
+                {
                     this.m_lvwBanlistColumnSorter.Order = SortOrder.Descending;
                 }
-                else {
+                else
+                {
                     this.m_lvwBanlistColumnSorter.Order = SortOrder.Ascending;
                 }
             }
-            else {
+            else
+            {
                 // Set the column number that is to be sorted; default to ascending.
                 this.m_lvwBanlistColumnSorter.SortColumn = e.Column;
                 this.m_lvwBanlistColumnSorter.Order = SortOrder.Ascending;
@@ -1248,14 +1430,17 @@ namespace PRoCon.Controls {
             this.lsvBanlist.Sort();
         }
 
-        public void OnClearBanList(FrostbiteClient sender) {
+        public void OnClearBanList(FrostbiteClient sender)
+        {
             this.OnSettingResponse("local.banlist.clearlist", true);
         }
 
-        private void btnBanlistClearNameList_Click(object sender, EventArgs e) {
+        private void btnBanlistClearNameList_Click(object sender, EventArgs e)
+        {
 
             DialogResult dlgClearList = MessageBox.Show(this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.btnBanlistClearBanlist.Question", null), this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.btnBanlistClearBanlist.Title", null), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (dlgClearList == DialogResult.Yes) {
+            if (dlgClearList == DialogResult.Yes)
+            {
                 this.WaitForSettingResponse("local.banlist.clearlist");
 
                 this.m_prcClient.Game.SendBanListClearPacket();
@@ -1263,8 +1448,10 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void rdoBanlistName_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoBanlistName.Checked == true) {
+        private void rdoBanlistName_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoBanlistName.Checked == true)
+            {
                 //this.ValidateManualBan();
                 this.txtBanlistManualBanName.Focus();
                 this.txtBanlistManualBanName.Enabled = true;
@@ -1279,8 +1466,10 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void rdoBanlistIP_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoBanlistIP.Checked == true) {
+        private void rdoBanlistIP_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoBanlistIP.Checked == true)
+            {
                 this.txtBanlistManualBanIP.Focus();
                 this.txtBanlistManualBanName.Enabled = false;
                 this.txtBanlistManualBanIP.Enabled = true;
@@ -1294,8 +1483,10 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void rdoBanlistBc2GUID_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoBanlistBc2GUID.Checked == true) {
+        private void rdoBanlistBc2GUID_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoBanlistBc2GUID.Checked == true)
+            {
                 this.txtBanlistManualBanGUID.Focus();
                 this.txtBanlistManualBanName.Enabled = false;
                 this.txtBanlistManualBanIP.Enabled = false;
@@ -1311,8 +1502,10 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void rdoBanlistGUID_CheckedChanged(object sender, EventArgs e) {
-            if (this.rdoBanlistPbGUID.Checked == true) {
+        private void rdoBanlistGUID_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.rdoBanlistPbGUID.Checked == true)
+            {
                 this.txtBanlistManualBanGUID.Focus();
                 this.txtBanlistManualBanName.Enabled = true;
                 this.txtBanlistManualBanIP.Enabled = true;
@@ -1328,14 +1521,17 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void ListSettings_ManualBansVisibleChange(bool isVisible) {
-            if (isVisible == true) {
+        private void ListSettings_ManualBansVisibleChange(bool isVisible)
+        {
+            if (isVisible == true)
+            {
                 this.lnkCloseOpenManualBans.Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lnkCloseOpenManualBans.Close", null);
                 this.picCloseOpenManualBans.Image = this.m_frmMain.iglIcons.Images["arrow_down.png"];
 
                 this.spltBanlistManualBans.Panel2Collapsed = false;
             }
-            else {
+            else
+            {
                 this.lnkCloseOpenManualBans.Text = this.m_prcClient.Language.GetLocalized("uscListControlPanel.tabBanlist.lnkCloseOpenManualBans.Open", null);
                 this.picCloseOpenManualBans.Image = this.m_frmMain.iglIcons.Images["arrow_up.png"];
 
@@ -1343,19 +1539,24 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void lnkAddBan_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.m_prcClient != null) {
+        private void lnkAddBan_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.ListSettings.ManualBansVisible = !this.m_prcClient.ListSettings.ManualBansVisible;
             }
         }
 
-        private void picCloseOpenManualBans_Click(object sender, EventArgs e) {
-            if (this.m_prcClient != null) {
+        private void picCloseOpenManualBans_Click(object sender, EventArgs e)
+        {
+            if (this.m_prcClient != null)
+            {
                 this.m_prcClient.ListSettings.ManualBansVisible = !this.m_prcClient.ListSettings.ManualBansVisible;
             }
         }
 
-        private void btnBanlistAddBan_Click(object sender, EventArgs e) {
+        private void btnBanlistAddBan_Click(object sender, EventArgs e)
+        {
 
             string m_strReasonAdmin = this.cboBanlistReason.Text;
             string accountName = this.m_prcClient.Username;
@@ -1369,38 +1570,48 @@ namespace PRoCon.Controls {
                 m_strReasonAdmin = m_strReasonAdmin + " (" + accountName + ")";
             }
 
-            if (this.rdoBanlistName.Checked == true) {
+            if (this.rdoBanlistName.Checked == true)
+            {
                 // obsolete with BF3 R-8 string name = this.m_prcClient.Game is BF3Client ? "persona" : "name";
                 string name = "name";
 
-                if (this.rdoBanlistPermanent.Checked == true) {
+                if (this.rdoBanlistPermanent.Checked == true)
+                {
                     this.SendCommand("banList.add", name, this.txtBanlistManualBanName.Text, "perm", m_strReasonAdmin);
                 }
-                else {
+                else
+                {
                     this.SendCommand("banList.add", name, this.txtBanlistManualBanName.Text, "seconds", (uscPlayerPunishPanel.GetBanLength(this.txtBanlistTime, this.cboBanlistTimeMultiplier) * 60).ToString(), m_strReasonAdmin);
                 }
             }
-            else if (this.rdoBanlistIP.Checked == true) {
-                if (this.rdoBanlistPermanent.Checked == true) {
+            else if (this.rdoBanlistIP.Checked == true)
+            {
+                if (this.rdoBanlistPermanent.Checked == true)
+                {
                     this.SendCommand("banList.add", "ip", this.txtBanlistManualBanIP.Text, "perm", m_strReasonAdmin);
                 }
-                else {
+                else
+                {
                     this.SendCommand("banList.add", "ip", this.txtBanlistManualBanIP.Text, "seconds", (uscPlayerPunishPanel.GetBanLength(this.txtBanlistTime, this.cboBanlistTimeMultiplier) * 60).ToString(), m_strReasonAdmin);
                 }
             }
-            else if (this.rdoBanlistBc2GUID.Checked == true) {
-                if (this.rdoBanlistPermanent.Checked == true) {
+            else if (this.rdoBanlistBc2GUID.Checked == true)
+            {
+                if (this.rdoBanlistPermanent.Checked == true)
+                {
                     this.SendCommand("banList.add", "guid", this.txtBanlistManualBanGUID.Text.ToUpper(), "perm", m_strReasonAdmin);
                 }
-                else {
+                else
+                {
                     this.SendCommand("banList.add", "guid", this.txtBanlistManualBanGUID.Text.ToUpper(), "seconds", (uscPlayerPunishPanel.GetBanLength(this.txtBanlistTime, this.cboBanlistTimeMultiplier) * 60).ToString(), m_strReasonAdmin);
                 }
             }
-            else if (this.rdoBanlistPbGUID.Checked == true) {
+            else if (this.rdoBanlistPbGUID.Checked == true)
+            {
                 this.SendCommand("punkBuster.pb_sv_command", String.Format("pb_sv_banguid {0} \"{1}\" \"{2}\" \"BC2! {3}\"", this.txtBanlistManualBanGUID.Text, this.txtBanlistManualBanName.Text.Length > 0 ? this.txtBanlistManualBanName.Text : "???", this.txtBanlistManualBanIP.Text.Length > 0 ? this.txtBanlistManualBanIP.Text : "???", m_strReasonAdmin));
                 this.SendCommand("punkBuster.pb_sv_command", this.m_prcClient.Variables.GetVariable<string>("PUNKBUSTER_BANLIST_REFRESH", "pb_sv_banlist BC2! "));
             }
-            
+
             this.txtBanlistManualBanName.Focus();
             this.txtBanlistManualBanName.Clear();
             this.txtBanlistManualBanGUID.Clear();
@@ -1409,143 +1620,178 @@ namespace PRoCon.Controls {
             this.m_prcClient.Game.SendBanListSavePacket();
         }
 
-        private void txtBanlistManualBanName_TextChanged(object sender, EventArgs e) {
+        private void txtBanlistManualBanName_TextChanged(object sender, EventArgs e)
+        {
             this.UpdateConfirmationLabel();
         }
 
-        private void txtBanlistManualBanIP_TextChanged(object sender, EventArgs e) {
+        private void txtBanlistManualBanIP_TextChanged(object sender, EventArgs e)
+        {
             this.UpdateConfirmationLabel();
         }
 
-        private void txtBanlistManualBanGUID_TextChanged(object sender, EventArgs e) {
+        private void txtBanlistManualBanGUID_TextChanged(object sender, EventArgs e)
+        {
             this.UpdateConfirmationLabel();
         }
 
-        private void lsvBanlist_MouseUp(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Right) {
+        private void lsvBanlist_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
 
-                if (this.lsvBanlist.SelectedItems.Count > 0) {
+                if (this.lsvBanlist.SelectedItems.Count > 0)
+                {
                     Point pntMouseLocation = new Point(e.X, e.Y);
                     this.ctxBanlistMenuStrip.Show(this.lsvBanlist, pntMouseLocation);
                 }
             }
         }
 
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
-            if (this.lsvBanlist.SelectedItems.Count > 0) {
+            if (this.lsvBanlist.SelectedItems.Count > 0)
+            {
 
                 string strClipboard = this.lsvBanlist.SelectedItems[0].Text;
 
-                foreach (ListViewItem.ListViewSubItem lvsiItem in this.lsvBanlist.SelectedItems[0].SubItems) {
+                foreach (ListViewItem.ListViewSubItem lvsiItem in this.lsvBanlist.SelectedItems[0].SubItems)
+                {
                     strClipboard += " " + lvsiItem.Text;
                 }
 
-                try {
+                try
+                {
                     Clipboard.SetDataObject(strClipboard, true, 5, 10);
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     // Nope, another thread is accessing the clipboard..
                 }
             }
         }
 
-        private void rdoBanlistTemporary_CheckedChanged(object sender, EventArgs e) {
+        private void rdoBanlistTemporary_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlBanlistTime.Enabled = this.rdoBanlistTemporary.Checked;
             this.UpdateConfirmationLabel();
         }
 
-        private void rdoBanlistPermanent_CheckedChanged(object sender, EventArgs e) {
+        private void rdoBanlistPermanent_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlBanlistTime.Enabled = this.rdoBanlistTemporary.Checked;
             this.UpdateConfirmationLabel();
         }
 
-        private void UpdateConfirmationLabel() {
+        private void UpdateConfirmationLabel()
+        {
 
             string strBanDescription = String.Empty;
 
-            if (this.rdoBanlistPbGUID.Checked == true) {
+            if (this.rdoBanlistPbGUID.Checked == true)
+            {
                 strBanDescription = this.txtBanlistManualBanGUID.Text;
             }
-            else if (this.rdoBanlistBc2GUID.Checked == true) {
+            else if (this.rdoBanlistBc2GUID.Checked == true)
+            {
                 strBanDescription = this.txtBanlistManualBanGUID.Text.ToUpper();
             }
-            else if (this.rdoBanlistIP.Checked == true) {
+            else if (this.rdoBanlistIP.Checked == true)
+            {
                 strBanDescription = this.txtBanlistManualBanIP.Text;
             }
-            else if (this.rdoBanlistName.Checked == true) {
+            else if (this.rdoBanlistName.Checked == true)
+            {
                 strBanDescription = this.txtBanlistManualBanName.Text;
             }
 
             bool blAbleToPunish = false;
 
-            if (this.m_uscConnectionPanel != null) {
+            if (this.m_uscConnectionPanel != null)
+            {
                 this.lblBanlistConfirmation.Text = uscPlayerPunishPanel.GetConfirmationLabel(out blAbleToPunish, strBanDescription, this.m_spPrivileges,
                                                                                              this.m_prcClient.Language, false, false, this.rdoBanlistPermanent.Checked,
                                                                                              this.rdoBanlistTemporary.Checked, this.txtBanlistTime, this.cboBanlistTimeMultiplier,
                                                                                              this.ma_strTimeDescriptionsLong, this.m_prcClient.SV_Variables.GetVariable<int>("TEMP_BAN_CEILING", 3600));
             }
 
-            if (this.rdoBanlistIP.Checked == true) {
+            if (this.rdoBanlistIP.Checked == true)
+            {
                 this.btnBanlistAddBan.Enabled = (this.txtBanlistManualBanIP.Text.Length > 0 && this.m_regIP.Match(this.txtBanlistManualBanIP.Text).Success) && blAbleToPunish == true;
                 this.picBanlistIPError.Visible = !this.btnBanlistAddBan.Enabled && blAbleToPunish == true;
 
-                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true) {
+                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true)
+                {
                     this.txtBanlistManualBanIP.ForeColor = Color.Maroon;
                 }
-                else {
+                else
+                {
                     this.txtBanlistManualBanIP.ForeColor = SystemColors.WindowText;
                 }
             }
-            else {
+            else
+            {
                 this.picBanlistIPError.Visible = false;
             }
 
-            if (this.rdoBanlistPbGUID.Checked == true) {
+            if (this.rdoBanlistPbGUID.Checked == true)
+            {
                 this.btnBanlistAddBan.Enabled = (this.txtBanlistManualBanGUID.Text.Length > 0 && this.m_regPbGUID.Match(this.txtBanlistManualBanGUID.Text).Success) && blAbleToPunish == true;
                 this.picBanlistGUIDError.Visible = !this.btnBanlistAddBan.Enabled && blAbleToPunish == true;
 
-                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true) {
+                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true)
+                {
                     this.txtBanlistManualBanGUID.ForeColor = Color.Maroon;
                 }
-                else {
+                else
+                {
                     this.txtBanlistManualBanGUID.ForeColor = SystemColors.WindowText;
                 }
             }
-            else if (this.rdoBanlistBc2GUID.Checked == true) {
+            else if (this.rdoBanlistBc2GUID.Checked == true)
+            {
                 this.btnBanlistAddBan.Enabled = (this.txtBanlistManualBanGUID.Text.Length > 0 && this.m_regBc2GUID.Match(this.txtBanlistManualBanGUID.Text).Success) && blAbleToPunish == true;
                 this.picBanlistGUIDError.Visible = !this.btnBanlistAddBan.Enabled && blAbleToPunish == true;
 
-                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true) {
+                if (this.btnBanlistAddBan.Enabled == false && blAbleToPunish == true)
+                {
                     this.txtBanlistManualBanGUID.ForeColor = Color.Maroon;
                 }
-                else {
+                else
+                {
                     this.txtBanlistManualBanGUID.ForeColor = SystemColors.WindowText;
                 }
             }
-            else {
+            else
+            {
                 this.picBanlistGUIDError.Visible = false;
             }
 
-            if (this.rdoBanlistName.Checked == true) {
+            if (this.rdoBanlistName.Checked == true)
+            {
                 this.btnBanlistAddBan.Enabled = (this.txtBanlistManualBanName.Text.Length > 0) && blAbleToPunish == true;
             }
 
         }
 
-        private void txtBanlistTime_TextChanged(object sender, EventArgs e) {
+        private void txtBanlistTime_TextChanged(object sender, EventArgs e)
+        {
             this.UpdateConfirmationLabel();
         }
 
-        private void cboBanlistTimeMultiplier_SelectedIndexChanged(object sender, EventArgs e) {
+        private void cboBanlistTimeMultiplier_SelectedIndexChanged(object sender, EventArgs e)
+        {
             this.UpdateConfirmationLabel();
         }
 
-        private void txtBanlistTime_KeyPress(object sender, KeyPressEventArgs e) {
+        private void txtBanlistTime_KeyPress(object sender, KeyPressEventArgs e)
+        {
             e.Handled = (!char.IsDigit(e.KeyChar) && e.KeyChar != '\b');
         }
 
-        private void btnBanlistRefresh_Click(object sender, EventArgs e) {
+        private void btnBanlistRefresh_Click(object sender, EventArgs e)
+        {
 
             this.m_prcClient.Game.SendBanListListPacket();
             // .SendPunkbusterThing

@@ -1,22 +1,21 @@
 ﻿using System;
 //using System.Collections.Generic;
 using System.Collections;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.BF4 {
+namespace PRoCon.Controls.ServerSettings.BF4
+{
     using Core;
-    using Core.Remote;
-    using Core.UnlockMode;
     using Core.BF4preset;
     using Core.GunMasterWeaponsPreset;
-    public partial class uscServerSettingsGameplayBF4 : uscServerSettingsGameplay {
+    using Core.Remote;
+    using Core.UnlockMode;
+    public partial class uscServerSettingsGameplayBF4 : uscServerSettingsGameplay
+    {
 
         public uscServerSettingsGameplayBF4()
-            : base() {
+            : base()
+        {
             InitializeComponent();
 
             this.chkSettingsHardcore.Enabled = false;
@@ -34,7 +33,7 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.AsyncSettingControls.Add("vars.regeneratehealth", new AsyncStyleSetting(this.picSettingsRegenerateHealth, this.chkSettingsRegenerateHealth, new Control[] { this.chkSettingsRegenerateHealth }, false));
             this.AsyncSettingControls.Add("vars.hud", new AsyncStyleSetting(this.picSettingsHud, this.chkSettingsHud, new Control[] { this.chkSettingsHud }, false));
             this.AsyncSettingControls.Add("vars.onlysquadleaderspawn", new AsyncStyleSetting(this.picSettingsOnlySquadLeaderSpawn, this.chkSettingsOnlySquadLeaderSpawn, new Control[] { this.chkSettingsOnlySquadLeaderSpawn }, false));
-            
+
             this.AsyncSettingControls.Add("vars.unlockmode", new AsyncStyleSetting(this.picSettingsUnlockMode, this.cboSettingsUnlockMode, new Control[] { this.cboSettingsUnlockMode }, true));
             this.AsyncSettingControls.Add("vars.gunMasterWeaponsPreset", new AsyncStyleSetting(this.picSettingsGunMasterWeaponsPreset, this.cboSettingsGunMasterWeaponsPreset, new Control[] { this.cboSettingsGunMasterWeaponsPreset }, true));
             this.AsyncSettingControls.Add("vars.preset", new AsyncStyleSetting(this.picSettingsBF4preset, this.cboSettingsBF4preset, new Control[] { this.cboSettingsBF4preset }, true));
@@ -54,12 +53,13 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.AsyncSettingControls.Add("vars.roundLockdownCountdown", new AsyncStyleSetting(this.picSettingsLockdownCountdown, this.numSettingsLockdownCountdown, new Control[] { this.numSettingsLockdownCountdown, this.lnkSettingsLockdownCountdown }, true));
             this.AsyncSettingControls.Add("vars.roundWarmupTimeout", new AsyncStyleSetting(this.picSettingsWarmupTimeout, this.numSettingsWarmupTimeout, new Control[] { this.numSettingsWarmupTimeout, this.lnkSettingsWarmupTimeout }, true));
             this.AsyncSettingControls.Add("vars.ticketBleedRate", new AsyncStyleSetting(this.picSettingsTicketBleedRate, this.numSettingsTicketBleedRate, new Control[] { this.numSettingsTicketBleedRate, this.lnkSettingsTicketBleedRate }, false));
-            
+
             this.AsyncSettingControls.Add("vars.hitIndicatorsEnabled", new AsyncStyleSetting(this.picSettingsIsHitIndicators, this.chkSettingsIsHitIndicators, new Control[] { this.chkSettingsIsHitIndicators }, false));
             this.AsyncSettingControls.Add("vars.forceReloadWholeMags", new AsyncStyleSetting(this.picSettingsIsForceReloadWholeMags, this.chkSettingsIsForceReloadWholeMags, new Control[] { this.chkSettingsIsForceReloadWholeMags }, false));
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsKillCam.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsKillCam");
@@ -75,7 +75,7 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.chkSettingsRegenerateHealth.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsRegenerateHealth");
             this.chkSettingsHud.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsHud");
             this.chkSettingsOnlySquadLeaderSpawn.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsOnlySquadLeaderSpawn");
-            
+
             this.chkSettingsVehicleSpawnAllowed.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsVehicleSpawnAllowed");
             this.lblSettingsVehicleSpawnDelay.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsVehicleSpawnDelay");
             this.lnkSettingsVehicleSpawnDelay.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsVehicleSpawnDelay");
@@ -132,7 +132,7 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.lblSettingsBF4preset.Text = this.Language.GetDefaultLocalized("Game preset (server side)", "uscServerSettingsPanel.lblSettingsBF4preset");
             this.lnkSettingsBF4preset.Text = this.Language.GetDefaultLocalized("Apply", "uscServerSettingsPanel.lnkSettingsBF4preset");
             this.chkSettingsBF4presetLock.Text = this.Language.GetDefaultLocalized("Lock preset related values", "uscServerSettingsPanel.chkSettingsBF4presetLock");
-            
+
             ArrayList BF4preset = new ArrayList();
             BF4preset.Add(new UnlockMode(this.Language.GetDefaultLocalized("Normal", "uscServerSettingsPanel.cboSettingsBF4preset.Normal"), BF4presetType.NORMAL.ToString()));
             BF4preset.Add(new UnlockMode(this.Language.GetDefaultLocalized("Classic", "uscServerSettingsPanel.cboSettingsBF4preset.Classic"), BF4presetType.CLASSIC.ToString()));
@@ -165,26 +165,33 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             this.picSettingsPlayerManDownTime.Visible = false;
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
 
             // override RoundStart minimum in case server is unranked
-            if (this.Client.CurrentServerInfo.Ranked == false) {
+            if (this.Client.CurrentServerInfo.Ranked == false)
+            {
                 this.numSettingsRoundStartPlayerCount.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.TeamBalance += new FrostbiteClient.IsEnabledHandler(m_prcClient_TeamBalance);
                 this.Client.Game.KillCam += new FrostbiteClient.IsEnabledHandler(m_prcClient_KillCam);
                 this.Client.Game.MiniMap += new FrostbiteClient.IsEnabledHandler(m_prcClient_MiniMap);
@@ -229,9 +236,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Third Person Vehicle Cameras
 
-        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false) {
+        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.thirdpersonvehiclecameras", !this.chkSettingsThirdPersonVehicleCameras.Checked);
 
                     this.Client.Game.SendSetVarsThirdPersonVehicleCamerasPacket(this.chkSettingsThirdPersonVehicleCameras.Checked);
@@ -239,7 +249,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.thirdpersonvehiclecameras", isEnabled, true);
         }
 
@@ -247,9 +258,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Minimap Spotting
 
-        private void chkSettingsMinimapSpotting_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimapspotting"].IgnoreEvent == false) {
+        private void chkSettingsMinimapSpotting_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimapspotting"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.minimapspotting", !this.chkSettingsMinimapSpotting.Checked);
 
                     this.Client.Game.SendSetVarsMiniMapSpottingPacket(this.chkSettingsMinimapSpotting.Checked);
@@ -257,7 +271,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.minimapspotting", isEnabled, true);
         }
 
@@ -265,9 +280,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region 3d Spotting
 
-        private void chkSettings3DSpotting_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.3dspotting"].IgnoreEvent == false) {
+        private void chkSettings3DSpotting_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.3dspotting"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.3dspotting", !this.chkSettings3DSpotting.Checked);
 
                     this.Client.Game.SendSetVars3dSpottingPacket(this.chkSettings3DSpotting.Checked);
@@ -275,7 +293,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.3dspotting", isEnabled, true);
         }
 
@@ -283,10 +302,13 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Cross hair
 
-        private void chkSettingsCrosshair_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsCrosshair_CheckedChanged(object sender, EventArgs e)
+        {
 
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.crosshair"].IgnoreEvent == false) {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.crosshair"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.crosshair", !this.chkSettingsCrosshair.Checked);
 
                     this.Client.Game.SendSetVarsCrossHairPacket(this.chkSettingsCrosshair.Checked);
@@ -294,7 +316,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.crosshair", isEnabled, true);
         }
 
@@ -302,9 +325,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Mini map
 
-        private void chkSettingsMinimap_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimap"].IgnoreEvent == false) {
+        private void chkSettingsMinimap_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimap"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.minimap", !this.chkSettingsMinimap.Checked);
 
                     this.Client.Game.SendSetVarsMiniMapPacket(this.chkSettingsMinimap.Checked);
@@ -312,7 +338,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.minimap", isEnabled, true);
         }
 
@@ -320,9 +347,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Kill cam
 
-        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false) {
+        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.killcam", !this.chkSettingsKillCam.Checked);
 
                     this.Client.Game.SendSetVarsKillCamPacket(this.chkSettingsKillCam.Checked);
@@ -330,7 +360,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.killcam", isEnabled, true);
         }
 
@@ -338,9 +369,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Team Balance
 
-        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false) {
+        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.teambalance", !this.chkSettingsTeamBalance.Checked);
 
                     this.Client.Game.SendSetVarsTeamBalancePacket(this.chkSettingsTeamBalance.Checked);
@@ -348,7 +382,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.teambalance", isEnabled, true);
         }
 
@@ -358,9 +393,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Name Tag
 
-        private void chkSettingsNameTag_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.nametag"].IgnoreEvent == false) {
+        private void chkSettingsNameTag_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.nametag"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.nametag", !this.chkSettingsNameTag.Checked);
 
                     this.Client.Game.SendSetVarsNameTagPacket(this.chkSettingsNameTag.Checked);
@@ -368,7 +406,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_NameTag(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NameTag(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.nametag", isEnabled, true);
         }
 
@@ -376,9 +415,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Regenerate Health
 
-        private void chkSettingsRegenerateHealth_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.regeneratehealth"].IgnoreEvent == false) {
+        private void chkSettingsRegenerateHealth_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.regeneratehealth"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.regeneratehealth", !this.chkSettingsRegenerateHealth.Checked);
 
                     this.Client.Game.SendSetVarsRegenerateHealthPacket(this.chkSettingsRegenerateHealth.Checked);
@@ -386,7 +428,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled) {
+        private void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.regeneratehealth", isEnabled, true);
         }
 
@@ -394,9 +437,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Show HUD
 
-        private void chkSettingsHud_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hud"].IgnoreEvent == false) {
+        private void chkSettingsHud_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hud"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hud", !this.chkSettingsHud.Checked);
 
                     this.Client.Game.SendSetVarsHudPacket(this.chkSettingsHud.Checked);
@@ -404,7 +450,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_Hud(FrostbiteClient sender, bool isEnabled) {
+        private void Game_Hud(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hud", isEnabled, true);
         }
 
@@ -412,9 +459,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Only Squad Leader Spawn
 
-        private void chkSettingsOnlySquadLeaderSpawn_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.onlysquadleaderspawn"].IgnoreEvent == false) {
+        private void chkSettingsOnlySquadLeaderSpawn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.onlysquadleaderspawn"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.onlysquadleaderspawn", !this.chkSettingsOnlySquadLeaderSpawn.Checked);
 
                     this.Client.Game.SendSetVarsOnlySquadLeaderSpawnPacket(this.chkSettingsOnlySquadLeaderSpawn.Checked);
@@ -422,7 +472,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_OnlySquadLeaderSpawn(FrostbiteClient sender, bool isEnabled) {
+        private void Game_OnlySquadLeaderSpawn(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.onlysquadleaderspawn", isEnabled, true);
         }
 
@@ -432,8 +483,10 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private string m_strPreviousSuccessUnlockMode;
 
-        private void Game_UnlockMode(FrostbiteClient sender, string mode) {
-            this.InvokeIfRequired(() => {
+        private void Game_UnlockMode(FrostbiteClient sender, string mode)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_strPreviousSuccessUnlockMode = mode.ToString();
                 this.OnSettingResponse("vars.unlockmode", mode.ToString(), true);
 
@@ -461,8 +514,10 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private string m_strPreviousSuccessBF4preset;
 
-        private void Game_BF4preset(FrostbiteClient sender, string mode, bool locked) {
-            this.InvokeIfRequired(() => {
+        private void Game_BF4preset(FrostbiteClient sender, string mode, bool locked)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_strPreviousSuccessBF4preset = mode.ToString();
                 this.OnSettingResponse("vars.preset", mode.ToString(), true);
 
@@ -503,16 +558,20 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             });
         }
 
-        private void lnkSettingsBF4preset_LinkClicked(object sender, EventArgs e) {
+        private void lnkSettingsBF4preset_LinkClicked(object sender, EventArgs e)
+        {
             // see line 126 uscServerSettingsTextChatModeration.cs
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.preset"].IgnoreEvent == false) {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.preset"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.preset", this.cboSettingsBF4preset.SelectedValue.ToString());
                     this.WaitForSettingResponse("vars.preset", this.chkSettingsBF4presetLock.Checked);
 
                     this.Client.Game.SendSetVarsPresetPacket(this.cboSettingsBF4preset.SelectedValue.ToString(), this.chkSettingsBF4presetLock.Checked);
 
-                    if (this.chkSettingsBF4presetLock.Checked == true) {
+                    if (this.chkSettingsBF4presetLock.Checked == true)
+                    {
                         this.Client.Game.FetchStartupVariables();
                     }
                 }
@@ -525,10 +584,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessGunMasterWeaponsPreset;
 
-        private void Game_GunMasterWeaponsPreset(FrostbiteClient sender, int preset) {
-            this.InvokeIfRequired(() => {
+        private void Game_GunMasterWeaponsPreset(FrostbiteClient sender, int preset)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_iPreviousSuccessGunMasterWeaponsPreset = preset;
-                this.OnSettingResponse("vars.gunMasterWeaponsPreset", (decimal) preset, true);
+                this.OnSettingResponse("vars.gunMasterWeaponsPreset", (decimal)preset, true);
 
                 this.cboSettingsGunMasterWeaponsPreset.SelectedValue = preset.ToString();
             });
@@ -537,8 +598,10 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
         private void lnkSettingsGunMasterWeaponsPreset_LinkClicked(object sender, EventArgs e)
         {
             // see line 126 uscServerSettingsTextChatModeration.cs
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.gunMasterWeaponsPreset"].IgnoreEvent == false) {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.gunMasterWeaponsPreset"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.gunMasterWeaponsPreset", (decimal)this.m_iPreviousSuccessGunMasterWeaponsPreset);
 
                     this.Client.Game.SendSetVarsGunMasterWeaponsPresetPacket(Convert.ToInt32(this.cboSettingsGunMasterWeaponsPreset.SelectedValue));
@@ -550,9 +613,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         #region Vehicle Spawning
 
-        private void chkSettingsVehicleSpawnAllowed_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.vehiclespawnallowed"].IgnoreEvent == false) {
+        private void chkSettingsVehicleSpawnAllowed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.vehiclespawnallowed"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.vehiclespawnallowed", !this.chkSettingsVehicleSpawnAllowed.Checked);
 
                     this.Client.Game.SendSetVarsVehicleSpawnAllowedPacket(this.chkSettingsVehicleSpawnAllowed.Checked);
@@ -560,7 +626,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_VehicleSpawnAllowed(FrostbiteClient sender, bool isEnabled) {
+        private void Game_VehicleSpawnAllowed(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.vehiclespawnallowed", isEnabled, true);
         }
 
@@ -570,14 +637,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessVehicleSpawnDelaySecond;
 
-        void Game_VehicleSpawnDelay(FrostbiteClient sender, int limit) {
+        void Game_VehicleSpawnDelay(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessVehicleSpawnDelaySecond = limit;
 
             this.OnSettingResponse("vars.vehiclespawndelay", (decimal)limit, true);
         }
 
-        private void lnkSettingsVehicleSpawnDelay_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsVehicleSpawnDelay_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsVehicleSpawnDelay.Focus();
                 this.WaitForSettingResponse("vars.vehiclespawndelay", (decimal)this.m_iPreviousSuccessVehicleSpawnDelaySecond);
 
@@ -592,14 +662,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessBulletDamage;
 
-        void Game_BulletDamage(FrostbiteClient sender, int limit) {
+        void Game_BulletDamage(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessBulletDamage = limit;
 
             this.OnSettingResponse("vars.bulletdamage", (decimal)limit, true);
         }
 
-        private void lnkSettingsBulletDamage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsBulletDamage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsBulletDamage.Focus();
                 this.WaitForSettingResponse("vars.bulletdamage", (decimal)this.m_iPreviousSuccessBulletDamage);
 
@@ -613,15 +686,18 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessRoundRestartPlayerCount;
 
-        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit)
+        {
             if (limit == -1) { limit = 2; }
             this.m_iPreviousSuccessRoundRestartPlayerCount = limit;
 
             this.OnSettingResponse("vars.roundrestartplayercount", (decimal)limit, true);
         }
 
-        private void lnkSettingsRoundRestartPlayerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsRoundRestartPlayerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsRoundRestartPlayerCount.Focus();
                 this.WaitForSettingResponse("vars.roundrestartplayercount", (decimal)this.m_iPreviousSuccessRoundRestartPlayerCount);
 
@@ -635,15 +711,18 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessRoundStartPlayerCount;
 
-        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit)
+        {
             if (limit == -1) { limit = 4; }
             this.m_iPreviousSuccessRoundStartPlayerCount = limit;
 
             this.OnSettingResponse("vars.roundstartplayercount", (decimal)limit, true);
         }
 
-        private void lnkSettingsRoundStartPlayerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsRoundStartPlayerCount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsRoundStartPlayerCount.Focus();
                 this.WaitForSettingResponse("vars.roundstartplayercount", (decimal)this.m_iPreviousSuccessRoundStartPlayerCount);
 
@@ -657,14 +736,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessSoldierHealth;
 
-        void Game_SoldierHealth(FrostbiteClient sender, int limit) {
+        void Game_SoldierHealth(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessSoldierHealth = limit;
 
             this.OnSettingResponse("vars.soldierhealth", (decimal)limit, true);
         }
 
-        private void lnkSettingsSoldierHealth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSoldierHealth_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsSoldierHealth.Focus();
                 this.WaitForSettingResponse("vars.soldierhealth", (decimal)this.m_iPreviousSuccessSoldierHealth);
 
@@ -678,14 +760,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessPlayerManDownTimePacket;
 
-        void Game_PlayerManDownTime(FrostbiteClient sender, int limit) {
+        void Game_PlayerManDownTime(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessPlayerManDownTimePacket = limit;
 
             this.OnSettingResponse("vars.playermandowntime", (decimal)limit, true);
         }
 
-        private void lnkSettingsPlayerManDownTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsPlayerManDownTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsPlayerManDownTime.Focus();
                 this.WaitForSettingResponse("vars.playermandowntime", (decimal)this.m_iPreviousSuccessPlayerManDownTimePacket);
 
@@ -700,14 +785,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessPlayerRespawnTimePacket;
 
-        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit) {
+        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessPlayerRespawnTimePacket = limit;
 
             this.OnSettingResponse("vars.playerrespawntime", (decimal)limit, true);
         }
-        
-        private void lnkSettingsPlayerRespawnTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+
+        private void lnkSettingsPlayerRespawnTime_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsPlayerManDownTime.Focus();
                 this.WaitForSettingResponse("vars.playerrespawntime", (decimal)this.m_iPreviousSuccessPlayerRespawnTimePacket);
 
@@ -746,14 +834,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessRoundTimeLimitPacket;
 
-        void Game_RoundTimeLimit(FrostbiteClient sender, int limit) {
+        void Game_RoundTimeLimit(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessRoundTimeLimitPacket = limit;
 
             this.OnSettingResponse("vars.roundTimeLimit", (decimal)limit, true);
         }
 
-        private void lnkSettingsRoundTimeLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsRoundTimeLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsRoundTimeLimit.Focus();
                 this.WaitForSettingResponse("vars.roundTimeLimit", (decimal)this.m_iPreviousSuccessRoundTimeLimitPacket);
 
@@ -767,14 +858,17 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
         private int m_iPreviousSuccessTicketBleedRatePacket;
 
-        void Game_TicketBleedRate(FrostbiteClient sender, int limit) {
+        void Game_TicketBleedRate(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTicketBleedRatePacket = limit;
 
             this.OnSettingResponse("vars.ticketBleedRate", (decimal)limit, true);
         }
 
-        private void lnkSettingsTicketBleedRate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsTicketBleedRate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsTicketBleedRate.Focus();
                 this.WaitForSettingResponse("vars.ticketBleedRate", (decimal)this.m_iPreviousSuccessTicketBleedRatePacket);
 
@@ -831,9 +925,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
         #region Hit Indicators
 
 
-        private void chkSettingsIsHitIndicators_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hitIndicatorsEnabled"].IgnoreEvent == false) {
+        private void chkSettingsIsHitIndicators_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.hitIndicatorsEnabled"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.hitIndicatorsEnabled", !this.chkSettingsIsHitIndicators.Checked);
 
                     this.Client.Game.SendSetVarsHitIndicatorsEnabled(this.chkSettingsIsHitIndicators.Checked);
@@ -841,7 +938,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_IsHitIndicator(FrostbiteClient sender, bool isEnabled) {
+        private void Game_IsHitIndicator(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.hitIndicatorsEnabled", isEnabled, true);
         }
 
@@ -850,9 +948,12 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
         #region Force reload of whole mags
 
 
-        private void chkSettingsForceReloadWholeMags_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.forceReloadWholeMags"].IgnoreEvent == false) {
+        private void chkSettingsForceReloadWholeMags_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.forceReloadWholeMags"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.forceReloadWholeMags", !this.chkSettingsIsForceReloadWholeMags.Checked);
 
                     this.Client.Game.SendSetVarsForceReloadWholeMags(this.chkSettingsIsForceReloadWholeMags.Checked);
@@ -860,15 +961,18 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
             }
         }
 
-        private void Game_IsForceReloadWholeMags(FrostbiteClient sender, bool isEnabled) {
+        private void Game_IsForceReloadWholeMags(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.forceReloadWholeMags", isEnabled, true);
         }
 
         #endregion
 
-        private void btnGameplayPresets_Click(object sender, EventArgs e) {
+        private void btnGameplayPresets_Click(object sender, EventArgs e)
+        {
 
-            if (MessageBox.Show(String.Format("Are you sure you wish to overwrite your current config with the \"{0}\" preset?", this.cboGameplayPresets.SelectedItem), "Confirm update", MessageBoxButtons.YesNo) == DialogResult.Yes) {
+            if (MessageBox.Show(String.Format("Are you sure you wish to overwrite your current config with the \"{0}\" preset?", this.cboGameplayPresets.SelectedItem), "Confirm update", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
 
                 bool friendlyFire = false,
                     killCam = true,
@@ -882,7 +986,8 @@ namespace PRoCon.Controls.ServerSettings.BF4 {
 
                 int soldierHealth = 100;
 
-                switch (this.cboGameplayPresets.SelectedIndex) {
+                switch (this.cboGameplayPresets.SelectedIndex)
+                {
                     case 0: // Quickmatch
                         this.Client.Game.SendSetVarsRoundStartPlayerCountPacket(8);
                         this.Client.Game.SendSetVarsRoundRestartPlayerCountPacket(4);

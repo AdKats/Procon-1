@@ -19,20 +19,22 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
     using Core.Players;
     [Serializable]
-    public class Kill {
+    public class Kill
+    {
 
-        public CPlayerInfo Killer {
+        public CPlayerInfo Killer
+        {
             get;
             private set;
         }
 
-        public CPlayerInfo Victim {
+        public CPlayerInfo Victim
+        {
             get;
             private set;
         }
@@ -44,7 +46,8 @@ namespace PRoCon.Core {
         }
         */
 
-        public Point3D KillerLocation {
+        public Point3D KillerLocation
+        {
             get;
             private set;
         }
@@ -56,44 +59,53 @@ namespace PRoCon.Core {
         }
         */
 
-        public Point3D VictimLocation {
+        public Point3D VictimLocation
+        {
             get;
             private set;
         }
 
-        public string DamageType {
+        public string DamageType
+        {
             get;
             private set;
         }
 
-        public bool Headshot {
+        public bool Headshot
+        {
             get;
             private set;
         }
 
-        public bool IsSuicide {
+        public bool IsSuicide
+        {
             get;
             private set;
         }
 
         // TO DO: Change set back to private only.
-        public DateTime TimeOfDeath {
+        public DateTime TimeOfDeath
+        {
             get;
             set;
         }
-        
-        public double Distance {
+
+        public double Distance
+        {
             get;
             private set;
         }
 
-        public Kill(CPlayerInfo cpKiller, CPlayerInfo cpVictim, string strDamageType, bool blHeadshot, Point3D pntKiller, Point3D pntVictim) {
+        public Kill(CPlayerInfo cpKiller, CPlayerInfo cpVictim, string strDamageType, bool blHeadshot, Point3D pntKiller, Point3D pntVictim)
+        {
 
-            if ((this.Killer = cpKiller) == null) {
+            if ((this.Killer = cpKiller) == null)
+            {
                 this.Killer = new CPlayerInfo();
             }
 
-            if ((this.Victim = cpVictim) == null) {
+            if ((this.Victim = cpVictim) == null)
+            {
                 this.Victim = new CPlayerInfo();
             }
 

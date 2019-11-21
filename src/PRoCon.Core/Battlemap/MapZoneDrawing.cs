@@ -21,22 +21,27 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using PRoCon.Core.Remote;
 
-namespace PRoCon.Core.Battlemap {
+namespace PRoCon.Core.Battlemap
+{
     [Serializable]
-    public class MapZoneDrawing : MapZone {
+    public class MapZoneDrawing : MapZone
+    {
         public delegate void TagsEditedHandler(MapZoneDrawing sender);
 
-        public MapZoneDrawing(string strUid, string strLevelFileName, string strTagList, Point3D[] zonePolygon, bool blInclusive) : base(strUid, strLevelFileName, strTagList, zonePolygon, blInclusive) {
+        public MapZoneDrawing(string strUid, string strLevelFileName, string strTagList, Point3D[] zonePolygon, bool blInclusive) : base(strUid, strLevelFileName, strTagList, zonePolygon, blInclusive)
+        {
             Tags.TagsEdited += new ZoneTagList.TagsEditedHandler(Tags_TagsEdited);
         }
 
-        public GraphicsPath ZoneGraphicsPath {
-            get {
+        public GraphicsPath ZoneGraphicsPath
+        {
+            get
+            {
                 var gpReturn = new GraphicsPath();
                 var pntPolygon = new PointF[ZonePolygon.Length];
-                for (int i = 0; i < ZonePolygon.Length; i++) {
+                for (int i = 0; i < ZonePolygon.Length; i++)
+                {
                     pntPolygon[i] = new PointF(ZonePolygon[i].X, ZonePolygon[i].Y);
                 }
                 gpReturn.AddPolygon(pntPolygon);
@@ -50,9 +55,10 @@ namespace PRoCon.Core.Battlemap {
 
         // Returns a percentage of the ErrorArea circle trespassing on the zone.
         // If anyone knows calculus better than me I'd welcome you to clean up this function =)
-        public float TrespassArea(Point3D pntLocation, float flErrorRadius) {
+        public float TrespassArea(Point3D pntLocation, float flErrorRadius)
+        {
             float returnPercentage = 0.0F;
-            var errorArea = (float) (flErrorRadius * flErrorRadius * Math.PI);
+            var errorArea = (float)(flErrorRadius * flErrorRadius * Math.PI);
 
             var gpLocationError = new GraphicsPath();
             gpLocationError.AddEllipse(new RectangleF(pntLocation.X - flErrorRadius, pntLocation.Y - flErrorRadius, flErrorRadius * 2, flErrorRadius * 2));
@@ -65,20 +71,25 @@ namespace PRoCon.Core.Battlemap {
 
             int iPixelCount = 0;
 
-            if (scans.Length > 0) {
-                for (int i = 0; i < scans.Length; i++) {
-                    recIntersection.X = scans[i].X < recIntersection.X ? (int) scans[i].X : recIntersection.X;
-                    recIntersection.Y = scans[i].Y < recIntersection.Y ? (int) scans[i].Y : recIntersection.Y;
+            if (scans.Length > 0)
+            {
+                for (int i = 0; i < scans.Length; i++)
+                {
+                    recIntersection.X = scans[i].X < recIntersection.X ? (int)scans[i].X : recIntersection.X;
+                    recIntersection.Y = scans[i].Y < recIntersection.Y ? (int)scans[i].Y : recIntersection.Y;
 
-                    recIntersection.Width = scans[i].Right > recIntersection.Right ? (int) scans[i].Right - recIntersection.X : recIntersection.Width;
-                    recIntersection.Height = scans[i].Bottom > recIntersection.Bottom ? (int) scans[i].Bottom - recIntersection.Y : recIntersection.Height;
+                    recIntersection.Width = scans[i].Right > recIntersection.Right ? (int)scans[i].Right - recIntersection.X : recIntersection.Width;
+                    recIntersection.Height = scans[i].Bottom > recIntersection.Bottom ? (int)scans[i].Bottom - recIntersection.Y : recIntersection.Height;
                 }
 
                 var pntVisible = new Point(recIntersection.X, recIntersection.Y);
 
-                for (pntVisible.X = recIntersection.X; pntVisible.X <= recIntersection.Right; pntVisible.X++) {
-                    for (pntVisible.Y = recIntersection.Y; pntVisible.Y <= recIntersection.Bottom; pntVisible.Y++) {
-                        if (regZone.IsVisible(pntVisible) == true) {
+                for (pntVisible.X = recIntersection.X; pntVisible.X <= recIntersection.Right; pntVisible.X++)
+                {
+                    for (pntVisible.Y = recIntersection.Y; pntVisible.Y <= recIntersection.Bottom; pntVisible.Y++)
+                    {
+                        if (regZone.IsVisible(pntVisible) == true)
+                        {
                             iPixelCount++;
                         }
                     }
@@ -89,15 +100,18 @@ namespace PRoCon.Core.Battlemap {
 
             // Accounts for low error when using this method. (98.4% should be 100%)
             // but using regZone.GetRegionScans is slightly lossy.
-            if (returnPercentage > 0.0F) {
-                returnPercentage = (float) Math.Min(1.0F, returnPercentage + 0.02);
+            if (returnPercentage > 0.0F)
+            {
+                returnPercentage = (float)Math.Min(1.0F, returnPercentage + 0.02);
             }
 
             return returnPercentage;
         }
 
-        private void Tags_TagsEdited(ZoneTagList sender) {
-            if (TagsEdited != null) {
+        private void Tags_TagsEdited(ZoneTagList sender)
+        {
+            if (TagsEdited != null)
+            {
                 this.TagsEdited(this);
             }
         }

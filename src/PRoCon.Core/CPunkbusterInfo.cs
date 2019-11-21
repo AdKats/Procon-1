@@ -33,7 +33,7 @@ namespace PRoCon.Core
             this.PlayerCountry = String.Empty;
             this.PlayerCountryCode = String.Empty;
         }
-        
+
         public CPunkbusterInfo(string strSlotID, string strSoldierName, string strGUID, string strIP,
                                string strPlayerCountry, string strPlayerCountryCode)
         {

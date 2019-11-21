@@ -1,6 +1,9 @@
-﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers {
-    public class MohwPacketDispatcher : LayerPacketDispatcher {
-        public MohwPacketDispatcher(ILayerConnection connection) : base(connection) {
+﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers
+{
+    public class MohwPacketDispatcher : LayerPacketDispatcher
+    {
+        public MohwPacketDispatcher(ILayerConnection connection) : base(connection)
+        {
             this.RequestDelegates.Add("admin.eventsEnabled", this.DispatchEventsEnabledRequest);
 
             #region FrostbiteLayerClient delegates
@@ -50,7 +53,7 @@
             this.RequestDelegates.Add("vars.hudObiturary", this.DispatchVarsRequest); // MoHW
             this.RequestDelegates.Add("vars.hudPointsTracker", this.DispatchVarsRequest); // MoHW
             this.RequestDelegates.Add("vars.hudUnlocks", this.DispatchVarsRequest); // MoHW
-            
+
             this.RequestDelegates.Add("vars.idleBanRounds", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.killCam", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.maxPlayers", this.DispatchVarsRequest);
@@ -61,7 +64,7 @@
             this.RequestDelegates.Add("vars.roundRestartPlayerCount", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.roundStartPlayerCount", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.soldierHealth", this.DispatchVarsRequest);
-            
+
             this.RequestDelegates.Add("reservedSlotsList.configFile", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSlotsList.load", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSlotsList.save", this.DispatchAlterReservedSlotsListRequest);
@@ -69,7 +72,7 @@
             this.RequestDelegates.Add("reservedSlotsList.remove", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSlotsList.clear", this.DispatchAlterReservedSlotsListRequest);
             this.RequestDelegates.Add("reservedSlotsList.list", this.DispatchSecureSafeListedRequest);
-            
+
             this.RequestDelegates.Add("currentLevel", this.DispatchSecureSafeListedRequest);
 
             this.RequestDelegates.Add("mapList.add", this.DispatchAlterMaplistRequest);

@@ -19,90 +19,110 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Plugin.Commands {
+namespace PRoCon.Core.Plugin.Commands
+{
     [Serializable]
-    public class ExecutionRequirements {
+    public class ExecutionRequirements
+    {
 
-        public ExecutionScope ExecutionScope {
+        public ExecutionScope ExecutionScope
+        {
             get;
             private set;
         }
 
-        public Privileges RequiredPrivileges {
+        public Privileges RequiredPrivileges
+        {
             get;
             private set;
         }
 
-        public string FailedRequirementsMessage {
+        public string FailedRequirementsMessage
+        {
             get;
             private set;
         }
 
-        public int MinimumMatchSimilarity {
+        public int MinimumMatchSimilarity
+        {
             get;
             private set;
         }
 
-        public MatchCommand ConfirmationCommand {
+        public MatchCommand ConfirmationCommand
+        {
             get;
             private set;
         }
 
-        public ExecutionRequirements(ExecutionScope scope) {
+        public ExecutionRequirements(ExecutionScope scope)
+        {
             this.Initialize(scope, Privileges.CanLogin, int.MaxValue, null, string.Empty);
         }
 
-        public ExecutionRequirements(ExecutionScope scope, string strFailedRequirementsMessage) {
+        public ExecutionRequirements(ExecutionScope scope, string strFailedRequirementsMessage)
+        {
             this.Initialize(scope, Privileges.CanLogin, int.MaxValue, null, strFailedRequirementsMessage);
         }
 
-        public ExecutionRequirements(ExecutionScope scope, Privileges privileges, string strFailedRequirementsMessage) {
+        public ExecutionRequirements(ExecutionScope scope, Privileges privileges, string strFailedRequirementsMessage)
+        {
             this.Initialize(scope, privileges, int.MaxValue, null, strFailedRequirementsMessage);
         }
 
-        public ExecutionRequirements(ExecutionScope scope, int iMinimumSimilarity, MatchCommand mcConfirmationCommand) {
+        public ExecutionRequirements(ExecutionScope scope, int iMinimumSimilarity, MatchCommand mcConfirmationCommand)
+        {
             this.Initialize(scope, Privileges.CanLogin, iMinimumSimilarity, mcConfirmationCommand, string.Empty);
         }
 
-        public ExecutionRequirements(ExecutionScope scope, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage) {
+        public ExecutionRequirements(ExecutionScope scope, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage)
+        {
             this.Initialize(scope, Privileges.CanLogin, iMinimumSimilarity, mcConfirmationCommand, strFailedRequirementsMessage);
         }
 
-        public ExecutionRequirements(ExecutionScope scope, Privileges privileges, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage) {
+        public ExecutionRequirements(ExecutionScope scope, Privileges privileges, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage)
+        {
             this.Initialize(scope, privileges, iMinimumSimilarity, mcConfirmationCommand, strFailedRequirementsMessage);
         }
 
-        private void Initialize(ExecutionScope scope, Privileges privileges, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage) {
+        private void Initialize(ExecutionScope scope, Privileges privileges, int iMinimumSimilarity, MatchCommand mcConfirmationCommand, string strFailedRequirementsMessage)
+        {
             this.ExecutionScope = scope;
             this.RequiredPrivileges = privileges;
             this.MinimumMatchSimilarity = iMinimumSimilarity;
             this.ConfirmationCommand = mcConfirmationCommand;
 
-            if (strFailedRequirementsMessage.Length < 100) {
+            if (strFailedRequirementsMessage.Length < 100)
+            {
                 this.FailedRequirementsMessage = strFailedRequirementsMessage;
             }
-            else {
+            else
+            {
                 this.FailedRequirementsMessage = strFailedRequirementsMessage.Substring(0, 100);
             }
         }
 
-        public bool HasValidPermissions(CPrivileges privileges) {
+        public bool HasValidPermissions(CPrivileges privileges)
+        {
 
             bool canExecuteCommand = false;
 
-            if (this.ExecutionScope == ExecutionScope.All) {
+            if (this.ExecutionScope == ExecutionScope.All)
+            {
                 canExecuteCommand = true;
             }
-            else if (this.ExecutionScope == ExecutionScope.Account) {
-                if (privileges != null) {
+            else if (this.ExecutionScope == ExecutionScope.Account)
+            {
+                if (privileges != null)
+                {
                     canExecuteCommand = true;
                 }
             }
-            else if (this.ExecutionScope == ExecutionScope.Privileges) {
-                if (privileges != null && privileges.Has(this.RequiredPrivileges) == true) {
+            else if (this.ExecutionScope == ExecutionScope.Privileges)
+            {
+                if (privileges != null && privileges.Has(this.RequiredPrivileges) == true)
+                {
                     canExecuteCommand = true;
                 }
             }

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace PRoCon.Core.Plugin {
+namespace PRoCon.Core.Plugin
+{
     [Serializable]
-    public class PluginCacheEntry {
+    public class PluginCacheEntry
+    {
 
         /// <summary>
         /// The class name of the plugin
@@ -32,7 +31,8 @@ namespace PRoCon.Core.Plugin {
         /// </summary>
         public DateTime Stamp { get; set; }
 
-        public PluginCacheEntry() {
+        public PluginCacheEntry()
+        {
             this.Stamp = DateTime.Now;
         }
     }

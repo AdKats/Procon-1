@@ -1,5 +1,7 @@
-﻿namespace PRoCon.Core.Events {
-    public enum EventType {
+﻿namespace PRoCon.Core.Events
+{
+    public enum EventType
+    {
         None,
         Game,
         Map,

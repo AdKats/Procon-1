@@ -20,15 +20,19 @@
 
 using System;
 
-namespace PRoCon.Core.Battlemap {
+namespace PRoCon.Core.Battlemap
+{
     [Serializable]
-    public class MapZone {
-        public MapZone(string strLevelFileName) {
+    public class MapZone
+    {
+        public MapZone(string strLevelFileName)
+        {
             LevelFileName = strLevelFileName;
             Tags = new ZoneTagList();
         }
 
-        public MapZone(string strUid, string strLevelFileName, string strTagList, Point3D[] zonePolygon, bool blInclusive) {
+        public MapZone(string strUid, string strLevelFileName, string strTagList, Point3D[] zonePolygon, bool blInclusive)
+        {
             LevelFileName = strLevelFileName;
             UID = strUid;
             ZonePolygon = zonePolygon;

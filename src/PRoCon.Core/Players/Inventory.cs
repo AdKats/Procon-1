@@ -18,30 +18,34 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Players {
+namespace PRoCon.Core.Players
+{
     using Core.Players.Items;
 
     [Serializable]
-    public class Inventory {
-        public Kits Kit {
+    public class Inventory
+    {
+        public Kits Kit
+        {
             get;
             private set;
         }
 
-        public WeaponDictionary Weapons {
+        public WeaponDictionary Weapons
+        {
             get;
             private set;
         }
 
-        public SpecializationDictionary Specializations {
+        public SpecializationDictionary Specializations
+        {
             get;
             private set;
         }
 
-        public Inventory(Kits kit) {
+        public Inventory(Kits kit)
+        {
             this.Kit = kit;
             this.Weapons = new WeaponDictionary();
             this.Specializations = new SpecializationDictionary();

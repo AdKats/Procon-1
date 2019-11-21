@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.BFBC2 {
+namespace PRoCon.Controls.ServerSettings.BFBC2
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsGameplayBFBC2 : uscServerSettingsGameplay {
+    public partial class uscServerSettingsGameplayBFBC2 : uscServerSettingsGameplay
+    {
 
         private int m_iPreviousSuccessRankLimit;
 
         public uscServerSettingsGameplayBFBC2()
-            : base() {
+            : base()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.ranklimit -1", new AsyncStyleSetting(this.picSettingsRankLimit, this.chkSettingsNoRankLimit, new Control[] { this.chkSettingsNoRankLimit }, true));
@@ -31,7 +29,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             this.m_iPreviousSuccessRankLimit = 50;
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsKillCam.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsKillCam");
@@ -47,21 +46,27 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             this.lnkSettingsSetRankLimit.Text = this.Language.GetLocalized("uscServerSettingsPanel.lnkSettingsSetRankLimit");
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.TeamBalance += new FrostbiteClient.IsEnabledHandler(m_prcClient_TeamBalance);
                 this.Client.Game.KillCam += new FrostbiteClient.IsEnabledHandler(m_prcClient_KillCam);
                 this.Client.Game.MiniMap += new FrostbiteClient.IsEnabledHandler(m_prcClient_MiniMap);
@@ -75,9 +80,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Third Person Vehicle Cameras
 
-        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false) {
+        private void chkSettingsThirdPersonVehicleCameras_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.thirdpersonvehiclecameras"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.thirdpersonvehiclecameras", !this.chkSettingsThirdPersonVehicleCameras.Checked);
 
                     this.Client.Game.SendSetVarsThirdPersonVehicleCamerasPacket(this.chkSettingsThirdPersonVehicleCameras.Checked);
@@ -85,7 +93,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.thirdpersonvehiclecameras", isEnabled, true);
         }
 
@@ -93,9 +102,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Minimap Spotting
 
-        private void chkSettingsMinimapSpotting_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimapspotting"].IgnoreEvent == false) {
+        private void chkSettingsMinimapSpotting_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimapspotting"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.minimapspotting", !this.chkSettingsMinimapSpotting.Checked);
 
                     this.Client.Game.SendSetVarsMiniMapSpottingPacket(this.chkSettingsMinimapSpotting.Checked);
@@ -103,7 +115,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMapSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.minimapspotting", isEnabled, true);
         }
 
@@ -111,9 +124,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region 3d Spotting
 
-        private void chkSettings3DSpotting_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.3dspotting"].IgnoreEvent == false) {
+        private void chkSettings3DSpotting_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.3dspotting"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.3dspotting", !this.chkSettings3DSpotting.Checked);
 
                     this.Client.Game.SendSetVars3dSpottingPacket(this.chkSettings3DSpotting.Checked);
@@ -121,7 +137,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_ThreeDSpotting(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.3dspotting", isEnabled, true);
         }
 
@@ -129,10 +146,13 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Cross hair
 
-        private void chkSettingsCrosshair_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsCrosshair_CheckedChanged(object sender, EventArgs e)
+        {
 
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.crosshair"].IgnoreEvent == false) {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.crosshair"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.crosshair", !this.chkSettingsCrosshair.Checked);
 
                     this.Client.Game.SendSetVarsCrossHairPacket(this.chkSettingsCrosshair.Checked);
@@ -140,7 +160,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_CrossHair(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.crosshair", isEnabled, true);
         }
 
@@ -148,9 +169,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Mini map
 
-        private void chkSettingsMinimap_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimap"].IgnoreEvent == false) {
+        private void chkSettingsMinimap_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.minimap"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.minimap", !this.chkSettingsMinimap.Checked);
 
                     this.Client.Game.SendSetVarsMiniMapPacket(this.chkSettingsMinimap.Checked);
@@ -158,7 +182,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_MiniMap(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.minimap", isEnabled, true);
         }
 
@@ -166,9 +191,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Kill cam
 
-        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false) {
+        private void chkSettingsKillCam_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.killcam"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.killcam", !this.chkSettingsKillCam.Checked);
 
                     this.Client.Game.SendSetVarsKillCamPacket(this.chkSettingsKillCam.Checked);
@@ -176,7 +204,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.killcam", isEnabled, true);
         }
 
@@ -184,9 +213,12 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Team Balance
 
-        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false) {
+        private void chkSettingsTeamBalance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teambalance"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.teambalance", !this.chkSettingsTeamBalance.Checked);
 
                     this.Client.Game.SendSetVarsTeamBalancePacket(this.chkSettingsTeamBalance.Checked);
@@ -194,7 +226,8 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.teambalance", isEnabled, true);
         }
 
@@ -203,24 +236,31 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
 
         #region Rank Limit
 
-        private void m_prcClient_RankLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_RankLimit(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessRankLimit = limit;
 
-            if (this.m_iPreviousSuccessRankLimit == -1) {
+            if (this.m_iPreviousSuccessRankLimit == -1)
+            {
                 this.OnSettingResponse("vars.ranklimit -1", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.ranklimit", (decimal)this.m_iPreviousSuccessRankLimit, true);
             }
         }
 
-        private void chkSettingsNoRankLimit_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void chkSettingsNoRankLimit_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.pnlSettingsSetRankLimit.Enabled = !this.chkSettingsNoRankLimit.Checked;
                 this.pnlSettingsSetRankLimit.Visible = !this.chkSettingsNoRankLimit.Checked;
 
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.ranklimit -1"].IgnoreEvent == false) {
-                    if (chkSettingsNoRankLimit.Checked == true) {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.ranklimit -1"].IgnoreEvent == false)
+                {
+                    if (chkSettingsNoRankLimit.Checked == true)
+                    {
                         this.WaitForSettingResponse("vars.ranklimit -1", !this.chkSettingsNoRankLimit.Checked);
 
                         this.Client.Game.SendSetVarsRankLimitPacket(-1);
@@ -230,8 +270,10 @@ namespace PRoCon.Controls.ServerSettings.BFBC2 {
             }
         }
 
-        private void lnkSettingsSetRankLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetRankLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsRankLimit.Focus();
                 this.WaitForSettingResponse("vars.ranklimit", (decimal)this.m_iPreviousSuccessRankLimit);
 

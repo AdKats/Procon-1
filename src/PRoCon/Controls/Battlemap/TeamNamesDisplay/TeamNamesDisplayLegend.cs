@@ -19,49 +19,59 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap.TeamNamesDisplay {
-    using PRoCon.Core;
+namespace PRoCon.Controls.Battlemap.TeamNamesDisplay
+{
     using Controls.Battlemap.KillDisplay;
-    public class TeamNamesDisplayLegend : MapObject, IDisposable {
+    using PRoCon.Core;
+    public class TeamNamesDisplayLegend : MapObject, IDisposable
+    {
 
-        private MapTextBlock TeamNamesText {
+        private MapTextBlock TeamNamesText
+        {
             get;
             set;
         }
 
-        public KillDisplayColours LegendType {
+        public KillDisplayColours LegendType
+        {
             get;
             private set;
         }
 
-        public TeamNamesDisplayLegend(KillDisplayColours legendType, Dictionary<int, Color> dicTeamColours, CLocalization language, CMap mapDetails) {
+        public TeamNamesDisplayLegend(KillDisplayColours legendType, Dictionary<int, Color> dicTeamColours, CLocalization language, CMap mapDetails)
+        {
 
             this.TeamNamesText = new MapTextBlock();
             this.LegendType = legendType;
 
-            if (legendType == KillDisplayColours.TeamColours) {
+            if (legendType == KillDisplayColours.TeamColours)
+            {
 
-                foreach (CTeamName teamName in mapDetails.TeamNames) {
-                    if (teamName.TeamID > 0 && dicTeamColours.ContainsKey(teamName.TeamID)) {
+                foreach (CTeamName teamName in mapDetails.TeamNames)
+                {
+                    if (teamName.TeamID > 0 && dicTeamColours.ContainsKey(teamName.TeamID))
+                    {
                         this.TeamNamesText.Strings.Add(new MapTextBlockString(language.GetLocalized(teamName.LocalizationKey), ControlPaint.LightLight(dicTeamColours[teamName.TeamID]), true));
                     }
                 }
             }
-            else {
+            else
+            {
                 this.TeamNamesText.Strings.Add(new MapTextBlockString("Killer", Color.LightSeaGreen, true));
                 this.TeamNamesText.Strings.Add(new MapTextBlockString("Victim", ControlPaint.Light(Color.Red), true));
             }
 
         }
 
-        public new void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons) {
+        public new void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons)
+        {
 
-            if (this.TeamNamesText != null) {
+            if (this.TeamNamesText != null)
+            {
                 this.TeamNamesText.Draw(g, new PointF(pntDrawOffset.X + this.TeamNamesText.HorizontalSpacing + 10.0F, pntDrawOffset.Y), pntMouseLocation, mbButtons);
             }
 
@@ -69,8 +79,9 @@ namespace PRoCon.Controls.Battlemap.TeamNamesDisplay {
 
             this.m_pntDrawOffset = pntDrawOffset;
 
-            for (int i = 0; i < this.TeamNamesText.Strings.Count; i++) {
-            //foreach (MapTextBlockString teamName in this.TeamNamesText.Strings) {
+            for (int i = 0; i < this.TeamNamesText.Strings.Count; i++)
+            {
+                //foreach (MapTextBlockString teamName in this.TeamNamesText.Strings) {
                 GraphicsPath gpTeamColour = new GraphicsPath();
 
                 gpTeamColour.AddRectangle(new RectangleF(0.0F, i * (blockBounds.Height / this.TeamNamesText.Strings.Count) + (this.TeamNamesText.VerticalSpacing / 2.0F), 10.0F, 10.0F));
@@ -81,7 +92,8 @@ namespace PRoCon.Controls.Battlemap.TeamNamesDisplay {
             }
         }
 
-        public RectangleF GetBounds() {
+        public RectangleF GetBounds()
+        {
 
             RectangleF bounds = this.TeamNamesText.GetBounds();
 
@@ -92,7 +104,8 @@ namespace PRoCon.Controls.Battlemap.TeamNamesDisplay {
 
         #region IDisposable Members
 
-        void IDisposable.Dispose() {
+        void IDisposable.Dispose()
+        {
 
             this.TeamNamesText.Dispose();
 

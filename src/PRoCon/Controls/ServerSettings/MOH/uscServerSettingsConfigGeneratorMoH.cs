@@ -1,36 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
-namespace PRoCon.Controls.ServerSettings.MOH {
-    using Core;
+﻿namespace PRoCon.Controls.ServerSettings.MOH
+{
     using Core.Remote;
-    public partial class uscServerSettingsConfigGeneratorMoH : uscServerSettingsConfigGenerator {
+    public partial class uscServerSettingsConfigGeneratorMoH : uscServerSettingsConfigGenerator
+    {
         public uscServerSettingsConfigGeneratorMoH()
-            : base() {
+            : base()
+        {
             InitializeComponent();
         }
 
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.ClanTeams += new FrostbiteClient.IsEnabledHandler(Game_ClanTeams);
                 this.Client.Game.NoCrosshairs += new FrostbiteClient.IsEnabledHandler(Game_NoCrosshairs);
                 this.Client.Game.RealisticHealth += new FrostbiteClient.IsEnabledHandler(Game_RealisticHealth);
@@ -46,47 +46,58 @@ namespace PRoCon.Controls.ServerSettings.MOH {
             });
         }
 
-        private void Game_PreRoundLimit(FrostbiteClient sender, int upperLimit, int lowerLimit) {
+        private void Game_PreRoundLimit(FrostbiteClient sender, int upperLimit, int lowerLimit)
+        {
             this.AppendSetting("vars.preRoundLimit", upperLimit.ToString(), lowerLimit.ToString());
         }
 
-        private void Game_RoundStartTimerPlayerLimit(FrostbiteClient sender, int limit) {
+        private void Game_RoundStartTimerPlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundStartTimerPlayersLimit", limit.ToString());
         }
 
-        private void Game_RoundStartTimerDelay(FrostbiteClient sender, int limit) {
+        private void Game_RoundStartTimerDelay(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundStartTimerDelay", limit.ToString());
         }
 
-        private void Game_RoundStartTimer(FrostbiteClient sender, bool isEnabled) {
+        private void Game_RoundStartTimer(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("admin.roundStartTimerEnabled", isEnabled.ToString());
         }
 
-        private void Game_SkillLimit(FrostbiteClient sender, int upperLimit, int lowerLimit) {
+        private void Game_SkillLimit(FrostbiteClient sender, int upperLimit, int lowerLimit)
+        {
             this.AppendSetting("vars.skillLimit", upperLimit.ToString(), lowerLimit.ToString());
         }
 
-        private void Game_TdmScoreCounterMaxScore(FrostbiteClient sender, int limit) {
+        private void Game_TdmScoreCounterMaxScore(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.tdmScoreCounterMaxScore", limit.ToString());
         }
 
-        private void Game_ClanTeams(FrostbiteClient sender, bool isEnabled) {
+        private void Game_ClanTeams(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.clanTeams", isEnabled.ToString());
         }
 
-        private void Game_NoCrosshairs(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoCrosshairs(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.noCrosshairs", isEnabled.ToString());
         }
 
-        private void Game_RealisticHealth(FrostbiteClient sender, bool isEnabled) {
+        private void Game_RealisticHealth(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.realisticHealth", isEnabled.ToString());
         }
 
-        private void Game_NoUnlocks(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoUnlocks(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.noUnlocks", isEnabled.ToString());
         }
 
-        private void Game_NoAmmoPickups(FrostbiteClient sender, bool isEnabled) {
+        private void Game_NoAmmoPickups(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.noAmmoPickups", isEnabled.ToString());
         }
 

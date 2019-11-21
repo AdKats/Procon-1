@@ -1,6 +1,9 @@
-﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers {
-    public class Bfbc2PacketDispatcher : LayerPacketDispatcher {
-        public Bfbc2PacketDispatcher(ILayerConnection connection) : base(connection) {
+﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers
+{
+    public class Bfbc2PacketDispatcher : LayerPacketDispatcher
+    {
+        public Bfbc2PacketDispatcher(ILayerConnection connection) : base(connection)
+        {
             this.RequestDelegates.Add("vars.killCam", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.miniMap", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.crossHair", this.DispatchVarsRequest);

@@ -20,21 +20,25 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
-namespace PRoCon.Console {
+namespace PRoCon.Console
+{
     using Core;
     using Core.Remote;
-    class Program {
-      
-        static void Main(string[] args) {
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
 
             int iValue;
-            if (args != null && args.Length >= 2) {
-                for (int i = 0; i < args.Length; i = i + 2) {
-                    if (String.Compare("-use_core", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true && iValue > 0) {
+            if (args != null && args.Length >= 2)
+            {
+                for (int i = 0; i < args.Length; i = i + 2)
+                {
+                    if (String.Compare("-use_core", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true && iValue > 0)
+                    {
                         System.Diagnostics.Process.GetCurrentProcess().ProcessorAffinity = (System.IntPtr)iValue;
                     }
                 }
@@ -42,8 +46,10 @@ namespace PRoCon.Console {
 
             PRoConApplication application = null;
 
-            if (PRoConApplication.IsProcessOpen() == false) {
-                try {
+            if (PRoConApplication.IsProcessOpen() == false)
+            {
+                try
+                {
                     application = new PRoConApplication(true, args);
 
                     // Note: The license states usage data must be enabled for procon.console.exe support
@@ -65,17 +71,21 @@ namespace PRoCon.Console {
                     System.Console.WriteLine("Running... (Press any key to shutdown)");
                     System.Console.ReadKey();
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     FrostbiteConnection.LogError("PRoCon.Console.exe", "", e);
                 }
-                finally {
-                    if (application != null) {
+                finally
+                {
+                    if (application != null)
+                    {
                         application.Shutdown();
                     }
                 }
 
             }
-            else {
+            else
+            {
                 // Possible prevention of a cpu consumption bug I can see at the time of writing.
                 // TCAdmin: Start procon.exe
                 // procon.exe has an update to install

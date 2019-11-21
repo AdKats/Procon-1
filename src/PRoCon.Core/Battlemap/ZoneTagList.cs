@@ -22,53 +22,67 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace PRoCon.Core.Battlemap {
+namespace PRoCon.Core.Battlemap
+{
     [Serializable]
-    public class ZoneTagList : Collection<string> {
+    public class ZoneTagList : Collection<string>
+    {
         public delegate void TagsEditedHandler(ZoneTagList sender);
 
         protected bool IsInternallyEditing;
 
-        public ZoneTagList() {
+        public ZoneTagList()
+        {
         }
 
-        public ZoneTagList(string tagList) {
-            if (tagList.Length > 0) {
+        public ZoneTagList(string tagList)
+        {
+            if (tagList.Length > 0)
+            {
                 FromString(tagList);
             }
         }
 
         public event TagsEditedHandler TagsEdited;
 
-        protected override void InsertItem(int index, string item) {
+        protected override void InsertItem(int index, string item)
+        {
             base.InsertItem(index, item.Trim());
 
-            if (TagsEdited != null && IsInternallyEditing == false) {
+            if (TagsEdited != null && IsInternallyEditing == false)
+            {
                 TagsEdited(this);
             }
         }
 
-        protected override void RemoveItem(int index) {
+        protected override void RemoveItem(int index)
+        {
             base.RemoveItem(index);
 
-            if (TagsEdited != null && IsInternallyEditing == false) {
+            if (TagsEdited != null && IsInternallyEditing == false)
+            {
                 TagsEdited(this);
             }
         }
 
-        protected override void SetItem(int index, string item) {
+        protected override void SetItem(int index, string item)
+        {
             base.SetItem(index, item);
 
-            if (TagsEdited != null && IsInternallyEditing == false) {
+            if (TagsEdited != null && IsInternallyEditing == false)
+            {
                 TagsEdited(this);
             }
         }
 
-        public new bool Remove(string item) {
+        public new bool Remove(string item)
+        {
             bool isRemoved = false;
             string removeKey = String.Empty;
-            foreach (string zoneTag in this) {
-                if ((isRemoved = (System.String.Compare(zoneTag, item, System.StringComparison.OrdinalIgnoreCase) == 0)) == true) {
+            foreach (string zoneTag in this)
+            {
+                if ((isRemoved = (System.String.Compare(zoneTag, item, System.StringComparison.OrdinalIgnoreCase) == 0)) == true)
+                {
                     removeKey = zoneTag;
                     break;
                 }
@@ -79,11 +93,14 @@ namespace PRoCon.Core.Battlemap {
             return isRemoved;
         }
 
-        public new bool Contains(string item) {
+        public new bool Contains(string item)
+        {
             bool isListed = false;
 
-            foreach (string zoneTag in this) {
-                if ((isListed = (System.String.Compare(zoneTag, item, System.StringComparison.OrdinalIgnoreCase) == 0)) == true) {
+            foreach (string zoneTag in this)
+            {
+                if ((isListed = (System.String.Compare(zoneTag, item, System.StringComparison.OrdinalIgnoreCase) == 0)) == true)
+                {
                     break;
                 }
             }
@@ -91,28 +108,34 @@ namespace PRoCon.Core.Battlemap {
             return isListed;
         }
 
-        public void FromString(string tagList) {
+        public void FromString(string tagList)
+        {
             IsInternallyEditing = true;
 
             Clear();
 
-            foreach (string zoneTag in tagList.Split(';')) {
+            foreach (string zoneTag in tagList.Split(';'))
+            {
                 Add(zoneTag.Trim());
             }
 
-            if (TagsEdited != null) {
+            if (TagsEdited != null)
+            {
                 TagsEdited(this);
             }
 
             IsInternallyEditing = false;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             string returnString = String.Empty;
             bool hasLoopedOnce = false;
 
-            foreach (string zoneTag in new List<string>(this)) {
-                if (hasLoopedOnce == true) {
+            foreach (string zoneTag in new List<string>(this))
+            {
+                if (hasLoopedOnce == true)
+                {
                     returnString += "; ";
                 }
 

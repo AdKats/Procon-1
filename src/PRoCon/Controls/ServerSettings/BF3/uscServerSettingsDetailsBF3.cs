@@ -19,18 +19,16 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.BF3 {
+namespace PRoCon.Controls.ServerSettings.BF3
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsDetailsBF3 : uscServerSettings {
+    public partial class uscServerSettingsDetailsBF3 : uscServerSettings
+    {
 
         private string m_strPreviousSuccessServerName;
         private string m_strPreviousSuccessServerDescription;
@@ -39,7 +37,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         private CDownloadFile m_cdfBanner;
 
-        public uscServerSettingsDetailsBF3() {
+        public uscServerSettingsDetailsBF3()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.servername", new AsyncStyleSetting(this.picSettingsServerName, this.txtSettingsServerName, new Control[] { this.lblSettingsServerName, this.txtSettingsServerName, this.lnkSettingsSetServerName }, true));
@@ -53,7 +52,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             this.m_strPreviousSuccessBannerURL = String.Empty;
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.lblSettingsDescription.Text = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsDescription");
@@ -71,22 +71,28 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             this.DisplayName = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsDetails");
         }
 
-        public override void SetConnection(PRoConClient prcClient) {
+        public override void SetConnection(PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.ServerName += new FrostbiteClient.ServerNameHandler(m_prcClient_ServerName);
                 this.Client.Game.BannerUrl += new FrostbiteClient.BannerUrlHandler(m_prcClient_BannerUrl);
                 this.Client.Game.ServerDescription += new FrostbiteClient.ServerDescriptionHandler(m_prcClient_ServerDescription);
@@ -96,16 +102,21 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Banner URL
 
-        private void m_prcClient_BannerUrl(FrostbiteClient sender, string url) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_BannerUrl(FrostbiteClient sender, string url)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.OnSettingResponse("vars.bannerurl", url, true);
 
-                if (String.Compare(this.m_strPreviousSuccessBannerURL, url) != 0) {
+                if (String.Compare(this.m_strPreviousSuccessBannerURL, url) != 0)
+                {
 
-                    if (String.IsNullOrEmpty(url) == false) {
+                    if (String.IsNullOrEmpty(url) == false)
+                    {
                         this.DownloadBannerURL(url);
                     }
-                    else {
+                    else
+                    {
                         this.cdfBanner_DownloadComplete(null);
                     }
                 }
@@ -114,14 +125,19 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             });
         }
 
-        public void OnSettingsBannerURLSuccess(FrostbiteClient sender, string strSuccessBannerURL) {
-            this.InvokeIfRequired(() => {
-                if (String.Compare(this.m_strPreviousSuccessBannerURL, strSuccessBannerURL) != 0) {
+        public void OnSettingsBannerURLSuccess(FrostbiteClient sender, string strSuccessBannerURL)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (String.Compare(this.m_strPreviousSuccessBannerURL, strSuccessBannerURL) != 0)
+                {
 
-                    if (String.IsNullOrEmpty(strSuccessBannerURL) == false) {
+                    if (String.IsNullOrEmpty(strSuccessBannerURL) == false)
+                    {
                         this.DownloadBannerURL(strSuccessBannerURL);
                     }
-                    else {
+                    else
+                    {
                         this.cdfBanner_DownloadComplete(null);
                     }
                 }
@@ -130,13 +146,17 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             });
         }
 
-        private void lnkSettingsSetBannerURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetBannerURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 // TO DO: More error reporting about the image.
-                if (String.IsNullOrEmpty(this.txtSettingsBannerURL.Text) == false) {
+                if (String.IsNullOrEmpty(this.txtSettingsBannerURL.Text) == false)
+                {
                     this.DownloadBannerURL(this.txtSettingsBannerURL.Text);
                 }
-                else {
+                else
+                {
                     this.cdfBanner_DownloadComplete(null);
                 }
                 //this.picSettingsDownloadedBannerURL.ImageLocation = this.txtSettingsBannerURL.Text;
@@ -152,11 +172,14 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Server Description
 
-        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_ServerDescription(FrostbiteClient sender, string serverDescription)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_strPreviousSuccessServerDescription = serverDescription.Replace("|", Environment.NewLine);
 
-                if (this.m_strPreviousSuccessServerDescription.Length >= 255) {
+                if (this.m_strPreviousSuccessServerDescription.Length >= 255)
+                {
                     this.m_strPreviousSuccessServerDescription = this.m_strPreviousSuccessServerDescription.Substring(0, 255);
                 }
 
@@ -165,8 +188,10 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         }
 
-        private void lnkSettingsSetDescription_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetDescription_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsDescription.Focus();
                 this.WaitForSettingResponse("vars.serverdescription", this.m_strPreviousSuccessServerDescription);
 
@@ -179,11 +204,14 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Server Message
 
-        private void m_prcClient_ServerMessage(FrostbiteClient sender, string serverMessage) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_ServerMessage(FrostbiteClient sender, string serverMessage)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_strPreviousSuccessServerMessage = serverMessage.Replace("|", Environment.NewLine);
 
-                if (this.m_strPreviousSuccessServerMessage.Length >= 255) {
+                if (this.m_strPreviousSuccessServerMessage.Length >= 255)
+                {
                     this.m_strPreviousSuccessServerMessage = this.m_strPreviousSuccessServerMessage.Substring(0, 255);
                 }
 
@@ -208,13 +236,16 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Server Name
 
-        private void m_prcClient_ServerName(FrostbiteClient sender, string strServerName) {
+        private void m_prcClient_ServerName(FrostbiteClient sender, string strServerName)
+        {
             this.OnSettingResponse("vars.servername", strServerName, true);
             this.m_strPreviousSuccessServerName = strServerName;
         }
 
-        private void lnkSettingsSetServerName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetServerName_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsServerName.Focus();
                 this.WaitForSettingResponse("vars.servername", this.m_strPreviousSuccessServerName);
 
@@ -227,8 +258,10 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Download Banner
 
-        private void DownloadBannerURL(string strUrl) {
-            if (strUrl != null) {
+        private void DownloadBannerURL(string strUrl)
+        {
+            if (strUrl != null)
+            {
                 this.m_cdfBanner = new CDownloadFile(strUrl);
                 this.m_cdfBanner.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(cdfBanner_DownloadComplete);
                 this.m_cdfBanner.DownloadError += new CDownloadFile.DownloadFileEventDelegate(cdfBanner_DownloadError);
@@ -236,21 +269,25 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             }
         }
 
-        private void cdfBanner_DownloadError(CDownloadFile cdfSender) {
+        private void cdfBanner_DownloadError(CDownloadFile cdfSender)
+        {
             this.lblSettingsDownloadedBannerURLError.Visible = true;
             this.picSettingsDownloadedBannerURL.Image = null;
         }
 
-        private void cdfBanner_DownloadComplete(CDownloadFile cdfSender) {
+        private void cdfBanner_DownloadComplete(CDownloadFile cdfSender)
+        {
             this.lblSettingsDownloadedBannerURLError.Visible = false;
 
-            if (cdfSender != null) {
+            if (cdfSender != null)
+            {
                 MemoryStream msImage = new MemoryStream(cdfSender.CompleteFileData);
                 Image imgCompleted = Image.FromStream(msImage);
 
                 this.picSettingsDownloadedBannerURL.Image = imgCompleted;
             }
-            else {
+            else
+            {
                 this.picSettingsDownloadedBannerURL.Image = null;
             }
         }

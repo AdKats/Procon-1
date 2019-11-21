@@ -21,40 +21,49 @@
 using System;
 using System.Collections;
 
-namespace PRoCon.Core.Consoles.Chat {
-    public class ChatMessage {
+namespace PRoCon.Core.Consoles.Chat
+{
+    public class ChatMessage
+    {
 
-        public DateTime LoggedTime {
+        public DateTime LoggedTime
+        {
             get;
             private set;
         }
 
-        public string Speaker {
+        public string Speaker
+        {
             get;
             private set;
         }
 
-        public string Message {
+        public string Message
+        {
             get;
             private set;
         }
 
-        public bool IsFromServer {
+        public bool IsFromServer
+        {
             get;
             private set;
         }
 
-        public bool IsYelling {
+        public bool IsYelling
+        {
             get;
             private set;
         }
 
-        public CPlayerSubset Subset {
+        public CPlayerSubset Subset
+        {
             get;
             private set;
         }
 
-        public ChatMessage(DateTime loggedTime, string speaker, string message, bool isFromServer, bool isYelling, CPlayerSubset subset) {
+        public ChatMessage(DateTime loggedTime, string speaker, string message, bool isFromServer, bool isYelling, CPlayerSubset subset)
+        {
             this.LoggedTime = loggedTime;
             this.Speaker = speaker;
             this.Message = message;
@@ -63,7 +72,8 @@ namespace PRoCon.Core.Consoles.Chat {
             this.Subset = subset;
         }
 
-        public Hashtable ToHashtable() {
+        public Hashtable ToHashtable()
+        {
 
             Hashtable message = new Hashtable();
 

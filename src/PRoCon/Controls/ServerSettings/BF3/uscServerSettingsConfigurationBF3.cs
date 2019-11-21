@@ -19,17 +19,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings.BF3 {
+namespace PRoCon.Controls.ServerSettings.BF3
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsConfigurationBF3 : uscServerSettings {
+    public partial class uscServerSettingsConfigurationBF3 : uscServerSettings
+    {
 
         private int m_iPreviousSuccessPlayerLimit;
         private int m_iPreviousSuccessIdleTimeoutLimit;
@@ -38,7 +35,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
         private string m_strPreviousSuccessAdminPassword;
         private string m_strPreviousSuccessGamePassword;
 
-        public uscServerSettingsConfigurationBF3() {
+        public uscServerSettingsConfigurationBF3()
+        {
             InitializeComponent();
 
             //this.AsyncSettingControls.Add("vars.punkbuster", new AsyncStyleSetting(this.picSettingsPunkbuster, this.chkSettingsPunkbuster, new Control[] { this.chkSettingsPunkbuster }, false));
@@ -55,7 +53,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             this.AsyncSettingControls.Add("vars.gamepassword", new AsyncStyleSetting(this.picSettingsGamePassword, this.txtSettingsGamePassword, new Control[] { this.lblSettingsGamePassword, this.txtSettingsGamePassword, this.lnkSettingsSetGamePassword }, true));
             this.AsyncSettingControls.Add("vars.adminpassword", new AsyncStyleSetting(this.picSettingsAdminPassword, this.txtSettingsAdminPassword, new Control[] { this.lblSettingsAdminPassword, this.txtSettingsAdminPassword, this.lnkSettingsSetAdminPassword }, true));
 
-            if (Program.ProconApplication.OptionsSettings.ShowDICESpecialOptions == true) {
+            if (Program.ProconApplication.OptionsSettings.ShowDICESpecialOptions == true)
+            {
                 this.chkSettingsPremiumStatus.Enabled = Program.ProconApplication.OptionsSettings.ShowDICESpecialOptions;
                 this.AsyncSettingControls.Add("vars.premiumstatus", new AsyncStyleSetting(this.picSettingsPremiumStatus, this.chkSettingsPremiumStatus, new Control[] { this.chkSettingsPremiumStatus }, true));
             }
@@ -69,7 +68,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             this.m_strPreviousSuccessGamePassword = String.Empty;
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsPunkbuster.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsPunkbuster");
@@ -97,21 +97,27 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             this.DisplayName = this.Language.GetLocalized("uscServerSettingsPanel.lblSettingsConfiguration");
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.Punkbuster += new FrostbiteClient.IsEnabledHandler(m_prcClient_Punkbuster);
                 this.Client.Game.Ranked += new FrostbiteClient.IsEnabledHandler(m_prcClient_Ranked);
 
@@ -132,9 +138,12 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             });
         }
 
-        private void m_prcClient_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo) {
-            this.InvokeIfRequired(() => {
-                if (csiServerInfo.MaxPlayerCount > 0 && csiServerInfo.MaxPlayerCount <= this.numSettingsPlayerLimit.Maximum) {
+        private void m_prcClient_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (csiServerInfo.MaxPlayerCount > 0 && csiServerInfo.MaxPlayerCount <= this.numSettingsPlayerLimit.Maximum)
+                {
                     //this.numSettingsPlayerLimit.Value = (decimal)csiServerInfo.MaxPlayerCount;
                     this.numSettingsEffectivePlayerLimit.Value = (decimal)csiServerInfo.MaxPlayerCount;
                 }
@@ -146,13 +155,16 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Passwords
 
-        private void m_prcClient_GamePassword(FrostbiteClient sender, string password) {
+        private void m_prcClient_GamePassword(FrostbiteClient sender, string password)
+        {
             this.OnSettingResponse("vars.gamepassword", password, true);
             this.m_strPreviousSuccessGamePassword = password;
         }
 
-        private void lnkSettingsSetGamePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetGamePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsGamePassword.Focus();
                 this.WaitForSettingResponse("vars.gamepassword", this.m_strPreviousSuccessGamePassword);
 
@@ -160,13 +172,16 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             }
         }
 
-        private void m_prcClient_AdminPassword(FrostbiteClient sender, string password) {
+        private void m_prcClient_AdminPassword(FrostbiteClient sender, string password)
+        {
             this.OnSettingResponse("vars.adminpassword", password, true);
             this.m_strPreviousSuccessAdminPassword = password;
         }
 
-        private void lnkSettingsSetAdminPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetAdminPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.txtSettingsAdminPassword.Focus();
                 this.WaitForSettingResponse("vars.adminpassword", this.m_strPreviousSuccessAdminPassword);
 
@@ -178,7 +193,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Punkbuster
 
-        private void m_prcClient_Punkbuster(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_Punkbuster(FrostbiteClient sender, bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkSettingsPunkbuster.Checked = isEnabled; });
             //this.OnSettingResponse("vars.punkbuster", isEnabled, true);
         }
@@ -202,7 +218,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Ranked
 
-        private void m_prcClient_Ranked(FrostbiteClient sender, bool isEnabled) {
+        private void m_prcClient_Ranked(FrostbiteClient sender, bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkSettingsRanked.Checked = isEnabled; });
             //this.OnSettingResponse("vars.ranked", isEnabled, true);
         }
@@ -224,13 +241,17 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region PremiumStatus
 
-        private void Game_PremiumStatus(FrostbiteClient sender, bool isEnabled) {
+        private void Game_PremiumStatus(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("vars.premiumstatus", isEnabled, true);
         }
 
-        private void chkSettingsPremiumStatus_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.premiumstatus"].IgnoreEvent == false) {
+        private void chkSettingsPremiumStatus_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.premiumstatus"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("vars.premiumstatus", !this.chkSettingsPremiumStatus.Checked);
 
                     this.Client.Game.SendSetVarsPremiumStatusPacket(this.chkSettingsPremiumStatus.Checked);
@@ -242,25 +263,32 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Player Limit
 
-        private void m_prcClient_CurrentPlayerLimit(FrostbiteClient sender, int limit) {
-            this.InvokeIfRequired(() => {
-                if (limit > 0 && limit <= this.numSettingsPlayerLimit.Maximum) {
+        private void m_prcClient_CurrentPlayerLimit(FrostbiteClient sender, int limit)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (limit > 0 && limit <= this.numSettingsPlayerLimit.Maximum)
+                {
                     this.numSettingsPlayerLimit.Value = (decimal)limit;
                 }
             });
         }
 
-        private void m_prcClient_MaxPlayerLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_MaxPlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.InvokeIfRequired(() => { this.numSettingsPlayerLimit.Maximum = (decimal)limit; });
         }
 
-        private void m_prcClient_PlayerLimit(FrostbiteClient sender, int limit) {
+        private void m_prcClient_PlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.OnSettingResponse("vars.playerlimit", (decimal)limit, true);
             this.m_iPreviousSuccessPlayerLimit = limit;
         }
 
-        private void lnkSettingsSetPlayerLimt_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsSetPlayerLimt_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsPlayerLimit.Focus();
                 this.WaitForSettingResponse("vars.playerlimit", (decimal)this.m_iPreviousSuccessPlayerLimit);
 
@@ -273,33 +301,40 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region Idle Timeout
 
-        private void m_prcClient_IdleTimeout(FrostbiteClient sender, int limit) {
+        private void m_prcClient_IdleTimeout(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessIdleTimeoutLimit = limit;
 
-            if (this.m_iPreviousSuccessIdleTimeoutLimit == 0) {
+            if (this.m_iPreviousSuccessIdleTimeoutLimit == 0)
+            {
                 this.OnSettingResponse("vars.idletimeout 0", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.idletimeout", (decimal)this.m_iPreviousSuccessIdleTimeoutLimit, true);
                 this.OnSettingResponse("vars.idletimeout 0", false, true);
             }
         }
 
-        private void chkSettingsNoIdleKickLimit_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsNoIdleKickLimit_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlSettingsSetidleKickLimit.Enabled = !this.chkSettingsNoIdleKickLimit.Checked;
             this.pnlSettingsSetidleKickLimit.Visible = !this.chkSettingsNoIdleKickLimit.Checked;
 
             this.chkSettingsNoIdleBanRoundsLimit.Enabled = !this.chkSettingsNoIdleKickLimit.Checked;
             this.chkSettingsNoIdleBanRoundsLimit.Visible = !this.chkSettingsNoIdleKickLimit.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.idletimeout 0"].IgnoreEvent == false) {
-                if (this.chkSettingsNoIdleKickLimit.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.idletimeout 0"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsNoIdleKickLimit.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.idletimeout 0", !this.chkSettingsNoIdleKickLimit.Checked);
 
                     this.Client.Game.SendSetVarsIdleTimeoutPacket(0);
                     //this.SendCommand("vars.idleTimeout", "0");
                 }
-                if (this.chkSettingsNoIdleKickLimit.Checked == false) {
+                if (this.chkSettingsNoIdleKickLimit.Checked == false)
+                {
                     this.WaitForSettingResponse("vars.idletimeout 300", this.chkSettingsNoIdleKickLimit.Checked);
 
                     this.Client.Game.SendSetVarsIdleTimeoutPacket(300);
@@ -308,7 +343,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             }
         }
 
-        private void lnkSettingsSetidleKickLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsSetidleKickLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsIdleKickLimit.Focus();
             this.WaitForSettingResponse("vars.idletimeout", (decimal)this.m_iPreviousSuccessIdleTimeoutLimit);
 
@@ -320,32 +356,39 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region idleBanRounds
 
-        private void m_prcClient_IdleBanRounds(FrostbiteClient sender, int limit) {
+        private void m_prcClient_IdleBanRounds(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessIdleBanRoundsLimit = limit;
 
-            if (this.m_iPreviousSuccessIdleBanRoundsLimit == 0) {
+            if (this.m_iPreviousSuccessIdleBanRoundsLimit == 0)
+            {
                 this.OnSettingResponse("vars.idlebanrounds 0", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.idlebanrounds", (decimal)this.m_iPreviousSuccessIdleBanRoundsLimit, true);
                 this.OnSettingResponse("vars.idlebanrounds 0", false, true);
             }
         }
 
-        private void chkSettingsNoIdleBanRoundsLimit_CheckedChanged(object sender, EventArgs e) {
+        private void chkSettingsNoIdleBanRoundsLimit_CheckedChanged(object sender, EventArgs e)
+        {
             this.lnkSettingsSetIdleBanRoundsLimit.Enabled = !this.chkSettingsNoIdleBanRoundsLimit.Checked;
             this.lnkSettingsSetIdleBanRoundsLimit.Visible = !this.chkSettingsNoIdleBanRoundsLimit.Checked;
 
             this.numSettingsIdleBanRoundsLimit.Enabled = !this.chkSettingsNoIdleBanRoundsLimit.Checked;
             this.numSettingsIdleBanRoundsLimit.Visible = !this.chkSettingsNoIdleBanRoundsLimit.Checked;
 
-            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.idlebanrounds 0"].IgnoreEvent == false) {
-                if (this.chkSettingsNoIdleBanRoundsLimit.Checked == true) {
+            if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.idlebanrounds 0"].IgnoreEvent == false)
+            {
+                if (this.chkSettingsNoIdleBanRoundsLimit.Checked == true)
+                {
                     this.WaitForSettingResponse("vars.idlebanrounds 0", !this.chkSettingsNoIdleBanRoundsLimit.Checked);
 
                     this.Client.Game.SendSetVarsIdleBanRoundsPacket(0);
                 }
-                if (this.chkSettingsNoIdleBanRoundsLimit.Checked == false) {
+                if (this.chkSettingsNoIdleBanRoundsLimit.Checked == false)
+                {
                     this.WaitForSettingResponse("vars.idlebanrounds 2", this.chkSettingsNoIdleBanRoundsLimit.Checked);
 
                     this.Client.Game.SendSetVarsIdleBanRoundsPacket(2);
@@ -354,7 +397,8 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
             }
         }
 
-        private void lnkSettingsSetIdleBanRoundsLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSettingsSetIdleBanRoundsLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.numSettingsIdleBanRoundsLimit.Focus();
             this.WaitForSettingResponse("vars.idlebanrounds", (decimal)this.m_iPreviousSuccessIdleBanRoundsLimit);
 
@@ -364,13 +408,17 @@ namespace PRoCon.Controls.ServerSettings.BF3 {
 
         #region ReservedSlotsAggressiveJoin
 
-        private void Game_ReservedSlotsAggressiveJoin(FrostbiteClient sender, bool isEnabled) {
+        private void Game_ReservedSlotsAggressiveJoin(FrostbiteClient sender, bool isEnabled)
+        {
             this.OnSettingResponse("reservedslotslist.aggressivejoin", isEnabled, true);
         }
 
-        private void chkSettingsAggressiveJoin_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["reservedslotslist.aggressivejoin"].IgnoreEvent == false) {
+        private void chkSettingsAggressiveJoin_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["reservedslotslist.aggressivejoin"].IgnoreEvent == false)
+                {
                     this.WaitForSettingResponse("reservedslotslist.aggressivejoin", !this.chkSettingsAggressiveJoin.Checked);
 
                     this.Client.Game.SendSetReservedSlotsListAggressiveJoinPacket(this.chkSettingsAggressiveJoin.Checked);

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using PRoCon.Controls.Data;
+using System;
 using System.Windows.Forms;
-using PRoCon.Controls.Data;
 
-namespace PRoCon.Controls.ControlsEx {
-    public partial class Pagination : UserControl {
+namespace PRoCon.Controls.ControlsEx
+{
+    public partial class Pagination : UserControl
+    {
         /// <summary>
         /// The total number of items to display on each page.
         /// </summary>
@@ -17,19 +19,23 @@ namespace PRoCon.Controls.ControlsEx {
         /// <summary>
         /// The maximum number of pages.
         /// </summary>
-        public int MaximumPage {
+        public int MaximumPage
+        {
             get { return this.Source != null ? (int)Math.Ceiling((decimal)this.Source.Count / this.ItemsPerPage) : 1; }
         }
 
         /// <summary>
         /// Source of data 
         /// </summary>
-        public ISource Source {
+        public ISource Source
+        {
             get { return _source; }
-            set {
+            set
+            {
                 _source = value;
 
-                if (this._source != null) {
+                if (this._source != null)
+                {
                     this._source.Changed += SourceOnChanged;
                 }
             }
@@ -41,7 +47,8 @@ namespace PRoCon.Controls.ControlsEx {
         /// </summary>
         public event Action<Object, EventArgs> Changed;
 
-        public Pagination() {
+        public Pagination()
+        {
             InitializeComponent();
 
             this.CurrentPage = 1;
@@ -52,7 +59,8 @@ namespace PRoCon.Controls.ControlsEx {
         /// <summary>
         /// Disable all actions
         /// </summary>
-        protected void DisableAllActions() {
+        protected void DisableAllActions()
+        {
             this.First.Enabled = false;
             this.Previous.Enabled = false;
             this.Next.Enabled = false;
@@ -62,15 +70,18 @@ namespace PRoCon.Controls.ControlsEx {
         /// <summary>
         /// Enable all allowed actions
         /// </summary>
-        protected void EnableAllowedActions() {
+        protected void EnableAllowedActions()
+        {
             this.First.Enabled = this.CurrentPage != 1;
             this.Previous.Enabled = this.CurrentPage != 1;
             this.Next.Enabled = this.CurrentPage != this.MaximumPage;
             this.Last.Enabled = this.CurrentPage != this.MaximumPage;
         }
 
-        protected void UpdateSource() {
-            if (this.Source != null) {
+        protected void UpdateSource()
+        {
+            if (this.Source != null)
+            {
                 this.Source.Take = this.ItemsPerPage;
                 this.Source.Skip = (this.CurrentPage - 1) * this.ItemsPerPage;
             }
@@ -79,8 +90,10 @@ namespace PRoCon.Controls.ControlsEx {
         /// <summary>
         /// Disables all actions, then enables the allowed actions.
         /// </summary>
-        protected void Calculate() {
-            if (this.CurrentPage > this.MaximumPage) {
+        protected void Calculate()
+        {
+            if (this.CurrentPage > this.MaximumPage)
+            {
                 this.CurrentPage = this.MaximumPage == 0 ? 1 : this.MaximumPage;
             }
 
@@ -95,42 +108,49 @@ namespace PRoCon.Controls.ControlsEx {
         /// <summary>
         /// Fires off the current page change event
         /// </summary>
-        protected void OnChange() {
+        protected void OnChange()
+        {
             var handler = this.Changed;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, null);
             }
         }
 
-        private void First_Click(object sender, EventArgs e) {
+        private void First_Click(object sender, EventArgs e)
+        {
             this.CurrentPage = 1;
             this.Calculate();
 
             this.OnChange();
         }
 
-        private void Previous_Click(object sender, EventArgs e) {
+        private void Previous_Click(object sender, EventArgs e)
+        {
             this.CurrentPage = this.CurrentPage > 1 ? this.CurrentPage - 1 : 1;
             this.Calculate();
 
             this.OnChange();
         }
 
-        private void Next_Click(object sender, EventArgs e) {
+        private void Next_Click(object sender, EventArgs e)
+        {
             this.CurrentPage = this.CurrentPage < this.MaximumPage ? this.CurrentPage + 1 : this.MaximumPage;
             this.Calculate();
 
             this.OnChange();
         }
 
-        private void Last_Click(object sender, EventArgs e) {
+        private void Last_Click(object sender, EventArgs e)
+        {
             this.CurrentPage = this.MaximumPage;
             this.Calculate();
 
             this.OnChange();
         }
 
-        private void SourceOnChanged() {
+        private void SourceOnChanged()
+        {
             this.Calculate();
 
             this.OnChange();

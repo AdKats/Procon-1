@@ -20,35 +20,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
-namespace PRoCon.Core.Plugin {
-    using Core.Remote;
+namespace PRoCon.Core.Plugin
+{
     using System.Reflection;
-    using System.Security.Permissions;
 
     // Factory class to create objects exposing IPRoConPluginInterface
-    public class CPRoConPluginLoaderFactory : MarshalByRefObject {
-        protected List<IPRoConPluginInterface> LoadedPlugins; 
+    public class CPRoConPluginLoaderFactory : MarshalByRefObject
+    {
+        protected List<IPRoConPluginInterface> LoadedPlugins;
 
-        public override object InitializeLifetimeService() {
+        public override object InitializeLifetimeService()
+        {
             return null;
         }
 
-        public CPRoConPluginLoaderFactory() {
+        public CPRoConPluginLoaderFactory()
+        {
             this.LoadedPlugins = new List<IPRoConPluginInterface>();
         }
 
-        public IPRoConPluginInterface Create(string assemblyFile, string typeName, object[] constructArguments) {
-            IPRoConPluginInterface loadedPlugin = (IPRoConPluginInterface) Activator.CreateInstanceFrom(
-                assemblyFile, 
-                typeName, 
-                false, 
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, 
+        public IPRoConPluginInterface Create(string assemblyFile, string typeName, object[] constructArguments)
+        {
+            IPRoConPluginInterface loadedPlugin = (IPRoConPluginInterface)Activator.CreateInstanceFrom(
+                assemblyFile,
+                typeName,
+                false,
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance,
                 null,
                 constructArguments,
-                null, 
+                null,
                 null).Unwrap();
 
             this.LoadedPlugins.Add(loadedPlugin);
@@ -56,10 +58,12 @@ namespace PRoCon.Core.Plugin {
             return loadedPlugin;
         }
 
-        public Object ConditionallyInvokeOn(List<String> types, String methodName, params object[] parameters) {
+        public Object ConditionallyInvokeOn(List<String> types, String methodName, params object[] parameters)
+        {
             Object returnValue = null;
 
-            foreach (IPRoConPluginInterface plugin in this.LoadedPlugins.Where(plugin => types.Contains(plugin.ClassName) == true)) {
+            foreach (IPRoConPluginInterface plugin in this.LoadedPlugins.Where(plugin => types.Contains(plugin.ClassName) == true))
+            {
                 returnValue = plugin.Invoke(methodName, parameters);
             }
 

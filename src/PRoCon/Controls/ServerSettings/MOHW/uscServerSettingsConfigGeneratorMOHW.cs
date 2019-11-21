@@ -18,38 +18,38 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-
-namespace PRoCon.Controls.ServerSettings.MOHW {
-    using Core;
+namespace PRoCon.Controls.ServerSettings.MOHW
+{
     using Core.Remote;
-    public partial class uscServerSettingsConfigGeneratorMOHW : uscServerSettingsConfigGenerator {
+    public partial class uscServerSettingsConfigGeneratorMOHW : uscServerSettingsConfigGenerator
+    {
         public uscServerSettingsConfigGeneratorMOHW()
-            : base() {
+            : base()
+        {
             InitializeComponent();
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.Client_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(Client_GameTypeDiscovered);
                 }
             }
         }
 
-        private void Client_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void Client_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.ThirdPersonVehicleCameras += new FrostbiteClient.IsEnabledHandler(Client_ThirdPersonVehicleCameras);
                 // deprecated R-5 this.Client.Game.AllUnlocksUnlocked += new FrostbiteClient.IsEnabledHandler(Game_AllUnlocksUnlocked);
                 this.Client.Game.TeamBalance += new FrostbiteClient.IsEnabledHandler(Client_TeamBalance);
@@ -84,45 +84,55 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             });
         }
 
-        protected override void Game_Login(FrostbiteClient sender) {
+        protected override void Game_Login(FrostbiteClient sender)
+        {
             //base.Game_Login(sender);
 
             this.AppendPunkbusterActivation();
         }
 
-        private void AppendPunkbusterActivation() {
+        private void AppendPunkbusterActivation()
+        {
             this.AppendSetting("punkBuster.activate");
         }
 
-        private void Game_Playlist(FrostbiteClient sender, string playlist) {
+        private void Game_Playlist(FrostbiteClient sender, string playlist)
+        {
             this.AppendSetting("vars.playlist", playlist);
         }
-        
-        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit) {
+
+        void Game_PlayerRespawnTime(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.playerRespawnTime", limit.ToString());
         }
 
-        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundRestartPlayerCount(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundRestartPlayerCount", limit.ToString());
         }
 
-        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit) {
+        void Game_RoundStartPlayerCount(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.roundStartPlayerCount", limit.ToString());
         }
 
-        void Game_PlayerManDownTime(FrostbiteClient sender, int limit) {
+        void Game_PlayerManDownTime(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.playerManDownTime", limit.ToString());
         }
 
-        void Game_SoldierHealth(FrostbiteClient sender, int limit) {
+        void Game_SoldierHealth(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.soldierHealth", limit.ToString());
         }
 
-        void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled) {
+        void Game_RegenerateHealth(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.regenerateHealth", isEnabled.ToString());
         }
 
-        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled) {
+        void Client_ThirdPersonVehicleCameras(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.3pCam", isEnabled.ToString());
         }
         /* deprecated R-5
@@ -130,76 +140,92 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
             this.AppendSetting("vars.allUnlocksUnlocked", isEnabled.ToString());
         }
         */
-        void Game_BuddyOutline(FrostbiteClient sender, bool isEnabled) {
+        void Game_BuddyOutline(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.buddyOutline", isEnabled.ToString());
         }
 
-        void Game_BulletDamage(FrostbiteClient sender, int limit) {
+        void Game_BulletDamage(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.bulletDamage", limit.ToString());
         }
 
-        void Game_HudEnemyTag(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudEnemyTag(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudEnemyTag", isEnabled.ToString());
         }
 
-        void Game_HudExplosiveIcons(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudExplosiveIcons(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudExplosiveIcons", isEnabled.ToString());
         }
 
-        void Game_HudGameMode(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudGameMode(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudGameMode", isEnabled.ToString());
         }
 
-        void Game_HudCrosshair(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudCrosshair(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudCrosshair", isEnabled.ToString());
         }
 
-        void Game_HudHealthAmmo(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudHealthAmmo(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudHealthAmmo", isEnabled.ToString());
         }
 
-        void Game_HudMinimap(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudMinimap(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudMinimap", isEnabled.ToString());
         }
 
-        void Game_HudObiturary(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudObiturary(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudObiturary", isEnabled.ToString());
         }
 
-        void Game_HudPointsTracker(FrostbiteClient sender, bool isEnabled)         {
+        void Game_HudPointsTracker(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudPointsTracker", isEnabled.ToString());
         }
 
-        void Game_HudUnlocks(FrostbiteClient sender, bool isEnabled) {
+        void Game_HudUnlocks(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.hudUnlocks", isEnabled.ToString());
         }
-        
+
         void Client_RankLimit(FrostbiteClient sender, int limit)
         {
             this.AppendSetting("vars.rankLimit", limit.ToString());
         }
 
-        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled) {
+        void Client_TeamBalance(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.autoBalance", isEnabled.ToString());
         }
 
-        void Client_KillCam(FrostbiteClient sender, bool isEnabled) {
+        void Client_KillCam(FrostbiteClient sender, bool isEnabled)
+        {
             this.AppendSetting("vars.killCam", isEnabled.ToString());
         }
 
 
-        void Game_GameModeCounter(FrostbiteClient sender, int limit) {
+        void Game_GameModeCounter(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.gameModeCounter", limit.ToString());
         }
 
-        protected override void Client_PlayerLimit(FrostbiteClient sender, int limit) {
+        protected override void Client_PlayerLimit(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.maxPlayers", limit.ToString());
         }
 
-        protected override void Client_IdleTimeout(FrostbiteClient sender, int limit) {
+        protected override void Client_IdleTimeout(FrostbiteClient sender, int limit)
+        {
             this.AppendSetting("vars.idleTimeout", limit.ToString());
         }
-        
+
         void Game_IdleBanRounds(FrostbiteClient sender, int limit)
         {
             this.AppendSetting("vars.idleBanRounds", limit.ToString());
@@ -211,6 +237,6 @@ namespace PRoCon.Controls.ServerSettings.MOHW {
         }
 
 
-        
+
     }
 }

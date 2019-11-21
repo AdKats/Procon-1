@@ -19,16 +19,14 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
 using System.IO;
+using System.Net;
 using System.Threading;
-using System.IO.Compression;
 
-namespace PRoCon.Core {
-    using Core.Remote;
-    public class CDownloadFile {
+namespace PRoCon.Core
+{
+    public class CDownloadFile
+    {
 
         public delegate void DownloadFileEventDelegate(CDownloadFile sender);
         public event DownloadFileEventDelegate DownloadComplete;
@@ -52,54 +50,70 @@ namespace PRoCon.Core {
         protected Timer ProgressTick { get; set; }
 
         private bool m_blFileDownloading;
-        public bool FileDownloading {
-            get {
+        public bool FileDownloading
+        {
+            get
+            {
                 return this.m_blFileDownloading;
             }
         }
 
-        public int BytesDownloaded {
-            get {
+        public int BytesDownloaded
+        {
+            get
+            {
                 return this.m_iReadBytes;
             }
         }
 
-        public int FileSize {
-            get {
+        public int FileSize
+        {
+            get
+            {
                 return this.m_iCompleteFileSize;
             }
         }
 
         private double m_dblKibPerSecond = 0.0;
-        public double KibPerSecond {
-            get {
+        public double KibPerSecond
+        {
+            get
+            {
                 return this.m_dblKibPerSecond;
             }
         }
 
-        public byte[] CompleteFileData {
-            get {
+        public byte[] CompleteFileData
+        {
+            get
+            {
                 return this.ma_bCompleteFile;
             }
         }
 
         private bool m_blUnknownSize;
-        public bool UnknownSize {
-            get {
+        public bool UnknownSize
+        {
+            get
+            {
                 return this.m_blUnknownSize;
             }
         }
 
         private object m_objData;
-        public object AdditionalData {
-            get {
+        public object AdditionalData
+        {
+            get
+            {
                 return m_objData;
             }
         }
 
         private string m_strLastError;
-        public string Error {
-            get {
+        public string Error
+        {
+            get
+            {
                 return this.m_strLastError;
             }
         }
@@ -108,24 +122,31 @@ namespace PRoCon.Core {
         /// <summary>
         /// ReadTimeout of the stream in milliseconds.  Default is 10 seconds.
         /// </summary>
-        public int Timeout {
-            get {
+        public int Timeout
+        {
+            get
+            {
                 return this.m_iTimeout;
             }
-            set {
+            set
+            {
                 this.m_iTimeout = value;
 
-                if (this.m_stmResponseStream != null) {
+                if (this.m_stmResponseStream != null)
+                {
                     this.m_stmResponseStream.ReadTimeout = value;
                 }
             }
         }
 
-        public string FileName {
-            get {
+        public string FileName
+        {
+            get
+            {
                 string strReturnFileName = String.Empty;
 
-                if (this.m_strDownloadSource.Length > 0) {
+                if (this.m_strDownloadSource.Length > 0)
+                {
                     strReturnFileName = this.m_strDownloadSource.Substring(this.m_strDownloadSource.LastIndexOf("/") + 1, (this.m_strDownloadSource.Length - this.m_strDownloadSource.LastIndexOf("/") - 1));
                 }
 
@@ -133,41 +154,50 @@ namespace PRoCon.Core {
             }
         }
 
-        public CDownloadFile(string strDownloadSource) {
+        public CDownloadFile(string strDownloadSource)
+        {
             this.m_strDownloadSource = strDownloadSource;
 
             this.m_iTimeout = 10000;
         }
 
-        public CDownloadFile(string strDownloadSource, object objData) {
+        public CDownloadFile(string strDownloadSource, object objData)
+        {
             this.m_strDownloadSource = strDownloadSource;
             this.m_objData = objData;
 
             this.m_iTimeout = 10000;
         }
 
-        public void EndDownload() {
+        public void EndDownload()
+        {
             this.m_blFileDownloading = false;
         }
 
-        public string GetLabelProgress() {
+        public string GetLabelProgress()
+        {
             return String.Format("{0:0.0} KiB of {1:0.0} KiB @ {2:0.0} KiB/s", this.m_iReadBytes / 1024, this.m_iCompleteFileSize / 1024, this.m_dblKibPerSecond);
         }
 
-        private void RequestTimeoutCallback(object objState, bool blTimedOut) {
-            if (blTimedOut == true) {
+        private void RequestTimeoutCallback(object objState, bool blTimedOut)
+        {
+            if (blTimedOut == true)
+            {
                 CDownloadFile cdfParent = (CDownloadFile)objState;
-                if (cdfParent != null) {
+                if (cdfParent != null)
+                {
                     cdfParent.m_wrRequest.Abort();
                 }
             }
         }
 
-        public void BeginDownload() {
+        public void BeginDownload()
+        {
             new Thread(new ThreadStart(this.BeginDownloadCallback)).Start();
         }
 
-        private void BeginDownloadCallback() {
+        private void BeginDownloadCallback()
+        {
 
             this.m_blUnknownSize = true;
 
@@ -178,7 +208,8 @@ namespace PRoCon.Core {
 
             this.ma_bBufferStream = new byte[CDownloadFile.INT_BUFFER_SIZE];
 
-            try {
+            try
+            {
                 this.m_wrRequest = (HttpWebRequest)HttpWebRequest.Create(this.m_strDownloadSource);
                 this.m_wrRequest.Referer = "http://www.phogue.net/procon/";
                 this.m_wrRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
@@ -188,7 +219,8 @@ namespace PRoCon.Core {
             }
             catch (Exception e) { }
 
-            if (this.m_wrRequest != null) {
+            if (this.m_wrRequest != null)
+            {
                 IAsyncResult arResult = this.m_wrRequest.BeginGetResponse(new AsyncCallback(this.ResponseCallback), this);
                 ThreadPool.RegisterWaitForSingleObject(arResult.AsyncWaitHandle, new WaitOrTimerCallback(this.RequestTimeoutCallback), this, this.m_iTimeout, true);
 
@@ -196,20 +228,24 @@ namespace PRoCon.Core {
             }
         }
 
-        private void ResponseCallback(IAsyncResult ar) {
+        private void ResponseCallback(IAsyncResult ar)
+        {
             CDownloadFile cdfParent = (CDownloadFile)ar.AsyncState;
 
-            try {
+            try
+            {
                 cdfParent.m_wrResponse = cdfParent.m_wrRequest.EndGetResponse(ar);
 
                 string strContentLength = null;
-                if ((strContentLength = cdfParent.m_wrResponse.Headers["Content-Length"]) != null) {
+                if ((strContentLength = cdfParent.m_wrResponse.Headers["Content-Length"]) != null)
+                {
                     cdfParent.m_iCompleteFileSize = Convert.ToInt32(strContentLength);
                     cdfParent.ma_bCompleteFile = new byte[cdfParent.m_iCompleteFileSize];
 
                     cdfParent.m_blUnknownSize = false;
 
-                    if (cdfParent.DownloadDiscoveredFileSize != null) {
+                    if (cdfParent.DownloadDiscoveredFileSize != null)
+                    {
                         //cdfParent.DownloadDiscoveredFileSize(cdfParent);
 
                         cdfParent.DownloadDiscoveredFileSize(cdfParent);
@@ -224,9 +260,11 @@ namespace PRoCon.Core {
 
                 ThreadPool.RegisterWaitForSingleObject(arResult.AsyncWaitHandle, new WaitOrTimerCallback(cdfParent.ReadTimeoutCallback), cdfParent, cdfParent.m_iTimeout, true);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 cdfParent.m_blFileDownloading = false;
-                if (cdfParent.DownloadError != null) {
+                if (cdfParent.DownloadError != null)
+                {
                     cdfParent.m_strLastError = e.Message;
 
                     cdfParent.DownloadError(cdfParent);
@@ -235,13 +273,17 @@ namespace PRoCon.Core {
             }
         }
 
-        private void ReadTimeoutCallback(object objState, bool blTimedOut) {
-            if (blTimedOut == true) {
+        private void ReadTimeoutCallback(object objState, bool blTimedOut)
+        {
+            if (blTimedOut == true)
+            {
                 CDownloadFile cdfParent = (CDownloadFile)objState;
-                if (cdfParent != null && cdfParent.m_stmResponseStream != null) {
+                if (cdfParent != null && cdfParent.m_stmResponseStream != null)
+                {
                     cdfParent.m_stmResponseStream.Close();
 
-                    if (cdfParent.DownloadError != null) {
+                    if (cdfParent.DownloadError != null)
+                    {
                         cdfParent.m_strLastError = "Read Timeout";
 
                         cdfParent.DownloadError(cdfParent);
@@ -251,17 +293,22 @@ namespace PRoCon.Core {
             }
         }
 
-        private void ReadCallBack(IAsyncResult ar) {
+        private void ReadCallBack(IAsyncResult ar)
+        {
             CDownloadFile cdfParent = (CDownloadFile)ar.AsyncState;
 
-            if (cdfParent.m_blFileDownloading == true) {
-                try {
+            if (cdfParent.m_blFileDownloading == true)
+            {
+                try
+                {
 
                     int iBytesRead = -1;
-                    if ((iBytesRead = cdfParent.m_stmResponseStream.EndRead(ar)) > 0) {
+                    if ((iBytesRead = cdfParent.m_stmResponseStream.EndRead(ar)) > 0)
+                    {
 
 
-                        if (this.CompleteFileData.Length < this.BytesDownloaded + iBytesRead) {
+                        if (this.CompleteFileData.Length < this.BytesDownloaded + iBytesRead)
+                        {
                             byte[] resizedFileData = new byte[this.CompleteFileData.Length + iBytesRead];
 
                             this.CompleteFileData.CopyTo(resizedFileData, 0);
@@ -276,10 +323,12 @@ namespace PRoCon.Core {
 
                         ThreadPool.RegisterWaitForSingleObject(arResult.AsyncWaitHandle, new WaitOrTimerCallback(cdfParent.ReadTimeoutCallback), cdfParent, cdfParent.m_iTimeout, true);
                     }
-                    else {
+                    else
+                    {
 
                         cdfParent.m_blFileDownloading = false;
-                        if (cdfParent.DownloadComplete != null) {
+                        if (cdfParent.DownloadComplete != null)
+                        {
                             cdfParent.DownloadComplete(cdfParent);
                             //cdfParent.DownloadComplete(cdfParent);
                         }
@@ -289,9 +338,11 @@ namespace PRoCon.Core {
                         cdfParent.m_stmResponseStream = null;
                     }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     cdfParent.m_blFileDownloading = false;
-                    if (cdfParent.DownloadError != null) {
+                    if (cdfParent.DownloadError != null)
+                    {
                         cdfParent.m_strLastError = e.Message;
 
                         cdfParent.DownloadError(cdfParent);
@@ -305,17 +356,20 @@ namespace PRoCon.Core {
         private int[] a_iKiBytesPerTick = new int[50];
         private int iPreviousTickReadBytes = 0;
 
-        private void DownloadRateUpdater(Object obj) {
+        private void DownloadRateUpdater(Object obj)
+        {
 
             CDownloadFile cdfParent = ((CDownloadFile)obj);
 
-            if (((CDownloadFile) obj).FileDownloading == true) {
+            if (((CDownloadFile)obj).FileDownloading == true)
+            {
 
                 a_iKiBytesPerTick[iTickCount] = cdfParent.m_iReadBytes - iPreviousTickReadBytes;
                 iTickCount = (++iTickCount % 50);
 
                 cdfParent.m_dblKibPerSecond = 0.0;
-                foreach (int iKiBytesTick in a_iKiBytesPerTick) {
+                foreach (int iKiBytesTick in a_iKiBytesPerTick)
+                {
                     cdfParent.m_dblKibPerSecond += iKiBytesTick;
                 }
 
@@ -323,13 +377,15 @@ namespace PRoCon.Core {
 
                 iPreviousTickReadBytes = cdfParent.m_iReadBytes;
 
-                if (cdfParent.DownloadProgressUpdate != null && iPreviousTickReadBytes > 0) {
+                if (cdfParent.DownloadProgressUpdate != null && iPreviousTickReadBytes > 0)
+                {
                     //cdfParent.DownloadProgressUpdate(cdfParent);
 
                     cdfParent.DownloadProgressUpdate(cdfParent);
                 }
             }
-            else {
+            else
+            {
                 // Don't run again.
                 this.ProgressTick.Dispose();
             }

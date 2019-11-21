@@ -1,6 +1,9 @@
-﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers {
-    public class BfhlPacketDispatcher : LayerPacketDispatcher {
-        public BfhlPacketDispatcher(ILayerConnection connection) : base(connection) {
+﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers
+{
+    public class BfhlPacketDispatcher : LayerPacketDispatcher
+    {
+        public BfhlPacketDispatcher(ILayerConnection connection) : base(connection)
+        {
             this.RequestDelegates.Add("admin.eventsEnabled", this.DispatchEventsEnabledRequest);
 
             // vars.idleTimeout is already included in FrostbiteLayerClient
@@ -24,7 +27,7 @@
             this.RequestDelegates.Add("vars.roundStartPlayerCount", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.playerRespawnTime", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.gameModeCounter", this.DispatchVarsRequest);
-            
+
             this.RequestDelegates.Add("vars.roundLockdownCountdown", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.roundWarmupTimeout", this.DispatchVarsRequest);
 
@@ -88,9 +91,9 @@
             this.RequestDelegates.Add("fairFight.isActive", this.DispatchVarsRequest);
             this.RequestDelegates.Add("fairFight.activate", this.DispatchVarsRequest);
             this.RequestDelegates.Add("fairfight.deactivate", this.DispatchVarsRequest);
-            
+
             this.RequestDelegates.Add("vars.maxSpectators", this.DispatchVarsRequest);
-            
+
             this.RequestDelegates.Add("vars.hitIndicatorsEnabled", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.hacker", this.DispatchVarsRequest);
             this.RequestDelegates.Add("vars.serverType", this.DispatchVarsRequest);

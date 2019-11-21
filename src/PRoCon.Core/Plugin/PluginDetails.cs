@@ -20,9 +20,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Plugin {
+namespace PRoCon.Core.Plugin
+{
 
-    public class PluginDetails {
+    public class PluginDetails
+    {
 
         public String ClassName { get; set; }
         public String Name { get; set; }
@@ -34,7 +36,8 @@ namespace PRoCon.Core.Plugin {
         public List<CPluginVariable> DisplayPluginVariables;
         public List<CPluginVariable> PluginVariables;
 
-        public PluginDetails() {
+        public PluginDetails()
+        {
 
         }
     }

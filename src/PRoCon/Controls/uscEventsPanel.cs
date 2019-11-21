@@ -18,17 +18,19 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using PRoCon.Controls.ControlsEx;
 using PRoCon.Core;
 using PRoCon.Core.Events;
 using PRoCon.Core.Remote;
 using PRoCon.Forms;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
-namespace PRoCon.Controls {
-    public partial class uscEventsPanel : UserControl {
+namespace PRoCon.Controls
+{
+    public partial class uscEventsPanel : UserControl
+    {
 
         private frmMain m_frmMain;
         private uscServerConnection m_uscConnectionPanel;
@@ -40,19 +42,25 @@ namespace PRoCon.Controls {
 
         private ListViewColumnSorter m_lvwColumnSorter;
 
-        public void SetConnection(PRoConClient prcClient) {
-            if ((this.m_prcClient = prcClient) != null) {
-                if (this.m_prcClient.Game != null) {
+        public void SetConnection(PRoConClient prcClient)
+        {
+            if ((this.m_prcClient = prcClient) != null)
+            {
+                if (this.m_prcClient.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.m_prcClient.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_prcClient.EventsLogging.CapturedEvents.ItemAdded += new NotificationList<CapturableEvents>.ItemModifiedHandler(CapturedEvents_ItemAdded);
                 this.m_prcClient.EventsLogging.CapturedEvents.ItemRemoved += new NotificationList<CapturableEvents>.ItemModifiedHandler(CapturedEvents_ItemRemoved);
 
@@ -64,9 +72,11 @@ namespace PRoCon.Controls {
             });
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
 
-            if ((this.m_clocLanguage = clocLanguage) != null) {
+            if ((this.m_clocLanguage = clocLanguage) != null)
+            {
 
                 this.colSource.Text = this.m_clocLanguage.GetLocalized("uscEvents.colSource", null);
                 this.colTime.Text = this.m_clocLanguage.GetLocalized("uscEvents.colTime", null);
@@ -86,7 +96,8 @@ namespace PRoCon.Controls {
             }
         }
 
-        public uscEventsPanel() {
+        public uscEventsPanel()
+        {
             InitializeComponent();
             this.m_queListItems = new Queue<ListViewItem>();
 
@@ -94,7 +105,8 @@ namespace PRoCon.Controls {
             this.lsvEvents.ListViewItemSorter = this.m_lvwColumnSorter;
 
             ListViewItem lviNewCapture = null;
-            foreach (string strEvent in Enum.GetNames(typeof(CapturableEvents))) {
+            foreach (string strEvent in Enum.GetNames(typeof(CapturableEvents)))
+            {
                 this.cboEvents.Items.Add(strEvent);
                 lviNewCapture = new ListViewItem(strEvent);
                 lviNewCapture.Name = strEvent;
@@ -105,11 +117,13 @@ namespace PRoCon.Controls {
         }
 
         private bool isLoaded = false;
-        private void uscEventsPanel_Load(object sender, EventArgs e) {
+        private void uscEventsPanel_Load(object sender, EventArgs e)
+        {
 
             this.spltEvents.SplitterDistance = (int)(this.spltEvents.Width * 0.8);
 
-            if (isLoaded == false && this.m_prcClient != null && this.m_prcClient.EventsLogging != null) {
+            if (isLoaded == false && this.m_prcClient != null && this.m_prcClient.EventsLogging != null)
+            {
 
                 // it just fires the events again, saves messy coding elsewhere.
                 this.m_prcClient.EventsLogging.OptionsVisible = this.m_prcClient.EventsLogging.OptionsVisible;
@@ -118,7 +132,8 @@ namespace PRoCon.Controls {
 
                 this.lsvCapturedEvents.Items.Clear();
 
-                foreach (CapturableEvents ceCapturedEvents in this.m_prcClient.EventsLogging.CapturedEvents) {
+                foreach (CapturableEvents ceCapturedEvents in this.m_prcClient.EventsLogging.CapturedEvents)
+                {
                     ListViewItem lviNewCapture = new ListViewItem(ceCapturedEvents.ToString());
                     lviNewCapture.Name = ceCapturedEvents.ToString();
                     this.lsvCapturedEvents.Items.Add(lviNewCapture);
@@ -131,11 +146,13 @@ namespace PRoCon.Controls {
                 //this.m_queListItems.Clear();
 
                 ListViewItem lastAddedItem = null;
-                foreach (CapturedEvent ceEvent in this.m_prcClient.EventsLogging.LogEntries.ToArray()) {
+                foreach (CapturedEvent ceEvent in this.m_prcClient.EventsLogging.LogEntries.ToArray())
+                {
                     lastAddedItem = this.AddLoggedEvent(ceEvent);
                 }
 
-                if (lastAddedItem != null) {
+                if (lastAddedItem != null)
+                {
                     this.CleanUpLoggedEvents(lastAddedItem);
                 }
 
@@ -149,7 +166,8 @@ namespace PRoCon.Controls {
             this.lsvCapturedEvents.SetBounds(this.lsvCapturedEvents.Bounds.X, this.lsvCapturedEvents.Bounds.Y, this.lsvCapturedEvents.Bounds.Width, btncleareventbox.Bounds.Y - this.lsvCapturedEvents.Bounds.Y - 10);
         }
 
-        public void Initalize(frmMain frmMain, uscServerConnection uscConnectionPanel) {
+        public void Initalize(frmMain frmMain, uscServerConnection uscConnectionPanel)
+        {
             this.m_frmMain = frmMain;
             this.m_uscConnectionPanel = uscConnectionPanel;
 
@@ -164,27 +182,33 @@ namespace PRoCon.Controls {
             this.picOpenCloseCaptures.Image = this.m_frmMain.iglIcons.Images["arrow_right.png"];
         }
 
-        private ListViewItem CreateLoggedEvent(CapturedEvent ceEvent) {
+        private ListViewItem CreateLoggedEvent(CapturedEvent ceEvent)
+        {
 
             ListViewItem lviNewEvent = new ListViewItem();
 
-            if (ceEvent.EventType == EventType.Game) {
+            if (ceEvent.EventType == EventType.Game)
+            {
                 lviNewEvent.ImageKey = "bfbc2server.png";
                 lviNewEvent.Text = "Game";
             }
-            else if (ceEvent.EventType == EventType.Plugins) {
+            else if (ceEvent.EventType == EventType.Plugins)
+            {
                 lviNewEvent.ImageKey = "plugin.png";
                 lviNewEvent.Text = "Plugins";
             }
-            else if (ceEvent.EventType == EventType.Connection) {
+            else if (ceEvent.EventType == EventType.Connection)
+            {
                 lviNewEvent.ImageKey = "connect.png";
                 lviNewEvent.Text = "Connection";
             }
-            else if (ceEvent.EventType == EventType.Playerlist) {
+            else if (ceEvent.EventType == EventType.Playerlist)
+            {
                 lviNewEvent.ImageKey = "mouse.png";
                 lviNewEvent.Text = "Playerlist";
             }
-            else if (ceEvent.EventType == EventType.Layer) {
+            else if (ceEvent.EventType == EventType.Layer)
+            {
                 lviNewEvent.ImageKey = "layer.png";
                 lviNewEvent.Text = "Layer";
             }
@@ -212,7 +236,8 @@ namespace PRoCon.Controls {
             return lviNewEvent;
         }
 
-        private ListViewItem AddLoggedEvent(CapturedEvent ceEvent) {
+        private ListViewItem AddLoggedEvent(CapturedEvent ceEvent)
+        {
 
             ListViewItem lviNewEvent = this.CreateLoggedEvent(ceEvent);
 
@@ -222,25 +247,31 @@ namespace PRoCon.Controls {
             return lviNewEvent;
         }
 
-        private void CleanUpLoggedEvents(ListViewItem newEventItem) {
+        private void CleanUpLoggedEvents(ListViewItem newEventItem)
+        {
 
-            while (this.m_queListItems.Count > this.numMaximumEvents.Value) {
+            while (this.m_queListItems.Count > this.numMaximumEvents.Value)
+            {
                 this.lsvEvents.Items.Remove(this.m_queListItems.Dequeue());
             }
 
             this.lsvEvents.Sort();
 
-            if (this.m_prcClient.EventsLogging.ScrollingEnabled == true) {
+            if (this.m_prcClient.EventsLogging.ScrollingEnabled == true)
+            {
                 newEventItem.EnsureVisible();
             }
 
-            foreach (ColumnHeader ch in this.lsvEvents.Columns) {
+            foreach (ColumnHeader ch in this.lsvEvents.Columns)
+            {
                 ch.Width = -2;
             }
         }
 
-        private void LoggedEvents_LoggedEvent(CapturedEvent ceEvent) {
-            this.InvokeIfRequired(() => {
+        private void LoggedEvents_LoggedEvent(CapturedEvent ceEvent)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.lsvEvents.BeginUpdate();
 
                 this.CleanUpLoggedEvents(this.AddLoggedEvent(ceEvent));
@@ -249,32 +280,42 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void CapturedEvents_ItemAdded(int iIndex, CapturableEvents item) {
-            this.InvokeIfRequired(() => {
+        private void CapturedEvents_ItemAdded(int iIndex, CapturableEvents item)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 ListViewItem lviNewCapture = new ListViewItem(item.ToString());
                 lviNewCapture.Name = item.ToString();
                 this.lsvCapturedEvents.Items.Add(lviNewCapture);
             });
         }
 
-        private void CapturedEvents_ItemRemoved(int iIndex, CapturableEvents item) {
-            this.InvokeIfRequired(() => {
-                if (this.lsvCapturedEvents.Items.ContainsKey(item.ToString()) == true) {
+        private void CapturedEvents_ItemRemoved(int iIndex, CapturableEvents item)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.lsvCapturedEvents.Items.ContainsKey(item.ToString()) == true)
+                {
                     this.lsvCapturedEvents.Items.Remove(this.lsvCapturedEvents.Items[item.ToString()]);
                 }
             });
         }
 
-        private void LoggedEvents_OptionsHiddenChange(bool isVisible) {
-            this.InvokeIfRequired(() => {
-                if (this.m_frmMain != null) {
+        private void LoggedEvents_OptionsHiddenChange(bool isVisible)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this.m_frmMain != null)
+                {
 
-                    if (isVisible == true) {
+                    if (isVisible == true)
+                    {
                         this.lnkShowHide.Text = this.lnkShowHide.Text = this.m_clocLanguage.GetLocalized("uscEvents.lnkShowHide.Hide", null);
                         this.picOpenCloseCaptures.Image = this.m_frmMain.iglIcons.Images["arrow_right.png"];
                         spltEvents.Panel2Collapsed = false;
                     }
-                    else {
+                    else
+                    {
                         this.lnkShowHide.Text = this.lnkShowHide.Text = this.m_clocLanguage.GetLocalized("uscEvents.lnkShowHide.Show", null);
                         this.picOpenCloseCaptures.Image = this.m_frmMain.iglIcons.Images["arrow_left.png"];
                         spltEvents.Panel2Collapsed = true;
@@ -283,14 +324,18 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void LoggedEvents_MaximumDisplayedEventsChange(int maximumDisplayedEvents) {
-            this.InvokeIfRequired(() => {
-                if (maximumDisplayedEvents >= this.numMaximumEvents.Minimum && maximumDisplayedEvents <= this.numMaximumEvents.Maximum) {
-                    this.numMaximumEvents.Value = (decimal) maximumDisplayedEvents;
+        private void LoggedEvents_MaximumDisplayedEventsChange(int maximumDisplayedEvents)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (maximumDisplayedEvents >= this.numMaximumEvents.Minimum && maximumDisplayedEvents <= this.numMaximumEvents.Maximum)
+                {
+                    this.numMaximumEvents.Value = (decimal)maximumDisplayedEvents;
 
                     this.lsvEvents.BeginUpdate();
 
-                    while (this.m_queListItems.Count > this.numMaximumEvents.Value) {
+                    while (this.m_queListItems.Count > this.numMaximumEvents.Value)
+                    {
                         this.lsvEvents.Items.Remove(this.m_queListItems.Dequeue());
                     }
 
@@ -299,59 +344,75 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void LoggedEvents_ScrollingEnabledChange(bool isEnabled) {
+        private void LoggedEvents_ScrollingEnabledChange(bool isEnabled)
+        {
             this.InvokeIfRequired(() => { this.chkEventsEnableScrolling.Checked = isEnabled; });
         }
 
-        private void picOpenCloseCaptures_Click(object sender, EventArgs e) {
+        private void picOpenCloseCaptures_Click(object sender, EventArgs e)
+        {
             this.m_prcClient.EventsLogging.OptionsVisible = !this.m_prcClient.EventsLogging.OptionsVisible;
         }
 
-        private void lnkShowHide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkShowHide_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.picOpenCloseCaptures_Click(sender, e);
         }
 
-        private void cboEvents_SelectedIndexChanged(object sender, EventArgs e) {
+        private void cboEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (this.m_prcClient != null) {
-                if (this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), (string)cboEvents.SelectedItem)) == false) {
+            if (this.m_prcClient != null)
+            {
+                if (this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), (string)cboEvents.SelectedItem)) == false)
+                {
                     this.btnAddCapture.Enabled = true;
                 }
-                else {
+                else
+                {
                     this.btnAddCapture.Enabled = false;
                 }
             }
         }
 
-        private void lsvCapturedEvents_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lsvCapturedEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (this.lsvCapturedEvents.SelectedItems.Count > 0) {
+            if (this.lsvCapturedEvents.SelectedItems.Count > 0)
+            {
                 this.btnRemoveCapture.Enabled = true;
             }
-            else if (this.lsvCapturedEvents.FocusedItem != null) {
+            else if (this.lsvCapturedEvents.FocusedItem != null)
+            {
                 this.btnRemoveCapture.Enabled = false;
             }
 
         }
 
-        private void btnRemoveCapture_Click(object sender, EventArgs e) {
+        private void btnRemoveCapture_Click(object sender, EventArgs e)
+        {
 
-            if (this.lsvCapturedEvents.SelectedItems.Count > 0) {
+            if (this.lsvCapturedEvents.SelectedItems.Count > 0)
+            {
 
-                if (Enum.IsDefined(typeof(CapturableEvents), this.lsvCapturedEvents.SelectedItems[0].Text) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), this.lsvCapturedEvents.SelectedItems[0].Text)) == true) {
+                if (Enum.IsDefined(typeof(CapturableEvents), this.lsvCapturedEvents.SelectedItems[0].Text) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), this.lsvCapturedEvents.SelectedItems[0].Text)) == true)
+                {
 
                     int iCurrentIndex = this.lsvCapturedEvents.SelectedItems[0].Index;
                     this.m_prcClient.EventsLogging.CapturedEvents.Remove((CapturableEvents)Enum.Parse(typeof(CapturableEvents), this.lsvCapturedEvents.SelectedItems[0].Text));
 
-                    if (this.lsvCapturedEvents.Items.Count > 0) {
+                    if (this.lsvCapturedEvents.Items.Count > 0)
+                    {
                         this.lsvCapturedEvents.SelectedIndices.Clear();
                         this.lsvCapturedEvents.SelectedIndices.Add(Math.Min(iCurrentIndex, this.lsvCapturedEvents.Items.Count - 1));
                     }
 
-                    if (this.lsvCapturedEvents.Items.ContainsKey((string)cboEvents.SelectedItem) == false) {
+                    if (this.lsvCapturedEvents.Items.ContainsKey((string)cboEvents.SelectedItem) == false)
+                    {
                         this.btnAddCapture.Enabled = true;
                     }
-                    else {
+                    else
+                    {
                         this.btnAddCapture.Enabled = false;
                     }
                 }
@@ -359,22 +420,28 @@ namespace PRoCon.Controls {
 
         }
 
-        private void numMaximumEvents_ValueChanged(object sender, EventArgs e) {
+        private void numMaximumEvents_ValueChanged(object sender, EventArgs e)
+        {
             this.m_prcClient.EventsLogging.MaximumDisplayedEvents = (int)this.numMaximumEvents.Value;
         }
 
-        private void lsvEvents_ColumnClick(object sender, ColumnClickEventArgs e) {
+        private void lsvEvents_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
             // Determine if clicked column is already the column that is being sorted.
-            if (e.Column == this.m_lvwColumnSorter.SortColumn) {
+            if (e.Column == this.m_lvwColumnSorter.SortColumn)
+            {
                 // Reverse the current sort direction for this column.
-                if (this.m_lvwColumnSorter.Order == SortOrder.Ascending) {
+                if (this.m_lvwColumnSorter.Order == SortOrder.Ascending)
+                {
                     this.m_lvwColumnSorter.Order = SortOrder.Descending;
                 }
-                else {
+                else
+                {
                     this.m_lvwColumnSorter.Order = SortOrder.Ascending;
                 }
             }
-            else {
+            else
+            {
                 // Set the column number that is to be sorted; default to ascending.
                 this.m_lvwColumnSorter.SortColumn = e.Column;
                 this.m_lvwColumnSorter.Order = SortOrder.Ascending;
@@ -384,9 +451,11 @@ namespace PRoCon.Controls {
             this.lsvEvents.Sort();
         }
 
-        private void btnAddCapture_Click(object sender, EventArgs e) {
+        private void btnAddCapture_Click(object sender, EventArgs e)
+        {
 
-            if (Enum.IsDefined(typeof(CapturableEvents), (string)cboEvents.SelectedItem) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), (string)cboEvents.SelectedItem)) == false) {
+            if (Enum.IsDefined(typeof(CapturableEvents), (string)cboEvents.SelectedItem) == true && this.m_prcClient.EventsLogging.CapturedEvents.Contains((CapturableEvents)Enum.Parse(typeof(CapturableEvents), (string)cboEvents.SelectedItem)) == false)
+            {
                 this.m_prcClient.EventsLogging.CapturedEvents.Add((CapturableEvents)Enum.Parse(typeof(CapturableEvents), (string)cboEvents.SelectedItem));
 
                 cboEvents.Focus();
@@ -396,17 +465,20 @@ namespace PRoCon.Controls {
 
         }
 
-        private void btncleareventbox_Click(object sender, EventArgs e) {
+        private void btncleareventbox_Click(object sender, EventArgs e)
+        {
             this.lsvEvents.BeginUpdate();
 
-            while (this.m_queListItems.Count > 0) {
+            while (this.m_queListItems.Count > 0)
+            {
                 this.lsvEvents.Items.Remove(this.m_queListItems.Dequeue());
             }
 
             this.lsvEvents.EndUpdate();
         }
 
-        private void chkEventsEnableScrolling_CheckedChanged(object sender, EventArgs e) {
+        private void chkEventsEnableScrolling_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_prcClient.EventsLogging.ScrollingEnabled = this.chkEventsEnableScrolling.Checked;
         }
     }

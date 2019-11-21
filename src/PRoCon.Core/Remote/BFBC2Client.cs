@@ -20,9 +20,12 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace PRoCon.Core.Remote {
-    public class BFBC2Client : BFClient {
-        public BFBC2Client(FrostbiteConnection connection) : base(connection) {
+namespace PRoCon.Core.Remote
+{
+    public class BFBC2Client : BFClient
+    {
+        public BFBC2Client(FrostbiteConnection connection) : base(connection)
+        {
             #region Map list functions
 
             ResponseDelegates.Add("admin.getPlaylist", DispatchAdminGetPlaylistResponse);
@@ -48,11 +51,13 @@ namespace PRoCon.Core.Remote {
             GetPacketsPattern = new Regex(GetPacketsPattern + "|^admin.getPlaylist|^reservedSlots.list", RegexOptions.Compiled);
         }
 
-        public override string GameType {
+        public override string GameType
+        {
             get { return "BFBC2"; }
         }
 
-        public override void FetchStartupVariables() {
+        public override void FetchStartupVariables()
+        {
             base.FetchStartupVariables();
 
             SendGetVarsBannerUrlPacket();
@@ -97,37 +102,51 @@ namespace PRoCon.Core.Remote {
 
         #region Overridden Response Handlers
 
-        protected override void DispatchPlayerOnSpawnRequest(FrostbiteConnection sender, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 9) {
-                if (PlayerSpawned != null) {
+        protected override void DispatchPlayerOnSpawnRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 9)
+            {
+                if (PlayerSpawned != null)
+                {
                     this.PlayerSpawned(this, cpRequestPacket.Words[1], cpRequestPacket.Words[2], cpRequestPacket.Words.GetRange(3, 3), cpRequestPacket.Words.GetRange(6, 3)); // new Inventory(cpRequestPacket.Words[3], cpRequestPacket.Words[4], cpRequestPacket.Words[5], cpRequestPacket.Words[6], cpRequestPacket.Words[7], cpRequestPacket.Words[8]));
                 }
             }
         }
 
-        protected override void DispatchAdminSetPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 2) {
-                if (PlaylistSet != null) {
+        protected override void DispatchAdminSetPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 2)
+            {
+                if (PlaylistSet != null)
+                {
                     this.PlaylistSet(this, cpRequestPacket.Words[1]);
                 }
             }
         }
 
-        protected override void DispatchAdminGetPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1 && cpRecievedPacket.Words.Count >= 2) {
-                if (PlaylistSet != null) {
+        protected override void DispatchAdminGetPlaylistResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1 && cpRecievedPacket.Words.Count >= 2)
+            {
+                if (PlaylistSet != null)
+                {
                     this.PlaylistSet(this, cpRecievedPacket.Words[1]);
                 }
             }
         }
 
-        protected override void DispatchVarsRankLimitResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket) {
-            if (cpRequestPacket.Words.Count >= 1) {
-                if (RankLimit != null) {
-                    if (cpRecievedPacket.Words.Count == 2) {
+        protected override void DispatchVarsRankLimitResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
+        {
+            if (cpRequestPacket.Words.Count >= 1)
+            {
+                if (RankLimit != null)
+                {
+                    if (cpRecievedPacket.Words.Count == 2)
+                    {
                         this.RankLimit(this, Convert.ToInt32(cpRecievedPacket.Words[1]));
                     }
-                    else if (cpRequestPacket.Words.Count >= 2) {
+                    else if (cpRequestPacket.Words.Count >= 2)
+                    {
                         this.RankLimit(this, Convert.ToInt32(cpRequestPacket.Words[1]));
                     }
                 }

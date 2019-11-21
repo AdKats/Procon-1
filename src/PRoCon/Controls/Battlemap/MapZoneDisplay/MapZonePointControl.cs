@@ -17,35 +17,36 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap.MapZoneDisplay {
-    using Core.Battlemap;
+namespace PRoCon.Controls.Battlemap.MapZoneDisplay
+{
     using Core;
 
-    public class MapZonePointControl : MapObject, IMapZonePoints {
+    public class MapZonePointControl : MapObject, IMapZonePoints
+    {
 
         public delegate void MapZonePointControlDragHandler(MapZonePointControl sender);
         public event MapZonePointControlDragHandler MapZonePointDropped;
 
-        public bool IsPointSelected {
-            get {
+        public bool IsPointSelected
+        {
+            get
+            {
                 return this.m_isMouseDown;
             }
         }
 
         private PointF m_zonePoint;
-        public PointF ZonePoint {
-            get {
+        public PointF ZonePoint
+        {
+            get
+            {
                 return this.m_zonePoint;
             }
-            set {
+            set
+            {
                 this.m_zonePoint = value;
                 this.ObjectPath = new GraphicsPath();
 
@@ -57,48 +58,59 @@ namespace PRoCon.Controls.Battlemap.MapZoneDisplay {
             }
         }
 
-        public Point3D ToPoint3D() {
+        public Point3D ToPoint3D()
+        {
             return new Point3D((int)this.ZonePoint.X, (int)this.ZonePoint.Y, 0);
         }
 
-        public MapZonePointControl(PointF point) {
+        public MapZonePointControl(PointF point)
+        {
             this.ZonePoint = point;
 
         }
 
-        protected override void MouseOver(Graphics g) {
+        protected override void MouseOver(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.Blue);
         }
 
-        protected override void MouseLeave(Graphics g) {
+        protected override void MouseLeave(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.WhiteSmoke);
         }
 
-        protected override void MouseDown(Graphics g) {
+        protected override void MouseDown(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.WhiteSmoke);
         }
 
-        protected override void MouseUp(Graphics g) {
+        protected override void MouseUp(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.WhiteSmoke);
         }
 
-        protected override void MouseClicked(Graphics g) {
+        protected override void MouseClicked(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.WhiteSmoke);
         }
 
-        protected override void NormalPaint(Graphics g) {
+        protected override void NormalPaint(Graphics g)
+        {
             this.DrawBwShape(g, 1.0F, 4.0F, Color.Black, Color.WhiteSmoke);
         }
 
-        protected override void EndDrag() {
-            if (this.MapZonePointDropped != null) {
+        protected override void EndDrag()
+        {
+            if (this.MapZonePointDropped != null)
+            {
                 this.MapZonePointDropped(this);
             }
         }
 
         #region IMapZonePoints Members
 
-        public void translate(float x, float y) {
+        public void translate(float x, float y)
+        {
             this.ZonePoint = new PointF(this.ZonePoint.X + x, this.ZonePoint.Y + y);
         }
 

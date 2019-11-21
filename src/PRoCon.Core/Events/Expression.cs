@@ -1,14 +1,17 @@
-﻿using System;
+﻿using PRoCon.Core.Remote;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using PRoCon.Core.Remote;
 
-namespace PRoCon.Core.Events {
-    public class Expression {
+namespace PRoCon.Core.Events
+{
+    public class Expression
+    {
         protected PRoConClient Client;
 
-        public Expression(PRoConClient prcClient, string strExpression) {
+        public Expression(PRoConClient prcClient, string strExpression)
+        {
             TextExpression = strExpression;
             //this.m_prcClient = prcClient;
 
@@ -38,10 +41,12 @@ namespace PRoCon.Core.Events {
         ///     Converts "2 * (4 + 5) > 9" to "> * + 4 5 2 9"
         /// </summary>
         /// <returns></returns>
-        private void CompileExpression() {
+        private void CompileExpression()
+        {
         }
 
-        private object EvalOperator(string strOperator, string strLeft, string strRight) {
+        private object EvalOperator(string strOperator, string strLeft, string strRight)
+        {
             object objReturn = null;
 
             double dblLeft = 0, dblRight = 0;
@@ -50,86 +55,105 @@ namespace PRoCon.Core.Events {
             bool isNumeric = double.TryParse(strLeft, out dblLeft) && double.TryParse(strRight, out dblRight);
             bool isBoolean = bool.TryParse(strLeft, out blLeft) && bool.TryParse(strRight, out blRight);
 
-            switch (strOperator) {
+            switch (strOperator)
+            {
                 case "/":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft / dblRight);
                     }
                     break;
                 case "*":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft * dblRight);
                     }
                     break;
                 case "-":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft - dblRight);
                     }
                     break;
                 case "+":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft + dblRight);
                     }
                     break;
                 case "%":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft % dblRight);
                     }
                     break;
                 case "<":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft < dblRight);
                     }
                     break;
                 case "<=":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft <= dblRight);
                     }
                     break;
                 case ">":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft > dblRight);
                     }
                     break;
                 case ">=":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft >= dblRight);
                     }
                     break;
                 case "==":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft == dblRight);
                     }
-                    else if (isBoolean == true) {
+                    else if (isBoolean == true)
+                    {
                         objReturn = (blLeft == blRight);
                     }
-                    else {
+                    else
+                    {
                         objReturn = System.String.CompareOrdinal(strLeft, strRight);
                     }
                     break;
                 case "!=":
-                    if (isNumeric == true) {
+                    if (isNumeric == true)
+                    {
                         objReturn = (dblLeft != dblRight);
                     }
-                    else if (isBoolean == true) {
+                    else if (isBoolean == true)
+                    {
                         objReturn = (blLeft != blRight);
                     }
                     break;
                 case "&&":
-                    if (isBoolean == true) {
+                    if (isBoolean == true)
+                    {
                         objReturn = (blLeft && blRight);
                     }
                     break;
                 case "||":
-                    if (isBoolean == true) {
+                    if (isBoolean == true)
+                    {
                         objReturn = (blLeft || blRight);
                     }
                     break;
                 case "=":
                     Match mtcVariable;
 
-                    if ((mtcVariable = Regex.Match(strLeft, "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true) {
-                        if (mtcVariable.Groups.Count >= 2) {
+                    if ((mtcVariable = Regex.Match(strLeft, "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true)
+                    {
+                        if (mtcVariable.Groups.Count >= 2)
+                        {
                             Client.Variables.SetVariable(mtcVariable.Groups["variable"].Value, strRight);
                         }
                     }
@@ -144,46 +168,57 @@ namespace PRoCon.Core.Events {
             return objReturn;
         }
 
-        public T Evaluate<T>() {
+        public T Evaluate<T>()
+        {
             T tReturn = default(T);
 
             List<string> lstExpression = Packet.Wordify(TextExpression);
 
-            while (lstExpression.Count >= 3) {
+            while (lstExpression.Count >= 3)
+            {
                 object objOperatorResult = null;
 
-                for (int i = 0; i < lstExpression.Count; i++) {
-                    if (Operators.Contains(lstExpression[i]) == true && Operators.Contains(lstExpression[i + 1]) == false && Operators.Contains(lstExpression[i + 2]) == false) {
+                for (int i = 0; i < lstExpression.Count; i++)
+                {
+                    if (Operators.Contains(lstExpression[i]) == true && Operators.Contains(lstExpression[i + 1]) == false && Operators.Contains(lstExpression[i + 2]) == false)
+                    {
                         Match mtcVariable;
 
-                        if (System.String.CompareOrdinal(lstExpression[i], "=") != 0 && (mtcVariable = Regex.Match(lstExpression[i + 1], "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true) {
-                            if (mtcVariable.Groups.Count >= 2) {
+                        if (System.String.CompareOrdinal(lstExpression[i], "=") != 0 && (mtcVariable = Regex.Match(lstExpression[i + 1], "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true)
+                        {
+                            if (mtcVariable.Groups.Count >= 2)
+                            {
                                 lstExpression[i + 1] = Client.Variables.GetVariable(mtcVariable.Groups["variable"].Value, "");
                             }
                         }
 
-                        if ((mtcVariable = Regex.Match(lstExpression[i + 2], "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true) {
-                            if (mtcVariable.Groups.Count >= 2) {
+                        if ((mtcVariable = Regex.Match(lstExpression[i + 2], "^procon\\.vars\\.(?<variable>.*)$", RegexOptions.IgnoreCase)).Success == true)
+                        {
+                            if (mtcVariable.Groups.Count >= 2)
+                            {
                                 lstExpression[i + 2] = Client.Variables.GetVariable(mtcVariable.Groups["variable"].Value, "");
                             }
                         }
 
                         objOperatorResult = EvalOperator(lstExpression[i], lstExpression[i + 1], lstExpression[i + 2]);
 
-                        if (objOperatorResult != null) {
+                        if (objOperatorResult != null)
+                        {
                             lstExpression.RemoveRange(i, 3);
                             lstExpression.Insert(i, Convert.ToString(objOperatorResult));
                         }
-                        else {
+                        else
+                        {
                             throw new Exception(String.Format("Error in expression {0} {1} {2}", lstExpression[i], lstExpression[i + 1], lstExpression[i + 2]));
                         }
                     }
                 }
             }
 
-            TypeConverter tycPossible = TypeDescriptor.GetConverter(typeof (T));
-            if (lstExpression[0].Length > 0 && tycPossible.CanConvertFrom(typeof (string)) == true) {
-                tReturn = (T) tycPossible.ConvertFrom(lstExpression[0]);
+            TypeConverter tycPossible = TypeDescriptor.GetConverter(typeof(T));
+            if (lstExpression[0].Length > 0 && tycPossible.CanConvertFrom(typeof(string)) == true)
+            {
+                tReturn = (T)tycPossible.ConvertFrom(lstExpression[0]);
             }
 
             return tReturn;

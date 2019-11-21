@@ -3,43 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace PRoCon.Core.Plugin {
+namespace PRoCon.Core.Plugin
+{
     [Serializable]
-    public class PluginCache {
+    public class PluginCache
+    {
 
         /// <summary>
         /// The list of plugins being cached
         /// </summary>
-        public List<PluginCacheEntry> Entries { get; set; } 
+        public List<PluginCacheEntry> Entries { get; set; }
 
-        public PluginCache() {
+        public PluginCache()
+        {
             this.Entries = new List<PluginCacheEntry>();
         }
 
-        public bool IsModified(String className, String hash) {
+        public bool IsModified(String className, String hash)
+        {
             bool isModified = true;
 
             PluginCacheEntry pluginEntry = this.Entries.FirstOrDefault(entry => entry.ClassName == className);
 
-            if (pluginEntry != null) {
+            if (pluginEntry != null)
+            {
                 isModified = String.Compare(pluginEntry.Hash, hash, StringComparison.OrdinalIgnoreCase) != 0;
             }
 
             return isModified;
         }
 
-        public void Cache(PluginCacheEntry entry) {
+        public void Cache(PluginCacheEntry entry)
+        {
             PluginCacheEntry pluginEntry = null;
 
-            do {
+            do
+            {
                 pluginEntry = this.Entries.FirstOrDefault(e => e.ClassName == entry.ClassName);
 
-                if (pluginEntry != null) {
+                if (pluginEntry != null)
+                {
                     this.Entries.Remove(pluginEntry);
                 }
 
             } while (pluginEntry != null);
-            
+
             this.Entries.Add(entry);
         }
 
@@ -49,21 +57,26 @@ namespace PRoCon.Core.Plugin {
         /// We still save with Utils/ToXElement because it's easy, but we load it manually for speed.
         /// </summary>
         /// <param name="path">The path to the plugin cache file.</param>
-        public static PluginCache Load(String path) {
+        public static PluginCache Load(String path)
+        {
             PluginCache cache = new PluginCache();
 
             XElement root = XDocument.Load(path).Root;
 
-            if (root != null) {
-                foreach (var element in root.Descendants("PluginCacheEntry")) {
+            if (root != null)
+            {
+                foreach (var element in root.Descendants("PluginCacheEntry"))
+                {
                     var className = element.Element("ClassName");
                     var destinationPath = element.Element("DestinationPath");
                     var hash = element.Element("Hash");
                     var sourcePath = element.Element("SourcePath");
                     var stamp = element.Element("Stamp");
 
-                    if (className != null && destinationPath != null && hash != null && sourcePath != null && stamp != null) {
-                        cache.Entries.Add(new PluginCacheEntry() {
+                    if (className != null && destinationPath != null && hash != null && sourcePath != null && stamp != null)
+                    {
+                        cache.Entries.Add(new PluginCacheEntry()
+                        {
                             ClassName = className.Value,
                             DestinationPath = destinationPath.Value,
                             Hash = hash.Value,
@@ -77,7 +90,8 @@ namespace PRoCon.Core.Plugin {
             return cache;
         }
 
-        public void Save(String path) {
+        public void Save(String path)
+        {
             XDocument pluginCacheDocument = new XDocument(
                 new XElement("PluginCache",
                     new XElement("Entries",
@@ -89,7 +103,7 @@ namespace PRoCon.Core.Plugin {
                             new XElement("Stamp", item.Stamp)
                         )).Cast<Object>().ToArray()
                     )
-                )    
+                )
             );
 
             pluginCacheDocument.Add();

@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Forms {
+namespace PRoCon.Forms
+{
     using PRoCon.Core;
-    public partial class LicenseAgreement : Form {
+    public partial class LicenseAgreement : Form
+    {
 
         PRoConApplication m_app = null;
         string m_agreementRevision = "";
 
-        public LicenseAgreement(PRoConApplication app, string agreementRevision) {
+        public LicenseAgreement(PRoConApplication app, string agreementRevision)
+        {
             this.m_app = app;
             this.m_agreementRevision = agreementRevision;
             InitializeComponent();
@@ -188,12 +186,14 @@ For example, an APHP that has hosted an average of (210) layers per month would 
 
         }
 
-        private void btnCancel_Click(object sender, EventArgs e) {
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
             // No messing about.. gtfo. Now.
             Environment.Exit(0);
         }
-        
-        private void btnAgree_Click(object sender, EventArgs e) {
+
+        private void btnAgree_Click(object sender, EventArgs e)
+        {
             this.m_app.LicenseAgreements.Add(this.m_agreementRevision);
             this.m_app.SaveGspSettings();
             this.m_app.OptionsSettings.AllowAnonymousUsageData = this.chkAgreeUsageReports.Checked;
@@ -201,7 +201,8 @@ For example, an APHP that has hosted an average of (210) layers per month would 
             this.Close();
         }
 
-        private void lnkDownloadPdf_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkDownloadPdf_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("https://myrcon.net/licenses/myrcon.pdf");
         }
     }

@@ -18,8 +18,10 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace PRoCon.Core.Plugin {
-    public interface IPRoConPluginInterface2 : IPRoConPluginInterface {
+namespace PRoCon.Core.Plugin
+{
+    public interface IPRoConPluginInterface2 : IPRoConPluginInterface
+    {
         // This interface was a pointless failure of an attempt to implement version control to plugin API's
     }
 }

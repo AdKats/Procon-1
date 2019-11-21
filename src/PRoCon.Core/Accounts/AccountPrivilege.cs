@@ -1,10 +1,11 @@
-﻿using PRoCon.Core.Remote;
-
-namespace PRoCon.Core.Accounts {
-    public class AccountPrivilege {
+﻿namespace PRoCon.Core.Accounts
+{
+    public class AccountPrivilege
+    {
         public delegate void AccountPrivilegesChangedHandler(AccountPrivilege item);
 
-        public AccountPrivilege(Account accOwner, CPrivileges cpPrivileges) {
+        public AccountPrivilege(Account accOwner, CPrivileges cpPrivileges)
+        {
             Owner = accOwner;
             Privileges = cpPrivileges;
         }
@@ -14,10 +15,12 @@ namespace PRoCon.Core.Accounts {
         public CPrivileges Privileges { get; private set; }
         public event AccountPrivilegesChangedHandler AccountPrivilegesChanged;
 
-        public void SetPrivileges(CPrivileges cpUpdatedPrivileges) {
+        public void SetPrivileges(CPrivileges cpUpdatedPrivileges)
+        {
             Privileges = cpUpdatedPrivileges;
 
-            if (AccountPrivilegesChanged != null) {
+            if (AccountPrivilegesChanged != null)
+            {
                 this.AccountPrivilegesChanged(this);
             }
         }

@@ -18,21 +18,25 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System.Collections.Generic;
 using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
+using System.Collections.Generic;
 
-namespace PRoCon.Core.Battlemap {
-    public class MapGeometry {
+namespace PRoCon.Core.Battlemap
+{
+    public class MapGeometry
+    {
         public delegate void MapZoneTrespassedHandler(CPlayerInfo soldier, ZoneAction action, MapZone sender, Point3D tresspassLocation, float tresspassPercentage, object trespassState);
 
         protected readonly PRoConClient Client;
         protected string CurrentMapFileName;
 
-        public MapGeometry(PRoConClient prcClient) {
+        public MapGeometry(PRoConClient prcClient)
+        {
             MapZones = new MapZoneDictionary();
 
-            if ((Client = prcClient) != null) {
+            if ((Client = prcClient) != null)
+            {
                 Client.Game.ServerInfo += new FrostbiteClient.ServerInfoHandler(m_prcClient_ServerInfo);
                 Client.Game.LoadingLevel += new FrostbiteClient.LoadingLevelHandler(m_prcClient_LoadingLevel);
                 Client.Game.LevelLoaded += new FrostbiteClient.LevelLoadedHandler(m_prcClient_LevelLoaded);
@@ -43,19 +47,26 @@ namespace PRoCon.Core.Battlemap {
         public MapZoneDictionary MapZones { get; private set; }
         public event MapZoneTrespassedHandler MapZoneTrespassed;
 
-        private void m_prcClient_PlayerKilled(PRoConClient sender, Kill kKillerVictimDetails) {
+        private void m_prcClient_PlayerKilled(PRoConClient sender, Kill kKillerVictimDetails)
+        {
             float trespassArea = 0.0F;
 
-            foreach (MapZoneDrawing zone in new List<MapZoneDrawing>(MapZones)) {
-                if (System.String.Compare(CurrentMapFileName, zone.LevelFileName, System.StringComparison.OrdinalIgnoreCase) == 0) {
-                    if ((trespassArea = zone.TrespassArea(kKillerVictimDetails.KillerLocation, 14.14F)) > 0.0F) {
-                        if (MapZoneTrespassed != null) {
+            foreach (MapZoneDrawing zone in new List<MapZoneDrawing>(MapZones))
+            {
+                if (System.String.Compare(CurrentMapFileName, zone.LevelFileName, System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    if ((trespassArea = zone.TrespassArea(kKillerVictimDetails.KillerLocation, 14.14F)) > 0.0F)
+                    {
+                        if (MapZoneTrespassed != null)
+                        {
                             this.MapZoneTrespassed(kKillerVictimDetails.Killer, ZoneAction.Kill, new MapZone(zone.UID, zone.LevelFileName, zone.Tags.ToString(), zone.ZonePolygon, true), kKillerVictimDetails.KillerLocation, trespassArea, kKillerVictimDetails);
                         }
                     }
 
-                    if ((trespassArea = zone.TrespassArea(kKillerVictimDetails.VictimLocation, 14.14F)) > 0.0F) {
-                        if (MapZoneTrespassed != null) {
+                    if ((trespassArea = zone.TrespassArea(kKillerVictimDetails.VictimLocation, 14.14F)) > 0.0F)
+                    {
+                        if (MapZoneTrespassed != null)
+                        {
                             this.MapZoneTrespassed(kKillerVictimDetails.Victim, ZoneAction.Death, new MapZone(zone.UID, zone.LevelFileName, zone.Tags.ToString(), zone.ZonePolygon, true), kKillerVictimDetails.VictimLocation, trespassArea, kKillerVictimDetails);
                         }
                     }
@@ -63,15 +74,18 @@ namespace PRoCon.Core.Battlemap {
             }
         }
 
-        private void m_prcClient_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal) {
+        private void m_prcClient_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal)
+        {
             CurrentMapFileName = mapFileName;
         }
 
-        private void m_prcClient_LevelLoaded(FrostbiteClient sender, string mapFileName, string gamemode, int roundsPlayed, int roundsTotal) {
+        private void m_prcClient_LevelLoaded(FrostbiteClient sender, string mapFileName, string gamemode, int roundsPlayed, int roundsTotal)
+        {
             CurrentMapFileName = mapFileName;
         }
 
-        private void m_prcClient_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo) {
+        private void m_prcClient_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo)
+        {
             CurrentMapFileName = csiServerInfo.Map;
         }
     }

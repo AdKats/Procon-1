@@ -18,18 +18,15 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls {
+namespace PRoCon.Controls
+{
     using Core;
-    using Core.Plugin;
 
-    public partial class uscPrivilegesSelection : UserControl {
+    public partial class uscPrivilegesSelection : UserControl
+    {
 
         private CLocalization m_clocLanguage = null;
 
@@ -40,8 +37,10 @@ namespace PRoCon.Controls {
         public event OnUpdatePrivilegesDelegate OnUpdatePrivileges;
 
         private string m_strEditingAccountName;
-        public string AccountName {
-            set {
+        public string AccountName
+        {
+            set
+            {
                 this.m_strEditingAccountName = value;
                 this.lblAccountPrivilegesTitle.Text = this.m_clocLanguage.GetLocalized("uscAccountsPanel.lblAccountPrivilegesTitle", new string[] { value });
 
@@ -60,13 +59,16 @@ namespace PRoCon.Controls {
             }
         }
 
-        public uscPrivilegesSelection() {
+        public uscPrivilegesSelection()
+        {
             InitializeComponent();
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
 
-            if ((this.m_clocLanguage = clocLanguage) != null) {
+            if ((this.m_clocLanguage = clocLanguage) != null)
+            {
 
                 this.chkAllowConnectionLogin.Text = this.m_clocLanguage.GetLocalized("uscAccountsPanel.chkAllowConnectionLogin");
 
@@ -109,7 +111,8 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void btnSavePrivileges_Click(object sender, EventArgs e) {
+        private void btnSavePrivileges_Click(object sender, EventArgs e)
+        {
 
             UInt32 i = 0;
 
@@ -145,40 +148,48 @@ namespace PRoCon.Controls {
             // 0.6.0.0 additions
             i |= (1 & Convert.ToUInt32(this.chkEditTextModerationList.Checked)) << 20;
             i |= (1 & Convert.ToUInt32(this.chkCanShutdownServer.Checked)) << 21;
-            
+
             CPrivileges spUpdatedPrivileges = new CPrivileges();
             spUpdatedPrivileges.PrivilegesFlags = i;
 
             // TO DO: Event Privileges set ()
-            if (this.OnUpdatePrivileges != null) {
+            if (this.OnUpdatePrivileges != null)
+            {
                 this.OnUpdatePrivileges(this.m_strEditingAccountName, spUpdatedPrivileges);
             }
         }
 
-        private void btnCancelPrivileges_Click(object sender, EventArgs e) {
-            if (this.OnCancelPrivileges != null) {
+        private void btnCancelPrivileges_Click(object sender, EventArgs e)
+        {
+            if (this.OnCancelPrivileges != null)
+            {
                 this.OnCancelPrivileges();
             }
         }
 
-        private void chkAllowConnectionLogin_CheckedChanged(object sender, EventArgs e) {
+        private void chkAllowConnectionLogin_CheckedChanged(object sender, EventArgs e)
+        {
             this.pnlRconAccess.Enabled = this.chkAllowConnectionLogin.Checked;
 
-            if (this.pnlRconAccess.Enabled == false) {
+            if (this.pnlRconAccess.Enabled == false)
+            {
                 this.rdoNoProconAccess.Checked = true;
             }
         }
 
-        public CPrivileges Privileges {
+        public CPrivileges Privileges
+        {
 
-            set {
+            set
+            {
 
                 this.rdoNoProconAccess.Checked = value.CannotIssueProconCommands;
                 this.rdoLimitedProconPluginAccess.Checked = value.CanIssueLimitedProconPluginCommands;
                 this.rdoLimitedProconAccess.Checked = value.CanIssueLimitedProconCommands;
                 this.rdoFullProconAccess.Checked = value.CanIssueAllProconCommands;
 
-                if (this.rdoLimitedProconPluginAccess.Checked == false && this.rdoNoProconAccess.Checked == false && this.rdoLimitedProconAccess.Checked == false && this.rdoFullProconAccess.Checked == false) {
+                if (this.rdoLimitedProconPluginAccess.Checked == false && this.rdoNoProconAccess.Checked == false && this.rdoLimitedProconAccess.Checked == false && this.rdoFullProconAccess.Checked == false)
+                {
                     this.rdoNoProconAccess.Checked = true;
                 }
 
@@ -193,7 +204,8 @@ namespace PRoCon.Controls {
 
                 this.chkMovePlayers.Checked = value.CanMovePlayers;
 
-                if (this.rdoKillingPlayersOnly.Checked == false && this.rdoNoPlayerPunishment.Checked == false && this.rdoKickingPlayers.Checked == false && this.rdoKickingTemporaryOnly.Checked == false && this.rdoKicingTemporaryPermanent.Checked == false) {
+                if (this.rdoKillingPlayersOnly.Checked == false && this.rdoNoPlayerPunishment.Checked == false && this.rdoKickingPlayers.Checked == false && this.rdoKickingTemporaryOnly.Checked == false && this.rdoKicingTemporaryPermanent.Checked == false)
+                {
                     this.rdoNoPlayerPunishment.Checked = true;
                 }
 
@@ -201,14 +213,15 @@ namespace PRoCon.Controls {
                 this.rdoLimitedPunkbusterAccess.Checked = value.CanIssueLimitedPunkbusterCommands;
                 this.rdoFullPunkbusterAccess.Checked = value.CanIssueAllPunkbusterCommands;
 
-                if (this.rdoNotAllowedToIssuePunkbusterCommands.Checked == false && this.rdoLimitedPunkbusterAccess.Checked == false && this.rdoFullPunkbusterAccess.Checked == false) {
+                if (this.rdoNotAllowedToIssuePunkbusterCommands.Checked == false && this.rdoLimitedPunkbusterAccess.Checked == false && this.rdoFullPunkbusterAccess.Checked == false)
+                {
                     this.rdoNotAllowedToIssuePunkbusterCommands.Checked = true;
                 }
 
                 this.chkEditMapList.Checked = value.CanEditMapList;
                 this.chkEditBanList.Checked = value.CanEditBanList;
                 this.chkEditReservedSlotsList.Checked = value.CanEditReservedSlotsList;
-                
+
                 this.chkAllowConnectionLogin.Checked = value.CanLogin;
 
                 // 0.5.4.0 additions
@@ -222,7 +235,7 @@ namespace PRoCon.Controls {
             }
 
         }
-        
+
 
     }
 }

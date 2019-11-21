@@ -19,18 +19,17 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.ServerSettings {
+namespace PRoCon.Controls.ServerSettings
+{
     using Core;
     using Core.Remote;
-    public partial class uscServerSettingsTeamKills : uscServerSettings {
-        public uscServerSettingsTeamKills() {
+    public partial class uscServerSettingsTeamKills : uscServerSettings
+    {
+        public uscServerSettingsTeamKills()
+        {
             InitializeComponent();
 
             this.AsyncSettingControls.Add("vars.teamkillcountforkick 0", new AsyncStyleSetting(this.picSettingsTeamkillCountLimit, this.chkSettingsTeamkillCountLimit, new Control[] { this.chkSettingsTeamkillCountLimit }, true));
@@ -43,7 +42,8 @@ namespace PRoCon.Controls.ServerSettings {
             this.AsyncSettingControls.Add("vars.teamkillvaluedecreasepersecond", new AsyncStyleSetting(this.picTeamKillValueDecreasePerSecond, this.numTeamKillValueDecreasePerSecond, new Control[] { this.numTeamKillValueDecreasePerSecond, this.lnkTeamKillValueDecreasePerSecond }, true));
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this.chkSettingsTeamkillCountLimit.Text = this.Language.GetLocalized("uscServerSettingsPanel.chkSettingsTeamkillCountLimit");
@@ -63,21 +63,27 @@ namespace PRoCon.Controls.ServerSettings {
             this.UpdateTeamkillExplanations();
         }
 
-        public override void SetConnection(Core.Remote.PRoConClient prcClient) {
+        public override void SetConnection(Core.Remote.PRoConClient prcClient)
+        {
             base.SetConnection(prcClient);
 
-            if (this.Client != null) {
-                if (this.Client.Game != null) {
+            if (this.Client != null)
+            {
+                if (this.Client.Game != null)
+                {
                     this.m_prcClient_GameTypeDiscovered(prcClient);
                 }
-                else {
+                else
+                {
                     this.Client.GameTypeDiscovered += new PRoConClient.EmptyParamterHandler(m_prcClient_GameTypeDiscovered);
                 }
             }
         }
 
-        private void m_prcClient_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcClient_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.Client.Game.TeamKillCountForKick += new FrostbiteClient.LimitHandler(m_prcClient_TeamKillCountForKick);
                 this.Client.Game.TeamKillValueForKick += new FrostbiteClient.LimitHandler(m_prcClient_TeamKillValueForKick);
                 this.Client.Game.TeamKillValueIncrease += new FrostbiteClient.LimitHandler(m_prcClient_TeamKillValueIncrease);
@@ -89,24 +95,31 @@ namespace PRoCon.Controls.ServerSettings {
 
         private int m_iPreviousSuccessTeamKillCountForKick;
 
-        private void m_prcClient_TeamKillCountForKick(FrostbiteClient sender, int limit) {
+        private void m_prcClient_TeamKillCountForKick(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTeamKillCountForKick = limit;
 
-            if (this.m_iPreviousSuccessTeamKillCountForKick == 0) {
+            if (this.m_iPreviousSuccessTeamKillCountForKick == 0)
+            {
                 this.OnSettingResponse("vars.teamkillcountforkick 0", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.teamkillcountforkick", (decimal)this.m_iPreviousSuccessTeamKillCountForKick, true);
             }
         }
 
-        private void chkSettingsTeamkillCountLimit_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void chkSettingsTeamkillCountLimit_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.pnlSettingsTeamkillCountLimit.Enabled = !this.chkSettingsTeamkillCountLimit.Checked;
                 this.pnlSettingsTeamkillCountLimit.Visible = !this.chkSettingsTeamkillCountLimit.Checked;
 
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teamkillcountforkick 0"].IgnoreEvent == false) {
-                    if (this.chkSettingsTeamkillCountLimit.Checked == true) {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teamkillcountforkick 0"].IgnoreEvent == false)
+                {
+                    if (this.chkSettingsTeamkillCountLimit.Checked == true)
+                    {
                         this.WaitForSettingResponse("vars.teamkillcountforkick 0", !this.chkSettingsTeamkillCountLimit.Checked);
 
                         this.Client.Game.SendSetVarsTeamKillCountForKickPacket(0);
@@ -115,8 +128,10 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void lnkSettingsTeamkillCountLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsTeamkillCountLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsTeamkillCountLimit.Focus();
                 this.WaitForSettingResponse("vars.teamkillcountforkick", (decimal)this.m_iPreviousSuccessTeamKillCountForKick);
 
@@ -131,36 +146,45 @@ namespace PRoCon.Controls.ServerSettings {
 
         private int m_iPreviousSuccessTeamKillValueForKick;
 
-        private void m_prcClient_TeamKillValueForKick(FrostbiteClient sender, int limit) {
+        private void m_prcClient_TeamKillValueForKick(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTeamKillValueForKick = limit;
 
-            if (this.m_iPreviousSuccessTeamKillValueForKick == 0) {
+            if (this.m_iPreviousSuccessTeamKillValueForKick == 0)
+            {
                 this.OnSettingResponse("vars.teamkillvalueforkick 0", true, true);
             }
-            else {
+            else
+            {
                 this.OnSettingResponse("vars.teamkillvalueforkick", (decimal)this.m_iPreviousSuccessTeamKillValueForKick, true);
             }
         }
 
-        private void chkSettingsTeamkillValueLimit_CheckedChanged(object sender, EventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void chkSettingsTeamkillValueLimit_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.pnlSettingsTeamkillValueLimit.Enabled = !this.chkSettingsTeamkillValueLimit.Checked;
                 this.pnlSettingsTeamkillValueLimit.Visible = !this.chkSettingsTeamkillValueLimit.Checked;
 
-                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teamkillvalueforkick 0"].IgnoreEvent == false) {
-                    if (this.chkSettingsTeamkillValueLimit.Checked == true) {
+                if (this.IgnoreEvents == false && this.AsyncSettingControls["vars.teamkillvalueforkick 0"].IgnoreEvent == false)
+                {
+                    if (this.chkSettingsTeamkillValueLimit.Checked == true)
+                    {
                         this.WaitForSettingResponse("vars.teamkillvalueforkick 0", !this.chkSettingsTeamkillValueLimit.Checked);
 
                         this.Client.Game.SendSetVarsTeamKillValueForKickPacket(0);
-                        
+
                         //this.SendCommand("vars.teamKillValueForKick", "0");
                     }
                 }
             }
         }
 
-        private void lnkSettingsTeamkillValueLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsTeamkillValueLimit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsTeamkillValueLimit.Focus();
                 this.WaitForSettingResponse("vars.teamkillvalueforkick", (decimal)this.m_iPreviousSuccessTeamKillValueForKick);
 
@@ -171,14 +195,17 @@ namespace PRoCon.Controls.ServerSettings {
 
         private int m_iPreviousSuccessTeamKillValueIncrease;
 
-        void m_prcClient_TeamKillValueIncrease(FrostbiteClient sender, int limit) {
+        void m_prcClient_TeamKillValueIncrease(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTeamKillValueIncrease = limit;
 
             this.OnSettingResponse("vars.teamkillvalueincrease", (decimal)limit, true);
         }
 
-        private void lnkSettingsTeamKillValueIncrease_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkSettingsTeamKillValueIncrease_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numSettingsTeamKillValueIncrease.Focus();
                 this.WaitForSettingResponse("vars.teamkillvalueincrease", (decimal)this.m_iPreviousSuccessTeamKillValueIncrease);
 
@@ -188,14 +215,17 @@ namespace PRoCon.Controls.ServerSettings {
 
         private int m_iPreviousSuccessTeamKillValueDecreasePerSecond;
 
-        void m_prcClient_TeamKillValueDecreasePerSecond(FrostbiteClient sender, int limit) {
+        void m_prcClient_TeamKillValueDecreasePerSecond(FrostbiteClient sender, int limit)
+        {
             this.m_iPreviousSuccessTeamKillValueDecreasePerSecond = limit;
 
             this.OnSettingResponse("vars.teamkillvaluedecreasepersecond", (decimal)limit, true);
         }
 
-        private void lnkTeamKillValueDecreasePerSecond_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.Client != null && this.Client.Game != null) {
+        private void lnkTeamKillValueDecreasePerSecond_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.Client != null && this.Client.Game != null)
+            {
                 this.numTeamKillValueDecreasePerSecond.Focus();
                 this.WaitForSettingResponse("vars.teamkillvaluedecreasepersecond", (decimal)this.m_iPreviousSuccessTeamKillValueDecreasePerSecond);
 
@@ -203,7 +233,8 @@ namespace PRoCon.Controls.ServerSettings {
             }
         }
 
-        private void UpdateTeamkillExplanations() {
+        private void UpdateTeamkillExplanations()
+        {
 
             float burstSecond = (float)this.numSettingsTeamkillValueLimit.Value / (float)this.numSettingsTeamKillValueIncrease.Value;
             float minimumRate = 60.0F / ((float)this.numSettingsTeamKillValueIncrease.Value / ((float)this.numTeamKillValueDecreasePerSecond.Value - 1.0F)) + burstSecond;
@@ -220,19 +251,23 @@ namespace PRoCon.Controls.ServerSettings {
 
         }
 
-        private void numSettingsTeamkillValueLimit_ValueChanged(object sender, EventArgs e) {
+        private void numSettingsTeamkillValueLimit_ValueChanged(object sender, EventArgs e)
+        {
             this.UpdateTeamkillExplanations();
         }
 
-        private void numSettingsTeamKillValueIncrease_ValueChanged(object sender, EventArgs e) {
+        private void numSettingsTeamKillValueIncrease_ValueChanged(object sender, EventArgs e)
+        {
             this.UpdateTeamkillExplanations();
         }
 
-        private void numTeamKillValueDecreasePerSecond_ValueChanged(object sender, EventArgs e) {
+        private void numTeamKillValueDecreasePerSecond_ValueChanged(object sender, EventArgs e)
+        {
             this.UpdateTeamkillExplanations();
         }
 
-        private void numSettingsTeamkillCountLimit_ValueChanged(object sender, EventArgs e) {
+        private void numSettingsTeamkillCountLimit_ValueChanged(object sender, EventArgs e)
+        {
             this.UpdateTeamkillExplanations();
         }
 

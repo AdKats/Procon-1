@@ -24,7 +24,8 @@ namespace PRoCon.Core
     public class CTeamName
     {
 
-        public CTeamName(string strMapFilename, int iTeamId, string strLocalizationKey, string strImageKey) {
+        public CTeamName(string strMapFilename, int iTeamId, string strLocalizationKey, string strImageKey)
+        {
             this.MapFilename = strMapFilename;
             this.TeamID = iTeamId;
             this.LocalizationKey = strLocalizationKey;

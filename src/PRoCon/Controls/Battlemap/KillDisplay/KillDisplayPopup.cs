@@ -19,17 +19,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap.KillDisplay {
+namespace PRoCon.Controls.Battlemap.KillDisplay
+{
     using Core;
-    public class KillDisplayPopup : MapObject {
+    public class KillDisplayPopup : MapObject
+    {
 
         // MapObject is only used in this class as a reference point, nothing in it is really used per se.
-        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons, Kill kMouseOveredKill, KillDisplayDetails kddDisplayDetails, Image imgDamageType, string strLocalizedDamageType, KillDisplayColours colours, Dictionary<int, Color> teamColours) {
+        public void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons, Kill kMouseOveredKill, KillDisplayDetails kddDisplayDetails, Image imgDamageType, string strLocalizedDamageType, KillDisplayColours colours, Dictionary<int, Color> teamColours)
+        {
 
             //string killerName = kMouseOveredKill.Killer.ClanTag.Length > 0 ? String.Format("[{0}] {1}", kMouseOveredKill.Killer.ClanTag, kMouseOveredKill.Killer.SoldierName) : kMouseOveredKill.Killer.SoldierName;
             //string victimName = kMouseOveredKill.Victim.ClanTag.Length > 0 ? String.Format("[{0}] {1}", kMouseOveredKill.Victim.ClanTag, kMouseOveredKill.Victim.SoldierName) : kMouseOveredKill.Victim.SoldierName;
@@ -42,30 +44,37 @@ namespace PRoCon.Controls.Battlemap.KillDisplay {
             Color killerColour = Color.White;
             Color victimColour = Color.White;
 
-            if (colours == KillDisplayColours.EnemyColours) {
+            if (colours == KillDisplayColours.EnemyColours)
+            {
                 killerColour = ControlPaint.LightLight(Color.SeaGreen);
                 victimColour = ControlPaint.LightLight(Color.Red);
             }
-            else if (colours == KillDisplayColours.TeamColours) {
-                if (teamColours.ContainsKey(kMouseOveredKill.Killer.TeamID) == true && teamColours.ContainsKey(kMouseOveredKill.Victim.TeamID) == true) {
-                    
+            else if (colours == KillDisplayColours.TeamColours)
+            {
+                if (teamColours.ContainsKey(kMouseOveredKill.Killer.TeamID) == true && teamColours.ContainsKey(kMouseOveredKill.Victim.TeamID) == true)
+                {
+
                     killerColour = ControlPaint.LightLight(teamColours[kMouseOveredKill.Killer.TeamID]);
                     victimColour = ControlPaint.LightLight(teamColours[kMouseOveredKill.Victim.TeamID]);
                 }
             }
 
-            if (kMouseOveredKill.Killer.ClanTag.Length > 0) {
+            if (kMouseOveredKill.Killer.ClanTag.Length > 0)
+            {
                 textBlock.Strings.Add(new MapTextBlockString(String.Format("Killer: [{0}] ", kMouseOveredKill.Killer.ClanTag), Color.WhiteSmoke, false));
             }
-            else {
+            else
+            {
                 textBlock.Strings.Add(new MapTextBlockString("Killer: ", Color.WhiteSmoke, false));
             }
             textBlock.Strings.Add(new MapTextBlockString(kMouseOveredKill.Killer.SoldierName, killerColour, true));
 
-            if (kMouseOveredKill.Victim.ClanTag.Length > 0) {
+            if (kMouseOveredKill.Victim.ClanTag.Length > 0)
+            {
                 textBlock.Strings.Add(new MapTextBlockString(String.Format("Victim: [{0}] ", kMouseOveredKill.Victim.ClanTag), Color.WhiteSmoke, false));
             }
-            else {
+            else
+            {
                 textBlock.Strings.Add(new MapTextBlockString("Victim: ", Color.WhiteSmoke, false));
             }
             textBlock.Strings.Add(new MapTextBlockString(kMouseOveredKill.Victim.SoldierName, victimColour, true));
@@ -80,7 +89,8 @@ namespace PRoCon.Controls.Battlemap.KillDisplay {
 
             RectangleF recTextSize = textBlock.GetBounds();
 
-            if (imgDamageType != null) {
+            if (imgDamageType != null)
+            {
                 recBackground = new RectangleF(new PointF(pntDrawOffset.X, pntDrawOffset.Y - (imgDamageType.Height + recTextSize.Height)), new SizeF(Math.Max(imgDamageType.Width, recTextSize.Width) + 10.0F, imgDamageType.Height + recTextSize.Height));
                 gpBackground.AddRectangle(recBackground);
 
@@ -89,7 +99,8 @@ namespace PRoCon.Controls.Battlemap.KillDisplay {
                 //gpKillPopupText.AddString(strText, new FontFamily("Arial"), 0, 12, new PointF(recBackground.X + 10.0F, recBackground.Y + imgDamageType.Height), StringFormat.GenericTypographic);
                 //this.DrawText(g, strText, new Point(pntMouseLocation.X + 10, pntMouseLocation.Y - 100 + imgDamageType.Height), 12, 1.0F);
             }
-            else {
+            else
+            {
                 recBackground = new RectangleF(new PointF(pntDrawOffset.X, pntDrawOffset.Y - recTextSize.Height), new SizeF(recTextSize.Width + 10.0F, recTextSize.Height));
 
                 gpBackground.AddRectangle(recBackground);
@@ -102,11 +113,13 @@ namespace PRoCon.Controls.Battlemap.KillDisplay {
 
             // Give it a little bit of a border.
 
-            if (pntDrawOffset.X + recBackground.Width > g.ClipBounds.Width) {
+            if (pntDrawOffset.X + recBackground.Width > g.ClipBounds.Width)
+            {
                 this.m_pntDrawOffset.X = -1 * ((pntDrawOffset.X + recBackground.Width) - g.ClipBounds.Width);
             }
 
-            if (pntDrawOffset.Y - recBackground.Height < 0) {
+            if (pntDrawOffset.Y - recBackground.Height < 0)
+            {
                 this.m_pntDrawOffset.Y = -1 * (pntDrawOffset.Y - recBackground.Height);
             }
 
@@ -114,8 +127,9 @@ namespace PRoCon.Controls.Battlemap.KillDisplay {
             //this.DrawBwShape(g, gpKillPopupText, 1.0F, 4.0F, Color.Black, Color.White);
             textBlock.Draw(g, new PointF(this.m_pntDrawOffset.X + recBackground.X + 5.0F, this.m_pntDrawOffset.Y + recBackground.Y + 10.0F + (imgDamageType != null ? imgDamageType.Height : 0)), pntMouseLocation, mbButtons);
             //textBlock.Draw(g, new PointF(pntDrawOffset.X + 5.0F, pntDrawOffset.Y - recTextSize.Height + 10.0F), pntMouseLocation, mbButtons);
-            
-            if (imgDamageType != null) {
+
+            if (imgDamageType != null)
+            {
 
                 g.DrawImage(imgDamageType, new RectangleF((recBackground.X + recBackground.Width / 2) - imgDamageType.Width / 2 + this.m_pntDrawOffset.X, recBackground.Y + this.m_pntDrawOffset.Y + 5.0F, imgDamageType.Width, imgDamageType.Height));
             }

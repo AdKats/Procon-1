@@ -18,21 +18,23 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Drawing;
-using System.Windows.Forms;
 using PRoCon.Controls.ControlsEx;
 using PRoCon.Core;
+using PRoCon.Core.Logging;
 using PRoCon.Core.Players;
 using PRoCon.Core.Plugin;
-using PRoCon.Core.Logging;
 using PRoCon.Core.Remote;
 using PRoCon.Forms;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
-namespace PRoCon.Controls {
-    public partial class uscServerConnection : uscPage {
+namespace PRoCon.Controls
+{
+    public partial class uscServerConnection : uscPage
+    {
 
         private frmMain m_frmParent = null;
         private frmManageAccounts m_frmAccounts = null;
@@ -69,21 +71,25 @@ namespace PRoCon.Controls {
 
         #endregion
 
-        public PRoConClient Client {
+        public PRoConClient Client
+        {
             get { return this.m_prcConnection; }
         }
 
-        public int ConnectingFrame {
+        public int ConnectingFrame
+        {
             get;
             set;
         }
 
-        private void uscServerConnection_Resize(object sender, EventArgs e) {
+        private void uscServerConnection_Resize(object sender, EventArgs e)
+        {
             this.Refresh();
         }
 
-        public uscServerConnection(PRoConApplication paProcon, PRoConClient prcConnection, frmMain frmParent, frmManageAccounts frmAccounts) {
-        //public uscServerConnection(PRoConApplication paProcon, ProConClient prcConnection, frmMain frmParent, frmManageAccounts frmAccounts, uscServerPlayerTreeview uscServerPlayerTree, string strHost, UInt16 iu16Port, string strUsername, string strPassword) {
+        public uscServerConnection(PRoConApplication paProcon, PRoConClient prcConnection, frmMain frmParent, frmManageAccounts frmAccounts)
+        {
+            //public uscServerConnection(PRoConApplication paProcon, ProConClient prcConnection, frmMain frmParent, frmManageAccounts frmAccounts, uscServerPlayerTreeview uscServerPlayerTree, string strHost, UInt16 iu16Port, string strUsername, string strPassword) {
 
             InitializeComponent();
 
@@ -104,11 +110,13 @@ namespace PRoCon.Controls {
 
             this.uscLogin.BackgroundHostPort = prcConnection.HostNamePort;
 
-            if (prcConnection.State != ConnectionState.Connected) {
+            if (prcConnection.State != ConnectionState.Connected)
+            {
                 this.uscLogin.Dock = DockStyle.Fill;
                 this.uscLogin.Show();
             }
-            else {
+            else
+            {
                 this.uscLogin.Hide();
             }
 
@@ -183,8 +191,10 @@ namespace PRoCon.Controls {
             this.uscAccounts.SetConnection(this.m_praApplication, this.m_prcConnection);
         }
 
-        void m_prcConnection_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        void m_prcConnection_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.uscPlayers.Initialize(this.m_frmParent, this);
                 this.uscLists.Initialize(this.m_frmParent, this);
                 this.uscChat.Initialize(this);
@@ -218,28 +228,34 @@ namespace PRoCon.Controls {
 
                 this.m_prcConnection.PluginsCompiled += new PRoConClient.EmptyParamterHandler(m_prcConnection_PluginsCompiled);
 
-                if (this.m_prcConnection.PluginsManager != null) {
+                if (this.m_prcConnection.PluginsManager != null)
+                {
                     this.m_prcConnection.PluginsManager.PluginVariableAltered += new PluginManager.PluginVariableAlteredHandler(Plugins_PluginVariableAltered);
                     this.m_prcConnection.PluginsManager.PluginEnabled += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginEnabled);
                     this.m_prcConnection.PluginsManager.PluginDisabled += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginDisabled);
                 }
 
-                if (this.m_prcConnection.PluginsManager != null) {
+                if (this.m_prcConnection.PluginsManager != null)
+                {
                     this.uscPlugins.SetLoadedPlugins(this.m_prcConnection.PluginsManager.Plugins.LoadedClassNames);
                     this.uscPlugins.SetEnabledPlugins(this.m_prcConnection.PluginsManager.Plugins.EnabledClassNames);
                 }
 
-                if (this.m_prcConnection.PluginConsole != null) {
-                    foreach (LogEntry leEntry in this.m_prcConnection.PluginConsole.LogEntries) {
+                if (this.m_prcConnection.PluginConsole != null)
+                {
+                    foreach (LogEntry leEntry in this.m_prcConnection.PluginConsole.LogEntries)
+                    {
                         this.PluginConsole_WriteConsole(leEntry.Logged, leEntry.Text);
                     }
                 }
 
-                if (this.m_prcConnection.CurrentServerInfo.ServerName.Length > 0) {
+                if (this.m_prcConnection.CurrentServerInfo.ServerName.Length > 0)
+                {
                     this.m_prcConnection_ServerInfo(this.m_prcConnection.Game, this.m_prcConnection.CurrentServerInfo);
                 }
 
-                if (this.m_prcConnection.GameType == "BF3" || this.m_prcConnection.GameType == "BF4" || this.m_prcConnection.GameType == "BFHL" || this.m_prcConnection.GameType == "MOHW") {
+                if (this.m_prcConnection.GameType == "BF3" || this.m_prcConnection.GameType == "BF4" || this.m_prcConnection.GameType == "BFHL" || this.m_prcConnection.GameType == "MOHW")
+                {
                     this.tbcClientTabs.TabPages.Remove(this.tabMapView);
                 }
 
@@ -251,49 +267,61 @@ namespace PRoCon.Controls {
 
         // Minimizing to tray, then maximizing from tray will fire the Load event again.
         //private bool m_blFormLoaded = false;
-        private void uscServerConnection_Load(object sender, EventArgs e) {
+        private void uscServerConnection_Load(object sender, EventArgs e)
+        {
 
-            if (Program.ProconApplication.OptionsSettings.ShowRoundTimerConstantly) {
+            if (Program.ProconApplication.OptionsSettings.ShowRoundTimerConstantly)
+            {
                 this.lblRoundTime.Visible = true;
-            } 
-            else {
+            }
+            else
+            {
                 this.lblRoundTime.Visible = false;
             }
 
-            if (this.m_prcConnection != null) {
+            if (this.m_prcConnection != null)
+            {
                 this.m_clocLanguage = this.m_prcConnection.Language;
 
                 //this.lblVersion.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblVersion", new string[] { this.m_prcConnection.VersionNumber });
 
-                if (this.m_prcConnection.PluginsManager != null) {
+                if (this.m_prcConnection.PluginsManager != null)
+                {
                     this.uscPlugins.SetLoadedPlugins(this.m_prcConnection.PluginsManager.Plugins.LoadedClassNames);
                     this.uscPlugins.SetEnabledPlugins(this.m_prcConnection.PluginsManager.Plugins.EnabledClassNames);
                 }
 
-                if (this.m_prcConnection.PluginConsole != null) {
-                    foreach (LogEntry leEntry in new List<LogEntry>(this.m_prcConnection.PluginConsole.LogEntries)) {
+                if (this.m_prcConnection.PluginConsole != null)
+                {
+                    foreach (LogEntry leEntry in new List<LogEntry>(this.m_prcConnection.PluginConsole.LogEntries))
+                    {
                         this.PluginConsole_WriteConsole(leEntry.Logged, leEntry.Text);
                     }
                 }
 
-                if (this.m_prcConnection.State != ConnectionState.Connected) {
+                if (this.m_prcConnection.State != ConnectionState.Connected)
+                {
                     this.uscLogin.Dock = DockStyle.Fill;
                     this.uscLogin.Show();
                 }
-                else {
+                else
+                {
                     this.uscLogin.Hide();
                 }
 
-                if (this.m_prcConnection.IsPRoConConnection == true) {
+                if (this.m_prcConnection.IsPRoConConnection == true)
+                {
                     this.m_prcConnection_ProconPrivileges(this.m_prcConnection, this.m_prcConnection.Privileges);
                 }
             }
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             this.m_clocLanguage = clocLanguage;
 
-            if (this.m_clocLanguage != null) {
+            if (this.m_clocLanguage != null)
+            {
 
                 //this.m_prcConnection.SetLocalization(this.m_clocLanguage);
 
@@ -322,7 +350,7 @@ namespace PRoCon.Controls {
 
                 this.m_tabParentLayerControl.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.tabParentLayerControl", null);
                 this.m_uscParentLayerControl.SetLocalization(this.m_clocLanguage);
-                
+
                 this.toolTipMapControls.SetToolTip(this.btnNextRound, this.m_clocLanguage.GetLocalized("uscServerConnection.btnNextRound.ToolTip"));
                 this.toolTipMapControls.SetToolTip(this.btnRestartRound, this.m_clocLanguage.GetLocalized("uscServerConnection.btnRestartRound.ToolTip"));
 
@@ -341,7 +369,8 @@ namespace PRoCon.Controls {
                 this.ma_timeDescriptionsShort[1] = this.m_clocLanguage.GetLocalized("global.Years.Short", null) + " ";
                 this.ma_timeDescriptionsShort[0] = this.m_clocLanguage.GetLocalized("global.Years.Short", null) + " ";
 
-                if (this.m_prcConnection.CurrentServerInfo != null) {
+                if (this.m_prcConnection.CurrentServerInfo != null)
+                {
                     this.SetServerInfoLabels(this.m_prcConnection.CurrentServerInfo);
                     //this.lblPlayerCount.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblPlayerCount", new string[] { this.m_prcConnection.CurrentServerInfo.PlayerCount.ToString(), this.m_prcConnection.CurrentServerInfo.MaxPlayerCount.ToString() });
                     //this.lblCurrentGameMode.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentGameMode", new string[] {  });
@@ -350,7 +379,8 @@ namespace PRoCon.Controls {
                     //this.lblCurrentMapName.Text = String.Format("{0} - {1}", this.m_prcConnection.GetFriendlyGamemode(this.m_prcConnection.CurrentServerInfo.GameMode), this.m_prcConnection.GetFriendlyMapname(this.m_prcConnection.CurrentServerInfo.Map));
                     //this.lblCurrentRound.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentRound", this.m_prcConnection.CurrentServerInfo.CurrentRound.ToString(), this.m_prcConnection.CurrentServerInfo.TotalRounds.ToString());
                 }
-                else { 
+                else
+                {
                     //this.lblPlayerCount.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblPlayerCount", new string[] { "", "" });
                     //this.lblCurrentGameMode.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentGameMode", new string[] { "" });
                     //this.lblCurrentMapName.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentMapName", new string[] { "" });
@@ -358,7 +388,8 @@ namespace PRoCon.Controls {
                     this.lblCurrentRound.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentRound", "", "");
                 }
 
-                if (this.m_prcConnection.Game != null) {
+                if (this.m_prcConnection.Game != null)
+                {
                     this.SetVersionInfoLabels(this.m_prcConnection.Game);
                 }
             }
@@ -369,30 +400,38 @@ namespace PRoCon.Controls {
         public delegate void OnTabChangeDelegate(object sender, Stack<string> stkTabIndexes);
         public event OnTabChangeDelegate OnTabChange;
 
-        private void tbcClientTabs_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.OnTabChange != null) {
+        private void tbcClientTabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.OnTabChange != null)
+            {
                 Stack<string> stkTabIndexes = new Stack<string>();
                 stkTabIndexes.Push(tbcClientTabs.SelectedTab.Name);
-                
+
                 this.OnTabChange(this, stkTabIndexes);
             }
 
-            if (this.tbcClientTabs.SelectedTab == this.tabMapView) {
+            if (this.tbcClientTabs.SelectedTab == this.tabMapView)
+            {
                 this.uscMap.IsMapSelected = true;
             }
-            else {
+            else
+            {
                 this.uscMap.IsMapSelected = false;
             }
 
         }
 
-        public void SetTabIndexes(Stack<string> stkTabIndexes) {
-            if (tbcClientTabs.TabPages.ContainsKey(stkTabIndexes.Peek()) == true) {
+        public void SetTabIndexes(Stack<string> stkTabIndexes)
+        {
+            if (tbcClientTabs.TabPages.ContainsKey(stkTabIndexes.Peek()) == true)
+            {
                 this.tbcClientTabs.SelectedTab = tbcClientTabs.TabPages[stkTabIndexes.Pop()];
             }
 
-            if (stkTabIndexes.Count > 0) {
-                switch (tbcClientTabs.SelectedTab.Name) {
+            if (stkTabIndexes.Count > 0)
+            {
+                switch (tbcClientTabs.SelectedTab.Name)
+                {
                     case "tabLists":
                         this.uscLists.SetTabIndexes(stkTabIndexes);
                         break;
@@ -409,32 +448,40 @@ namespace PRoCon.Controls {
             }
         }
 
-        void uscServerConsole_OnTabChange(object sender, Stack<string> stkTabIndexes) {
-            if (this.OnTabChange != null) {
+        void uscServerConsole_OnTabChange(object sender, Stack<string> stkTabIndexes)
+        {
+            if (this.OnTabChange != null)
+            {
                 stkTabIndexes.Push(tbcClientTabs.SelectedTab.Name);
 
                 this.OnTabChange(this, stkTabIndexes);
             }
         }
 
-        void m_uscParentLayerControl_OnTabChange(object sender, Stack<string> stkTabIndexes) {
-            if (this.OnTabChange != null) {
+        void m_uscParentLayerControl_OnTabChange(object sender, Stack<string> stkTabIndexes)
+        {
+            if (this.OnTabChange != null)
+            {
                 stkTabIndexes.Push(tbcClientTabs.SelectedTab.Name);
 
                 this.OnTabChange(this, stkTabIndexes);
             }
         }
 
-        void uscPlugins_OnTabChange(object sender, Stack<string> stkTabIndexes) {
-            if (this.OnTabChange != null) {
+        void uscPlugins_OnTabChange(object sender, Stack<string> stkTabIndexes)
+        {
+            if (this.OnTabChange != null)
+            {
                 stkTabIndexes.Push(tbcClientTabs.SelectedTab.Name);
 
                 this.OnTabChange(this, stkTabIndexes);
             }
         }
 
-        void uscLists_OnTabChange(object sender, Stack<string> stkTabIndexes) {
-            if (this.OnTabChange != null) {
+        void uscLists_OnTabChange(object sender, Stack<string> stkTabIndexes)
+        {
+            if (this.OnTabChange != null)
+            {
                 stkTabIndexes.Push(tbcClientTabs.SelectedTab.Name);
 
                 this.OnTabChange(this, stkTabIndexes);
@@ -447,15 +494,18 @@ namespace PRoCon.Controls {
 
         #region ServerInfo updates and simulators
 
-        private void m_prcConnection_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo) {
-            this.InvokeIfRequired(() => {
+        private void m_prcConnection_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.SetServerInfoLabels(csiServerInfo);
 
                 this.SetVersionInfoLabels(sender);
             });
         }
 
-        private void SetServerInfoLabels(CServerInfo csiServerInfo) {
+        private void SetServerInfoLabels(CServerInfo csiServerInfo)
+        {
             //this.lblServerName.Text = String.Format("{0} [{1}]", csiServerInfo.ServerName, this.m_prcConnection.HostNamePort);
             this.uscAccounts.ServerName = csiServerInfo.ServerName;
             //this.lblCurrentMapName.Text = String.Format("{0} - {1}", this.m_prcConnection.GetFriendlyGamemode(csiServerInfo.GameMode), this.m_prcConnection.GetFriendlyMapname(csiServerInfo.Map));
@@ -466,22 +516,26 @@ namespace PRoCon.Controls {
 
             this.toolTipMapControls.SetToolTip(this.lblCurrentMapName, csiServerInfo.Map);
 
-            if ((this.Client.Game is BFHLClient || this.Client.Game is BF4Client || this.Client.Game is BF3Client || this.Client.Game is MOHWClient) && (csiServerInfo.CurrentRound != csiServerInfo.TotalRounds)) {
+            if ((this.Client.Game is BFHLClient || this.Client.Game is BF4Client || this.Client.Game is BF3Client || this.Client.Game is MOHWClient) && (csiServerInfo.CurrentRound != csiServerInfo.TotalRounds))
+            {
                 this.lblCurrentRound.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentRound", (csiServerInfo.CurrentRound + 1).ToString(), csiServerInfo.TotalRounds.ToString());
             }
-            else {
+            else
+            {
                 this.lblCurrentRound.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblCurrentRound", csiServerInfo.CurrentRound.ToString(), csiServerInfo.TotalRounds.ToString());
             }
-            
+
             this.lblMappack.Text = this.m_clocLanguage.GetLocalized("uscServerConnection.lblMappack", csiServerInfo.Mappack.ToString());
 
-            if (csiServerInfo.ConnectionState.Length > 0) {
+            if (csiServerInfo.ConnectionState.Length > 0)
+            {
 
                 this.lblPlasmaStatus.Text = this.m_clocLanguage.GetLocalized(String.Format("uscServerConnection.lblPlasmaStatus.{0}", csiServerInfo.ConnectionState));
                 // this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus, this.m_clocLanguage.GetLocalized(String.Format("uscServerConnection.lblPlasmaStatus.{0}.ToolTip", csiServerInfo.ConnectionState)));
                 // &#xa; or Environment.NewLine 
-                if (csiServerInfo.GameMod == GameMods.BC2 || csiServerInfo.GameMod == GameMods.VIETNAM) {
-                    this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus, 
+                if (csiServerInfo.GameMod == GameMods.BC2 || csiServerInfo.GameMod == GameMods.VIETNAM)
+                {
+                    this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus,
                         this.m_clocLanguage.GetLocalized(String.Format("uscServerConnection.lblPlasmaStatus.{0}.ToolTip", csiServerInfo.ConnectionState))
                         + Environment.NewLine + Environment.NewLine +
                         this.m_clocLanguage.GetLocalized("uscServerConnection.extServerInfo.ExternalGameIpandPort.ToolTip") + "\t" + csiServerInfo.ExternalGameIpandPort
@@ -493,14 +547,17 @@ namespace PRoCon.Controls {
                             + this.m_clocLanguage.GetLocalized(String.Format("uscServerConnection.extServerInfo.ServerRegion.{0}.ToolTip", csiServerInfo.ServerRegion))
                         + Environment.NewLine +
                         this.m_clocLanguage.GetLocalized("uscServerConnection.extServerInfo.PunkBusterVersion.ToolTip") + "\t" + csiServerInfo.PunkBusterVersion
-                        + Environment.NewLine 
+                        + Environment.NewLine
                         + Environment.NewLine
                     );
-                } else {
+                }
+                else
+                {
                     this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus, this.m_clocLanguage.GetLocalized(String.Format("uscServerConnection.lblPlasmaStatus.{0}.ToolTip", csiServerInfo.ConnectionState)));
                 }
 
-                switch (csiServerInfo.ConnectionState) {
+                switch (csiServerInfo.ConnectionState)
+                {
                     case "NotConnected":
                         this.lblPlasmaStatus.ForeColor = Color.Maroon;
                         break;
@@ -514,7 +571,8 @@ namespace PRoCon.Controls {
                 }
             }
             // BF3 & MOHW goes here cause it has ConnectionState parameter is empty
-            if (this.Client.Game is BF3Client) {
+            if (this.Client.Game is BF3Client)
+            {
                 this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus,
                     this.m_clocLanguage.GetLocalized("uscServerConnection.lblPlasmaStatus.AcceptingPlayers.ToolTip")
                         + Environment.NewLine + Environment.NewLine +
@@ -539,7 +597,8 @@ namespace PRoCon.Controls {
                     + Environment.NewLine
                 );
             }
-            if (this.Client.Game is BFHLClient || this.Client.Game is BF4Client) {
+            if (this.Client.Game is BFHLClient || this.Client.Game is BF4Client)
+            {
                 this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus,
                     this.m_clocLanguage.GetLocalized("uscServerConnection.lblPlasmaStatus.AcceptingPlayers.ToolTip")
                         + Environment.NewLine + Environment.NewLine +
@@ -569,7 +628,8 @@ namespace PRoCon.Controls {
                 );
             }
             // MoHW is way different to BF3 R-33
-            if (this.Client.Game is MOHWClient) {
+            if (this.Client.Game is MOHWClient)
+            {
                 this.toolTipPlasma.SetToolTip(this.lblPlasmaStatus,
                     this.m_clocLanguage.GetLocalized("uscServerConnection.lblPlasmaStatus.AcceptingPlayers.ToolTip")
                         + Environment.NewLine + Environment.NewLine +
@@ -589,9 +649,12 @@ namespace PRoCon.Controls {
 
         }
 
-        private void m_prcConnection_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal) {
-            this.InvokeIfRequired(() => {
-                if (String.Compare(this.Client.GameType, "MOH", true) == 0) {
+        private void m_prcConnection_LoadingLevel(FrostbiteClient sender, string mapFileName, int roundsPlayed, int roundsTotal)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (String.Compare(this.Client.GameType, "MOH", true) == 0)
+                {
 #pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
@@ -604,7 +667,8 @@ namespace PRoCon.Controls {
                                                             this.m_prcConnection.CurrentServerInfo.ConnectionState));
 #pragma warning restore CS0612 // Type or member is obsolete
                 }
-                else {
+                else
+                {
 #pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
@@ -621,13 +685,17 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void Game_LevelStarted(FrostbiteClient sender) {
+        private void Game_LevelStarted(FrostbiteClient sender)
+        {
             sender.SendServerinfoPacket();
         }
 
-        private void m_prcConnection_LevelLoaded(FrostbiteClient sender, string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal) {
-            this.InvokeIfRequired(() => {
-                if (String.Compare(this.Client.GameType, "BF3", true) == 0 || String.Compare(this.Client.GameType, "MOHW", true) == 0) {
+        private void m_prcConnection_LevelLoaded(FrostbiteClient sender, string mapFileName, string Gamemode, int roundsPlayed, int roundsTotal)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (String.Compare(this.Client.GameType, "BF3", true) == 0 || String.Compare(this.Client.GameType, "MOHW", true) == 0)
+                {
 #pragma warning disable CS0612 // Type or member is obsolete
                     this.SetServerInfoLabels(new CServerInfo(this.m_prcConnection.CurrentServerInfo.ServerName,
                                                             mapFileName,
@@ -646,11 +714,14 @@ namespace PRoCon.Controls {
 
         #endregion
 
-        private void SetVersionInfoLabels(FrostbiteClient sender) {
-            this.InvokeIfRequired(() => {
+        private void SetVersionInfoLabels(FrostbiteClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 string version = sender.VersionNumber;
 
-                if (sender.FriendlyVersionNumber.Length > 0) {
+                if (sender.FriendlyVersionNumber.Length > 0)
+                {
                     version = String.Format("{0} ({1})", sender.VersionNumber, sender.FriendlyVersionNumber);
                 }
 
@@ -658,31 +729,38 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void Game_Version(FrostbiteClient sender, string serverType, string serverVersion) {
+        private void Game_Version(FrostbiteClient sender, string serverType, string serverVersion)
+        {
             this.InvokeIfRequired(() => this.SetVersionInfoLabels(sender));
         }
 
-        private void m_prcConnection_ProconVersion(PRoConClient sender, Version version) {
-            this.InvokeIfRequired(() => {
+        private void m_prcConnection_ProconVersion(PRoConClient sender, Version version)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.lblLayerVersion.Text = version.ToString();
                 this.lblLayerVersion.Visible = true;
 
-                if (sender.ConnectedLayerVersion != null) {
+                if (sender.ConnectedLayerVersion != null)
+                {
 
                     Version assemblyVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
                     int comparedVersions = assemblyVersion.CompareTo(sender.ConnectedLayerVersion);
 
-                    if (comparedVersions > 0) {
+                    if (comparedVersions > 0)
+                    {
                         // Older.
                         this.lblLayerVersion.ForeColor = Color.Maroon;
                         this.toolTipPlasma.SetToolTip(this.lblLayerVersion, this.m_clocLanguage.GetLocalized("uscServerConnection.lblLayerVersion.Older.ToolTip"));
                     }
-                    else if (comparedVersions < 0) {
+                    else if (comparedVersions < 0)
+                    {
                         // Newer.
                         this.lblLayerVersion.ForeColor = Color.Maroon;
                         this.toolTipPlasma.SetToolTip(this.lblLayerVersion, this.m_clocLanguage.GetLocalized("uscServerConnection.lblLayerVersion.Newer.ToolTip"));
                     }
-                    else {
+                    else
+                    {
                         // Same.
                         this.lblLayerVersion.ForeColor = Color.MediumSeaGreen;
                         this.toolTipPlasma.SetToolTip(this.lblLayerVersion, this.m_clocLanguage.GetLocalized("uscServerConnection.lblLayerVersion.Same.ToolTip"));
@@ -691,9 +769,12 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void m_prcConnection_ProconPrivileges(PRoConClient sender, CPrivileges spPrivs) {
-            this.InvokeIfRequired(() => {
-                if (spPrivs.CanIssueLimitedProconPluginCommands == true && this.tbcClientTabs.TabPages.Contains(this.m_tabParentLayerControl) == false) {
+        private void m_prcConnection_ProconPrivileges(PRoConClient sender, CPrivileges spPrivs)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (spPrivs.CanIssueLimitedProconPluginCommands == true && this.tbcClientTabs.TabPages.Contains(this.m_tabParentLayerControl) == false)
+                {
                     this.tbcClientTabs.TabPages.Add(this.m_tabParentLayerControl);
                     this.m_tabParentLayerControl.ImageKey = "sitemap_color.png";
 
@@ -705,16 +786,19 @@ namespace PRoCon.Controls {
                 this.m_prcConnection.SendCommand(new List<string> { "procon.plugin.listEnabled" });
                 */
                 }
-                else if (spPrivs.CanIssueLimitedProconCommands == false && this.tbcClientTabs.TabPages.Contains(this.m_tabParentLayerControl) == true) {
+                else if (spPrivs.CanIssueLimitedProconCommands == false && this.tbcClientTabs.TabPages.Contains(this.m_tabParentLayerControl) == true)
+                {
                     this.tbcClientTabs.TabPages.Remove(this.m_tabParentLayerControl);
                 }
 
-                if (this.m_praApplication.OptionsSettings.LayerHideLocalPlugins == true) {
+                if (this.m_praApplication.OptionsSettings.LayerHideLocalPlugins == true)
+                {
                     this.tbcClientTabs.TabPages.Remove(this.tabPlugins);
                     // this.tabPlugins.Hide();
                 }
 
-                if (this.m_praApplication.OptionsSettings.LayerHideLocalAccounts == true) {
+                if (this.m_praApplication.OptionsSettings.LayerHideLocalAccounts == true)
+                {
                     this.tbcClientTabs.TabPages.Remove(this.tabAccounts);
                     // this.tabAccounts.Hide();
                 }
@@ -751,16 +835,19 @@ namespace PRoCon.Controls {
                                                     this.m_prcConnection.CurrentServerInfo.TotalRounds));
         }
         */
-        public void PlayerSelectionChange(string strSoldierName) {
+        public void PlayerSelectionChange(string strSoldierName)
+        {
             this.uscChat.PlayerSelectionChange(strSoldierName);
             this.uscPlayers.PlayerSelectionChange(strSoldierName);
         }
 
-        public bool BeginDragDrop() {
+        public bool BeginDragDrop()
+        {
 
             bool blBeginSuccess = false;
 
-            if (this.m_cpPrivileges.CanMovePlayers == true) {
+            if (this.m_cpPrivileges.CanMovePlayers == true)
+            {
                 //this.m_uscServerPlayerTree.BeginDragDrop(this);
                 this.uscPlayers.BeginDragDrop();
 
@@ -770,7 +857,8 @@ namespace PRoCon.Controls {
             return blBeginSuccess;
         }
 
-        public void EndDragDrop() {
+        public void EndDragDrop()
+        {
             //this.m_uscServerPlayerTree.EndDragDrop(this);
             this.uscPlayers.EndDragDrop();
         }
@@ -781,12 +869,15 @@ namespace PRoCon.Controls {
 
         private bool m_blUpdatingPlugins = false;
 
-        private void uscPlugins_ReloadPlugins() {
+        private void uscPlugins_ReloadPlugins()
+        {
             this.m_prcConnection.CompilePlugins(this.m_praApplication.OptionsSettings.PluginPermissions);
         }
 
-        private void m_prcConnection_PluginsCompiled(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
+        private void m_prcConnection_PluginsCompiled(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.uscPlugins.SetLoadedPlugins(this.m_prcConnection.PluginsManager.Plugins.LoadedClassNames);
                 this.m_prcConnection.PluginsManager.PluginVariableAltered += new PluginManager.PluginVariableAlteredHandler(Plugins_PluginVariableAltered);
                 this.m_prcConnection.PluginsManager.PluginEnabled += new PluginManager.PluginEmptyParameterHandler(Plugins_PluginEnabled);
@@ -794,23 +885,29 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void Plugins_PluginVariableAltered(PluginDetails spdNewDetails) {
+        private void Plugins_PluginVariableAltered(PluginDetails spdNewDetails)
+        {
             this.InvokeIfRequired(() => this.uscPlugins.RefreshPlugin());
         }
 
-        private void uscPlugins_PluginVariablesAltered(PluginDetails spdPlugin) {
+        private void uscPlugins_PluginVariablesAltered(PluginDetails spdPlugin)
+        {
 
         }
 
-        private void uscPlugins_PluginLoaded(PluginDetails spdPlugin) {
+        private void uscPlugins_PluginLoaded(PluginDetails spdPlugin)
+        {
 
         }
 
-        private void Plugins_PluginDisabled(string strClassName) {
-            this.InvokeIfRequired(() => {
+        private void Plugins_PluginDisabled(string strClassName)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_blUpdatingPlugins = true;
 
-                if (this.uscPlugins.LoadedPlugins.ContainsKey(strClassName) == true) {
+                if (this.uscPlugins.LoadedPlugins.ContainsKey(strClassName) == true)
+                {
                     this.uscPlugins.LoadedPlugins[strClassName].Checked = false;
                 }
 
@@ -818,11 +915,14 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void Plugins_PluginEnabled(string strClassName) {
-            this.InvokeIfRequired(() => {
+        private void Plugins_PluginEnabled(string strClassName)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 this.m_blUpdatingPlugins = true;
 
-                if (this.uscPlugins.LoadedPlugins.ContainsKey(strClassName) == true) {
+                if (this.uscPlugins.LoadedPlugins.ContainsKey(strClassName) == true)
+                {
                     this.uscPlugins.LoadedPlugins[strClassName].Checked = true;
                 }
 
@@ -830,14 +930,18 @@ namespace PRoCon.Controls {
             });
         }
 
-        private void uscPlugins_PluginEnabled(string strClassName, bool blEnabled) {
+        private void uscPlugins_PluginEnabled(string strClassName, bool blEnabled)
+        {
 
-            if (this.m_blUpdatingPlugins == false) {
+            if (this.m_blUpdatingPlugins == false)
+            {
 
-                if (blEnabled == true) {
+                if (blEnabled == true)
+                {
                     this.m_prcConnection.PluginsManager.EnablePlugin(strClassName);
                 }
-                else {
+                else
+                {
                     this.m_prcConnection.PluginsManager.DisablePlugin(strClassName);
                 }
 
@@ -845,34 +949,39 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void uscPlugins_SetPluginVariable(string strClassName, string strVariable, string strValue) {
+        private void uscPlugins_SetPluginVariable(string strClassName, string strVariable, string strValue)
+        {
             this.m_prcConnection.PluginsManager.SetPluginVariable(strClassName, strVariable, strValue);
         }
 
-        private PluginDetails uscPlugins_GetPluginDetails(string strClassName) {
+        private PluginDetails uscPlugins_GetPluginDetails(string strClassName)
+        {
             PluginDetails spdReturn = new PluginDetails();
             spdReturn.ClassName = strClassName;
             spdReturn.Name = strClassName;
 
-            if (this.m_prcConnection.PluginsManager != null) {
+            if (this.m_prcConnection.PluginsManager != null)
+            {
                 spdReturn = this.m_prcConnection.PluginsManager.GetPluginDetails(strClassName);
             }
 
             return spdReturn;
         }
 
-        private void PluginConsole_WriteConsole(DateTime dtLoggedTime, string strLoggedText) {
+        private void PluginConsole_WriteConsole(DateTime dtLoggedTime, string strLoggedText)
+        {
             this.InvokeIfRequired(() => this.uscPlugins.Write(dtLoggedTime, strLoggedText));
         }
 
         #endregion
 
         #region PRoCon Layer and accounts
-        
+
         public delegate void ManageAccountsRequestDelegate(object sender, EventArgs e);
         public event ManageAccountsRequestDelegate ManageAccountsRequest;
 
-        void uscAccounts_ManageAccountsRequest(object sender, EventArgs e) {
+        void uscAccounts_ManageAccountsRequest(object sender, EventArgs e)
+        {
             this.ManageAccountsRequest(this, e);
         }
 
@@ -881,20 +990,25 @@ namespace PRoCon.Controls {
         #region Console
 
         // Redesign note; Leaving these two here instead of putting in ServerConsole.cs until ExecuteCommand is in PRoConClient.cs
-        void uscServerConsole_SendListCommand(List<string> lstCommand) {
+        void uscServerConsole_SendListCommand(List<string> lstCommand)
+        {
             this.m_prcConnection.SendRequest(lstCommand);
         }
 
-        void uscServerConsole_SendCommand(string strCommand) {
-            if (strCommand.Length > 0) {
+        void uscServerConsole_SendCommand(string strCommand)
+        {
+            if (strCommand.Length > 0)
+            {
                 List<string> lstWords = Packet.Wordify(strCommand);
 
-                if (lstWords.Count >= 1 && lstWords[0].Length >= 1 && lstWords[0][0] == '/') {
+                if (lstWords.Count >= 1 && lstWords[0].Length >= 1 && lstWords[0][0] == '/')
+                {
                     lstWords[0] = lstWords[0].Remove(0, 1);
                     this.m_praApplication.ExecutePRoConCommand(this.m_prcConnection, lstWords, 0);
                     //this.ExecutePRoConCommand(lstWords);
                 }
-                else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "punkBuster.pb_sv_command", true) == 0) {
+                else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "punkBuster.pb_sv_command", true) == 0)
+                {
                     lstWords.Clear();
 
                     lstWords.Add("punkBuster.pb_sv_command");
@@ -902,7 +1016,8 @@ namespace PRoCon.Controls {
 
                     this.m_prcConnection.SendRequest(lstWords);
                 }
-                else {
+                else
+                {
                     this.m_prcConnection.SendRequest(lstWords);
                 }
             }
@@ -912,15 +1027,20 @@ namespace PRoCon.Controls {
 
         #region Map Controls
 
-        private void Game_RestartLevel(FrostbiteClient sender) {
+        private void Game_RestartLevel(FrostbiteClient sender)
+        {
             this.InvokeIfRequired(() => this.OnSettingResponse("admin.restartRound", true));
         }
 
-        private void btnRestartRound_Click(object sender, EventArgs e) {
-            if (this.m_prcConnection != null && this.m_prcConnection.Game != null) {
-                if (this.m_praApplication.OptionsSettings.ShowCfmMsgRoundRestartNext == true) {
+        private void btnRestartRound_Click(object sender, EventArgs e)
+        {
+            if (this.m_prcConnection != null && this.m_prcConnection.Game != null)
+            {
+                if (this.m_praApplication.OptionsSettings.ShowCfmMsgRoundRestartNext == true)
+                {
                     DialogResult cfmRestartRound = MessageBox.Show(this.m_clocLanguage.GetLocalized("uscServerConnection.MessageBox.RestartRound"), "PRoCon Frostbite", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (cfmRestartRound == DialogResult.No) {
+                    if (cfmRestartRound == DialogResult.No)
+                    {
                         return;
                     }
                 }
@@ -930,15 +1050,20 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void Game_RunNextLevel(FrostbiteClient sender) {
+        private void Game_RunNextLevel(FrostbiteClient sender)
+        {
             this.InvokeIfRequired(() => this.OnSettingResponse("admin.runNextRound", true));
         }
 
-        private void btnNextRound_Click(object sender, EventArgs e) {
-            if (this.m_prcConnection != null && this.m_prcConnection.Game != null) {
-                if (this.m_praApplication.OptionsSettings.ShowCfmMsgRoundRestartNext == true) {
+        private void btnNextRound_Click(object sender, EventArgs e)
+        {
+            if (this.m_prcConnection != null && this.m_prcConnection.Game != null)
+            {
+                if (this.m_praApplication.OptionsSettings.ShowCfmMsgRoundRestartNext == true)
+                {
                     DialogResult cfmRestartLevel = MessageBox.Show(this.m_clocLanguage.GetLocalized("uscServerConnection.MessageBox.NextRound"), "PRoCon Frostbite", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (cfmRestartLevel == DialogResult.No) {
+                    if (cfmRestartLevel == DialogResult.No)
+                    {
                         return;
                     }
                 }
@@ -948,9 +1073,12 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void Game_ResponseError(FrostbiteClient sender, Packet originalRequest, string errorMessage) {
-            this.InvokeIfRequired(() => {
-                if (originalRequest.Words.Count >= 1) {
+        private void Game_ResponseError(FrostbiteClient sender, Packet originalRequest, string errorMessage)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (originalRequest.Words.Count >= 1)
+                {
                     this.OnSettingResponse(originalRequest.Words[0].ToLower(), null, false);
                 }
             });
@@ -958,16 +1086,21 @@ namespace PRoCon.Controls {
 
         #endregion
 
-        private void tmrTimerTicks_Tick(object sender, EventArgs e) {
+        private void tmrTimerTicks_Tick(object sender, EventArgs e)
+        {
 
-            if (this.m_prcConnection != null) {
-                if (this.m_prcConnection.CurrentServerInfo != null) {
+            if (this.m_prcConnection != null)
+            {
+                if (this.m_prcConnection.CurrentServerInfo != null)
+                {
 
-                    if (this.m_prcConnection.CurrentServerInfo.RoundTime >= 0) {
+                    if (this.m_prcConnection.CurrentServerInfo.RoundTime >= 0)
+                    {
                         this.lblRoundTime.Text = uscPlayerPunishPanel.SecondsToText((UInt32)(this.m_prcConnection.CurrentServerInfo.RoundTime++), this.ma_timeDescriptionsShort);
                     }
 
-                    if ((this.lblServerUptime.Visible = (this.m_prcConnection.CurrentServerInfo.ServerUptime >= 0) == true)) {
+                    if ((this.lblServerUptime.Visible = (this.m_prcConnection.CurrentServerInfo.ServerUptime >= 0) == true))
+                    {
                         string uptimeText = uscPlayerPunishPanel.SecondsToText((UInt32)(this.m_prcConnection.CurrentServerInfo.ServerUptime++), this.ma_timeDescriptionsShort);
                         this.lblServerUptime.Text = this.m_clocLanguage.GetDefaultLocalized("Uptime: " + uptimeText, "uscServerConnection.lblServerUptime", uptimeText);
                     }
@@ -975,18 +1108,24 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void lblCurrentRound_MouseEnter(object sender, EventArgs e) {
-            if (this.m_prcConnection != null) {
-                if (this.m_prcConnection.CurrentServerInfo != null && this.m_prcConnection.CurrentServerInfo.RoundTime >= 0) {
+        private void lblCurrentRound_MouseEnter(object sender, EventArgs e)
+        {
+            if (this.m_prcConnection != null)
+            {
+                if (this.m_prcConnection.CurrentServerInfo != null && this.m_prcConnection.CurrentServerInfo.RoundTime >= 0)
+                {
                     this.lblRoundTime.Visible = true;
                     this.lblCurrentRound.Font = new Font(this.lblCurrentRound.Font, FontStyle.Bold);
                 }
             }
         }
 
-        private void lblCurrentRound_MouseLeave(object sender, EventArgs e) {
-            if (this.m_prcConnection != null) {
-                if (this.m_prcConnection.CurrentServerInfo != null && this.m_prcConnection.CurrentServerInfo.RoundTime >= 0) {
+        private void lblCurrentRound_MouseLeave(object sender, EventArgs e)
+        {
+            if (this.m_prcConnection != null)
+            {
+                if (this.m_prcConnection.CurrentServerInfo != null && this.m_prcConnection.CurrentServerInfo.RoundTime >= 0)
+                {
                     if (!Program.ProconApplication.OptionsSettings.ShowRoundTimerConstantly)
                     {
                         this.lblRoundTime.Visible = false;

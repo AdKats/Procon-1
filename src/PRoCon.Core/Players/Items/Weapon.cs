@@ -18,34 +18,39 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Players.Items {
+namespace PRoCon.Core.Players.Items
+{
     [Serializable]
-    public class Weapon {
+    public class Weapon
+    {
 
-        public Kits KitRestriction {
+        public Kits KitRestriction
+        {
             get;
             private set;
         }
 
-        public string Name {
+        public string Name
+        {
             get;
             private set;
         }
 
-        public WeaponSlots Slot {
+        public WeaponSlots Slot
+        {
             get;
             private set;
         }
 
-        public DamageTypes Damage {
+        public DamageTypes Damage
+        {
             get;
             private set;
         }
 
-        public Weapon(Kits restriction, string name, WeaponSlots slot, DamageTypes damage) {
+        public Weapon(Kits restriction, string name, WeaponSlots slot, DamageTypes damage)
+        {
             this.KitRestriction = restriction;
             this.Name = name;
             this.Slot = slot;

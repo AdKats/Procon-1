@@ -18,29 +18,33 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Controls.Battlemap {
+namespace PRoCon.Controls.Battlemap
+{
     using Core;
-    public class BattlemapRoundChange {
+    public class BattlemapRoundChange
+    {
 
-        public CMap Map {
+        public CMap Map
+        {
             get;
             private set;
         }
 
-        public DateTime ChangeTime {
+        public DateTime ChangeTime
+        {
             get;
             private set;
         }
 
-        public BattlemapRoundChange(CMap cmMap) {
+        public BattlemapRoundChange(CMap cmMap)
+        {
             this.Map = cmMap;
             this.ChangeTime = DateTime.Now;
         }
 
-        public BattlemapRoundChange(CMap cmMap, DateTime dtChangeTime) {
+        public BattlemapRoundChange(CMap cmMap, DateTime dtChangeTime)
+        {
             this.Map = cmMap;
             this.ChangeTime = dtChangeTime;
         }

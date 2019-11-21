@@ -17,58 +17,66 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon {
+namespace PRoCon
+{
     using Core;
     using Core.Remote;
-    public class ConnectionDictionary : KeyedCollection<string, PRoConClient> {
+    public class ConnectionDictionary : KeyedCollection<string, PRoConClient>
+    {
 
         public delegate void ConnectionAlteredHandler(PRoConClient item);
         public event ConnectionAlteredHandler ConnectionAdded;
         public event ConnectionAlteredHandler ConnectionChanged;
         public event ConnectionAlteredHandler ConnectionRemoved;
 
-        protected override string GetKeyForItem(PRoConClient item) {
+        protected override string GetKeyForItem(PRoConClient item)
+        {
             return item.HostNamePort;
         }
 
-        protected override void InsertItem(int index, PRoConClient item) {
-            if (this.ConnectionAdded != null) {
+        protected override void InsertItem(int index, PRoConClient item)
+        {
+            if (this.ConnectionAdded != null)
+            {
                 this.ConnectionAdded(item);
             }
 
             base.InsertItem(index, item);
         }
 
-        protected override void RemoveItem(int index) {
+        protected override void RemoveItem(int index)
+        {
             PRoConClient prcClient = this[index];
 
             base.RemoveItem(index);
 
-            if (this.ConnectionRemoved != null) {
+            if (this.ConnectionRemoved != null)
+            {
                 this.ConnectionRemoved(prcClient);
             }
         }
 
-        protected override void SetItem(int index, PRoConClient item) {
-            if (this.ConnectionChanged != null) {
+        protected override void SetItem(int index, PRoConClient item)
+        {
+            if (this.ConnectionChanged != null)
+            {
                 this.ConnectionChanged(item);
             }
 
             base.SetItem(index, item);
         }
 
-        public string ToJsonString() {
+        public string ToJsonString()
+        {
 
             Hashtable connections = new Hashtable();
 
             ArrayList connectionList = new ArrayList();
-            foreach (PRoConClient client in this) {
+            foreach (PRoConClient client in this)
+            {
 
                 Hashtable connection = new Hashtable();
 

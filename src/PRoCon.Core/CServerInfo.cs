@@ -18,15 +18,18 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
-using System.Reflection;
 using System.ComponentModel;
+using System.Reflection;
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
     using System;
 
     [Serializable]
-    public class CServerInfo {
-        public CServerInfo() {
+    public class CServerInfo
+    {
+        public CServerInfo()
+        {
             this.ServerName = String.Empty;
             this.Map = String.Empty;
             this.GameMode = String.Empty;
@@ -136,59 +139,70 @@ namespace PRoCon.Core {
         public int BlazePlayerCount { get; set; }
         public string BlazeGameState { get; set; }
 
-        public List<TeamScore> TeamScores {
+        public List<TeamScore> TeamScores
+        {
             get;
             private set;
         }
 
-        public CServerInfo(List<string> parameters, List<string> variables) {
+        public CServerInfo(List<string> parameters, List<string> variables)
+        {
 
             this.RoundTime = this.ServerUptime = -1;
 
-            for (int paramCount = 0, varCount = 0; paramCount < parameters.Count && varCount < variables.Count; paramCount++, varCount++) {
+            for (int paramCount = 0, varCount = 0; paramCount < parameters.Count && varCount < variables.Count; paramCount++, varCount++)
+            {
 
-                switch (parameters[paramCount]) {
+                switch (parameters[paramCount])
+                {
                     case "TeamScores":
 
                         int scoresCount = 0;
 
-                        if (int.TryParse(variables[varCount], out scoresCount) == true) {
+                        if (int.TryParse(variables[varCount], out scoresCount) == true)
+                        {
                             scoresCount++;
 
-                            this.TeamScores = TeamScore.GetTeamScores(variables.GetRange(varCount, scoresCount+1));
+                            this.TeamScores = TeamScore.GetTeamScores(variables.GetRange(varCount, scoresCount + 1));
 
                             varCount += scoresCount;
                         }
-                        else {
+                        else
+                        {
                             varCount--;
                         }
 
                         break;
                     case "GameMod":
 
-                        if (Enum.IsDefined(typeof(GameMods), variables[varCount]) == true) {
+                        if (Enum.IsDefined(typeof(GameMods), variables[varCount]) == true)
+                        {
                             this.GameMod = (GameMods)Enum.Parse(typeof(GameMods), variables[varCount]);
                         }
 
                         break;
                     default:
                         PropertyInfo property = null;
-                        if ((property = this.GetType().GetProperty(parameters[paramCount])) != null) {
+                        if ((property = this.GetType().GetProperty(parameters[paramCount])) != null)
+                        {
 
-                            try {
+                            try
+                            {
                                 // Geoff Green 08/10/2011 to account for a bug in BF3 release 872601 F sending back blank "" instead of a valid int.
-                                if (variables[varCount].Length == 0 && property.PropertyType == typeof(int)) {
+                                if (variables[varCount].Length == 0 && property.PropertyType == typeof(int))
+                                {
                                     variables[varCount] = "0";
                                 }
 
                                 object value = TypeDescriptor.GetConverter(property.PropertyType).ConvertFrom(variables[varCount]);
 
-                                if (value != null) {
+                                if (value != null)
+                                {
                                     property.SetValue(this, value, null);
                                 }
 
                             }
-                            catch(Exception) { }
+                            catch (Exception) { }
                         }
 
                         break;

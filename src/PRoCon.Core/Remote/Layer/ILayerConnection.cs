@@ -1,7 +1,9 @@
 ﻿using System;
 
-namespace PRoCon.Core.Remote.Layer {
-    public interface ILayerConnection {
+namespace PRoCon.Core.Remote.Layer
+{
+    public interface ILayerConnection
+    {
         /// <summary>
         /// The unique incoming ip:port of the remote point
         /// </summary>

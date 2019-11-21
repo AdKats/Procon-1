@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PRoCon.Core.Remote.Layer {
-    public abstract class LayerPacketDispatcher : ILayerPacketDispatcher {
+namespace PRoCon.Core.Remote.Layer
+{
+    public abstract class LayerPacketDispatcher : ILayerPacketDispatcher
+    {
         /// <summary>
         /// The connection to dispatch incoming packets from
         /// </summary>
@@ -53,11 +55,14 @@ namespace PRoCon.Core.Remote.Layer {
         public Action<ILayerPacketDispatcher, Packet> RequestPacketSquadLeaderRecieved { get; set; }
         public Action<ILayerPacketDispatcher, Packet> RequestPacketSquadIsPrivateReceived { get; set; }
 
-        public String IPPort {
-            get {
+        public String IPPort
+        {
+            get
+            {
                 String ipPort = String.Empty;
 
-                if (this.Connection != null) {
+                if (this.Connection != null)
+                {
                     ipPort = this.Connection.IPPort;
                 }
 
@@ -65,7 +70,8 @@ namespace PRoCon.Core.Remote.Layer {
             }
         }
 
-        protected LayerPacketDispatcher(ILayerConnection connection) {
+        protected LayerPacketDispatcher(ILayerConnection connection)
+        {
             this.Connection = connection;
 
             this.RequestDelegates = new Dictionary<String, Action<ILayerConnection, Packet>>() {
@@ -82,7 +88,7 @@ namespace PRoCon.Core.Remote.Layer {
                 { "serverInfo", this.DispatchUnsecureSafeListedRequest },
                 { "admin.say", this.DispatchSecureSafeListedRequest },
                 { "admin.yell", this.DispatchSecureSafeListedRequest },
-                
+
                 { "admin.runNextLevel", this.DispatchUseMapFunctionRequest },
                 { "admin.currentLevel", this.DispatchSecureSafeListedRequest },
                 { "admin.restartMap", this.DispatchUseMapFunctionRequest },
@@ -103,7 +109,7 @@ namespace PRoCon.Core.Remote.Layer {
                 { "banList.save", this.DispatchAlterBanListRequest },
                 { "banList.load", this.DispatchAlterBanListRequest },
                 { "banList.list", this.DispatchSecureSafeListedRequest },
-                
+
                 { "textChatModerationList.addPlayer", this.DispatchAlterTextMonderationListRequest },
                 { "textChatModerationList.removePlayer", this.DispatchAlterTextMonderationListRequest },
                 { "textChatModerationList.clear", this.DispatchAlterTextMonderationListRequest },
@@ -197,214 +203,277 @@ namespace PRoCon.Core.Remote.Layer {
         }
 
 
-        protected virtual void DispatchPunkbusterRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchPunkbusterRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketPunkbusterRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchUseMapFunctionRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchUseMapFunctionRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketUseMapFunctionRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchBanListAddRequest(ILayerConnection sender, Packet request) {
-            if (request.Words.Count >= 4) {
+        protected virtual void DispatchBanListAddRequest(ILayerConnection sender, Packet request)
+        {
+            if (request.Words.Count >= 4)
+            {
                 CBanInfo newBan = new CBanInfo(request.Words[1], request.Words[2], new TimeoutSubset(request.Words.GetRange(3, TimeoutSubset.RequiredLength(request.Words[3]))), request.Words.Count >= (4 + TimeoutSubset.RequiredLength(request.Words[3])) ? request.Words[(3 + TimeoutSubset.RequiredLength(request.Words[3]))] : "");
 
                 var handler = this.RequestBanListAddRecieved;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, request, newBan);
                 }
             }
         }
 
-        protected virtual void DispatchAlterTextMonderationListRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAlterTextMonderationListRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAlterTextMonderationListRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAlterBanListRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAlterBanListRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAlterBanListRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAlterReservedSlotsListRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAlterReservedSlotsListRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAlterReservedSlotsListRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAlterMaplistRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAlterMaplistRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAlterMaplistRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchVarsAdminPasswordRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchVarsAdminPasswordRequest(ILayerConnection sender, Packet request)
+        {
             this.SendResponse(request, "UnknownCommand");
         }
 
-        protected virtual void DispatchUnsecureSafeListedRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchUnsecureSafeListedRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketUnsecureSafeListedRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchVarsRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchVarsRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketVarsRecieved;
 
-            if (request.Words.Count == 1) {
+            if (request.Words.Count == 1)
+            {
                 handler = this.RequestPacketSecureSafeListedRecieved;
             }
 
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchSecureSafeListedRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchSecureSafeListedRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketSecureSafeListedRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAdminKickPlayerRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAdminKickPlayerRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAdminKickPlayerRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAdminMovePlayerRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAdminMovePlayerRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAdminPlayerMoveRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAdminKillPlayerRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAdminKillPlayerRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAdminPlayerKillRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchSquadLeaderRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchSquadLeaderRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketSquadLeaderRecieved;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchSquadIsPrivateRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchSquadIsPrivateRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketSquadIsPrivateReceived;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchLoginPlainTextRequest(ILayerConnection sender, Packet request) {
-            if (request.Words.Count >= 2) {
+        protected virtual void DispatchLoginPlainTextRequest(ILayerConnection sender, Packet request)
+        {
+            if (request.Words.Count >= 2)
+            {
                 var handler = this.RequestLoginPlainText;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, request, request.Words[1]);
                 }
             }
-            else {
+            else
+            {
                 this.SendResponse(request, "InvalidArguments");
             }
         }
 
-        protected virtual void DispatchLoginHashedRequest(ILayerConnection sender, Packet request) {
-            if (request.Words.Count == 1) {
+        protected virtual void DispatchLoginHashedRequest(ILayerConnection sender, Packet request)
+        {
+            if (request.Words.Count == 1)
+            {
                 var handler = this.RequestLoginHashed;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, request);
                 }
             }
-            else if (request.Words.Count >= 2) {
+            else if (request.Words.Count >= 2)
+            {
                 var handler = this.RequestLoginHashedPassword;
-                if (handler != null) {
+                if (handler != null)
+                {
                     handler(this, request, request.Words[1]);
                 }
             }
-            else {
+            else
+            {
                 this.SendResponse(request, "InvalidArguments");
             }
         }
 
-        protected virtual void DispatchLogoutRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchLogoutRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestLogout;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchQuitRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchQuitRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestQuit;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchEventsEnabledRequest(ILayerConnection sender, Packet request) {
-            if (this.RequestEventsEnabled != null) {
+        protected virtual void DispatchEventsEnabledRequest(ILayerConnection sender, Packet request)
+        {
+            if (this.RequestEventsEnabled != null)
+            {
                 bool blEnabled = true;
 
-                if (request.Words.Count == 2 && bool.TryParse(request.Words[1], out blEnabled) == true) {
+                if (request.Words.Count == 2 && bool.TryParse(request.Words[1], out blEnabled) == true)
+                {
                     var handler = this.RequestEventsEnabled;
-                    if (handler != null) {
+                    if (handler != null)
+                    {
                         handler(this, request, blEnabled);
                     }
                 }
-                else {
+                else
+                {
                     this.SendResponse(request, "InvalidArguments");
                 }
             }
         }
 
-        protected virtual void DispatchHelpRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchHelpRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestHelp;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        protected virtual void DispatchAdminShutDownRequest(ILayerConnection sender, Packet request) {
+        protected virtual void DispatchAdminShutDownRequest(ILayerConnection sender, Packet request)
+        {
             var handler = this.RequestPacketAdminShutdown;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this, request);
             }
         }
 
-        public virtual void DispatchRequestPacket(ILayerConnection sender, Packet request) {
-            if (request.Words.Count >= 1) {
-                if (this.RequestDelegates.ContainsKey(request.Words[0]) == true) {
+        public virtual void DispatchRequestPacket(ILayerConnection sender, Packet request)
+        {
+            if (request.Words.Count >= 1)
+            {
+                if (this.RequestDelegates.ContainsKey(request.Words[0]) == true)
+                {
                     this.RequestDelegates[request.Words[0]](sender, request);
                 }
-                else {
+                else
+                {
                     var handler = this.RequestPacketUnknownRecieved;
-                    if (handler != null) {
+                    if (handler != null)
+                    {
                         handler(this, request);
                     }
                 }
             }
         }
 
-        private void Connection_PacketReceived(ILayerConnection sender, Packet packet) {
-            if (packet.OriginatedFromServer == false && packet.IsResponse == false) {
+        private void Connection_PacketReceived(ILayerConnection sender, Packet packet)
+        {
+            if (packet.OriginatedFromServer == false && packet.IsResponse == false)
+            {
                 this.DispatchRequestPacket(sender, packet);
             }
             //else if (packet.OriginatedFromServer == true && packet.IsResponse == true) {
@@ -412,51 +481,64 @@ namespace PRoCon.Core.Remote.Layer {
             //}
         }
 
-        private void Connection_ConnectionClosed(ILayerConnection sender) {
+        private void Connection_ConnectionClosed(ILayerConnection sender)
+        {
             var handler = this.ConnectionClosed;
-            if (handler != null) {
+            if (handler != null)
+            {
                 handler(this);
             }
 
             this.NullActions();
         }
 
-        public void Poke() {
-            if (this.Connection != null) {
+        public void Poke()
+        {
+            if (this.Connection != null)
+            {
                 this.Connection.Poke();
             }
         }
 
-        public void SendPacket(Packet packet) {
-            if (this.Connection != null) {
+        public void SendPacket(Packet packet)
+        {
+            if (this.Connection != null)
+            {
                 this.Connection.Send(packet);
             }
         }
 
-        public void SendRequest(List<String> words) {
-            if (this.Connection != null) {
+        public void SendRequest(List<String> words)
+        {
+            if (this.Connection != null)
+            {
                 this.Connection.Send(new Packet(true, false, this.Connection.AcquireSequenceNumber, words));
             }
         }
 
-        public void SendRequest(params String[] words) {
+        public void SendRequest(params String[] words)
+        {
             this.SendRequest(new List<String>(words));
         }
 
-        public void SendResponse(Packet packet, List<String> words) {
-            if (this.Connection != null) {
+        public void SendResponse(Packet packet, List<String> words)
+        {
+            if (this.Connection != null)
+            {
                 this.Connection.Send(new Packet(false, true, packet.SequenceNumber, words));
             }
         }
 
-        public void SendResponse(Packet packet, params String[] words) {
+        public void SendResponse(Packet packet, params String[] words)
+        {
             this.SendResponse(packet, new List<String>(words));
         }
 
         /// <summary>
         /// Nulls out all of the actions, 
         /// </summary>
-        protected void NullActions() {
+        protected void NullActions()
+        {
             this.ConnectionClosed = null;
 
             this.RequestPacketUnsecureSafeListedRecieved = null;
@@ -498,8 +580,10 @@ namespace PRoCon.Core.Remote.Layer {
             this.RequestPacketSquadIsPrivateReceived = null;
         }
 
-        public void Shutdown() {
-            if (this.Connection != null) {
+        public void Shutdown()
+        {
+            if (this.Connection != null)
+            {
                 this.Connection.Shutdown();
                 this.Connection = null;
             }

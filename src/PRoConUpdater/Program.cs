@@ -19,21 +19,20 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
 
-namespace PRoConUpdater {
+namespace PRoConUpdater
+{
 
-    static class Program {
+    static class Program
+    {
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

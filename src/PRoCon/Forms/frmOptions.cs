@@ -20,21 +20,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
-using System.Windows.Forms;
-using System.IO;
 using System.Text.RegularExpressions;
-using System.Security;
-using System.Security.Permissions;
+using System.Windows.Forms;
 
-namespace PRoCon.Forms {
+namespace PRoCon.Forms
+{
     using Core;
     using Core.Options;
-    using Controls.ControlsEx;
-    public partial class frmOptions : Form {
+    public partial class frmOptions : Form
+    {
 
         //private Font m_fntComboBoxFont = null;
         private frmMain m_frmParent = null;
@@ -57,14 +53,15 @@ namespace PRoCon.Forms {
         private string m_strAutoApplyUpdateInfo;
         private PRoConApplication m_praApplication;
 
-        public frmOptions(PRoConApplication praApplication, frmMain frmParent) {
+        public frmOptions(PRoConApplication praApplication, frmMain frmParent)
+        {
             this.m_isLoadingForm = true;
 
             InitializeComponent();
 
             this.m_praApplication = praApplication;
             this.m_praApplication.CurrentLanguageChanged += new PRoConApplication.CurrentLanguageHandler(m_praApplication_CurrentLanguageChanged);
-            
+
             this.m_praApplication.OptionsSettings.AutoApplyUpdatesChanged += new PRoCon.Core.Options.OptionsSettings.OptionsEnabledHandler(OptionsSettings_AutoApplyUpdatesChanged);
             this.m_praApplication.OptionsSettings.AutoCheckDownloadUpdatesChanged += new PRoCon.Core.Options.OptionsSettings.OptionsEnabledHandler(OptionsSettings_AutoCheckDownloadUpdatesChanged);
             this.m_praApplication.OptionsSettings.AutoCheckGameConfigsForUpdatesChanged += new PRoCon.Core.Options.OptionsSettings.OptionsEnabledHandler(OptionsSettings_AutoCheckGameConfigsForUpdatesChanged);
@@ -127,19 +124,23 @@ namespace PRoCon.Forms {
             this.btnAddStatsLink.ImageKey = "add.png";
             this.btnRemoveStatsLink.ImageKey = "cross.png";
         }
-        
-        private void m_praApplication_CurrentLanguageChanged(CLocalization language) {
+
+        private void m_praApplication_CurrentLanguageChanged(CLocalization language)
+        {
             this.InvokeIfRequired(() => { cboBasicsLanguagePicker.SelectedItem = language; });
         }
 
         private bool m_isLoadingForm;
-        private void frmOptions_Load(object sender, EventArgs e) {
+        private void frmOptions_Load(object sender, EventArgs e)
+        {
 
-            if (this.m_praApplication != null) {
+            if (this.m_praApplication != null)
+            {
 
                 this.cboBasicsLanguagePicker.Items.Clear();
 
-                foreach (CLocalization clocLanguage in this.m_praApplication.Languages) {
+                foreach (CLocalization clocLanguage in this.m_praApplication.Languages)
+                {
                     this.cboBasicsLanguagePicker.Items.Add(clocLanguage);
                 }
 
@@ -178,7 +179,8 @@ namespace PRoCon.Forms {
 
                 this.m_praApplication.OptionsSettings.PluginMaxRuntime_m = this.m_praApplication.OptionsSettings.PluginMaxRuntime_m;
                 this.m_praApplication.OptionsSettings.PluginMaxRuntime_s = this.m_praApplication.OptionsSettings.PluginMaxRuntime_s;
-                if (this.m_praApplication.OptionsSettings.PluginMaxRuntimeLocked == true) {
+                if (this.m_praApplication.OptionsSettings.PluginMaxRuntimeLocked == true)
+                {
                     this.numPluginMaxRuntimeMin.Enabled = false;
                     this.numPluginMaxRuntimeSec.Enabled = false;
                 }
@@ -186,16 +188,19 @@ namespace PRoCon.Forms {
                 this.m_praApplication.OptionsSettings.EnablePluginDebugging = this.m_praApplication.OptionsSettings.EnablePluginDebugging;
 
                 this.lsvTrustedHostDomainPorts.Items.Clear();
-                foreach (TrustedHostWebsitePort trusted in this.m_praApplication.OptionsSettings.TrustedHostsWebsitesPorts) {
+                foreach (TrustedHostWebsitePort trusted in this.m_praApplication.OptionsSettings.TrustedHostsWebsitesPorts)
+                {
                     this.TrustedHostsWebsitesPorts_ItemAdded(0, trusted);
                 }
 
-                if (this.m_praApplication.HttpWebServer != null && this.m_praApplication.HttpWebServer.IsOnline == true) {
+                if (this.m_praApplication.HttpWebServer != null && this.m_praApplication.HttpWebServer.IsOnline == true)
+                {
                     this.m_praApplication_HttpServerOnline(this.m_praApplication.HttpWebServer);
                 }
 
                 this.lsvStatsLinksList.Items.Clear();
-                foreach (StatsLinkNameUrl StatsLink in this.m_praApplication.OptionsSettings.StatsLinkNameUrl) {
+                foreach (StatsLinkNameUrl StatsLink in this.m_praApplication.OptionsSettings.StatsLinkNameUrl)
+                {
                     this.StatsLinkNameUrl_ItemAdded(0, StatsLink);
                 }
 
@@ -203,7 +208,8 @@ namespace PRoCon.Forms {
             }
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             this.Text = clocLanguage.GetLocalized("frmOptions.Title");
 
             this.btnClose.Text = clocLanguage.GetLocalized("global.close");
@@ -220,7 +226,7 @@ namespace PRoCon.Forms {
 
             this.lblBasicsPrivacy.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.lblBasicsPrivacy");
             this.chkBasicsAutoCheckDownloadForUpdates.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsAutoCheckDownloadForUpdates");
-            this.chkBasicsAutoApplyUpdates.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsAutoApplyUpdates"); 
+            this.chkBasicsAutoApplyUpdates.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsAutoApplyUpdates");
             this.chkBasicsAutoCheckGameConfigsForUpdates.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsAutoCheckGameConfigsForUpdates");
 
             this.m_strAutoApplyUpdateInfo = clocLanguage.GetDefaultLocalized("Already downloaded updates are installed in case of a restart!" + Environment.NewLine
@@ -255,8 +261,8 @@ namespace PRoCon.Forms {
 
             this.lblHttpServerBindingIP.Text = clocLanguage.GetLocalized("frmOptions.lblHttpServerBindingIP");
             this.lblHttpServerStartPort.Text = clocLanguage.GetLocalized("frmOptions.lblHttpServerStartPort");
-            this.lblBindingExplanation.Text = clocLanguage.GetLocalized("frmOptions.lblBindingExplanation"); 
-            
+            this.lblBindingExplanation.Text = clocLanguage.GetLocalized("frmOptions.lblBindingExplanation");
+
             this.lnkStartStopHttpServer.Text = clocLanguage.GetLocalized("frmOptions.lnkStartStopHttpServer.Start");
             this.lnkHttpServerForwardedTest.Text = clocLanguage.GetLocalized("frmOptions.lnkHttpServerForwardedTest");
 
@@ -316,8 +322,10 @@ namespace PRoCon.Forms {
             //this.m_strSetLanguageFileName = clocLanguage.FileName;
         }
 
-        private void cboBasicsLanguagePicker_SelectedIndexChanged(object sender, EventArgs e) {
-            if (cboBasicsLanguagePicker.SelectedItem != null) {
+        private void cboBasicsLanguagePicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboBasicsLanguagePicker.SelectedItem != null)
+            {
 
                 this.lnkBasicsAuthor.Text = ((CLocalization)cboBasicsLanguagePicker.SelectedItem).GetLocalized("file.author", null);
                 //this.lnkBasicsAuthor.LinkArea = new LinkArea(0, this.lnkBasicsAuthor.Text.Length);
@@ -325,12 +333,15 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lnkBasicsAuthor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.lnkBasicsAuthor.Tag != null) {
+        private void lnkBasicsAuthor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.lnkBasicsAuthor.Tag != null)
+            {
 
                 string strLink = this.lnkBasicsAuthor.Tag.ToString();
 
-                if (Regex.Match(strLink, "^http://.*?$").Success == false) {
+                if (Regex.Match(strLink, "^http://.*?$").Success == false)
+                {
                     strLink = "http://" + strLink;
                 }
 
@@ -338,19 +349,23 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void btnSetLanguage_Click(object sender, EventArgs e) {
+        private void btnSetLanguage_Click(object sender, EventArgs e)
+        {
             this.m_praApplication.CurrentLanguage = (CLocalization)cboBasicsLanguagePicker.SelectedItem;
         }
 
-        private void cboBasicsLanguagePicker_DrawItem(object sender, DrawItemEventArgs e) {
-            if (e.Index != -1) {
+        private void cboBasicsLanguagePicker_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index != -1)
+            {
 
                 CLocalization clocDraw = ((CLocalization)cboBasicsLanguagePicker.Items[e.Index]);
                 System.Drawing.Image imgFlag = null;
 
                 e.Graphics.FillRectangle(SystemBrushes.Window, e.Bounds);
 
-                if (this.m_frmParent.iglFlags.Images.ContainsKey(clocDraw.GetLocalized("file.flag", null) + ".png") == true) {
+                if (this.m_frmParent.iglFlags.Images.ContainsKey(clocDraw.GetLocalized("file.flag", null) + ".png") == true)
+                {
 
                     imgFlag = this.m_frmParent.iglFlags.Images[clocDraw.GetLocalized("file.flag", null) + ".png"];
 
@@ -361,30 +376,37 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void cboSandboxOptions_DrawItem(object sender, DrawItemEventArgs e) {
-            if (e.Index == 0) {
+        private void cboSandboxOptions_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index == 0)
+            {
                 e.Graphics.FillRectangle(SystemBrushes.Window, e.Bounds);
                 e.Graphics.DrawString((string)this.cboPluginsSandboxOptions.Items[e.Index], new Font("Segoe UI", 9, FontStyle.Bold), SystemBrushes.WindowText, e.Bounds.Left + 5, e.Bounds.Top);
             }
-            else if (e.Index == 1) {
+            else if (e.Index == 1)
+            {
                 e.Graphics.FillRectangle(SystemBrushes.Window, e.Bounds);
                 e.Graphics.DrawString((string)this.cboPluginsSandboxOptions.Items[e.Index], this.Font, SystemBrushes.WindowText, e.Bounds.Left + 5, e.Bounds.Top);
             }
         }
 
-        private void txtPluginsTrustedPort_KeyPress(object sender, KeyPressEventArgs e) {
+        private void txtPluginsTrustedPort_KeyPress(object sender, KeyPressEventArgs e)
+        {
             e.Handled = (!char.IsDigit(e.KeyChar) && e.KeyChar != '\b');
         }
 
-        private void txtPluginsTrustedHostDomain_TextChanged(object sender, EventArgs e) {
+        private void txtPluginsTrustedHostDomain_TextChanged(object sender, EventArgs e)
+        {
             this.btnPluginsAddTrustedHostDomain.Enabled = (this.txtPluginsTrustedHostDomain.Text.Length > 0 && this.txtPluginsTrustedPort.Text.Length > 0);
         }
 
-        private void txtPluginsTrustedPort_TextChanged(object sender, EventArgs e) {
+        private void txtPluginsTrustedPort_TextChanged(object sender, EventArgs e)
+        {
             this.btnPluginsAddTrustedHostDomain.Enabled = (this.txtPluginsTrustedHostDomain.Text.Length > 0 && this.txtPluginsTrustedPort.Text.Length > 0);
         }
 
-        void TrustedHostsWebsitesPorts_ItemAdded(int iIndex, PRoCon.Core.Options.TrustedHostWebsitePort item) {
+        void TrustedHostsWebsitesPorts_ItemAdded(int iIndex, PRoCon.Core.Options.TrustedHostWebsitePort item)
+        {
             ListViewItem lviNewDomainHost = new ListViewItem(item.HostWebsite);
             lviNewDomainHost.Tag = item;
 
@@ -397,21 +419,26 @@ namespace PRoCon.Forms {
             this.txtPluginsTrustedHostDomain.Focus();
         }
 
-        void TrustedHostsWebsitesPorts_ItemRemoved(int iIndex, PRoCon.Core.Options.TrustedHostWebsitePort item) {
-            
-            for (int i = 0; i < this.lsvTrustedHostDomainPorts.Items.Count; i++) {
-                if (this.lsvTrustedHostDomainPorts.Items[i].Tag == item) {
+        void TrustedHostsWebsitesPorts_ItemRemoved(int iIndex, PRoCon.Core.Options.TrustedHostWebsitePort item)
+        {
+
+            for (int i = 0; i < this.lsvTrustedHostDomainPorts.Items.Count; i++)
+            {
+                if (this.lsvTrustedHostDomainPorts.Items[i].Tag == item)
+                {
                     this.lsvTrustedHostDomainPorts.Items.RemoveAt(i);
                     i--;
                 }
             }
         }
 
-        private void btnPluginsAddTrustedHostDomain_Click(object sender, EventArgs e) {
+        private void btnPluginsAddTrustedHostDomain_Click(object sender, EventArgs e)
+        {
 
             ushort iPort = 0;
 
-            if (ushort.TryParse(this.txtPluginsTrustedPort.Text, out iPort) == true) {
+            if (ushort.TryParse(this.txtPluginsTrustedPort.Text, out iPort) == true)
+            {
 
                 this.m_praApplication.OptionsSettings.TrustedHostsWebsitesPorts.Add(new TrustedHostWebsitePort(this.txtPluginsTrustedHostDomain.Text, iPort));
 
@@ -430,14 +457,18 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lsvTrustedHostDomainPorts_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lsvTrustedHostDomainPorts_SelectedIndexChanged(object sender, EventArgs e)
+        {
             this.btnPluginsRemoveTrustedHostDomain.Enabled = (this.lsvTrustedHostDomainPorts.SelectedItems.Count > 0);
         }
 
-        private void btnPluginsRemoveTrustedHostDomain_Click(object sender, EventArgs e) {
-            if (this.lsvTrustedHostDomainPorts.SelectedItems.Count > 0) {
+        private void btnPluginsRemoveTrustedHostDomain_Click(object sender, EventArgs e)
+        {
+            if (this.lsvTrustedHostDomainPorts.SelectedItems.Count > 0)
+            {
 
-                if (this.lsvTrustedHostDomainPorts.SelectedItems[0].Tag != null) {
+                if (this.lsvTrustedHostDomainPorts.SelectedItems[0].Tag != null)
+                {
                     this.m_praApplication.OptionsSettings.TrustedHostsWebsitesPorts.Remove((TrustedHostWebsitePort)this.lsvTrustedHostDomainPorts.SelectedItems[0].Tag);
                 }
 
@@ -456,11 +487,13 @@ namespace PRoCon.Forms {
             }
         }
 
-        void OptionsSettings_AllowAllODBCConnectionsChanged(bool blEnabled) {
+        void OptionsSettings_AllowAllODBCConnectionsChanged(bool blEnabled)
+        {
             this.chkAllowODBCConnections.Checked = blEnabled;
         }
 
-        private void chkAllowODBCConnections_CheckedChanged(object sender, EventArgs e) {
+        private void chkAllowODBCConnections_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.AllowAllODBCConnections = this.chkAllowODBCConnections.Checked;
         }
 
@@ -478,13 +511,16 @@ namespace PRoCon.Forms {
 
         #region Auto apply updates
 
-        void OptionsSettings_AutoApplyUpdatesChanged(bool blEnabled) {
+        void OptionsSettings_AutoApplyUpdatesChanged(bool blEnabled)
+        {
             this.chkBasicsAutoApplyUpdates.Checked = blEnabled;
         }
-        
-        private void chkBasicsAutoApplyUpdates_CheckedChanged(object sender, EventArgs e) {
+
+        private void chkBasicsAutoApplyUpdates_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.AutoApplyUpdates = this.chkBasicsAutoApplyUpdates.Checked;
-            if (this.chkBasicsAutoApplyUpdates.Checked == false) {
+            if (this.chkBasicsAutoApplyUpdates.Checked == false)
+            {
                 MessageBox.Show(this.m_strAutoApplyUpdateInfo, "Important Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -493,11 +529,13 @@ namespace PRoCon.Forms {
 
         #region Auto check and download
 
-        void OptionsSettings_AutoCheckDownloadUpdatesChanged(bool blEnabled) {
+        void OptionsSettings_AutoCheckDownloadUpdatesChanged(bool blEnabled)
+        {
             this.chkBasicsAutoCheckDownloadForUpdates.Checked = blEnabled;
         }
 
-        private void chkBasicsAutoCheckDownloadForUpdates_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsAutoCheckDownloadForUpdates_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.AutoCheckDownloadUpdates = this.chkBasicsAutoCheckDownloadForUpdates.Checked;
         }
 
@@ -523,11 +561,13 @@ namespace PRoCon.Forms {
 
         #region Chat
 
-        void OptionsSettings_ChatLoggingChanged(bool blEnabled) {
+        void OptionsSettings_ChatLoggingChanged(bool blEnabled)
+        {
             this.chkBasicsEnableChatLogging.Checked = blEnabled;
         }
 
-        private void chkBasicsEnableChatLogging_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsEnableChatLogging_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.ChatLogging = this.chkBasicsEnableChatLogging.Checked;
         }
 
@@ -535,11 +575,13 @@ namespace PRoCon.Forms {
 
         #region Events
 
-        void OptionsSettings_EventsLoggingChanged(bool blEnabled) {
+        void OptionsSettings_EventsLoggingChanged(bool blEnabled)
+        {
             this.chkBasicsEnableEventsLogging.Checked = blEnabled;
         }
 
-        private void chkBasicsEnableEventsLogging_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsEnableEventsLogging_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.EventsLogging = this.chkBasicsEnableEventsLogging.Checked;
         }
 
@@ -547,11 +589,13 @@ namespace PRoCon.Forms {
 
         #region Plugins
 
-        void OptionsSettings_PluginsLoggingChanged(bool blEnabled) {
+        void OptionsSettings_PluginsLoggingChanged(bool blEnabled)
+        {
             this.chkBasicsEnablePluginLogging.Checked = blEnabled;
         }
 
-        private void chkBasicsEnablePluginLogging_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsEnablePluginLogging_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.PluginLogging = this.chkBasicsEnablePluginLogging.Checked;
         }
 
@@ -559,11 +603,13 @@ namespace PRoCon.Forms {
 
         #region Console
 
-        void OptionsSettings_ConsoleLoggingChanged(bool blEnabled) {
+        void OptionsSettings_ConsoleLoggingChanged(bool blEnabled)
+        {
             this.chkBasicsEnableConsoleLogging.Checked = blEnabled;
         }
-        
-        private void chkBasicsEnableConsoleLogging_CheckedChanged(object sender, EventArgs e) {
+
+        private void chkBasicsEnableConsoleLogging_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.ConsoleLogging = this.chkBasicsEnableConsoleLogging.Checked;
         }
 
@@ -571,14 +617,17 @@ namespace PRoCon.Forms {
 
         #endregion
 
-        void OptionsSettings_ShowTrayIconChanged(bool blEnabled) {
-            if (blEnabled == true) {
+        void OptionsSettings_ShowTrayIconChanged(bool blEnabled)
+        {
+            if (blEnabled == true)
+            {
                 this.chkBasicsCloseToTray.Enabled = true;
                 this.chkBasicsMinimizeToTray.Enabled = true;
 
                 this.cboBasicsShowWindow.SelectedIndex = 0;
             }
-            else {
+            else
+            {
                 this.chkBasicsCloseToTray.Checked = false;
                 this.chkBasicsMinimizeToTray.Checked = false;
                 this.chkBasicsCloseToTray.Enabled = false;
@@ -588,68 +637,85 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void cboBasicsShowWindow_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.m_isLoadingForm == false) {
-                if (this.cboBasicsShowWindow.SelectedIndex == frmOptions.INT_OPTIONS_PREFERENCES_SHOWWINDOW_TASKBARANDTRAY) {
+        private void cboBasicsShowWindow_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.m_isLoadingForm == false)
+            {
+                if (this.cboBasicsShowWindow.SelectedIndex == frmOptions.INT_OPTIONS_PREFERENCES_SHOWWINDOW_TASKBARANDTRAY)
+                {
                     this.m_praApplication.OptionsSettings.ShowTrayIcon = true;
 
                 }
-                else if (this.cboBasicsShowWindow.SelectedIndex == frmOptions.INT_OPTIONS_PREFERENCES_SHOWWINDOW_TASKBARONLY) {
+                else if (this.cboBasicsShowWindow.SelectedIndex == frmOptions.INT_OPTIONS_PREFERENCES_SHOWWINDOW_TASKBARONLY)
+                {
                     this.m_praApplication.OptionsSettings.ShowTrayIcon = false;
                 }
             }
         }
 
-        void OptionsSettings_CloseToTrayChanged(bool blEnabled) {
+        void OptionsSettings_CloseToTrayChanged(bool blEnabled)
+        {
             this.chkBasicsCloseToTray.Checked = blEnabled;
         }
 
-        private void chkBasicsCloseToTray_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsCloseToTray_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.CloseToTray = this.chkBasicsCloseToTray.Checked;
         }
 
 
-        void OptionsSettings_MinimizeToTrayChanged(bool blEnabled) {
+        void OptionsSettings_MinimizeToTrayChanged(bool blEnabled)
+        {
             this.chkBasicsMinimizeToTray.Checked = blEnabled;
         }
 
-        private void chkBasicsMinimizeToTray_CheckedChanged(object sender, EventArgs e) {
+        private void chkBasicsMinimizeToTray_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.MinimizeToTray = this.chkBasicsMinimizeToTray.Checked;
         }
 
         #region plugin settings & http server
 
-        void OptionsSettings_RunPluginsInTrustedSandboxChanged(bool blEnabled) {
+        void OptionsSettings_RunPluginsInTrustedSandboxChanged(bool blEnabled)
+        {
             this.pnlSandboxOptions.Enabled = blEnabled;
 
-            if (blEnabled == true) {
+            if (blEnabled == true)
+            {
                 this.cboPluginsSandboxOptions.SelectedIndex = 0;
             }
-            else {
+            else
+            {
                 this.cboPluginsSandboxOptions.SelectedIndex = 1;
             }
 
         }
 
-        private void cboSandboxOptions_SelectedIndexChanged(object sender, EventArgs e) {
-            if (this.m_isLoadingForm == false) {
+        private void cboSandboxOptions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.m_isLoadingForm == false)
+            {
                 this.m_praApplication.OptionsSettings.RunPluginsInTrustedSandbox = (this.cboPluginsSandboxOptions.SelectedIndex == 0);
             }
             //this.pnlSandboxOptions.Enabled = (this.cboPluginsSandboxOptions.SelectedIndex == 0);
         }
 
-        private void lnkStartStopHttpServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkStartStopHttpServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             this.picHttpServerServerStatus.Image = this.m_frmParent.picAjaxStyleLoading.Image;
 
-            if (this.m_praApplication.HttpWebServer == null || (this.m_praApplication.HttpWebServer != null && this.m_praApplication.HttpWebServer.IsOnline == false)) {
+            if (this.m_praApplication.HttpWebServer == null || (this.m_praApplication.HttpWebServer != null && this.m_praApplication.HttpWebServer.IsOnline == false))
+            {
                 this.m_praApplication.ExecutePRoConCommand(this.m_praApplication, new List<string>() { "procon.private.httpWebServer.enable", "true", this.txtHttpServerStartPort.Text, this.txtHttpServerBindingAddress.Text }, 0);
             }
-            else {
+            else
+            {
                 this.m_praApplication.ExecutePRoConCommand(this.m_praApplication, new List<string>() { "procon.private.httpWebServer.enable", "false", this.txtHttpServerStartPort.Text, this.txtHttpServerBindingAddress.Text }, 0);
             }
         }
 
-        private void m_praApplication_HttpServerOnline(PRoCon.Core.HttpServer.HttpWebServer sender) {
+        private void m_praApplication_HttpServerOnline(PRoCon.Core.HttpServer.HttpWebServer sender)
+        {
             this.txtHttpServerStartPort.Text = sender.ListeningPort.ToString();
             this.txtPluginsTrustedHostDomain.Text = sender.BindingAddress;
 
@@ -669,7 +735,8 @@ namespace PRoCon.Forms {
             this.picHttpServerServerStatus.Image = this.m_frmParent.picLayerOnline.Image;
         }
 
-        private void m_praApplication_HttpServerOffline(PRoCon.Core.HttpServer.HttpWebServer sender) {
+        private void m_praApplication_HttpServerOffline(PRoCon.Core.HttpServer.HttpWebServer sender)
+        {
 
             this.pnlHttpServerSettings.Enabled = true;
             this.pnlHttpServerTester.Visible = false;
@@ -681,7 +748,8 @@ namespace PRoCon.Forms {
             this.picHttpServerServerStatus.Image = this.m_frmParent.picLayerOffline.Image;
         }
 
-        private void lnkHttpServerForwardedTest_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkHttpServerForwardedTest_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
             //CDownloadFile portTest = new CDownloadFile("http://www.phogue.net/procon/testport.php?port=" + this.txtHttpServerStartPort.Text);
             CDownloadFile portTest = new CDownloadFile("https://repo.myrcon.com/procon1/testport.php?port=" + this.txtHttpServerStartPort.Text);
@@ -697,7 +765,8 @@ namespace PRoCon.Forms {
             portTest.BeginDownload();
         }
 
-        private void portTest_DownloadError(CDownloadFile cdfSender) {
+        private void portTest_DownloadError(CDownloadFile cdfSender)
+        {
             this.picHttpServerForwardedTestStatus.Image = this.m_frmParent.picPortCheckerClosed.Image;
 
             this.lblHttpServerForwardedTestStatus.Text = this.m_praApplication.CurrentLanguage.GetLocalized("frmOptions.lblHttpServerForwardedTestStatus.Closed", this.txtHttpServerStartPort.Text);
@@ -707,30 +776,36 @@ namespace PRoCon.Forms {
             this.lnkHttpServerExampleLink.Visible = false;
         }
 
-        private void portTest_DownloadComplete(CDownloadFile cdfSender) {
+        private void portTest_DownloadComplete(CDownloadFile cdfSender)
+        {
 
             // Do not environment this \n.  It's from the php script and will always be just \n
             string[] a_strResponses = Encoding.UTF8.GetString(cdfSender.CompleteFileData).Split('\n');
 
-            if (a_strResponses.Length >= 1) {
-                if (a_strResponses[0].CompareTo("open") == 0) {
-                    
+            if (a_strResponses.Length >= 1)
+            {
+                if (a_strResponses[0].CompareTo("open") == 0)
+                {
+
                     this.picHttpServerForwardedTestStatus.Image = this.m_frmParent.picPortCheckerOpen.Image;
 
-                    if (a_strResponses.Length >= 2) {
+                    if (a_strResponses.Length >= 2)
+                    {
                         this.lblHttpServerForwardedTestStatus.Text = this.m_praApplication.CurrentLanguage.GetLocalized("frmOptions.lblHttpServerForwardedTestStatus.Open", this.txtHttpServerStartPort.Text, a_strResponses[1]);
 
                         this.lnkHttpServerExampleLink.Text = String.Format("http://{0}:{1}/connections", a_strResponses[1], this.txtHttpServerStartPort.Text);
                         this.lnkHttpServerExampleLink.Visible = true;
                     }
-                    else {
+                    else
+                    {
                         this.lblHttpServerForwardedTestStatus.Text = this.m_praApplication.CurrentLanguage.GetLocalized("frmOptions.lblHttpServerForwardedTestStatus.Open", this.txtHttpServerStartPort.Text, "");
                     }
                     this.lblHttpServerForwardedTestStatus.ForeColor = Color.ForestGreen;
 
                     this.lnkHttpServerForwardedTest.Enabled = true;
                 }
-                else if (a_strResponses[0].CompareTo("closed") == 0 || a_strResponses[0].CompareTo("error") == 0 || a_strResponses[0].CompareTo("denied") == 0) {
+                else if (a_strResponses[0].CompareTo("closed") == 0 || a_strResponses[0].CompareTo("error") == 0 || a_strResponses[0].CompareTo("denied") == 0)
+                {
                     this.picHttpServerForwardedTestStatus.Image = this.m_frmParent.picPortCheckerClosed.Image;
 
                     this.lblHttpServerForwardedTestStatus.Text = this.m_praApplication.CurrentLanguage.GetLocalized("frmOptions.lblHttpServerForwardedTestStatus.Closed", this.txtHttpServerStartPort.Text);
@@ -742,7 +817,8 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lnkHttpServerExampleLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkHttpServerExampleLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start(this.lnkHttpServerExampleLink.Text);
         }
 
@@ -770,23 +846,27 @@ namespace PRoCon.Forms {
             this.m_praApplication.OptionsSettings.ChatDisplayAdminName = this.chkAdvEnableChatAdminName.Checked;
         }
 
-        void OptionsSettings_LayerHideLocalPluginsChanged(bool blEnabled) {
+        void OptionsSettings_LayerHideLocalPluginsChanged(bool blEnabled)
+        {
             this.chkAdvHideLocalPluginsTab.Checked = blEnabled;
         }
 
-        private void chkAdvHideLocalPluginsTab_CheckedChanged(object sender, EventArgs e) {
+        private void chkAdvHideLocalPluginsTab_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.LayerHideLocalPlugins = this.chkAdvHideLocalPluginsTab.Checked;
         }
 
 
-        void OptionsSettings_LayerHideLocalAccountsChanged(bool blEnabled) {
+        void OptionsSettings_LayerHideLocalAccountsChanged(bool blEnabled)
+        {
             this.chkAdvHideLocalAccountsTab.Checked = blEnabled;
         }
 
-        private void chkAdvHideLocalAccountsTab_CheckedChanged(object sender, EventArgs e) {
+        private void chkAdvHideLocalAccountsTab_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.LayerHideLocalAccounts = this.chkAdvHideLocalAccountsTab.Checked;
         }
-        
+
         void OptionsSettings_ShowRoundTimerConstantlyChanged(bool blEnabled)
         {
             this.chkAdvShowRoundTimerConstantly.Checked = blEnabled;
@@ -821,15 +901,17 @@ namespace PRoCon.Forms {
 
         #region Advanced2
 
-        void OptionsSettings_EnableAdminReasonChanged(bool blEnabled) {
+        void OptionsSettings_EnableAdminReasonChanged(bool blEnabled)
+        {
             this.chkAdv2EnableAdminReason.Checked = blEnabled;
         }
 
-        private void chkAdv2EnableAdminReason_CheckedChanged(object sender, EventArgs e) {
+        private void chkAdv2EnableAdminReason_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.EnableAdminReason = this.chkAdv2EnableAdminReason.Checked;
         }
 
-        
+
         #endregion
 
         #region StatsLinks
@@ -847,23 +929,27 @@ namespace PRoCon.Forms {
 
         private void btnRemoveStatsLink_Click(object sender, EventArgs e)
         {
-            if (this.lsvStatsLinksList.SelectedItems.Count > 0) {
-                 if (this.lsvStatsLinksList.SelectedItems[0].Tag != null)
-                 {
-                     this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Remove((StatsLinkNameUrl)this.lsvStatsLinksList.SelectedItems[0].Tag);
-                 }
-             }
+            if (this.lsvStatsLinksList.SelectedItems.Count > 0)
+            {
+                if (this.lsvStatsLinksList.SelectedItems[0].Tag != null)
+                {
+                    this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Remove((StatsLinkNameUrl)this.lsvStatsLinksList.SelectedItems[0].Tag);
+                }
+            }
         }
 
         private void lsvStatsLinksList_MouseDoubleClick(object sender, EventArgs e)
         {
-            if (this.lsvStatsLinksList.SelectedItems.Count == 0) {
+            if (this.lsvStatsLinksList.SelectedItems.Count == 0)
+            {
                 return;
             }
-            try {
+            try
+            {
                 Clipboard.SetDataObject(this.lsvStatsLinksList.SelectedItems[0].SubItems[1].Text, true, 5, 10);
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 // Nope, another thread is accessing the clipboard..
             }
         }
@@ -871,14 +957,14 @@ namespace PRoCon.Forms {
         private void txtStatsLinkName_TextChanged(object sender, EventArgs e)
         {
             this.btnAddStatsLink.Enabled = (this.txtStatsLinkName.Text.Length > 0 && this.txtStatsLinkUrl.Text.Length > 0
-                && this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Count < this.m_praApplication.OptionsSettings.StatsLinksMaxNum 
+                && this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Count < this.m_praApplication.OptionsSettings.StatsLinksMaxNum
                 && IsValidUrl(this.txtStatsLinkUrl.Text));
         }
 
         private void txtStatsLinkUrl_TextChanged(object sender, EventArgs e)
         {
             this.btnAddStatsLink.Enabled = (this.txtStatsLinkUrl.Text.Length > 0 && this.txtStatsLinkName.Text.Length > 0
-                && this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Count < this.m_praApplication.OptionsSettings.StatsLinksMaxNum 
+                && this.m_praApplication.OptionsSettings.StatsLinkNameUrl.Count < this.m_praApplication.OptionsSettings.StatsLinksMaxNum
                 && IsValidUrl(this.txtStatsLinkUrl.Text));
         }
 
@@ -919,11 +1005,13 @@ namespace PRoCon.Forms {
         #endregion
 
         #region PluginMaxRuntime
-        private void numPluginMaxRuntimeMin_Validated(object sender, EventArgs e) {
+        private void numPluginMaxRuntimeMin_Validated(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.PluginMaxRuntime_m = (int)this.numPluginMaxRuntimeMin.Value;
         }
 
-        private void numPluginMaxRuntimeSec_Validated(object sender, EventArgs e) {
+        private void numPluginMaxRuntimeSec_Validated(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.PluginMaxRuntime_s = (int)this.numPluginMaxRuntimeSec.Value;
         }
         #endregion
@@ -940,11 +1028,13 @@ namespace PRoCon.Forms {
         }
         #endregion
 
-        void OptionsSettings_EnablePluginDebuggingChanged(bool blEnabled) {
+        void OptionsSettings_EnablePluginDebuggingChanged(bool blEnabled)
+        {
             this.chkEnablePluginDebugging.Checked = blEnabled;
         }
 
-        private void chkEnablePluginDebugging_CheckedChanged(object sender, EventArgs e) {
+        private void chkEnablePluginDebugging_CheckedChanged(object sender, EventArgs e)
+        {
             this.m_praApplication.OptionsSettings.EnablePluginDebugging = this.chkEnablePluginDebugging.Checked;
         }
     }

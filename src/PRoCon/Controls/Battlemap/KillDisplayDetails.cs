@@ -18,30 +18,34 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Controls.Battlemap {
+namespace PRoCon.Controls.Battlemap
+{
     // Only used to store icons and fade times of a kill.
     // This class will be removed once I move the kills over to the new MapObjects.
-    public class KillDisplayDetails {
+    public class KillDisplayDetails
+    {
 
-        public float Opacity {
+        public float Opacity
+        {
             get;
             set;
         }
 
-        public bool IsMouseOver {
+        public bool IsMouseOver
+        {
             get;
             set;
         }
 
-        public DateTime TimeOfFadeoutStart {
+        public DateTime TimeOfFadeoutStart
+        {
             get;
             set;
         }
 
-        public KillDisplayDetails(DateTime dtFadeoutStart) {
+        public KillDisplayDetails(DateTime dtFadeoutStart)
+        {
             this.TimeOfFadeoutStart = dtFadeoutStart;
             this.Opacity = 0.0F;
         }

@@ -19,25 +19,28 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Plugin.Commands {
+namespace PRoCon.Core.Plugin.Commands
+{
 
     [Serializable]
-    public class MatchArgument {
+    public class MatchArgument
+    {
 
-        public string Argument {
+        public string Argument
+        {
             get;
             private set;
         }
 
-        public int MatchScore {
+        public int MatchScore
+        {
             get;
             private set;
         }
 
-        public MatchArgument(string strArgument, int iMatchScore) {
+        public MatchArgument(string strArgument, int iMatchScore)
+        {
             this.Argument = strArgument;
             this.MatchScore = iMatchScore;
         }

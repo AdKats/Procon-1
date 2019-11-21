@@ -18,61 +18,68 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Specialized;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Net;
-using System.Net.Sockets;
-using System.Collections.Specialized;
-using System.IO;
 
-namespace PRoCon.Core.HttpServer {
+namespace PRoCon.Core.HttpServer
+{
 
     [Serializable]
-    public class HttpWebServerRequestData {
+    public class HttpWebServerRequestData
+    {
 
-        public string Method {
+        public string Method
+        {
             get;
             private set;
         }
 
-        public string Request {
+        public string Request
+        {
             get;
             private set;
         }
 
-        public string RequestPath {
+        public string RequestPath
+        {
             get;
             private set;
         }
 
-        public string RequestFile {
+        public string RequestFile
+        {
             get;
             private set;
         }
 
-        public NameValueCollection Query {
+        public NameValueCollection Query
+        {
             get;
             private set;
         }
 
-        public string HttpVersion {
+        public string HttpVersion
+        {
             get;
             private set;
         }
 
-        public string Post {
+        public string Post
+        {
             get;
             private set;
         }
 
-        public WebHeaderCollection Headers {
+        public WebHeaderCollection Headers
+        {
             get;
             private set;
         }
 
-        public HttpWebServerRequestData(string document) {
+        public HttpWebServerRequestData(string document)
+        {
             this.Method = String.Empty;
             this.Request = String.Empty;
             this.RequestPath = String.Empty;
@@ -83,7 +90,8 @@ namespace PRoCon.Core.HttpServer {
             this.Headers = new WebHeaderCollection();
 
             Match methodFileMatch = Regex.Match(document, @"^(?<method>GET|POST) (?<request>.*?) HTTP/(?<http_version>[0-9\.]*)[\r\n]+?", RegexOptions.IgnoreCase);
-            if (methodFileMatch.Success == true) {
+            if (methodFileMatch.Success == true)
+            {
 
                 this.Method = methodFileMatch.Groups["method"].Value;
                 this.Request = methodFileMatch.Groups["request"].Value;
@@ -91,13 +99,15 @@ namespace PRoCon.Core.HttpServer {
 
                 string[] requestQueryString = this.Request.Split(new char[] { '?' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                if (requestQueryString.Length >= 1) {
+                if (requestQueryString.Length >= 1)
+                {
                     int lastIndexForwardSlash = requestQueryString[0].LastIndexOf('/') + 1;
 
                     this.RequestPath = requestQueryString[0].Substring(0, lastIndexForwardSlash);
                     this.RequestFile = requestQueryString[0].Substring(lastIndexForwardSlash, requestQueryString[0].Length - lastIndexForwardSlash);
 
-                    if (requestQueryString.Length >= 2) {
+                    if (requestQueryString.Length >= 2)
+                    {
                         this.Query = HttpUtility.ParseQueryString(requestQueryString[1]);
                     }
                 }
@@ -107,7 +117,8 @@ namespace PRoCon.Core.HttpServer {
                 this.Headers = new WebHeaderCollection();
                 Match headersMatch = Regex.Match(document, @"(?<header>.*?)[ ]*?:[ ]*?(?<value>.*?)[\r\n]+?");
 
-                while (headersMatch.Success == true) {
+                while (headersMatch.Success == true)
+                {
 
                     this.Headers.Set(headersMatch.Groups["header"].Value, headersMatch.Groups["value"].Value);
 
@@ -116,7 +127,8 @@ namespace PRoCon.Core.HttpServer {
                     headersMatch = headersMatch.NextMatch();
                 }
 
-                if (System.String.Compare(this.Method, "POST", System.StringComparison.OrdinalIgnoreCase) == 0) {
+                if (System.String.Compare(this.Method, "POST", System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
                     // Read additional post data.
                 }
             }

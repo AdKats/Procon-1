@@ -1,8 +1,11 @@
 ﻿using System;
 
-namespace PRoCon.Core.Events {
-    public class CapturedEvent {
-        public CapturedEvent(EventType eventType, CapturableEvents capturableEvent, string eventText, DateTime loggedTime, string instigatingAdmin) {
+namespace PRoCon.Core.Events
+{
+    public class CapturedEvent
+    {
+        public CapturedEvent(EventType eventType, CapturableEvents capturableEvent, string eventText, DateTime loggedTime, string instigatingAdmin)
+        {
             EventType = eventType;
             Event = capturableEvent;
             EventText = eventText;

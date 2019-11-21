@@ -20,9 +20,11 @@
 
 using System;
 
-namespace PRoCon.Core.TextChatModeration {
+namespace PRoCon.Core.TextChatModeration
+{
     [Serializable]
-    public enum PlayerModerationLevelType {
+    public enum PlayerModerationLevelType
+    {
         None,
         Muted,
         Normal,

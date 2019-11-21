@@ -18,24 +18,27 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Players.Items {
+namespace PRoCon.Core.Players.Items
+{
     [Serializable]
-    public class Specialization {
+    public class Specialization
+    {
 
-        public SpecializationSlots Slot {
+        public SpecializationSlots Slot
+        {
             get;
             private set;
         }
 
-        public string Name {
+        public string Name
+        {
             get;
             private set;
         }
 
-        public Specialization(SpecializationSlots slot, string name) {
+        public Specialization(SpecializationSlots slot, string name)
+        {
             this.Slot = slot;
             this.Name = name;
         }

@@ -20,17 +20,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Plugin.Commands {
+namespace PRoCon.Core.Plugin.Commands
+{
 
     [Serializable]
-    public class CapturedCommand : IComparable<CapturedCommand> {
+    public class CapturedCommand : IComparable<CapturedCommand>
+    {
 
         /// <summary>
         /// This is the first character #/!/@ or whatever passed.
         /// </summary>
-        public string ResposeScope {
+        public string ResposeScope
+        {
             get;
             private set;
         }
@@ -38,7 +40,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// <summary>
         /// The command it was matched against.
         /// </summary>
-        public string Command {
+        public string Command
+        {
             get;
             private set;
         }
@@ -47,7 +50,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// A list of matched arguments which will also have the matched score to the dictionaries.
         /// If all of the matched scores == 0, then it is an entire match.
         /// </summary>
-        public List<MatchArgument> MatchedArguments {
+        public List<MatchArgument> MatchedArguments
+        {
             get;
             private set;
         }
@@ -57,7 +61,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// !fmove [playername] [squad]
         /// !fmove [Phogue] [Delta] [This is an example of extra arguments]
         /// </summary>
-        public string ExtraArguments {
+        public string ExtraArguments
+        {
             get;
             private set;
         }
@@ -71,7 +76,8 @@ namespace PRoCon.Core.Plugin.Commands {
         /// !kick phogue
         /// IsConfirmed == true
         /// </summary>
-        public bool IsConfirmed {
+        public bool IsConfirmed
+        {
             get;
             set;
         }
@@ -107,7 +113,8 @@ namespace PRoCon.Core.Plugin.Commands {
             }
         }
         */
-        public CapturedCommand(string strResposeScope, string strCommand, List<MatchArgument> lstMatchedArguments, string strExtraArguments) {
+        public CapturedCommand(string strResposeScope, string strCommand, List<MatchArgument> lstMatchedArguments, string strExtraArguments)
+        {
             this.ResposeScope = strResposeScope;
             this.Command = strCommand;
             this.MatchedArguments = lstMatchedArguments;
@@ -116,11 +123,13 @@ namespace PRoCon.Core.Plugin.Commands {
             this.IsConfirmed = false;
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
 
             string strString = String.Format("{0}{1}", this.ResposeScope, this.Command);
 
-            foreach (MatchArgument mtcArgument in this.MatchedArguments) {
+            foreach (MatchArgument mtcArgument in this.MatchedArguments)
+            {
                 strString = String.Format("{0} {1}", strString, mtcArgument.Argument);
             }
 
@@ -129,24 +138,30 @@ namespace PRoCon.Core.Plugin.Commands {
 
         #region IComparable<CapturedCommand> Members
 
-        public int CompareTo(CapturedCommand other) {
+        public int CompareTo(CapturedCommand other)
+        {
 
             float thisPercentage = 0.0F, otherPercentage = 0.0F;
             double highestCount = Math.Max(this.MatchedArguments.Count, other.MatchedArguments.Count);
 
-            foreach (MatchArgument arg in this.MatchedArguments) {
-                if (arg.Argument.Length > 0) {
+            foreach (MatchArgument arg in this.MatchedArguments)
+            {
+                if (arg.Argument.Length > 0)
+                {
                     thisPercentage += (float)(arg.Argument.Length - arg.MatchScore) / (float)arg.Argument.Length;
                 }
             }
 
-            foreach (MatchArgument arg in other.MatchedArguments) {
-                if (arg.Argument.Length > 0) {
+            foreach (MatchArgument arg in other.MatchedArguments)
+            {
+                if (arg.Argument.Length > 0)
+                {
                     otherPercentage += (float)(arg.Argument.Length - arg.MatchScore) / (float)arg.Argument.Length;
                 }
             }
 
-            if (this.MatchedArguments.Count > 0) {
+            if (this.MatchedArguments.Count > 0)
+            {
                 thisPercentage /= (float)highestCount;
                 otherPercentage /= (float)highestCount;
             }

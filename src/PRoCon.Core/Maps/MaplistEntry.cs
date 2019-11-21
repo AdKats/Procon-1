@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Maps {
+namespace PRoCon.Core.Maps
+{
 
     [Serializable]
-    public class MaplistEntry {
+    public class MaplistEntry
+    {
 
-        public int Index {
+        public int Index
+        {
             get;
             private set;
         }
 
-        public string Gamemode {
+        public string Gamemode
+        {
             get;
             private set;
         }
@@ -22,41 +24,48 @@ namespace PRoCon.Core.Maps {
             private set;
         }
         */
-        public string MapFileName {
+        public string MapFileName
+        {
             get;
             private set;
         }
 
-        public int Rounds {
+        public int Rounds
+        {
             get;
             private set;
         }
 
-        public MaplistEntry(string strMapFileName) {
+        public MaplistEntry(string strMapFileName)
+        {
             this.Index = -1;
             this.MapFileName = strMapFileName;
             this.Rounds = 0;
         }
 
-        public MaplistEntry(string strMapFileName, int iRounds) {
+        public MaplistEntry(string strMapFileName, int iRounds)
+        {
             this.Index = -1;
             this.MapFileName = strMapFileName;
             this.Rounds = iRounds;
         }
 
-        public MaplistEntry(int index, string strMapFileName, int iRounds) {
+        public MaplistEntry(int index, string strMapFileName, int iRounds)
+        {
             this.Index = index;
             this.MapFileName = strMapFileName;
             this.Rounds = iRounds;
         }
 
-        public MaplistEntry(string gameMode, string strMapFileName, int iRounds) {
+        public MaplistEntry(string gameMode, string strMapFileName, int iRounds)
+        {
             this.Gamemode = gameMode;
             this.MapFileName = strMapFileName;
             this.Rounds = iRounds;
         }
 
-        public MaplistEntry(string gameMode, string strMapFileName, int iRounds, int index) {
+        public MaplistEntry(string gameMode, string strMapFileName, int iRounds, int index)
+        {
             this.Gamemode = gameMode;
             this.MapFileName = strMapFileName;
             this.Rounds = iRounds;

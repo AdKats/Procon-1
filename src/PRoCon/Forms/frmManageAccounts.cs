@@ -18,22 +18,19 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using PRoCon.Controls;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 
-namespace PRoCon.Forms {
+namespace PRoCon.Forms
+{
     using Core;
-    using Core.Plugin;
     using Core.Accounts;
     using Core.Remote;
 
-    public partial class frmManageAccounts : Form {
+    public partial class frmManageAccounts : Form
+    {
 
         private frmMain m_frmMainWindow = null;
         private CLocalization m_clocLanguage = null;
@@ -68,7 +65,8 @@ namespace PRoCon.Forms {
         */
         private PRoConApplication m_paProcon;
 
-        public frmManageAccounts(PRoConApplication paProcon, frmMain frmMainWindow) {
+        public frmManageAccounts(PRoConApplication paProcon, frmMain frmMainWindow)
+        {
             InitializeComponent();
 
             this.m_paProcon = paProcon;
@@ -98,21 +96,27 @@ namespace PRoCon.Forms {
             this.picEditGlobalPrivileges.Image = this.m_frmMainWindow.iglIcons.Images["key.png"];
         }
 
-        private void frmManageAccounts_Load(object sender, EventArgs e) {
+        private void frmManageAccounts_Load(object sender, EventArgs e)
+        {
             this.lstAccounts.Items.Clear();
 
-            foreach (Account accAccount in this.m_paProcon.AccountsList) {
+            foreach (Account accAccount in this.m_paProcon.AccountsList)
+            {
                 this.AccountsList_AccountAdded(accAccount);
             }
         }
 
-        void uscSetPrivileges_OnUpdatePrivileges(string strAccountName, CPrivileges spUpdatedPrivs) {
+        void uscSetPrivileges_OnUpdatePrivileges(string strAccountName, CPrivileges spUpdatedPrivs)
+        {
             this.ShowPanel(this.pnlEditingUser);
 
-            if (this.m_paProcon.AccountsList.Contains(strAccountName) == true) {
+            if (this.m_paProcon.AccountsList.Contains(strAccountName) == true)
+            {
 
-                foreach (PRoConClient prcClient in this.m_paProcon.Connections) {
-                    if (prcClient.Layer.AccountPrivileges.Contains(strAccountName) == true) {
+                foreach (PRoConClient prcClient in this.m_paProcon.Connections)
+                {
+                    if (prcClient.Layer.AccountPrivileges.Contains(strAccountName) == true)
+                    {
                         prcClient.Layer.AccountPrivileges[strAccountName].SetPrivileges(spUpdatedPrivs);
                     }
                 }
@@ -123,16 +127,18 @@ namespace PRoCon.Forms {
             //}
         }
 
-        void uscSetPrivileges_OnCancelPrivileges() {
+        void uscSetPrivileges_OnCancelPrivileges()
+        {
             this.ShowPanel(this.pnlEditingUser);
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             this.m_clocLanguage = clocLanguage;
 
             this.uscSetPrivileges.SetLocalization(this.m_clocLanguage);
 
-            this.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.Title", null); 
+            this.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.Title", null);
 
             // Choose account windows
             this.lblSelectAccountTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblSelectAccountTitle", null);
@@ -170,16 +176,20 @@ namespace PRoCon.Forms {
         }
 
         // TO DO: implement this so it changes the icon.. when i finally get icons from people =)
-        public void OnAccountConnected(string strUsername) {
+        public void OnAccountConnected(string strUsername)
+        {
 
         }
 
-        public void OnAccountDisconnected(string strUsername) {
+        public void OnAccountDisconnected(string strUsername)
+        {
 
         }
 
-        private void AccountsList_AccountAdded(Account item) {
-            if (this.lstAccounts.Items.ContainsKey(item.Name) == false) {
+        private void AccountsList_AccountAdded(Account item)
+        {
+            if (this.lstAccounts.Items.ContainsKey(item.Name) == false)
+            {
                 ListViewItem lviNewAccount = new ListViewItem(item.Name);
                 lviNewAccount.Tag = item.Password;
                 lviNewAccount.Name = item.Name;
@@ -189,7 +199,8 @@ namespace PRoCon.Forms {
             }
         }
 
-        public void CreateNewAccount(string strUsername, string strPassword) {
+        public void CreateNewAccount(string strUsername, string strPassword)
+        {
             this.m_paProcon.AccountsList.CreateAccount(strUsername, strPassword);
             /*
             if (this.lstAccounts.Items.ContainsKey(strUsername) == false) {
@@ -206,15 +217,19 @@ namespace PRoCon.Forms {
             */
         }
 
-        private void AccountsList_AccountRemoved(Account item) {
-            if (this.lstAccounts.Items.ContainsKey(item.Name) == true) {
+        private void AccountsList_AccountRemoved(Account item)
+        {
+            if (this.lstAccounts.Items.ContainsKey(item.Name) == true)
+            {
                 this.lstAccounts.Items.Remove(this.lstAccounts.Items[item.Name]);
             }
         }
 
-        public void DeleteAccount(string strUsername) {
+        public void DeleteAccount(string strUsername)
+        {
 
-            if (this.m_paProcon.AccountsList.Contains(strUsername) == true) {
+            if (this.m_paProcon.AccountsList.Contains(strUsername) == true)
+            {
                 this.m_paProcon.AccountsList.Remove(strUsername);
             }
             /*
@@ -227,9 +242,11 @@ namespace PRoCon.Forms {
             */
         }
 
-        public void ChangePassword(string strUsername, string strPassword) {
+        public void ChangePassword(string strUsername, string strPassword)
+        {
 
-            if (this.m_paProcon.AccountsList.Contains(strUsername) == true) {
+            if (this.m_paProcon.AccountsList.Contains(strUsername) == true)
+            {
                 this.m_paProcon.AccountsList[strUsername].Password = strPassword;
             }
 
@@ -243,10 +260,13 @@ namespace PRoCon.Forms {
             */
         }
 
-        public void RemoveAllPrivileges(string strUsername) {
+        public void RemoveAllPrivileges(string strUsername)
+        {
 
-            foreach (PRoConClient prcClient in this.m_paProcon.Connections) {
-                if (prcClient.Layer.AccountPrivileges.Contains(strUsername) == true) {
+            foreach (PRoConClient prcClient in this.m_paProcon.Connections)
+            {
+                if (prcClient.Layer.AccountPrivileges.Contains(strUsername) == true)
+                {
                     prcClient.Layer.AccountPrivileges[strUsername].SetPrivileges(default(CPrivileges));
                 }
             }
@@ -266,14 +286,16 @@ namespace PRoCon.Forms {
             */
         }
 
-        private void ShowPanel(Panel pnlToShow) {
+        private void ShowPanel(Panel pnlToShow)
+        {
             this.pnlChooseAccount.Visible = false;
             this.pnlCreateAccount.Visible = false;
             this.pnlEditingUser.Visible = false;
             this.pnlConfirmation.Visible = false;
             this.pnlAlterPrivileges.Visible = false;
 
-            if (pnlToShow == this.pnlChooseAccount) {
+            if (pnlToShow == this.pnlChooseAccount)
+            {
                 this.lstAccounts.SelectedItems.Clear();
             }
 
@@ -282,7 +304,8 @@ namespace PRoCon.Forms {
 
         #region Create New Account
 
-        private void lnkAddNewAccount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkAddNewAccount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
             this.txtUsername.Text = String.Empty;
             this.txtPassword.Text = String.Empty;
@@ -290,12 +313,15 @@ namespace PRoCon.Forms {
             this.ShowPanel(this.pnlCreateAccount);
         }
 
-        private void ValidateCreateNewUser() {
+        private void ValidateCreateNewUser()
+        {
 
             bool blUsernameExists = false;
 
-            foreach (ListViewItem lviAccount in this.lstAccounts.Items) {
-                if (lviAccount.Text.CompareTo(this.txtUsername.Text) == 0) {
+            foreach (ListViewItem lviAccount in this.lstAccounts.Items)
+            {
+                if (lviAccount.Text.CompareTo(this.txtUsername.Text) == 0)
+                {
                     blUsernameExists = true;
                     break;
                 }
@@ -304,29 +330,35 @@ namespace PRoCon.Forms {
             this.lblUserNameExistsError.Visible = true & blUsernameExists;
 
             // If the username is not blank AND the username is valid AND they have input a password
-            if (this.txtUsername.Text.CompareTo(String.Empty) != 0 && blUsernameExists == false && this.txtPassword.Text.CompareTo(String.Empty) != 0) {
+            if (this.txtUsername.Text.CompareTo(String.Empty) != 0 && blUsernameExists == false && this.txtPassword.Text.CompareTo(String.Empty) != 0)
+            {
                 this.btnCreateAccount.Enabled = true;
             }
-            else {
+            else
+            {
                 this.btnCreateAccount.Enabled = false;
             }
         }
 
-        private void txtUsername_TextChanged(object sender, EventArgs e) {
+        private void txtUsername_TextChanged(object sender, EventArgs e)
+        {
             this.ValidateCreateNewUser();
         }
 
-        private void txtPassword_TextChanged(object sender, EventArgs e) {
+        private void txtPassword_TextChanged(object sender, EventArgs e)
+        {
             this.ValidateCreateNewUser();
         }
 
-        private void btnCreateAccount_Click(object sender, EventArgs e) {
+        private void btnCreateAccount_Click(object sender, EventArgs e)
+        {
             this.CreateNewAccount(this.txtUsername.Text, this.txtPassword.Text);
 
             this.ShowPanel(this.pnlChooseAccount);
         }
 
-        private void btnCancelNewAccount_Click(object sender, EventArgs e) {
+        private void btnCancelNewAccount_Click(object sender, EventArgs e)
+        {
             this.ShowPanel(this.pnlChooseAccount);
         }
 
@@ -334,9 +366,11 @@ namespace PRoCon.Forms {
 
         #region Edit account
 
-        private void lstAccounts_SelectedIndexChanged(object sender, EventArgs e) {
+        private void lstAccounts_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
 
                 this.lblEditingAccountTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblEditingAccountTitle", new string[] { this.lstAccounts.SelectedItems[0].Text });
 
@@ -346,23 +380,29 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lnkEditAnotherAccount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkEditAnotherAccount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
             this.ShowPanel(this.pnlChooseAccount);
         }
 
-        private void txtChangePassword_TextChanged(object sender, EventArgs e) {
+        private void txtChangePassword_TextChanged(object sender, EventArgs e)
+        {
 
-            if (this.txtChangePassword.Text.CompareTo(String.Empty) != 0) {
+            if (this.txtChangePassword.Text.CompareTo(String.Empty) != 0)
+            {
                 this.lnkUpdatePassword.Enabled = true;
             }
-            else {
+            else
+            {
                 this.lnkUpdatePassword.Enabled = false;
             }
         }
 
-        private void lnkUpdatePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+        private void lnkUpdatePassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
 
                 this.lblConfirmationTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblConfirmationTitle.UpdatePassword", null);
 
@@ -376,9 +416,11 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lnkDeleteUser_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkDeleteUser_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
                 this.lblConfirmationTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblConfirmationTitle.DeleteAccount", null);
 
                 this.lblExtraInformation.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblExtraInformation.DeleteAccount", new string[] { this.lstAccounts.SelectedItems[0].Text });
@@ -391,9 +433,11 @@ namespace PRoCon.Forms {
             }
         }
 
-        private void lnkRemovePrivileges_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkRemovePrivileges_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
 
                 this.lblConfirmationTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblConfirmationTitle.RemovePrivileges", null);
 
@@ -405,30 +449,36 @@ namespace PRoCon.Forms {
                 this.m_iConfirmationAction = frmManageAccounts.INT_REMOVING_PRIVILEGES;
                 this.ShowPanel(this.pnlConfirmation);
             }
-            
+
         }
 
-        private void btnConfirm_Click(object sender, EventArgs e) {
+        private void btnConfirm_Click(object sender, EventArgs e)
+        {
 
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
 
-                if (this.m_iConfirmationAction == frmManageAccounts.INT_DELETING_ACCOUNT) {
+                if (this.m_iConfirmationAction == frmManageAccounts.INT_DELETING_ACCOUNT)
+                {
                     this.DeleteAccount(this.lstAccounts.SelectedItems[0].Text);
 
                     this.ShowPanel(this.pnlChooseAccount);
                 }
-                else if (this.m_iConfirmationAction == frmManageAccounts.INT_CHANGING_PASSWORD) {
+                else if (this.m_iConfirmationAction == frmManageAccounts.INT_CHANGING_PASSWORD)
+                {
                     this.ChangePassword(this.lstAccounts.SelectedItems[0].Text, this.txtChangePassword.Text);
 
                     this.ShowPanel(this.pnlEditingUser);
                 }
-                else if (this.m_iConfirmationAction == frmManageAccounts.INT_REMOVING_PRIVILEGES) {
+                else if (this.m_iConfirmationAction == frmManageAccounts.INT_REMOVING_PRIVILEGES)
+                {
 
                     this.RemoveAllPrivileges(this.lstAccounts.SelectedItems[0].Text);
 
                     this.ShowPanel(this.pnlEditingUser);
                 }
-                else if (this.m_iConfirmationAction == frmManageAccounts.INT_CHANGING_PRIVILEGES) {
+                else if (this.m_iConfirmationAction == frmManageAccounts.INT_CHANGING_PRIVILEGES)
+                {
                     this.uscSetPrivileges.AccountName = this.lstAccounts.SelectedItems[0].Text;
                     this.uscSetPrivileges.Privileges = this.CollectLowestPrivileges(this.lstAccounts.SelectedItems[0].Text);
 
@@ -437,15 +487,19 @@ namespace PRoCon.Forms {
             }
         }
 
-        public CPrivileges CollectLowestPrivileges(string strAccountName) {
+        public CPrivileges CollectLowestPrivileges(string strAccountName)
+        {
 
             CPrivileges spLowestPrivileges = new CPrivileges();
 
-            if (this.m_paProcon.AccountsList.Contains(strAccountName) == true) {
+            if (this.m_paProcon.AccountsList.Contains(strAccountName) == true)
+            {
                 spLowestPrivileges.PrivilegesFlags = CPrivileges.FullPrivilegesFlags;
 
-                foreach (PRoConClient prcClient in this.m_paProcon.Connections) {
-                    if (prcClient.Layer != null && prcClient.Layer.AccountPrivileges.Contains(strAccountName) == true) {
+                foreach (PRoConClient prcClient in this.m_paProcon.Connections)
+                {
+                    if (prcClient.Layer != null && prcClient.Layer.AccountPrivileges.Contains(strAccountName) == true)
+                    {
                         spLowestPrivileges.SetLowestPrivileges(prcClient.Layer.AccountPrivileges[strAccountName].Privileges);
                     }
                 }
@@ -453,31 +507,36 @@ namespace PRoCon.Forms {
 
                 //if (this.m_paProcon.AccountsList.Contains(strAccountName) == true) {
                 //    foreach (AccountPrivilege apPrivilege in this.m_paProcon.AccountsList[strAccountName].AccountPrivileges) {
-                        
+
                 //    }
                 //}
             }
-            
+
             return spLowestPrivileges;
         }
 
-        private void btnCancel_Click(object sender, EventArgs e) {
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
             this.ShowPanel(this.pnlEditingUser);
         }
 
         #endregion
 
-        private void btnClose_Click(object sender, EventArgs e) {
+        private void btnClose_Click(object sender, EventArgs e)
+        {
             this.Close();
         }
 
-        private void frmManageAccounts_Shown(object sender, EventArgs e) {
+        private void frmManageAccounts_Shown(object sender, EventArgs e)
+        {
             this.ShowPanel(this.pnlChooseAccount);
         }
 
-        private void lnkAlterGlobalPrivileges_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkAlterGlobalPrivileges_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
 
-            if (this.lstAccounts.SelectedItems.Count > 0) {
+            if (this.lstAccounts.SelectedItems.Count > 0)
+            {
 
                 this.lblConfirmationTitle.Text = this.m_clocLanguage.GetLocalized("frmManageAccounts.lblConfirmationTitle.AssignPrivileges", null);
 

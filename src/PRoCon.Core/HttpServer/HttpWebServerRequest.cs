@@ -20,10 +20,11 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
-using PRoCon.Core.Remote;
 
-namespace PRoCon.Core.HttpServer {
-    public class HttpWebServerRequest {
+namespace PRoCon.Core.HttpServer
+{
+    public class HttpWebServerRequest
+    {
         public delegate void ClientShutdownHandler(HttpWebServerRequest sender);
 
         public delegate void ResponseSentHandler(HttpWebServerRequest request, HttpWebServerResponseData response);
@@ -31,7 +32,8 @@ namespace PRoCon.Core.HttpServer {
         protected readonly byte[] RecievedPacket;
         protected byte[] CompletedPacket;
 
-        public HttpWebServerRequest(NetworkStream stream) {
+        public HttpWebServerRequest(NetworkStream stream)
+        {
             Stream = stream;
             RecievedPacket = new byte[4096];
 
@@ -46,64 +48,80 @@ namespace PRoCon.Core.HttpServer {
 
         public event HttpWebServer.ProcessResponseHandler ProcessRequest;
 
-        public void ProcessPacket() {
-            if (CompletedPacket != null) {
+        public void ProcessPacket()
+        {
+            if (CompletedPacket != null)
+            {
                 string packet = Encoding.ASCII.GetString(CompletedPacket);
 
                 Data = new HttpWebServerRequestData(packet);
 
-                if (ProcessRequest != null) {
+                if (ProcessRequest != null)
+                {
                     this.ProcessRequest(this);
                 }
             }
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return Data.Request;
         }
 
         #region Reading packet
 
-        private void CompilePacket(int recievedData) {
-            if (CompletedPacket == null) {
+        private void CompilePacket(int recievedData)
+        {
+            if (CompletedPacket == null)
+            {
                 CompletedPacket = new byte[recievedData];
             }
-            else {
+            else
+            {
                 Array.Resize(ref CompletedPacket, CompletedPacket.Length + recievedData);
             }
 
             Array.Copy(RecievedPacket, 0, CompletedPacket, CompletedPacket.Length - recievedData, recievedData);
         }
 
-        private void ReadWebRequests(IAsyncResult ar) {
-            try {
+        private void ReadWebRequests(IAsyncResult ar)
+        {
+            try
+            {
                 //HttpWebServerRequest client = (HttpWebServerRequest)ar.AsyncState;
 
                 int iBytesRead = Stream.EndRead(ar);
 
-                if (iBytesRead > 0) {
+                if (iBytesRead > 0)
+                {
                     CompilePacket(iBytesRead);
 
-                    if (Stream.DataAvailable == true) {
+                    if (Stream.DataAvailable == true)
+                    {
                         Stream.BeginRead(RecievedPacket, 0, RecievedPacket.Length, ReadWebRequests, null);
                     }
-                    else {
+                    else
+                    {
                         ProcessPacket();
                     }
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
             }
 
             Shutdown();
         }
 
-        public void Shutdown() {
-            if (Stream != null) {
+        public void Shutdown()
+        {
+            if (Stream != null)
+            {
                 Stream.Close();
                 Stream = null;
 
-                if (ClientShutdown != null) {
+                if (ClientShutdown != null)
+                {
                     this.ClientShutdown(this);
                 }
             }
@@ -113,21 +131,26 @@ namespace PRoCon.Core.HttpServer {
 
         #region Sending Packet
 
-        public void Respond(HttpWebServerResponseData response) {
-            try {
-                if (Stream != null) {
+        public void Respond(HttpWebServerResponseData response)
+        {
+            try
+            {
+                if (Stream != null)
+                {
                     byte[] bData = Encoding.UTF8.GetBytes(response.ToString());
 
                     Stream.Write(bData, 0, bData.Length);
 
-                    if (ResponseSent != null) {
+                    if (ResponseSent != null)
+                    {
                         this.ResponseSent(this, response);
                     }
 
                     Shutdown();
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
             }
         }
 

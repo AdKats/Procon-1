@@ -19,39 +19,45 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.TextChatModeration {
+namespace PRoCon.Core.TextChatModeration
+{
     [Serializable]
-    public class TextChatModerationEntry {
+    public class TextChatModerationEntry
+    {
 
-        public PlayerModerationLevelType PlayerModerationLevel {
+        public PlayerModerationLevelType PlayerModerationLevel
+        {
             get;
             private set;
         }
 
-        public string SoldierName {
+        public string SoldierName
+        {
             get;
             private set;
         }
 
-        public TextChatModerationEntry(PlayerModerationLevelType playerModerationLevel, string soldierName) {
+        public TextChatModerationEntry(PlayerModerationLevelType playerModerationLevel, string soldierName)
+        {
             this.PlayerModerationLevel = playerModerationLevel;
             this.SoldierName = soldierName;
         }
 
-        public TextChatModerationEntry(string playerModerationLevel, string soldierName) {
+        public TextChatModerationEntry(string playerModerationLevel, string soldierName)
+        {
 
             this.SoldierName = soldierName;
             this.PlayerModerationLevel = TextChatModerationEntry.GetPlayerModerationLevelType(playerModerationLevel);
         }
 
-        public static PlayerModerationLevelType GetPlayerModerationLevelType(string playerModerationLevel) {
+        public static PlayerModerationLevelType GetPlayerModerationLevelType(string playerModerationLevel)
+        {
 
             PlayerModerationLevelType returnPlayerModerationLevel = PlayerModerationLevelType.None;
 
-            switch (playerModerationLevel.ToLower()) {
+            switch (playerModerationLevel.ToLower())
+            {
                 case "muted":
                     returnPlayerModerationLevel = PlayerModerationLevelType.Muted;
                     break;
@@ -71,11 +77,13 @@ namespace PRoCon.Core.TextChatModeration {
             return returnPlayerModerationLevel;
         }
 
-        public static ServerModerationModeType GetServerModerationLevelType(string serverModerationLevel) {
+        public static ServerModerationModeType GetServerModerationLevelType(string serverModerationLevel)
+        {
 
             ServerModerationModeType returnServerModerationLevel = ServerModerationModeType.None;
 
-            switch (serverModerationLevel.ToLower()) {
+            switch (serverModerationLevel.ToLower())
+            {
                 case "muted":
                     returnServerModerationLevel = ServerModerationModeType.Muted;
                     break;

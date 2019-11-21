@@ -1,6 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Myrcon")]
 [assembly: AssemblyProduct("Procon Frostbite")]

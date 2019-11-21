@@ -19,39 +19,46 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
     [Serializable]
-    public class Point3D {
-        public int X {
+    public class Point3D
+    {
+        public int X
+        {
             get;
             set;
         }
 
-        public int Y {
+        public int Y
+        {
             get;
             set;
         }
 
-        public int Z {
+        public int Z
+        {
             get;
             set;
         }
 
-        public Point3D() {
+        public Point3D()
+        {
             this.X = 0;
             this.Y = 0;
             this.Z = 0;
         }
 
-        public Point3D(int iX, int iY, int iZ) {
+        public Point3D(int iX, int iY, int iZ)
+        {
             this.X = iX;
             this.Y = iY;
             this.Z = iZ;
         }
-        
-        public Point3D(string strX, string strY, string strZ) {
+
+        public Point3D(string strX, string strY, string strZ)
+        {
             int iX = 0, iY = 0, iZ = 0;
 
             int.TryParse(strX, out iX);
@@ -63,11 +70,13 @@ namespace PRoCon.Core {
             this.Z = iZ;
         }
 
-        public static List<string> ToStringList(Point3D[] points) {
+        public static List<string> ToStringList(Point3D[] points)
+        {
 
             List<string> list = new List<string>();
 
-            foreach (Point3D point in points) {
+            foreach (Point3D point in points)
+            {
                 list.Add(point.X.ToString());
                 list.Add(point.Y.ToString());
                 list.Add(point.Z.ToString());

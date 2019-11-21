@@ -2,18 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Security.Permissions;
-using System.Xml;
-using System.Text.RegularExpressions;
 using System.IO;
+using System.Security.Permissions;
+using System.Text.RegularExpressions;
+using System.Xml;
 
-namespace PRoCon.Controls {
+namespace PRoCon.Controls
+{
     using PRoCon.Core;
     using PRoCon.Core.Remote;
 
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     [System.Runtime.InteropServices.ComVisibleAttribute(true)]
-    public partial class uscStartPage : uscPage {
+    public partial class uscStartPage : uscPage
+    {
 
         public delegate void ConnectionPageHandler(string hostNamePort);
         public event ConnectionPageHandler ConnectionPage;
@@ -28,7 +30,8 @@ namespace PRoCon.Controls {
 
         private CLocalization _language;
 
-        public uscStartPage(PRoConApplication proconApplication) {
+        public uscStartPage(PRoConApplication proconApplication)
+        {
             this._isDocumentReady = false;
 
             this._proconApplication = proconApplication;
@@ -46,12 +49,14 @@ namespace PRoCon.Controls {
             InitializeComponent();
         }
 
-        public override void SetLocalization(CLocalization clocLanguage) {
+        public override void SetLocalization(CLocalization clocLanguage)
+        {
             base.SetLocalization(clocLanguage);
 
             this._language = clocLanguage;
 
-            if (this._isDocumentReady == true && this.webBrowser1 != null && this.webBrowser1.Document != null) {
+            if (this._isDocumentReady == true && this.webBrowser1 != null && this.webBrowser1.Document != null)
+            {
 
                 // My Connections
                 this.webBrowser1.Document.InvokeScript("fnSetLocalization", new object[] { "pStartPage-lblMyConnections", clocLanguage.GetDefaultLocalized("My Connections", "pStartPage-lblMyConnections") });
@@ -117,41 +122,51 @@ namespace PRoCon.Controls {
             }
         }
 
-        private void UpdateConnections() {
-            this.InvokeIfRequired(() => {
+        private void UpdateConnections()
+        {
+            this.InvokeIfRequired(() =>
+            {
                 ArrayList connectionsArray = new ArrayList();
 
                 int playerCount = 0, playerSlotsTotal = 0;
 
-                if (this._startPageTemplates != null && this._proconApplication != null) {
-                    foreach (PRoConClient client in this._proconApplication.Connections) {
+                if (this._startPageTemplates != null && this._proconApplication != null)
+                {
+                    foreach (PRoConClient client in this._proconApplication.Connections)
+                    {
 
                         Hashtable connectionHtml = new Hashtable();
 
                         string replacedTemplate = String.Empty;
 
-                        if (client.State == ConnectionState.Connected == true && client.IsLoggedIn == true) {
+                        if (client.State == ConnectionState.Connected == true && client.IsLoggedIn == true)
+                        {
                             replacedTemplate = this._startPageTemplates.GetLocalized(client.CurrentServerInfo != null ? "connections.online" : "connections.online.noInfo");
                         }
-                        else if (client.State == ConnectionState.Connecting || (client.State == ConnectionState.Connected && client.IsLoggedIn == false)) {
+                        else if (client.State == ConnectionState.Connecting || (client.State == ConnectionState.Connected && client.IsLoggedIn == false))
+                        {
                             replacedTemplate = this._startPageTemplates.GetLocalized("connections.connect-attempt.noInfo");
                         }
-                        else if (client.State == ConnectionState.Error) {
+                        else if (client.State == ConnectionState.Error)
+                        {
                             replacedTemplate = this._startPageTemplates.GetLocalized(client.CurrentServerInfo != null ? "connections.error" : "connections.error.noInfo");
                         }
-                        else {
+                        else
+                        {
                             replacedTemplate = this._startPageTemplates.GetLocalized(client.CurrentServerInfo != null ? "connections.offline" : "connections.offline.noInfo");
                         }
 
                         replacedTemplate = replacedTemplate.Replace("%connections.online.options%", this._startPageTemplates.GetLocalized("connections.online.options"));
                         replacedTemplate = replacedTemplate.Replace("%connections.offline.options%", this._startPageTemplates.GetLocalized("connections.offline.options"));
 
-                        if (client.Language != null) {
+                        if (client.Language != null)
+                        {
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickConnect%", client.Language.GetDefaultLocalized("connect", "pStartPage-lblQuickConnect"));
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickDisconnect%", client.Language.GetDefaultLocalized("disconnect", "pStartPage-lblQuickDisconnect"));
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickDelete%", client.Language.GetDefaultLocalized("delete", "pStartPage-lblQuickDelete"));
                         }
-                        else {
+                        else
+                        {
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickConnect%", "connect");
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickDisconnect%", "disconnect");
                             replacedTemplate = replacedTemplate.Replace("%pStartPage-lblQuickDelete%", "delete");
@@ -161,19 +176,23 @@ namespace PRoCon.Controls {
 
                         replacedTemplate = replacedTemplate.Replace("%server_hostnameport%", client.HostNamePort);
 
-                        if (client.CurrentServerInfo != null) {
+                        if (client.CurrentServerInfo != null)
+                        {
                             replacedTemplate = replacedTemplate.Replace("%players%", client.CurrentServerInfo.PlayerCount.ToString(CultureInfo.InvariantCulture));
                             replacedTemplate = replacedTemplate.Replace("%max_players%", client.CurrentServerInfo.MaxPlayerCount.ToString(CultureInfo.InvariantCulture));
                             replacedTemplate = replacedTemplate.Replace("%server_name%", client.CurrentServerInfo.ServerName);
 
-                            if (this._proconApplication != null && this._proconApplication.CurrentLanguage != null) {
+                            if (this._proconApplication != null && this._proconApplication.CurrentLanguage != null)
+                            {
                                 CMap tmpMap = client.GetFriendlyMapByFilenamePlayList(client.CurrentServerInfo.Map, client.CurrentServerInfo.GameMode);
                                 int iTmpCurRounds = client.CurrentServerInfo.CurrentRound;
-                                if ((client.GameType == "BF3" || client.GameType == "MOHW" || client.GameType == "BF4" || client.GameType == "BFHL") && (client.CurrentServerInfo.CurrentRound != client.CurrentServerInfo.TotalRounds)) {
+                                if ((client.GameType == "BF3" || client.GameType == "MOHW" || client.GameType == "BF4" || client.GameType == "BFHL") && (client.CurrentServerInfo.CurrentRound != client.CurrentServerInfo.TotalRounds))
+                                {
                                     iTmpCurRounds++;
                                 }
 
-                                if (tmpMap != null) {
+                                if (tmpMap != null)
+                                {
                                     replacedTemplate = replacedTemplate.Replace("%server_additonal%", this._startPageTemplates.GetLocalized("connections.online.additional", tmpMap.GameMode, tmpMap.PublicLevelName, iTmpCurRounds.ToString(CultureInfo.InvariantCulture), client.CurrentServerInfo.TotalRounds.ToString(CultureInfo.InvariantCulture)));
                                 }
                             }
@@ -182,7 +201,8 @@ namespace PRoCon.Controls {
                             playerSlotsTotal += client.CurrentServerInfo.MaxPlayerCount;
                         }
 
-                        if (client.ConnectionServerName != String.Empty) {
+                        if (client.ConnectionServerName != String.Empty)
+                        {
                             replacedTemplate = replacedTemplate.Replace("%server_name%", client.ConnectionServerName);
                         }
 
@@ -192,21 +212,25 @@ namespace PRoCon.Controls {
                         connectionsArray.Add(connectionHtml);
                     }
 
-                    if (this.webBrowser1.IsDisposed == false && this.webBrowser1.Document != null) {
-                        if (playerSlotsTotal > 0 && this._language != null && this._isDocumentReady == true) {
-                            this.webBrowser1.Document.InvokeScript("fnSetLocalization", new object[] {"pStartPage-lblConnectionsSummary", this._language.GetDefaultLocalized(String.Format("{0} of {1} slots used", playerCount, playerSlotsTotal), "pStartPage-lblConnectionsSummary", playerCount, playerSlotsTotal)});
+                    if (this.webBrowser1.IsDisposed == false && this.webBrowser1.Document != null)
+                    {
+                        if (playerSlotsTotal > 0 && this._language != null && this._isDocumentReady == true)
+                        {
+                            this.webBrowser1.Document.InvokeScript("fnSetLocalization", new object[] { "pStartPage-lblConnectionsSummary", this._language.GetDefaultLocalized(String.Format("{0} of {1} slots used", playerCount, playerSlotsTotal), "pStartPage-lblConnectionsSummary", playerCount, playerSlotsTotal) });
                         }
 
-                        if (this._isDocumentReady == true) {
+                        if (this._isDocumentReady == true)
+                        {
 
-                            this.webBrowser1.Document.InvokeScript("fnUpdateConnectionsList", new object[] {JSON.JsonEncode(connectionsArray)});
+                            this.webBrowser1.Document.InvokeScript("fnUpdateConnectionsList", new object[] { JSON.JsonEncode(connectionsArray) });
                         }
                     }
                 }
             });
         }
-        
-        private void Connections_ConnectionAdded(PRoConClient item) {
+
+        private void Connections_ConnectionAdded(PRoConClient item)
+        {
             item.ConnectionClosed += new PRoConClient.EmptyParamterHandler(item_ConnectionClosed);
             item.ConnectAttempt += new PRoConClient.EmptyParamterHandler(item_ConnectAttempt);
             item.Login += new PRoConClient.EmptyParamterHandler(item_Login);
@@ -214,109 +238,136 @@ namespace PRoCon.Controls {
 
             this.UpdateConnections();
         }
-        
-        private void Connections_ConnectionRemoved(PRoConClient item) {
-            this.InvokeIfRequired(() => {
+
+        private void Connections_ConnectionRemoved(PRoConClient item)
+        {
+            this.InvokeIfRequired(() =>
+            {
                 item.ConnectionClosed -= new PRoConClient.EmptyParamterHandler(item_ConnectionClosed);
                 item.Login -= new PRoConClient.EmptyParamterHandler(item_Login);
                 item.GameTypeDiscovered -= new PRoConClient.EmptyParamterHandler(item_GameTypeDiscovered);
 
-                if (item.Game != null) {
+                if (item.Game != null)
+                {
                     item.Game.ServerInfo -= new FrostbiteClient.ServerInfoHandler(Game_ServerInfo);
                 }
 
-                if (this._isDocumentReady == true && this.webBrowser1.Document != null) {
-                    this.webBrowser1.Document.InvokeScript("fnRemoveConnection", new object[] {Regex.Replace(item.FileHostNamePort, "[^0-9a-zA-Z]", "")});
+                if (this._isDocumentReady == true && this.webBrowser1.Document != null)
+                {
+                    this.webBrowser1.Document.InvokeScript("fnRemoveConnection", new object[] { Regex.Replace(item.FileHostNamePort, "[^0-9a-zA-Z]", "") });
                 }
             });
         }
 
-        private void item_GameTypeDiscovered(PRoConClient sender) {
-            this.InvokeIfRequired(() => {
-                if (sender.Game != null) {
+        private void item_GameTypeDiscovered(PRoConClient sender)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (sender.Game != null)
+                {
                     sender.Game.ServerInfo += new FrostbiteClient.ServerInfoHandler(Game_ServerInfo);
                 }
             });
         }
 
-        private void item_ConnectAttempt(PRoConClient sender) {
+        private void item_ConnectAttempt(PRoConClient sender)
+        {
             this.UpdateConnections();
         }
 
-        private void item_Login(PRoConClient sender) {
+        private void item_Login(PRoConClient sender)
+        {
             this.UpdateConnections();
         }
 
-        private void item_ConnectionClosed(PRoConClient sender) {
+        private void item_ConnectionClosed(PRoConClient sender)
+        {
             this.UpdateConnections();
         }
 
-        private void Game_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo) {
+        private void Game_ServerInfo(FrostbiteClient sender, CServerInfo csiServerInfo)
+        {
             this.UpdateConnections();
         }
 
         #region COM Calls
 
-// ReSharper disable InconsistentNaming
-        public void HREF(string url) {
-// ReSharper restore InconsistentNaming
-            if (Regex.Match(url, @"http(s)?\:\/\/.*").Success == false) {
+        // ReSharper disable InconsistentNaming
+        public void HREF(string url)
+        {
+            // ReSharper restore InconsistentNaming
+            if (Regex.Match(url, @"http(s)?\:\/\/.*").Success == false)
+            {
                 url = String.Format("http://{0}", url);
             }
 
             System.Diagnostics.Process.Start(url);
         }
 
-        public void DocumentReady() {
+        public void DocumentReady()
+        {
             this._isDocumentReady = true;
 
             this.UpdateConnections();
-            if (this._previousDocument != null) {
+            if (this._previousDocument != null)
+            {
                 this.ReplaceRssContent(this._previousDocument);
 
                 // this.webBrowser1.Document.InvokeScript("UpdatePackageList", new object[] { this.m_proconApplication.PackageManager.RemoteToJsonString() });
             }
-            if (this._previousPromoDocument != null) {
+            if (this._previousPromoDocument != null)
+            {
                 this.ReplacePromoContent(this._previousPromoDocument);
             }
 
             this.SetLocalization(this._proconApplication.CurrentLanguage);
         }
 
-        public void CreateConnection(string hostName, string port, string username, string password) {
+        public void CreateConnection(string hostName, string port, string username, string password)
+        {
 
             ushort parsedPort = 0;
 
-            if (ushort.TryParse(port, out parsedPort) == true) {
+            if (ushort.TryParse(port, out parsedPort) == true)
+            {
                 PRoConClient newConnection = this._proconApplication.AddConnection(hostName, parsedPort, username, password);
 
-                if (newConnection != null) {
+                if (newConnection != null)
+                {
                     newConnection.Connect();
                 }
             }
         }
 
-        public void GoToConnectionPage(string hostNamePort) {
-            if (this.ConnectionPage != null) {
+        public void GoToConnectionPage(string hostNamePort)
+        {
+            if (this.ConnectionPage != null)
+            {
                 this.ConnectionPage(hostNamePort);
             }
         }
 
-        public void AttemptConnection(string hostNamePort) {
-            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true) {
+        public void AttemptConnection(string hostNamePort)
+        {
+            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true)
+            {
                 this._proconApplication.Connections[hostNamePort].Connect();
             }
         }
 
-        public void DisconnectConnection(string hostNamePort) {
-            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true) {
+        public void DisconnectConnection(string hostNamePort)
+        {
+            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true)
+            {
                 this._proconApplication.Connections[hostNamePort].Disconnect();
                 this._proconApplication.Connections[hostNamePort].AutomaticallyConnect = false;
             }
         }
 
-        public void DeleteConnection(string hostNamePort) {
-            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true) {
+        public void DeleteConnection(string hostNamePort)
+        {
+            if (this._proconApplication != null && this._proconApplication.Connections != null && this._proconApplication.Connections.Contains(hostNamePort) == true)
+            {
                 this._proconApplication.Connections[hostNamePort].Disconnect();
                 this._proconApplication.Connections.Remove(hostNamePort);
             }
@@ -324,13 +375,15 @@ namespace PRoCon.Controls {
 
         #endregion
 
-        protected override void OnLoad(EventArgs e) {
+        protected override void OnLoad(EventArgs e)
+        {
             base.OnLoad(e);
 
             string startPagePath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), "UI");
 
             this._isDocumentReady = false;
-            if (File.Exists(Path.Combine(startPagePath, "startPage.temp")) == true) {
+            if (File.Exists(Path.Combine(startPagePath, "startPage.temp")) == true)
+            {
                 this._startPageTemplates = new CLocalization(Path.Combine(startPagePath, "startPage.temp"), "startPage.temp");
             }
             this.webBrowser1.AllowNavigation = false;
@@ -339,15 +392,18 @@ namespace PRoCon.Controls {
             this.webBrowser1.ObjectForScripting = this;
             this.webBrowser1.ScriptErrorsSuppressed = true;
 
-            if (this.webBrowser1.Document == null && File.Exists(Path.Combine(startPagePath, "startpage.html")) == true) {
+            if (this.webBrowser1.Document == null && File.Exists(Path.Combine(startPagePath, "startpage.html")) == true)
+            {
                 this.webBrowser1.Navigate(Path.Combine(startPagePath, "startpage.html"));
             }
         }
 
         #region RSS Feed
 
-        private void ReplaceRssContent(XmlDocument rssDocument) {
-            try {
+        private void ReplaceRssContent(XmlDocument rssDocument)
+        {
+            try
+            {
                 this._previousDocument = rssDocument;
 
                 this.DispatchArticleFeed(rssDocument);
@@ -355,121 +411,153 @@ namespace PRoCon.Controls {
                 // this.DispatchDonationFeed(rssDocument);
                 //this.DispatchPromotions(rssDocument);
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 this._previousDocument = null;
             }
         }
 
-        private void ReplacePromoContent(XmlDocument rssDocument) {
-            try {
+        private void ReplacePromoContent(XmlDocument rssDocument)
+        {
+            try
+            {
                 this._previousPromoDocument = rssDocument;
                 this.DispatchPromotions(rssDocument);
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 this._previousPromoDocument = null;
             }
         }
 
-        private void m_proconApplication_RssUpdateSuccess(PRoConApplication instance, XmlDocument rssDocument) {
+        private void m_proconApplication_RssUpdateSuccess(PRoConApplication instance, XmlDocument rssDocument)
+        {
             this.InvokeIfRequired(() => this.ReplaceRssContent(rssDocument));
         }
 
-        private void m_proconApplication_PromoUpdateSuccess(PRoConApplication instance, XmlDocument rssDocument) {
+        private void m_proconApplication_PromoUpdateSuccess(PRoConApplication instance, XmlDocument rssDocument)
+        {
             this.InvokeIfRequired(() => this.ReplacePromoContent(rssDocument));
         }
 
-        private void m_proconApplication_RssUpdateError(PRoConApplication instance) {
-            this.InvokeIfRequired(() => {
-                if (this._isDocumentReady == true && this.webBrowser1.Document != null) {
-                    this.webBrowser1.Document.InvokeScript("UpdateRssMonthlySummaryFeed", new object[] {""});
-                    this.webBrowser1.Document.InvokeScript("UpdateRssDonationFeed", new object[] {""});
-                    this.webBrowser1.Document.InvokeScript("UpdateRssFeed", new object[] {""});
+        private void m_proconApplication_RssUpdateError(PRoConApplication instance)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this._isDocumentReady == true && this.webBrowser1.Document != null)
+                {
+                    this.webBrowser1.Document.InvokeScript("UpdateRssMonthlySummaryFeed", new object[] { "" });
+                    this.webBrowser1.Document.InvokeScript("UpdateRssDonationFeed", new object[] { "" });
+                    this.webBrowser1.Document.InvokeScript("UpdateRssFeed", new object[] { "" });
                 }
             });
         }
 
-        private void m_proconApplication_BeginRssUpdate(PRoConApplication instance) {
-            this.InvokeIfRequired(() => {
-                if (this._isDocumentReady == true && this.webBrowser1.Document != null) {
+        private void m_proconApplication_BeginRssUpdate(PRoConApplication instance)
+        {
+            this.InvokeIfRequired(() =>
+            {
+                if (this._isDocumentReady == true && this.webBrowser1.Document != null)
+                {
                     this.webBrowser1.Document.InvokeScript("LoadingRssFeed");
                 }
             });
         }
 
-        internal class RssArticleItem {
+        internal class RssArticleItem
+        {
 
-            public string Title {
+            public string Title
+            {
                 get;
                 internal set;
             }
 
-            public string Link {
+            public string Link
+            {
                 get;
                 internal set;
             }
 
-            public DateTime PublishDate {
+            public DateTime PublishDate
+            {
                 get;
                 internal set;
             }
 
-            public string Content {
-                get;
-                internal set;
-            }
-        }
-
-        internal class RssDonationItem {
-
-            public string Currency {
-                get;
-                internal set;
-            }
-
-            public float Amount {
-                get;
-                internal set;
-            }
-
-            public DateTime PublishDate {
-                get;
-                internal set;
-            }
-
-            public string Name {
-                get;
-                internal set;
-            }
-
-            public string Link {
-                get;
-                internal set;
-            }
-
-            public string Comment {
+            public string Content
+            {
                 get;
                 internal set;
             }
         }
 
-        internal class RssUserSummaryItem {
+        internal class RssDonationItem
+        {
 
-            public int Count {
+            public string Currency
+            {
+                get;
+                internal set;
+            }
+
+            public float Amount
+            {
+                get;
+                internal set;
+            }
+
+            public DateTime PublishDate
+            {
+                get;
+                internal set;
+            }
+
+            public string Name
+            {
+                get;
+                internal set;
+            }
+
+            public string Link
+            {
+                get;
+                internal set;
+            }
+
+            public string Comment
+            {
                 get;
                 internal set;
             }
         }
 
-        private void DispatchPromotions(XmlNode rssDocument) {
-            try {
+        internal class RssUserSummaryItem
+        {
+
+            public int Count
+            {
+                get;
+                internal set;
+            }
+        }
+
+        private void DispatchPromotions(XmlNode rssDocument)
+        {
+            try
+            {
                 ArrayList promotionsList = new ArrayList();
 
-                if (rssDocument != null) {
+                if (rssDocument != null)
+                {
                     XmlNodeList nodes = rssDocument.SelectNodes("/xml/procon/promotions/promotion");
 
-                    if (nodes != null) {
-                        foreach (XmlNode node in nodes) {
-                            if (node != null) {
+                    if (nodes != null)
+                    {
+                        foreach (XmlNode node in nodes)
+                        {
+                            if (node != null)
+                            {
                                 XmlNode image = node.SelectSingleNode("image");
                                 XmlNode link = node.SelectSingleNode("link");
                                 XmlNode name = node.SelectSingleNode("name");
@@ -485,37 +573,46 @@ namespace PRoCon.Controls {
                     }
                 }
 
-                if (this._isDocumentReady == true && this.webBrowser1.Document != null) {
-                    this.webBrowser1.Document.InvokeScript("UpdatePromotions", new object[] {JSON.JsonEncode(promotionsList)});
+                if (this._isDocumentReady == true && this.webBrowser1.Document != null)
+                {
+                    this.webBrowser1.Document.InvokeScript("UpdatePromotions", new object[] { JSON.JsonEncode(promotionsList) });
                 }
             }
-// ReSharper disable EmptyGeneralCatchClause
+            // ReSharper disable EmptyGeneralCatchClause
             catch (Exception) { }
-// ReSharper restore EmptyGeneralCatchClause
+            // ReSharper restore EmptyGeneralCatchClause
         }
-        
-        private void DispatchArticleFeed(XmlDocument rssDocument) {
 
-            try {
+        private void DispatchArticleFeed(XmlDocument rssDocument)
+        {
+
+            try
+            {
                 List<RssArticleItem> rssItems = new List<RssArticleItem>();
 
 
-                if (rssDocument != null) {
+                if (rssDocument != null)
+                {
                     XmlNodeList nodes = rssDocument.SelectNodes("rss/channel/item");
 
-                    if (nodes != null) {
-                        foreach (XmlNode node in nodes) {
-                            if (node != null) {
+                    if (nodes != null)
+                    {
+                        foreach (XmlNode node in nodes)
+                        {
+                            if (node != null)
+                            {
                                 XmlNode pubDateNode = node.SelectSingleNode("pubDate");
                                 XmlNode title = node.SelectSingleNode("title");
                                 XmlNode link = node.SelectSingleNode("link");
                                 XmlNode description = node.SelectSingleNode("description");
 
-                                if (pubDateNode != null && title != null && link != null && description != null) {
+                                if (pubDateNode != null && title != null && link != null && description != null)
+                                {
                                     DateTime pubDate = DateTime.Now.AddMonths(-1);
                                     DateTime.TryParse(pubDateNode.InnerText, out pubDate);
 
-                                    rssItems.Add(new RssArticleItem() {
+                                    rssItems.Add(new RssArticleItem()
+                                    {
                                         Title = title.InnerText,
                                         Link = link.InnerText,
                                         Content = description.InnerText,
@@ -529,18 +626,21 @@ namespace PRoCon.Controls {
 
                 this.UpdateRssArticleFeed(rssItems);
             }
-// ReSharper disable EmptyGeneralCatchClause
+            // ReSharper disable EmptyGeneralCatchClause
             catch (Exception) { }
-// ReSharper restore EmptyGeneralCatchClause
+            // ReSharper restore EmptyGeneralCatchClause
         }
 
-        private void UpdateRssArticleFeed(IEnumerable<RssArticleItem> rss) {
+        private void UpdateRssArticleFeed(IEnumerable<RssArticleItem> rss)
+        {
 
-            if (this._startPageTemplates != null) {
+            if (this._startPageTemplates != null)
+            {
 
                 string rssHtml = String.Empty;
 
-                foreach (RssArticleItem item in rss) {
+                foreach (RssArticleItem item in rss)
+                {
 
                     string replacedTemplate = this._startPageTemplates.GetLocalized("newsFeed.article");
 
@@ -559,7 +659,8 @@ namespace PRoCon.Controls {
                     //rssHtml += String.Format("<p><b>{0}</b></p><p>{1}</p>", item.PublishDate.ToShortDateString(), item.Content);
                 }
 
-                if (this._isDocumentReady == true && this.webBrowser1.Document != null) {
+                if (this._isDocumentReady == true && this.webBrowser1.Document != null)
+                {
                     this.webBrowser1.Document.InvokeScript("UpdateRssFeed", new object[] { rssHtml });
                 }
             }

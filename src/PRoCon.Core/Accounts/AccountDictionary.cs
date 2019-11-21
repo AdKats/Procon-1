@@ -20,66 +20,82 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using PRoCon.Core.Remote;
 
-namespace PRoCon.Core.Accounts {
-    public class AccountDictionary : KeyedCollection<string, Account> {
+namespace PRoCon.Core.Accounts
+{
+    public class AccountDictionary : KeyedCollection<string, Account>
+    {
         public delegate void AccountAlteredHandler(Account item);
 
         public event AccountAlteredHandler AccountAdded;
         public event AccountAlteredHandler AccountChanged;
         public event AccountAlteredHandler AccountRemoved;
 
-        protected override string GetKeyForItem(Account item) {
+        protected override string GetKeyForItem(Account item)
+        {
             return item.Name;
         }
 
-        protected override void InsertItem(int index, Account item) {
+        protected override void InsertItem(int index, Account item)
+        {
             base.InsertItem(index, item);
 
-            if (AccountAdded != null) {
+            if (AccountAdded != null)
+            {
                 this.AccountAdded(item);
             }
         }
 
-        protected override void RemoveItem(int index) {
-            if (AccountRemoved != null) {
+        protected override void RemoveItem(int index)
+        {
+            if (AccountRemoved != null)
+            {
                 this.AccountRemoved(this[index]);
             }
 
             base.RemoveItem(index);
         }
 
-        protected override void SetItem(int index, Account item) {
-            if (AccountChanged != null) {
+        protected override void SetItem(int index, Account item)
+        {
+            if (AccountChanged != null)
+            {
                 this.AccountChanged(item);
             }
 
             base.SetItem(index, item);
         }
 
-        public void CreateAccount(string strUsername, string strPassword) {
-            if (Contains(strUsername) == true) {
+        public void CreateAccount(string strUsername, string strPassword)
+        {
+            if (Contains(strUsername) == true)
+            {
                 this[strUsername].Password = strPassword;
             }
-            else {
+            else
+            {
                 Add(new Account(strUsername, strPassword));
             }
         }
 
-        public void DeleteAccount(string strUsername) {
-            if (Contains(strUsername) == true) {
+        public void DeleteAccount(string strUsername)
+        {
+            if (Contains(strUsername) == true)
+            {
                 Remove(strUsername);
             }
         }
 
-        public void ChangePassword(string strUsername, string strPassword) {
-            if (Contains(strUsername) == true) {
+        public void ChangePassword(string strUsername, string strPassword)
+        {
+            if (Contains(strUsername) == true)
+            {
                 this[strUsername].Password = strPassword;
             }
         }
 
-        public List<string> ListAccountNames() {
+        public List<string> ListAccountNames()
+        {
             return new List<string>(Dictionary.Keys);
         }
     }

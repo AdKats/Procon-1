@@ -1,17 +1,19 @@
-﻿using System;
+﻿using PRoCon.Core.Remote.Cache;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using System.Diagnostics;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Reflection;
-using PRoCon.Core.Remote.Cache;
 
-namespace PRoCon.Core.Remote {
-    public class FrostbiteConnection {
+namespace PRoCon.Core.Remote
+{
+    public class FrostbiteConnection
+    {
 
         /// <summary>
         /// The open client connection.
@@ -72,9 +74,12 @@ namespace PRoCon.Core.Remote {
         /// Why is this here?
         /// </summary>
         protected UInt32 SequenceNumber;
-        public UInt32 AcquireSequenceNumber {
-            get {
-                lock (this.AcquireSequenceNumberLock) {
+        public UInt32 AcquireSequenceNumber
+        {
+            get
+            {
+                lock (this.AcquireSequenceNumberLock)
+                {
                     return ++this.SequenceNumber;
                 }
             }
@@ -82,24 +87,30 @@ namespace PRoCon.Core.Remote {
 
         protected Object ShutdownConnectionLock = new Object();
 
-        public string Hostname {
+        public string Hostname
+        {
             get;
             private set;
         }
 
-        public UInt16 Port {
+        public UInt16 Port
+        {
             get;
             private set;
         }
 
-        public bool IsConnected {
-            get {
+        public bool IsConnected
+        {
+            get
+            {
                 return this.Client != null && this.Client.Connected;
             }
         }
 
-        public bool IsConnecting {
-            get {
+        public bool IsConnecting
+        {
+            get
+            {
                 return this.Client != null && true ^ this.Client.Connected;
             }
         }
@@ -124,7 +135,7 @@ namespace PRoCon.Core.Remote {
         public delegate void PacketDispatchHandler(FrostbiteConnection sender, bool isHandled, Packet packet);
         public event PacketDispatchHandler PacketSent;
         public event PacketDispatchHandler PacketReceived;
-        
+
         public delegate void PacketCacheDispatchHandler(FrostbiteConnection sender, Packet request, Packet response);
         /// <summary>
         /// A packet response has been pulled from cache, instead of being sent to the server.
@@ -150,13 +161,15 @@ namespace PRoCon.Core.Remote {
 
         #endregion
 
-        public FrostbiteConnection(string hostname, UInt16 port) {
+        public FrostbiteConnection(string hostname, UInt16 port)
+        {
             this.ClearConnection();
 
             this.Hostname = hostname;
             this.Port = port;
 
-            this.Cache = new CacheManager() {
+            this.Cache = new CacheManager()
+            {
                 Configurations = new List<IPacketCacheConfiguration>() {
                     // Cache all ping values for 30 seconds.
                     new PacketCacheConfiguration() {
@@ -182,18 +195,21 @@ namespace PRoCon.Core.Remote {
             };
         }
 
-        private void ClearConnection() {
+        private void ClearConnection()
+        {
             this.SequenceNumber = 0;
 
             this.OutgoingPackets = new Dictionary<uint?, Packet>();
             this.QueuedPackets = new Queue<Packet>();
-            
+
             this.ReceivedBuffer = new byte[FrostbiteConnection.BufferSize];
             this.PacketStream = null;
         }
 
-        public static void LogError(string strPacket, string strAdditional, Exception e) {
-            try {
+        public static void LogError(string strPacket, string strAdditional, Exception e)
+        {
+            try
+            {
                 string strOutput = "=======================================" + Environment.NewLine + Environment.NewLine;
 
                 StackTrace stTracer = new StackTrace(e, true);
@@ -217,63 +233,79 @@ namespace PRoCon.Core.Remote {
                 strOutput += Environment.NewLine;
                 strOutput += stTracer.ToString();
 
-                if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt"))) {
-                    using (StreamWriter sw = File.CreateText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt"))) {
+                if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
+                {
+                    using (StreamWriter sw = File.CreateText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
+                    {
                         sw.Write(strOutput);
                     }
                 }
-                else {
-                    using (StreamWriter sw = File.AppendText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt"))) {
+                else
+                {
+                    using (StreamWriter sw = File.AppendText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
+                    {
                         sw.Write(strOutput);
                     }
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 // It'd be to ironic to happen, surely?
             }
         }
 
-        private bool QueueUnqueuePacket(bool isSending, Packet packet, out Packet nextPacket) {
+        private bool QueueUnqueuePacket(bool isSending, Packet packet, out Packet nextPacket)
+        {
 
             nextPacket = null;
             bool response = false;
 
-            lock (this.QueueUnqueuePacketLock) {
+            lock (this.QueueUnqueuePacketLock)
+            {
 
-                if (isSending == true) {
+                if (isSending == true)
+                {
                     // If we have something that has been sent and is awaiting a response
-                    if (this.OutgoingPackets.Count > 0) {
+                    if (this.OutgoingPackets.Count > 0)
+                    {
                         // Add the packet to our queue to be sent at a later time.
                         this.QueuedPackets.Enqueue(packet);
 
                         response = true;
 
-                        if (this.PacketQueued != null) {
+                        if (this.PacketQueued != null)
+                        {
                             this.PacketQueued(this, packet, Thread.CurrentThread.ManagedThreadId);
                         }
                     }
                     // else - response = false
                 }
-                else {
+                else
+                {
                     // Else it's being called from recv and cpPacket holds the processed RequestPacket.
 
                     // Remove the packet 
-                    if (packet != null) {
-                        if (this.OutgoingPackets.ContainsKey(packet.SequenceNumber) == true) {
+                    if (packet != null)
+                    {
+                        if (this.OutgoingPackets.ContainsKey(packet.SequenceNumber) == true)
+                        {
                             this.OutgoingPackets.Remove(packet.SequenceNumber);
                         }
                     }
 
-                    if (this.QueuedPackets.Count > 0) {
+                    if (this.QueuedPackets.Count > 0)
+                    {
                         nextPacket = this.QueuedPackets.Dequeue();
 
                         response = true;
 
-                        if (this.PacketDequeued != null) {
+                        if (this.PacketDequeued != null)
+                        {
                             this.PacketDequeued(this, nextPacket, Thread.CurrentThread.ManagedThreadId);
                         }
                     }
-                    else {
+                    else
+                    {
                         response = false;
                     }
 
@@ -283,14 +315,18 @@ namespace PRoCon.Core.Remote {
             return response;
         }
 
-        private void SendAsyncCallback(IAsyncResult ar) {
+        private void SendAsyncCallback(IAsyncResult ar)
+        {
 
             Packet packet = (Packet)ar.AsyncState;
 
-            try {
-                if (this.NetworkStream != null) {
+            try
+            {
+                if (this.NetworkStream != null)
+                {
                     this.NetworkStream.EndWrite(ar);
-                    if (this.PacketSent != null) {
+                    if (this.PacketSent != null)
+                    {
 
                         this.LastPacketSent = packet;
 
@@ -298,30 +334,38 @@ namespace PRoCon.Core.Remote {
                     }
                 }
             }
-            catch (SocketException se) {
+            catch (SocketException se)
+            {
                 this.Shutdown(se);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 this.Shutdown(e);
             }
         }
 
         // Send straight away ignoring the queue
-        private void SendAsync(Packet cpPacket) {
-            try {
+        private void SendAsync(Packet cpPacket)
+        {
+            try
+            {
 
                 bool isProcessed = false;
 
-                if (this.BeforePacketSend != null) {
+                if (this.BeforePacketSend != null)
+                {
                     this.BeforePacketSend(this, cpPacket, out isProcessed);
                 }
 
-                if (isProcessed == false && this.NetworkStream != null) {
+                if (isProcessed == false && this.NetworkStream != null)
+                {
 
                     byte[] bytePacket = cpPacket.EncodePacket();
 
-                    lock (this.QueueUnqueuePacketLock) {
-                        if (cpPacket.OriginatedFromServer == false && cpPacket.IsResponse == false && this.OutgoingPackets.ContainsKey(cpPacket.SequenceNumber) == false) {
+                    lock (this.QueueUnqueuePacketLock)
+                    {
+                        if (cpPacket.OriginatedFromServer == false && cpPacket.IsResponse == false && this.OutgoingPackets.ContainsKey(cpPacket.SequenceNumber) == false)
+                        {
                             this.OutgoingPackets.Add(cpPacket.SequenceNumber, cpPacket);
                         }
                     }
@@ -330,28 +374,35 @@ namespace PRoCon.Core.Remote {
 
                 }
             }
-            catch (SocketException se) {
+            catch (SocketException se)
+            {
                 this.Shutdown(se);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 this.Shutdown(e);
             }
         }
 
         // Queue for sending.
-        public void SendQueued(Packet cpPacket) {
+        public void SendQueued(Packet cpPacket)
+        {
             IPacketCache cache = this.Cache.Request(cpPacket);
 
-            if (cache == null) {
+            if (cache == null)
+            {
                 // QueueUnqueuePacket
                 Packet cpNullPacket = null;
 
-                if (cpPacket.OriginatedFromServer == true && cpPacket.IsResponse == true) {
+                if (cpPacket.OriginatedFromServer == true && cpPacket.IsResponse == true)
+                {
                     this.SendAsync(cpPacket);
                 }
-                else {
+                else
+                {
                     // Null return because we're not popping a packet, just checking to see if this one needs to be queued.
-                    if (this.QueueUnqueuePacket(true, cpPacket, out cpNullPacket) == false) {
+                    if (this.QueueUnqueuePacket(true, cpPacket, out cpNullPacket) == false)
+                    {
                         // No need to queue, queue is empty.  Send away..
                         this.SendAsync(cpPacket);
                     }
@@ -360,7 +411,8 @@ namespace PRoCon.Core.Remote {
                     this.RestartConnectionOnQueueFailure();
                 }
             }
-            else if (this.PacketCacheIntercept != null) {
+            else if (this.PacketCacheIntercept != null)
+            {
                 Packet cloned = (Packet)cache.Response.Clone();
                 cloned.SequenceNumber = cpPacket.SequenceNumber;
 
@@ -369,12 +421,15 @@ namespace PRoCon.Core.Remote {
             }
         }
 
-        public Packet GetRequestPacket(Packet cpRecievedPacket) {
+        public Packet GetRequestPacket(Packet cpRecievedPacket)
+        {
 
             Packet cpRequestPacket = null;
 
-            lock (this.QueueUnqueuePacketLock) {
-                if (this.OutgoingPackets.ContainsKey(cpRecievedPacket.SequenceNumber) == true) {
+            lock (this.QueueUnqueuePacketLock)
+            {
+                if (this.OutgoingPackets.ContainsKey(cpRecievedPacket.SequenceNumber) == true)
+                {
                     cpRequestPacket = this.OutgoingPackets[cpRecievedPacket.SequenceNumber];
                 }
             }
@@ -382,19 +437,25 @@ namespace PRoCon.Core.Remote {
             return cpRequestPacket;
         }
 
-        private void ReceiveCallback(IAsyncResult ar) {
-            
-            if (this.NetworkStream != null) {
-                try {
+        private void ReceiveCallback(IAsyncResult ar)
+        {
+
+            if (this.NetworkStream != null)
+            {
+                try
+                {
                     int iBytesRead = this.NetworkStream.EndRead(ar);
 
-                    if (iBytesRead > 0) {
+                    if (iBytesRead > 0)
+                    {
 
                         // Create or resize our packet stream to hold the new data.
-                        if (this.PacketStream == null) {
+                        if (this.PacketStream == null)
+                        {
                             this.PacketStream = new byte[iBytesRead];
                         }
-                        else {
+                        else
+                        {
                             Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
                         }
 
@@ -402,7 +463,8 @@ namespace PRoCon.Core.Remote {
 
                         UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
 
-                        while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize) {
+                        while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
+                        {
 
                             // Copy the complete packet from the beginning of the stream.
                             byte[] completePacket = new byte[ui32PacketSize];
@@ -412,14 +474,17 @@ namespace PRoCon.Core.Remote {
                             //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
 
                             // Dispatch the completed packet.
-                            try {
+                            try
+                            {
                                 bool isProcessed = false;
 
-                                if (this.BeforePacketDispatch != null) {
+                                if (this.BeforePacketDispatch != null)
+                                {
                                     this.BeforePacketDispatch(this, packet, out isProcessed);
                                 }
 
-                                if (this.PacketReceived != null) {
+                                if (this.PacketReceived != null)
+                                {
                                     this.LastPacketReceived = packet;
 
                                     this.Cache.Response(packet);
@@ -427,32 +492,38 @@ namespace PRoCon.Core.Remote {
                                     this.PacketReceived(this, isProcessed, packet);
                                 }
 
-                                if (packet.OriginatedFromServer == true && packet.IsResponse == false) {
+                                if (packet.OriginatedFromServer == true && packet.IsResponse == false)
+                                {
                                     this.SendAsync(new Packet(true, true, packet.SequenceNumber, "OK"));
                                 }
 
                                 Packet cpNextPacket = null;
-                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true) {
+                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                                {
                                     this.SendAsync(cpNextPacket);
                                 }
 
                                 // Shutdown if we're just waiting for a response to an old packet.
                                 this.RestartConnectionOnQueueFailure();
                             }
-                            catch (Exception e) {
+                            catch (Exception e)
+                            {
 
                                 Packet cpRequest = this.GetRequestPacket(packet);
 
-                                if (cpRequest != null) {
+                                if (cpRequest != null)
+                                {
                                     LogError(packet.ToDebugString(), cpRequest.ToDebugString(), e);
                                 }
-                                else {
+                                else
+                                {
                                     LogError(packet.ToDebugString(), String.Empty, e);
                                 }
 
                                 // Now try to recover..
                                 Packet cpNextPacket = null;
-                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true) {
+                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                                {
                                     this.SendAsync(cpNextPacket);
                                 }
 
@@ -461,7 +532,8 @@ namespace PRoCon.Core.Remote {
                             }
 
                             // Now remove the completed packet from the beginning of the stream
-                            if (this.PacketStream != null) {
+                            if (this.PacketStream != null)
+                            {
                                 byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
                                 Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
                                 this.PacketStream = updatedSteam;
@@ -472,23 +544,28 @@ namespace PRoCon.Core.Remote {
 
                         // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
                         // We went really wrong somewhere =)
-                        if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes) {
+                        if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
+                        {
                             this.ReceivedBuffer = null; // GC.collect()
                             this.Shutdown(new Exception("Exceeded maximum garbage packet"));
                         }
 
-                        if (this.NetworkStream != null) {
+                        if (this.NetworkStream != null)
+                        {
                             this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
                         }
                     }
-                    else if (iBytesRead == 0) {
+                    else if (iBytesRead == 0)
+                    {
                         this.Shutdown();
                     }
                 }
-                catch (SocketException se) {
+                catch (SocketException se)
+                {
                     this.Shutdown(se);
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     this.Shutdown(e);
                 }
             }
@@ -500,20 +577,24 @@ namespace PRoCon.Core.Remote {
         /// 
         /// If a packet exists in our outgoing "SentPackets"
         /// </summary>
-        protected void RestartConnectionOnQueueFailure() {
+        protected void RestartConnectionOnQueueFailure()
+        {
             bool restart = false;
 
-            lock (this.QueueUnqueuePacketLock) {
+            lock (this.QueueUnqueuePacketLock)
+            {
                 restart = this.OutgoingPackets.Any(outgoingPacket => outgoingPacket.Value.Stamp < DateTime.Now.AddMinutes(-2));
 
-                if (restart == true) {
+                if (restart == true)
+                {
                     this.OutgoingPackets.Clear();
                     this.QueuedPackets.Clear();
                 }
             }
 
             // We do this outside of the lock to ensure calls outside this method won't result in a deadlock elsewhere.
-            if (restart == true) {
+            if (restart == true)
+            {
                 this.Shutdown(new Exception("Failed to hear response to packet within two minutes, forced shutdown."));
             }
         }
@@ -530,11 +611,13 @@ namespace PRoCon.Core.Remote {
         /// dead and a shutdown is initiated.
         /// </para>
         /// </remarks>
-        public virtual void Poke() {
+        public virtual void Poke()
+        {
             bool downstreamDead = this.LastPacketReceived != null && this.LastPacketReceived.Stamp < DateTime.Now.AddMinutes(-2);
             bool upstreamDead = this.LastPacketSent != null && this.LastPacketSent.Stamp < DateTime.Now.AddMinutes(-2);
 
-            if (downstreamDead && upstreamDead) {
+            if (downstreamDead && upstreamDead)
+            {
                 // Clear these out so we don't pick it up again on the next connection attempt.
                 this.LastPacketReceived = null;
                 this.LastPacketSent = null;
@@ -543,48 +626,59 @@ namespace PRoCon.Core.Remote {
                 this.Shutdown();
 
                 // Alert the ProconClient of the error, explaining why the connection has been shut down.
-                if (this.ConnectionFailure != null) {
+                if (this.ConnectionFailure != null)
+                {
                     this.ConnectionFailure(this, new Exception("Connection timed out with two minutes of inactivity."));
                 }
             }
         }
 
-        private void ConnectedCallback(IAsyncResult ar) {
+        private void ConnectedCallback(IAsyncResult ar)
+        {
 
-            try {
+            try
+            {
                 this.Client.EndConnect(ar);
                 this.Client.NoDelay = true;
 
-                if (this.ConnectSuccess != null) {
+                if (this.ConnectSuccess != null)
+                {
                     this.ConnectSuccess(this);
                 }
 
                 this.NetworkStream = this.Client.GetStream();
                 this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
 
-                if (this.ConnectionReady != null) {
+                if (this.ConnectionReady != null)
+                {
                     this.ConnectionReady(this);
                 }
             }
-            catch (SocketException se) {
+            catch (SocketException se)
+            {
                 this.Shutdown(se);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 this.Shutdown(e);
             }
         }
 
-        public static IPAddress ResolveHostName(string hostName) {
+        public static IPAddress ResolveHostName(string hostName)
+        {
             IPAddress ipReturn = IPAddress.None;
 
-            if (IPAddress.TryParse(hostName, out ipReturn) == false) {
+            if (IPAddress.TryParse(hostName, out ipReturn) == false)
+            {
 
                 ipReturn = IPAddress.None;
 
-                try {
+                try
+                {
                     IPHostEntry iphHost = Dns.GetHostEntry(hostName);
 
-                    if (iphHost.AddressList.Length > 0) {
+                    if (iphHost.AddressList.Length > 0)
+                    {
                         ipReturn = iphHost.AddressList[0];
                     }
                     // ELSE return IPAddress.None..
@@ -595,12 +689,15 @@ namespace PRoCon.Core.Remote {
             return ipReturn;
         }
 
-        public void AttemptConnection() {
-            try {
+        public void AttemptConnection()
+        {
+            try
+            {
                 // Clear this, everything from now on will throw an error.
                 this.IsRequestedShutdown = false;
 
-                lock (this.QueueUnqueuePacketLock) {
+                lock (this.QueueUnqueuePacketLock)
+                {
                     this.QueuedPackets.Clear();
                     this.OutgoingPackets.Clear();
                 }
@@ -610,37 +707,45 @@ namespace PRoCon.Core.Remote {
                 this.Client.NoDelay = true;
                 this.Client.BeginConnect(this.Hostname, this.Port, this.ConnectedCallback, this);
 
-                if (this.ConnectAttempt != null) {
+                if (this.ConnectAttempt != null)
+                {
                     this.ConnectAttempt(this);
                 }
             }
-            catch (SocketException se) {
+            catch (SocketException se)
+            {
                 this.Shutdown(se);
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 this.Shutdown(e);
             }
         }
 
-        public void Shutdown(Exception e) {
+        public void Shutdown(Exception e)
+        {
             this.ShutdownConnection();
 
             // If we're not currently shutdown from an external request
-            if (this.IsRequestedShutdown == false && this.ConnectionFailure != null) {
+            if (this.IsRequestedShutdown == false && this.ConnectionFailure != null)
+            {
                 this.ConnectionFailure(this, e);
             }
         }
 
-        public void Shutdown(SocketException se) {
+        public void Shutdown(SocketException se)
+        {
             this.ShutdownConnection();
 
             // If we're not currently shutdown from an external request
-            if (this.IsRequestedShutdown == false && this.SocketException != null) {
+            if (this.IsRequestedShutdown == false && this.SocketException != null)
+            {
                 this.SocketException(this, se);
             }
         }
 
-        public void Shutdown() {
+        public void Shutdown()
+        {
             // We've been asked to shutdown gracefully. We'll do so and supress any errors
             // that occur during the shutdown.
             this.IsRequestedShutdown = true;
@@ -648,15 +753,20 @@ namespace PRoCon.Core.Remote {
             this.ShutdownConnection();
         }
 
-        protected void ShutdownConnection() {
+        protected void ShutdownConnection()
+        {
 
-            if (this.Client != null) {
-                lock (this.ShutdownConnectionLock) {
-                    try {
+            if (this.Client != null)
+            {
+                lock (this.ShutdownConnectionLock)
+                {
+                    try
+                    {
 
                         this.ClearConnection();
 
-                        if (this.NetworkStream != null) {
+                        if (this.NetworkStream != null)
+                        {
                             this.NetworkStream.Close();
                             this.NetworkStream.Dispose();
                             this.NetworkStream = null;
@@ -665,18 +775,23 @@ namespace PRoCon.Core.Remote {
                         this.Client.Close();
                         this.Client = null;
 
-                        if (this.ConnectionClosed != null) {
+                        if (this.ConnectionClosed != null)
+                        {
                             this.ConnectionClosed(this);
                         }
                     }
-                    catch (SocketException se) {
-                        if (this.SocketException != null) {
+                    catch (SocketException se)
+                    {
+                        if (this.SocketException != null)
+                        {
                             this.SocketException(this, se);
                             //this.SocketException(se);
                         }
                     }
-                    catch (Exception e) {
-                        if (this.ConnectionFailure != null) {
+                    catch (Exception e)
+                    {
+                        if (this.ConnectionFailure != null)
+                        {
                             this.ConnectionFailure(this, e);
                         }
                     }

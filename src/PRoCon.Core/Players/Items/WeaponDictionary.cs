@@ -18,30 +18,36 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon.Core.Players.Items {
+namespace PRoCon.Core.Players.Items
+{
 
     [Serializable]
-    public class WeaponDictionary : KeyedCollection<string, Weapon>, ICloneable {
+    public class WeaponDictionary : KeyedCollection<string, Weapon>, ICloneable
+    {
 
-        protected override string GetKeyForItem(Weapon item) {
+        protected override string GetKeyForItem(Weapon item)
+        {
             return item.Name;
         }
-        
-        public object Clone() {
+
+        public object Clone()
+        {
             // Only need a shallow copy since the Weapon objects are readonly themselves.
             return this.MemberwiseClone();
         }
 
-        public new Weapon this[string key] {
-            get {
+        public new Weapon this[string key]
+        {
+            get
+            {
                 Weapon keyedWeapon = null;
 
-                foreach (Weapon weapon in this) {
-                    if (String.Compare(weapon.Name, key, true) == 0) {
+                foreach (Weapon weapon in this)
+                {
+                    if (String.Compare(weapon.Name, key, true) == 0)
+                    {
                         keyedWeapon = weapon;
                         break;
                     }
@@ -51,12 +57,15 @@ namespace PRoCon.Core.Players.Items {
             }
         }
 
-        public new bool Contains(string key) {
+        public new bool Contains(string key)
+        {
 
             bool isKeyed = false;
 
-            foreach (Weapon weapon in this) {
-                if (String.Compare(weapon.Name, key, true) == 0) {
+            foreach (Weapon weapon in this)
+            {
+                if (String.Compare(weapon.Name, key, true) == 0)
+                {
                     isKeyed = true;
                     break;
                 }

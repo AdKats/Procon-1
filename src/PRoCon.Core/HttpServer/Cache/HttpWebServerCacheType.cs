@@ -19,9 +19,11 @@
 
 using System;
 
-namespace PRoCon.Core.HttpServer.Cache {
+namespace PRoCon.Core.HttpServer.Cache
+{
     [Serializable]
-    public enum HttpWebServerCacheType {
+    public enum HttpWebServerCacheType
+    {
         None,
         NoCache,
         Cache,

@@ -17,74 +17,85 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 
-namespace PRoCon.Controls.Battlemap.MapTimeline {
-    public class MapTimelineControlButton : MapObject {
+namespace PRoCon.Controls.Battlemap.MapTimeline
+{
+    public class MapTimelineControlButton : MapObject
+    {
 
         public delegate void TimelineControlButtonClickedHandler(MapTimelineControlButton sender, MapTimelineControlButtonType ButtonType);
         public event TimelineControlButtonClickedHandler TimelineControlButtonClicked;
 
-        public MapTimelineControlButtonType ButtonType {
+        public MapTimelineControlButtonType ButtonType
+        {
             get;
             private set;
         }
 
-        public float ButtonOpacity {
+        public float ButtonOpacity
+        {
             get;
             set;
         }
 
-        public Color ForegroundColour {
+        public Color ForegroundColour
+        {
             get;
             set;
         }
 
         public MapTimelineControlButton(GraphicsPath gpButtonPath, MapTimelineControlButtonType mtbtButtonType)
-            : base(gpButtonPath) {
+            : base(gpButtonPath)
+        {
             this.ButtonOpacity = 0.0F;
             this.ButtonType = mtbtButtonType;
             this.ForegroundColour = Color.White;
         }
 
         public MapTimelineControlButton()
-            : base() {
+            : base()
+        {
             this.ButtonOpacity = 0.0F;
             this.ButtonType = MapTimelineControlButtonType.None;
         }
 
-        protected override void MouseOver(Graphics g) {
+        protected override void MouseOver(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, ControlPaint.Light(Color.RoyalBlue));
         }
 
-        protected override void MouseLeave(Graphics g) {
+        protected override void MouseLeave(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, this.ForegroundColour);
         }
 
-        protected override void MouseDown(Graphics g) {
+        protected override void MouseDown(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 8.0F, Color.Black, ControlPaint.Light(Color.RoyalBlue));
         }
 
-        protected override void MouseUp(Graphics g) {
+        protected override void MouseUp(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, this.ForegroundColour);
         }
 
-        protected override void MouseClicked(Graphics g) {
+        protected override void MouseClicked(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 8.0F, Color.Black, ControlPaint.Light(Color.RoyalBlue));
 
-            if (this.TimelineControlButtonClicked != null) {
+            if (this.TimelineControlButtonClicked != null)
+            {
                 this.TimelineControlButtonClicked(this, this.ButtonType);
                 //this.TimelineControlButtonClicked(this.ButtonType);
             }
         }
 
-        protected override void NormalPaint(Graphics g) {
+        protected override void NormalPaint(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, this.ForegroundColour);
         }
     }

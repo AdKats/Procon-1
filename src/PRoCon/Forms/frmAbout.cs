@@ -19,19 +19,19 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace PRoCon.Forms {
+namespace PRoCon.Forms
+{
     using Core;
-    partial class frmAbout : Form {
+    partial class frmAbout : Form
+    {
 
         private CLocalization m_clocLanguage = null;
 
-        public frmAbout() {
+        public frmAbout()
+        {
             InitializeComponent();
             //this.Text = String.Format("About {0}", AssemblyTitle);
             //this.lblProductName.Text = AssemblyTitle;
@@ -42,7 +42,8 @@ namespace PRoCon.Forms {
             //this.textBoxDescription.Text = AssemblyDescription;
         }
 
-        public void SetLocalization(CLocalization clocLanguage) {
+        public void SetLocalization(CLocalization clocLanguage)
+        {
             this.m_clocLanguage = clocLanguage;
 
             this.Text = this.m_clocLanguage.GetLocalized("frmAbout.Title", new string[] { this.AssemblyTitle });
@@ -56,12 +57,16 @@ namespace PRoCon.Forms {
             this.tabCopyright.Text = this.m_clocLanguage.GetLocalized("frmAbout.tabCopyright.Title", null);
         }
 
-        public string AssemblyTitle {
-            get {
+        public string AssemblyTitle
+        {
+            get
+            {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                if (attributes.Length > 0) {
+                if (attributes.Length > 0)
+                {
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "") {
+                    if (titleAttribute.Title != "")
+                    {
                         return titleAttribute.Title;
                     }
                 }
@@ -69,77 +74,98 @@ namespace PRoCon.Forms {
             }
         }
 
-        public string AssemblyVersion {
-            get {
+        public string AssemblyVersion
+        {
+            get
+            {
                 return Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
         }
 
-        public string AssemblyDescription {
-            get {
+        public string AssemblyDescription
+        {
+            get
+            {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                if (attributes.Length == 0) {
+                if (attributes.Length == 0)
+                {
                     return "";
                 }
                 return ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
         }
 
-        public string AssemblyProduct {
-            get {
+        public string AssemblyProduct
+        {
+            get
+            {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-                if (attributes.Length == 0) {
+                if (attributes.Length == 0)
+                {
                     return "";
                 }
                 return ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
 
-        public string AssemblyCopyright {
-            get {
+        public string AssemblyCopyright
+        {
+            get
+            {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                if (attributes.Length == 0) {
+                if (attributes.Length == 0)
+                {
                     return "";
                 }
                 return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
 
-        public string AssemblyCompany {
-            get {
+        public string AssemblyCompany
+        {
+            get
+            {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0) {
+                if (attributes.Length == 0)
+                {
                     return "";
                 }
                 return ((AssemblyCompanyAttribute)attributes[0]).Company;
             }
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("https://myrcon.net/");
         }
 
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("https://myrcon.net/");
         }
 
-        private void okButton_Click(object sender, EventArgs e) {
+        private void okButton_Click(object sender, EventArgs e)
+        {
             this.Close();
         }
 
-        private void lnkMaxMind_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkMaxMind_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.maxmind.com");
         }
 
-        private void picSpacefishSteve_Click(object sender, EventArgs e) {
+        private void picSpacefishSteve_Click(object sender, EventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.facebook.com/group.php?gid=474809860261&ref=nf");
         }
 
-        private void linkLabel2_LinkClicked_1(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void linkLabel2_LinkClicked_1(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://dotnetzip.codeplex.com/");
         }
 
-        private void lnkMySQLconnector_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkMySQLconnector_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://dev.mysql.com/downloads/connector/net/");
         }
 
@@ -148,25 +174,30 @@ namespace PRoCon.Forms {
             System.Diagnostics.Process.Start("http://www.u3.net.au");
         }
 
-        private void lnkSinex_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkSinex_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.u3.net.au");
         }
 
-        private void lnkIntruder_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkIntruder_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.solstice-gaming.eu/");
         }
 
-        private void lnk1349_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnk1349_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.facebook.com/group.php?gid=474809860261&ref=nf");
         }
 
-        private void lnkCptNeeda_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkCptNeeda_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.habitat4hookers.org/");
         }
 
-        private void lnkZboss_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+        private void lnkZboss_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
             System.Diagnostics.Process.Start("http://www.z-gaming.org/");
-            
+
         }
     }
 }

@@ -20,13 +20,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace PRoCon.Core.Plugin {
-    using Core.Plugin.Commands;
+namespace PRoCon.Core.Plugin
+{
     using Core.Players.Items;
+    using Core.Plugin.Commands;
 
-    public class CPRoConPluginCallbacks : MarshalByRefObject {
+    public class CPRoConPluginCallbacks : MarshalByRefObject
+    {
 
         private CPRoConMarshalByRefObject.ExecuteCommandHandler m_delExecuteCommand;
         private CPRoConMarshalByRefObject.GetAccountPrivilegesHandler m_delGetAccountPrivileges;
@@ -45,7 +46,8 @@ namespace PRoCon.Core.Plugin {
         private CPRoConMarshalByRefObject.GetLoggedInAccountUsernamesHandler m_delGetLoggedInAccountUsernames;
         private CPRoConMarshalByRefObject.RegisterEventsHandler m_delRegisterEvents;
 
-        public override object InitializeLifetimeService() {
+        public override object InitializeLifetimeService()
+        {
             return null;
         }
 
@@ -61,7 +63,8 @@ namespace PRoCon.Core.Plugin {
                                       CPRoConMarshalByRefObject.GetWeaponDefinesHandler delGetWeaponDefines,
                                       CPRoConMarshalByRefObject.GetSpecializationDefinesHandler delGetSpecializationDefines,
                                       CPRoConMarshalByRefObject.GetLoggedInAccountUsernamesHandler delGetLoggedInAccountUsernames,
-                                      CPRoConMarshalByRefObject.RegisterEventsHandler delRegisterEvents ) {
+                                      CPRoConMarshalByRefObject.RegisterEventsHandler delRegisterEvents)
+        {
             this.m_delExecuteCommand = delExecuteCommandCallback;
             this.m_delGetAccountPrivileges = delGetAccountPrivileges;
             this.m_delGetVariable = delGetVariable;
@@ -80,55 +83,68 @@ namespace PRoCon.Core.Plugin {
             this.m_delRegisterEvents = delRegisterEvents;
         }
 
-        public WeaponDictionary GetWeaponDefines_Callback() {
+        public WeaponDictionary GetWeaponDefines_Callback()
+        {
             return this.m_delGetWeaponDefines();
         }
 
-        public SpecializationDictionary GetSpecializationDefines_Callback() {
+        public SpecializationDictionary GetSpecializationDefines_Callback()
+        {
             return this.m_delGetSpecializationDefines();
         }
 
-        public void ExecuteCommand_Callback(List<string> lstCommand) {
+        public void ExecuteCommand_Callback(List<string> lstCommand)
+        {
             this.m_delExecuteCommand(lstCommand);
         }
 
-        public string GetVariable_Callback(string strVariable) {
+        public string GetVariable_Callback(string strVariable)
+        {
             return this.m_delGetVariable(strVariable);
         }
 
-        public string GetSvVariable_Callback(string strSvVariable) {
+        public string GetSvVariable_Callback(string strSvVariable)
+        {
             return this.m_delGetSvVariable(strSvVariable);
         }
 
-        public CPrivileges GetAccountPrivileges_Callback(string strAccountName) {
+        public CPrivileges GetAccountPrivileges_Callback(string strAccountName)
+        {
             return this.m_delGetAccountPrivileges(strAccountName);
         }
 
-        public List<CMap> GetMapDefines_Callback() {
+        public List<CMap> GetMapDefines_Callback()
+        {
             return this.m_delGetMapDefines();
         }
 
-        public bool TryGetLocalized_Callback(string strLanguageCode, out string strLocalizedText, string strVariable, string[] a_strArguements) {
+        public bool TryGetLocalized_Callback(string strLanguageCode, out string strLocalizedText, string strVariable, string[] a_strArguements)
+        {
             return this.m_delTryGetLocalized(strLanguageCode, out strLocalizedText, strVariable, a_strArguements);
         }
 
-        public void RegisterCommand_Callback(MatchCommand mtcCommand) {
+        public void RegisterCommand_Callback(MatchCommand mtcCommand)
+        {
             this.m_delRegisterCommand(mtcCommand);
         }
 
-        public void UnregisterCommand_Callback(MatchCommand mtcCommand) {
+        public void UnregisterCommand_Callback(MatchCommand mtcCommand)
+        {
             this.m_delUnregisterCommand(mtcCommand);
         }
 
-        public List<MatchCommand> GetRegisteredCommands_Callback() {
+        public List<MatchCommand> GetRegisteredCommands_Callback()
+        {
             return this.m_delGetRegisteredCommands();
         }
 
-        public List<string> GetLoggedInAccountUsernames_Callback() {
+        public List<string> GetLoggedInAccountUsernames_Callback()
+        {
             return this.m_delGetLoggedInAccountUsernames();
         }
 
-        public void RegisterEvents_Callback(string className, List<string> events) {
+        public void RegisterEvents_Callback(string className, List<string> events)
+        {
             this.m_delRegisterEvents(className, events);
         }
     }

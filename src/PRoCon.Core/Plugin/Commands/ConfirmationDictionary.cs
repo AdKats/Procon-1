@@ -17,15 +17,15 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon.Core.Plugin.Commands {
-    public class ConfirmationDictionary : KeyedCollection<string, ConfirmationEntry> {
+namespace PRoCon.Core.Plugin.Commands
+{
+    public class ConfirmationDictionary : KeyedCollection<string, ConfirmationEntry>
+    {
 
-        protected override string GetKeyForItem(ConfirmationEntry item) {
+        protected override string GetKeyForItem(ConfirmationEntry item)
+        {
             return item.Speaker;
         }
 

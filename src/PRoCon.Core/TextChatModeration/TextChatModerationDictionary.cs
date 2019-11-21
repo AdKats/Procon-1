@@ -18,37 +18,45 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
-namespace PRoCon.Core.TextChatModeration {
+namespace PRoCon.Core.TextChatModeration
+{
     // TextChatModerationEntry
     [Serializable]
-    public class TextChatModerationDictionary : KeyedCollection<string, TextChatModerationEntry> {
+    public class TextChatModerationDictionary : KeyedCollection<string, TextChatModerationEntry>
+    {
 
-        protected override string GetKeyForItem(TextChatModerationEntry item) {
+        protected override string GetKeyForItem(TextChatModerationEntry item)
+        {
             return item.SoldierName;
         }
 
-        public void AddEntry(TextChatModerationEntry item) {
-            if (this.Contains(item.SoldierName) == true) {
+        public void AddEntry(TextChatModerationEntry item)
+        {
+            if (this.Contains(item.SoldierName) == true)
+            {
                 this.SetItem(this.IndexOf(this[item.SoldierName]), item);
             }
-            else {
+            else
+            {
                 this.Add(item);
             }
         }
 
-        public void RemoveEntry(TextChatModerationEntry item) {
-            if (this.Contains(item.SoldierName) == true) {
+        public void RemoveEntry(TextChatModerationEntry item)
+        {
+            if (this.Contains(item.SoldierName) == true)
+            {
                 this.Remove(item.SoldierName);
             }
         }
 
-        public void AddRange(IEnumerable<TextChatModerationEntry> list) {
-            foreach (TextChatModerationEntry item in list) {
+        public void AddRange(IEnumerable<TextChatModerationEntry> list)
+        {
+            foreach (TextChatModerationEntry item in list)
+            {
                 this.AddEntry(item);
             }
         }

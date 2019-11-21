@@ -19,71 +19,85 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel;
 
-namespace PRoCon.Core {
+namespace PRoCon.Core
+{
 
     [Serializable]
-    public class LevelVariable {
+    public class LevelVariable
+    {
 
-        public LevelVariableContext Context {
+        public LevelVariableContext Context
+        {
             get;
             private set;
         }
 
-        public string VariableName {
+        public string VariableName
+        {
             get;
             private set;
         }
 
-        public string RawValue {
+        public string RawValue
+        {
             get;
             set;
         }
 
-        public T GetValue<T>(T tDefault) {
+        public T GetValue<T>(T tDefault)
+        {
             T tReturn = tDefault;
 
             TypeConverter tycPossible = TypeDescriptor.GetConverter(typeof(T));
-            if (tycPossible.CanConvertFrom(typeof(string)) == true) {
+            if (tycPossible.CanConvertFrom(typeof(string)) == true)
+            {
                 tReturn = (T)tycPossible.ConvertFrom(this.RawValue);
             }
-            else {
+            else
+            {
                 tReturn = tDefault;
             }
 
             return tReturn;
         }
 
-        public LevelVariable(LevelVariableContext lvcContext, string strVariableName, string strRawValue) {
+        public LevelVariable(LevelVariableContext lvcContext, string strVariableName, string strRawValue)
+        {
             this.Context = lvcContext;
             this.VariableName = strVariableName;
             this.RawValue = strRawValue;
         }
 
-        public static LevelVariable ExtractContextVariable(bool skipAllContext, List<string> contextList) {
+        public static LevelVariable ExtractContextVariable(bool skipAllContext, List<string> contextList)
+        {
 
             string contextType = String.Empty, contextTarget = String.Empty, variableName = String.Empty, variableValue = String.Empty;
 
-            if (contextList.Count >= 1) {
+            if (contextList.Count >= 1)
+            {
 
                 int offset = 0;
 
                 contextType = contextList[offset++];
 
-                if (String.Compare(contextType, "all") != 0 && offset < contextList.Count) {
+                if (String.Compare(contextType, "all") != 0 && offset < contextList.Count)
+                {
                     contextTarget = contextList[offset++];
                 }
-                else if (skipAllContext == true) {
+                else if (skipAllContext == true)
+                {
                     offset++;
                 }
 
-                if (offset < contextList.Count) {
+                if (offset < contextList.Count)
+                {
                     variableName = contextList[offset++];
                 }
 
-                if (offset < contextList.Count) {
+                if (offset < contextList.Count)
+                {
                     variableValue = contextList[offset++];
                 }
             }

@@ -18,33 +18,38 @@
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
-namespace PRoCon.Controls.Battlemap.MapTimeline {
-    public class MapTimelineSeekButton : MapTimelineControlButton {
+namespace PRoCon.Controls.Battlemap.MapTimeline
+{
+    public class MapTimelineSeekButton : MapTimelineControlButton
+    {
 
-        public float SeekerPosition {
+        public float SeekerPosition
+        {
             get;
             set;
         }
 
-        public bool IsSeekButtonSelected {
-            get {
+        public bool IsSeekButtonSelected
+        {
+            get
+            {
                 return this.m_isMouseDown;
             }
         }
 
-        public RectangleF SeekerBounds {
+        public RectangleF SeekerBounds
+        {
             get;
             set;
         }
 
         public MapTimelineSeekButton()
-            : base() {
+            : base()
+        {
 
             this.ObjectPath = this.GetRoundRect(0, 0, 12, 4, 2);
             this.HotSpot = this.ObjectPath.GetBounds();
@@ -52,7 +57,8 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             this.SeekerPosition = 1.0F;
         }
 
-        public GraphicsPath GetRoundRect(float x, float y, float width, float height, float radius) {
+        public GraphicsPath GetRoundRect(float x, float y, float width, float height, float radius)
+        {
             GraphicsPath gp = new GraphicsPath();
 
             //gp.AddLine(x + radius, y, x + width - (radius * 2), y); // Line
@@ -68,22 +74,27 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             return gp;
         }
 
-        public new void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons) {
+        public new void Draw(Graphics g, PointF pntDrawOffset, Point pntMouseLocation, MouseButtons mbButtons)
+        {
 
             GraphicsPath gpSeekPosition = new GraphicsPath();
             gpSeekPosition.AddLine(new PointF(6.0F, 2), new PointF(this.SeekerBounds.Width - this.SeekerPosition * (this.SeekerBounds.Width - 15) - 5, 2));
             gpSeekPosition.Widen(this.m_pOneWidth);
             this.DrawBwShape(g, gpSeekPosition, this.ButtonOpacity, 4.0F, Color.Black, ControlPaint.LightLight(Color.LightSeaGreen));
 
-            if (this.m_isMouseDown == true) {
+            if (this.m_isMouseDown == true)
+            {
 
-                if (pntMouseLocation.X < pntDrawOffset.X) {
+                if (pntMouseLocation.X < pntDrawOffset.X)
+                {
                     this.SeekerPosition = 0.0F;
                 }
-                else if (pntMouseLocation.X > pntDrawOffset.X + this.SeekerBounds.Width - 15) {
+                else if (pntMouseLocation.X > pntDrawOffset.X + this.SeekerBounds.Width - 15)
+                {
                     this.SeekerPosition = 1.0F;
                 }
-                else {
+                else
+                {
                     this.SeekerPosition = (pntMouseLocation.X - pntDrawOffset.X - 6) / (this.SeekerBounds.Width - 15);
                 }
             }
@@ -99,47 +110,57 @@ namespace PRoCon.Controls.Battlemap.MapTimeline {
             gpSeekPosition.Dispose();
         }
 
-        protected override void MouseOver(Graphics g) {
+        protected override void MouseOver(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, Color.White);
             this.DrawTime(g);
         }
 
-        protected override void MouseLeave(Graphics g) {
+        protected override void MouseLeave(Graphics g)
+        {
             //this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, Color.White);
         }
 
-        protected override void MouseDown(Graphics g) {
+        protected override void MouseDown(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 8.0F, Color.Black, Color.White);
             this.DrawTime(g);
         }
 
-        protected override void MouseUp(Graphics g) {
+        protected override void MouseUp(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, Color.White);
         }
 
-        protected override void MouseClicked(Graphics g) {
+        protected override void MouseClicked(Graphics g)
+        {
             this.DrawBwShape(g, this.ButtonOpacity, 4.0F, Color.Black, Color.White);
         }
 
-        protected override void NormalPaint(Graphics g) {
-            if (this.m_isMouseDown == true) {
+        protected override void NormalPaint(Graphics g)
+        {
+            if (this.m_isMouseDown == true)
+            {
                 this.DrawBwShape(g, this.ButtonOpacity, 8.0F, Color.Black, Color.White);
                 this.DrawTime(g);
             }
         }
 
-        private void DrawTime(Graphics g) {
+        private void DrawTime(Graphics g)
+        {
             TimeSpan tsSpan = DateTime.Now.AddHours(Math.Abs(this.SeekerPosition - 1.0F)) - DateTime.Now;
 
             GraphicsPath gpSeekTime = new GraphicsPath();
             string strText = String.Empty;
             Color clForecolor = Color.White;
 
-            if (tsSpan.TotalSeconds == 0) {
+            if (tsSpan.TotalSeconds == 0)
+            {
                 strText = "Live";
                 clForecolor = ControlPaint.Light(ControlPaint.LightLight(Color.LightSeaGreen));
             }
-            else {
+            else
+            {
                 strText = String.Format("-{0:00}:{1:00}:{2:00}", tsSpan.Hours, tsSpan.Minutes, tsSpan.Seconds);
                 clForecolor = Color.White;
             }
