@@ -166,6 +166,28 @@ procon.protected.weapons.add Demolition "U_UMP9" Primary SMG
 procon.protected.weapons.add None "U_WINCHESTER1887" Primary Shotgun
 procon.protected.weapons.add None "U_ZipLineGun" Secondary Impact
 
+// xp4 (Betrayal) (still missing augpara, M98B, A 8S, Dual VZ. 61)
+
+procon.protected.weapons.add Recon "U_Model_98B" Primary SniperRifle
+procon.protected.weapons.add Assault "U_RPK74" Primary AssaultRifle
+procon.protected.weapons.add None "U_FantasyKnife" Secondary Melee
+procon.protected.weapons.add Demolition "U_MX4" Primary SMG
+procon.protected.weapons.add Support "U_M1014" Primary Shotgun
+procon.protected.weapons.add None "U_M1903" Primary SniperRifle
+procon.protected.weapons.add Assault "U_AugA3" Primary SMG
+procon.protected.weapons.add Recon "U_MP9" Auxiliary Handgun
+procon.protected.weapons.add Recon "U_ImprovisedGun" Auxiliary Handgun
+procon.protected.weapons.add None "U_A_8S" Primary SniperRifle
+procon.protected.weapons.add None "U_ElephantGun" Primary Shotgun
+procon.protected.weapons.add None "U_LEWISGUN" Primary LMG
+procon.protected.weapons.add None "U_Cleaver" Secondary Melee
+procon.protected.weapons.add None "U_Shovel" Secondary Melee
+procon.protected.weapons.add None "U_Skorpion" Auxiliary Handgun
+procon.protected.weapons.add None "U_InquisitionSword" Secondary Melee
+procon.protected.weapons.add None "U_Karambit" Secondary Melee
+procon.protected.weapons.add None "U_FNAR" Primary SniperRifle
+procon.protected.weapons.add None "U_A_8S_EX" Primary SniperRifle
+
 // Personal vehicles
 procon.protected.weapons.add None "havana/Vehicles/OFFROAD_MOTORCYCLE_CR/OFFROAD_MOTORCYCLE_CR" Primary VehiclePersonal
 procon.protected.weapons.add None "havana/Vehicles/STREET_MOTORCYCLE_CR/STREET_MOTORCYCLE_CR" Primary VehiclePersonal

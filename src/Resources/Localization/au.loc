@@ -1187,6 +1187,25 @@ global.Weapons.u_ump45=UMP45
 global.Weapons.u_ump9=UMP-9
 global.Weapons.u_winchester1887=1887
 global.Weapons.u_ziplinegun=Zip Line
+global.Weapons.u_fantasyknife=Devils Toothpick
+global.Weapons.u_a_8s=A 8S
+global.Weapons.u_karambit=Karambit
+global.Weapons.u_shovel=Shovel
+global.Weapons.u_cleaver=Cleaver
+global.Weapons.u_model_98b=M98B
+global.Weapons.u_auga3=AUG A3
+global.Weapons.u_mx4=MX4
+global.Weapons.u_m1014=M4 Shotgun
+global.Weapons.u_m1903=M1903
+global.Weapons.u_fnar=SP-AR
+global.Weapons.u_mp9=MP9
+global.Weapons.u_improvisedgun=Improvised Gun
+global.Weapons.u_skorpion=Dual VZ. 61
+global.Weapons.u_elephantgun=Mammoth Gun
+global.Weapons.u_lewisgun=Syndicate Gun
+global.Weapons.u_inquisitionsword=Inquisition Sword
+global.Weapons.u_rpk74=RPK-74
+global.Weapons.u_a_8s_ex=A 8S Explosive Tip
 
 
 // BF-HL Vehicles
