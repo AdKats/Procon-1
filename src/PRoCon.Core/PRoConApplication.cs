@@ -2676,7 +2676,7 @@ namespace PRoCon.Core
                 this.BeginRssUpdate(this);
             }
 
-            CDownloadFile downloadRssFeed = new CDownloadFile("https://myrcon.net/index.php?app=core&module=global&section=rss&type=forums&id=3");
+            CDownloadFile downloadRssFeed = new CDownloadFile("https://myrcon.net/rss/1-procon-news.xml/");
             downloadRssFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadComplete);
             downloadRssFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadError);
             downloadRssFeed.BeginDownload();
