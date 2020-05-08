@@ -780,7 +780,7 @@ namespace PRoCon.Core.Plugin
                     }
 
                     IEnumerable<MetadataReference> compilationReferences = this.GetCSharpCompilationReferences();
-                    CSharpCompilation compilation = CSharpCompilation.Create(pluginClassName + ".dll", syntaxTrees, compilationReferences, compilationOptions);
+                    CSharpCompilation compilation = CSharpCompilation.Create(pluginClassName, syntaxTrees, compilationReferences, compilationOptions);
 
                     // 4.1. Now compile the plugin
                     this.PrintPluginResults(pluginFile, compilation.Emit(outputAssembly, pdbPath, xmlDocPath));
