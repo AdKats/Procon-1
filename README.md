@@ -16,6 +16,11 @@ If you are looking for a list of available plugins, head over to the [plugins se
 ## Known bugs ##
 Please refer to the [issues section](https://github.com/AdKats/Procon-1/issues?labels=bug&page=1&state=open "List of known bugs for Procon 1") for issues tagged as "bug" for a list of known bugs.
 
+### 1.5.3.2 to 1.5.3.3 ###
+#### Core ####
+- Updated geodata code
+- Updated the change log link in the procon menu.
+
 ### 1.5.2.1 to 1.5.3.2 ###
 #### Core ####
 - Insane Limits Fix
