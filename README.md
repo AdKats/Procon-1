@@ -13,9 +13,6 @@ Are you experiencing troubles while using Procon, would like to suggest a new fe
 If you are looking for a list of available plugins, head over to the [plugins section](https://myrcon.net/index.php?/forum/9-plugins/ "Procon 1 plugins") of our forums.
 
 
-## Known bugs ##
-Please refer to the [issues section](https://github.com/AdKats/Procon-1/issues?labels=bug&page=1&state=open "List of known bugs for Procon 1") for issues tagged as "bug" for a list of known bugs.
-
 ### 1.5.3.2 to 1.5.3.3 ###
 #### Core ####
 - Updated geodata code
