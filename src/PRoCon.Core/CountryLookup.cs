@@ -23,16 +23,26 @@ using System.Collections;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Web.Script.Serialization;
+using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MaxMind
 {
+    public class PIP
+    {
+        public string IP_Address { get; set; }
+        public string CountryCode { get; set; }
+        public string CountryName { get; set; }
+    }
+
     /// <summary>
     /// Summary description for CountryLookup.
     /// </summary>
     public class CountryLookup
     {
+        private Dictionary<string, PIP> IPs = new Dictionary<string, PIP>();
+
         private FileStream fileInput;
         private static long COUNTRY_BEGIN = 16776960;
         private static string[] countryCode =
@@ -100,29 +110,49 @@ namespace MaxMind
             return ipnum;
         }
 
-        public string lookupCountryCode(IPAddress addr)
+        public PIP ProxyCheckRequest(IPAddress addr)
         {
-            try
+            using (WebClient client = new WebClient())
             {
-                using (WebClient client = new WebClient())
-                {
-                    //manipulate request headers (optional)
-                    client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                //manipulate request headers (optional)
+                client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-                    //execute request and read response as string to console
-                    using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + addr)))
+                //execute request and read response as string to console
+                using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + addr.ToString())))
+                {
+                    string s = reader.ReadToEnd();
+                    Hashtable a = (Hashtable)JSON.JsonDecode(s);
+
+                    PIP apipc = new PIP()
                     {
-                        string s = reader.ReadToEnd();
-                        Hashtable a = (Hashtable)JSON.JsonDecode(s);
-                        return ((Hashtable)a["" + addr + ""])["isocode"].ToString();
-                    }
+                        CountryCode = ((Hashtable)a[addr.ToString()])["isocode"].ToString(),
+                        CountryName = ((Hashtable)a[addr.ToString()])["country"].ToString(),
+                        IP_Address = addr.ToString()
+                    };
+
+                    IPs.Add(addr.ToString(), apipc);
+
+                    return IPs[addr.ToString()];
                 }
             }
-            catch (Exception)
+        }
+
+        public string lookupCountryCode(IPAddress addr)
+        {
+            if (!IPs.ContainsKey(addr.ToString()))
             {
-                // If that fails, fall back to the outdated stuff.
-                return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+                try
+                {
+                    return ProxyCheckRequest(addr).CountryCode;
+                }
+                catch (Exception)
+                {
+                    // If that fails, fall back to the outdated stuff.
+                    return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+                }
             }
+
+            return IPs[addr.ToString()].CountryCode;
         }
 
         public string lookupCountryName(string str)
@@ -141,7 +171,20 @@ namespace MaxMind
 
         public string lookupCountryName(IPAddress addr)
         {
-            return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
+            if (!IPs.ContainsKey(addr.ToString()))
+            {
+                try
+                {
+                    return ProxyCheckRequest(addr).CountryName;
+                }
+                catch (Exception)
+                {
+                    // If that fails, fall back to the outdated stuff.
+                    return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
+                }
+            }
+
+            return IPs[addr.ToString()].CountryName;
         }
 
         private long seekCountry(long offset, long ipnum, int depth)

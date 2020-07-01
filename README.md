@@ -13,6 +13,10 @@ Are you experiencing troubles while using Procon, would like to suggest a new fe
 If you are looking for a list of available plugins, head over to the [plugins section](https://myrcon.net/index.php?/forum/9-plugins/ "Procon 1 plugins") of our forums.
 
 
+### 1.5.3.3 to 1.5.3.4 ###
+#### Core ####
+- Fixed GUI error with displaying country name
+
 ### 1.5.3.2 to 1.5.3.3 ###
 #### Core ####
 - Updated geodata code

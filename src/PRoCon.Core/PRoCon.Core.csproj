@@ -178,9 +178,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\builds\Debug\Plugins\BF4\InsaneLimits.cs">
-      <Link>InsaneLimits.cs</Link>
-    </Compile>
     <Compile Include="..\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>

@@ -156,27 +156,7 @@ namespace MaxMind
         /// <remarks>The Ip address must be IPv4.</remarks>
         public string GetCountryCode(IPAddress ip)
         {
-            try
-            {
-                using (WebClient client = new WebClient())
-                {
-                    //manipulate request headers (optional)
-                    client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
-                    //execute request and read response as string to console
-                    using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + ip)))
-                    {
-                        string s = reader.ReadToEnd();
-                        Hashtable a = (Hashtable) JSON.JsonDecode(s);
-                        return ((Hashtable)a[ip])["isocode"].ToString();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // If that fails, fall back to the outdated stuff.
-                return CountryCodes[FindIndex(ip)];
-            }
+            return CountryCodes[FindIndex(ip)];
         }
 
         /// <summary>
