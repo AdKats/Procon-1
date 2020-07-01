@@ -17,9 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+using PRoCon.Core;
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
+using System.Reflection;
 
 // This code is based on MaxMind's original C# code, which was ported from Java.
 // This version is very simplified and does not support a majority of features for speed.
@@ -153,7 +156,27 @@ namespace MaxMind
         /// <remarks>The Ip address must be IPv4.</remarks>
         public string GetCountryCode(IPAddress ip)
         {
-            return CountryCodes[FindIndex(ip)];
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    //manipulate request headers (optional)
+                    client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                    //execute request and read response as string to console
+                    using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + ip)))
+                    {
+                        string s = reader.ReadToEnd();
+                        Hashtable a = (Hashtable) JSON.JsonDecode(s);
+                        return ((Hashtable)a[ip])["isocode"].ToString();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // If that fails, fall back to the outdated stuff.
+                return CountryCodes[FindIndex(ip)];
+            }
         }
 
         /// <summary>

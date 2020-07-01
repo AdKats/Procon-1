@@ -17,10 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+using PRoCon.Core;
 using System;
+using System.Collections;
 using System.IO;
 using System.Net;
-
+using System.Reflection;
+using System.Windows.Forms;
+using System.Web.Script.Serialization;
 
 namespace MaxMind
 {
@@ -98,7 +102,27 @@ namespace MaxMind
 
         public string lookupCountryCode(IPAddress addr)
         {
-            return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    //manipulate request headers (optional)
+                    client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                    //execute request and read response as string to console
+                    using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + addr)))
+                    {
+                        string s = reader.ReadToEnd();
+                        Hashtable a = (Hashtable)JSON.JsonDecode(s);
+                        return ((Hashtable)a["" + addr + ""])["isocode"].ToString();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // If that fails, fall back to the outdated stuff.
+                return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            }
         }
 
         public string lookupCountryName(string str)
