@@ -41,6 +41,9 @@ namespace PRoCon.Core.Options
 
         public event OptionsEnabledHandler AllowAnonymousUsageDataChanged;
 
+        public event OptionsEnabledHandler UseGeoIpFileOnlyChanged;
+        public event OptionsEnabledHandler BlockRssFeedNewsChanged;
+
         public event OptionsEnabledHandler UsePluginOldStyleLoadChanged;
 
         public event OptionsEnabledHandler EnablePluginDebuggingChanged;
@@ -484,6 +487,44 @@ namespace PRoCon.Core.Options
             }
         }
 
+        private bool m_isUseGeoIpFileOnlyEnabled;
+        public bool UseGeoIpFileOnly
+        {
+            get
+            {
+                return this.m_isUseGeoIpFileOnlyEnabled;
+            }
+            set
+            {
+                this.m_isUseGeoIpFileOnlyEnabled = value;
+                this.m_praApplication.SaveMainConfig();
+
+                if (this.UseGeoIpFileOnlyChanged != null)
+                {
+                    this.UseGeoIpFileOnlyChanged(value);
+                }
+            }
+        }
+
+        private bool m_isBlockRssFeedNewsEnabled;
+        public bool BlockRssFeedNews
+        {
+            get
+            {
+                return this.m_isBlockRssFeedNewsEnabled;
+            }
+            set
+            {
+                this.m_isBlockRssFeedNewsEnabled = value;
+                this.m_praApplication.SaveMainConfig();
+
+                if (this.BlockRssFeedNewsChanged != null)
+                {
+                    this.BlockRssFeedNewsChanged(value);
+                }
+            }
+        }
+
         public NotificationList<TrustedHostWebsitePort> TrustedHostsWebsitesPorts
         {
             get;
@@ -695,7 +736,10 @@ namespace PRoCon.Core.Options
 
             this.StatsLinksMaxNum = 4;
             this.StatsLinkNameUrl = new NotificationList<StatsLinkNameUrl>();
-            this.StatsLinkNameUrl.Add(new StatsLinkNameUrl("Metabans", "http://metabans.com/search/%player_name%"));
+            this.StatsLinkNameUrl.Add(new StatsLinkNameUrl("Battlelog", "https://battlelog.battlefield.com/%game%/user/%player_name%"));
+            this.StatsLinkNameUrl.Add(new StatsLinkNameUrl("PunkBuster", "https://www.pbbans.com/mbi-guid-search-%player_PBguid%.html"));
+            this.StatsLinkNameUrl.Add(new StatsLinkNameUrl("BF4DB", "https://bf4db.com/player/search?query=%player_name%"));
+
 
             this.PluginMaxRuntime_s = 59;
             this.PluginMaxRuntime_m = 0;
