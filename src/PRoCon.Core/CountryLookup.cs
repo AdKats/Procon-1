@@ -92,6 +92,20 @@ namespace MaxMind
             }
             return lookupCountryCode(addr);
         }
+        
+        public string lookupCountryCodeGeoIpFile(string str)
+        {
+            IPAddress addr;
+            try
+            {
+                addr = IPAddress.Parse(str);
+            }
+            catch (FormatException e)
+            {
+                return "--";
+            }
+            return lookupCountryCodeGeoIpFile(addr);
+        }
 
         private long addrToNum(IPAddress addr)
         {
@@ -155,6 +169,16 @@ namespace MaxMind
             return IPs[addr.ToString()].CountryCode;
         }
 
+        public string lookupCountryCodeGeoIpFile(IPAddress addr)
+        {
+            if (!IPs.ContainsKey(addr.ToString()))
+            {
+                return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            }
+
+            return IPs[addr.ToString()].CountryCode;
+        }
+
         public string lookupCountryName(string str)
         {
             IPAddress addr;
@@ -167,6 +191,20 @@ namespace MaxMind
                 return "N/A";
             }
             return lookupCountryName(addr);
+        }
+
+        public string lookupCountryNameGeoIpFile(string str)
+        {
+            IPAddress addr;
+            try
+            {
+                addr = IPAddress.Parse(str);
+            }
+            catch (FormatException)
+            {
+                return "N/A";
+            }
+            return lookupCountryNameGeoIpFile(addr);
         }
 
         public string lookupCountryName(IPAddress addr)
@@ -182,6 +220,16 @@ namespace MaxMind
                     // If that fails, fall back to the outdated stuff.
                     return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
                 }
+            }
+
+            return IPs[addr.ToString()].CountryName;
+        }
+
+        public string lookupCountryNameGeoIpFile(IPAddress addr)
+        {
+            if (!IPs.ContainsKey(addr.ToString()))
+            {
+                return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
             }
 
             return IPs[addr.ToString()].CountryName;
