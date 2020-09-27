@@ -902,6 +902,9 @@ namespace PRoCon.Core
 
                         stwConfig.WriteLine("procon.private.options.enablePluginDebugging {0}", this.OptionsSettings.EnablePluginDebugging);
 
+                        stwConfig.WriteLine("procon.private.options.UseGeoIpFileOnly {0}", this.OptionsSettings.UseGeoIpFileOnly);
+                        stwConfig.WriteLine("procon.private.options.BlockRssFeedNews {0}", this.OptionsSettings.BlockRssFeedNews);
+
                         foreach (PRoConClient prcClient in this.Connections)
                         {
 
@@ -1400,6 +1403,24 @@ namespace PRoCon.Core
                 if (bool.TryParse(lstWords[1], out blEnabled) == true)
                 {
                     this.OptionsSettings.AllowAnonymousUsageData = blEnabled;
+                }
+            }
+            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.UseGeoIpFileOnly", true) == 0 && objSender == this)
+            {
+                bool blEnabled = false;
+
+                if (bool.TryParse(lstWords[1], out blEnabled) == true)
+                {
+                    this.OptionsSettings.UseGeoIpFileOnly = blEnabled;
+                }
+            }
+            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.BlockRssFeedNews", true) == 0 && objSender == this)
+            {
+                bool blEnabled = false;
+
+                if (bool.TryParse(lstWords[1], out blEnabled) == true)
+                {
+                    this.OptionsSettings.BlockRssFeedNews = blEnabled;
                 }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.consoleLogging", true) == 0 && objSender == this)
@@ -2669,22 +2690,24 @@ namespace PRoCon.Core
 
         public void UpdateRss()
         {
+			if (this.OptionsSettings.BlockRssFeedNews == true)
+			{
+				// Begin RSS Update
+				if (this.BeginRssUpdate != null)
+				{
+					this.BeginRssUpdate(this);
+				}
 
-            // Begin RSS Update
-            if (this.BeginRssUpdate != null)
-            {
-                this.BeginRssUpdate(this);
-            }
+				CDownloadFile downloadRssFeed = new CDownloadFile("https://myrcon.net/rss/1-procon-news.xml/");
+				downloadRssFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadComplete);
+				downloadRssFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadError);
+				downloadRssFeed.BeginDownload();
 
-            CDownloadFile downloadRssFeed = new CDownloadFile("https://myrcon.net/rss/1-procon-news.xml/");
-            downloadRssFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadComplete);
-            downloadRssFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadError);
-            downloadRssFeed.BeginDownload();
-
-            CDownloadFile downloadPromoFeed = new CDownloadFile("https://myrcon.com/procon/streams/banners/format/xml");
-            downloadPromoFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadComplete);
-            downloadPromoFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadError);
-            downloadPromoFeed.BeginDownload();
+				CDownloadFile downloadPromoFeed = new CDownloadFile("https://myrcon.com/procon/streams/banners/format/xml");
+				downloadPromoFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadComplete);
+				downloadPromoFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadError);
+				downloadPromoFeed.BeginDownload();
+			}
         }
 
         private void downloadRssFeed_DownloadComplete(CDownloadFile cdfSender)
@@ -2772,7 +2795,14 @@ namespace PRoCon.Core
 
                 if (a_strSplitIP.Length >= 1)
                 {
-                    strReturnCode = this.m_clIpToCountry.lookupCountryCode(a_strSplitIP[0]).ToLower();
+                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
+                    {
+                        strReturnCode = this.m_clIpToCountry.lookupCountryCodeGeoIpFile(a_strSplitIP[0]).ToLower();
+                    }
+                    else
+                    {
+                        strReturnCode = this.m_clIpToCountry.lookupCountryCode(a_strSplitIP[0]).ToLower();
+                    }
                     strReturnCode = (String.Compare(strReturnCode, "--", true) == 0) ? "unknown" : strReturnCode;
                 }
             }
@@ -2791,9 +2821,19 @@ namespace PRoCon.Core
 
                 if (a_strSplitIP.Length >= 1)
                 {
-                    strReturnName = this.m_clIpToCountry.lookupCountryName(a_strSplitIP[0]);
+                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
+                    {
+                        strReturnName = this.m_clIpToCountry.lookupCountryNameGeoIpFile(a_strSplitIP[0]);
+                    }
+                    else
+                    {
+                        strReturnName = this.m_clIpToCountry.lookupCountryName(a_strSplitIP[0]);
+                    }
                 }
             }
+
+            return strReturnName;
+        }
 
             return strReturnName;
         }
@@ -3079,7 +3119,6 @@ namespace PRoCon.Core
 
         private void ReconnectVersionChecker()
         {
-            this.SendUsageData();
             // Send a report naow, next in 30 mins.
             if (this.m_blInitialUsageDataSent == false && this.OptionsSettings.AllowAnonymousUsageData == true)
             {
