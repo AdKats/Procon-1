@@ -222,7 +222,8 @@ namespace PRoCon.Controls
 
             this.cboEndRound.SelectedIndex = 0;
 
-            this.updateDeveloperUids();
+            // not necessary anymore
+            //this.updateDeveloperUids();
         }
 
         // If we disconnect clear the player list so it's fresh on reconnection.
@@ -1218,6 +1219,16 @@ namespace PRoCon.Controls
                                 {
                                     playerListItem.ForeColor = Color.LightSkyBlue;
                                     playerListItem.SubItems["type"].Text = this.Language.GetDefaultLocalized("Plugin Developer", "uscPlayerListPanel.lsvPlayers.Type.PluginDeveloper", null);
+                                }
+                                else if (this.Client.ReservedSlotList.Contains(cpiPlayer.SoldierName))
+                                {
+                                    playerListItem.ForeColor = Color.FromArgb(0,200,200);
+                                    playerListItem.SubItems["type"].Text = "Reserved Slot";
+                                }
+                                else if (playerListItem.ForeColor != SystemColors.WindowText)
+                                {
+                                    // reserver slot players are colored in player list panel
+                                    playerListItem.ForeColor = SystemColors.WindowText;
                                 }
                             }
 
