@@ -2835,9 +2835,6 @@ namespace PRoCon.Core
             return strReturnName;
         }
 
-            return strReturnName;
-        }
-
         #endregion
 
         #region Accounts
