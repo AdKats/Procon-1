@@ -12,6 +12,19 @@ Are you experiencing troubles while using Procon, would like to suggest a new fe
 
 If you are looking for a list of available plugins, head over to the [plugins section](https://myrcon.net/index.php?/forum/9-plugins/ "Procon 1 plugins") of our forums.
 
+### 1.5.3.4 to 1.5.3.5 ###
+#### Core ####
+- Added ability to disable the new API check for player country info
+- Updated GEOIP database file
+- Removed usage sending stats
+- Added EZRCON ad banner
+
+If you are upgrading then you may need to add these two lines to your existing installation in the file `procon.cfg`. To enable these options just change `False` to `True`.
+
+```
+procon.private.options.UseGeoIpFileOnly False
+procon.private.options.BlockRssFeedNews False
+```
 
 ### 1.5.3.3 to 1.5.3.4 ###
 #### Core ####
@@ -54,7 +67,6 @@ If you are looking for a list of available plugins, head over to the [plugins se
 
 #### Default plugins ####
 - BFHL compatibility
-
 
 ## Credits & contributions ##
 Procon and the Procon layer are developed by [Myrcon](https://myrcon.net "Un-Official homepage of Myrcon").

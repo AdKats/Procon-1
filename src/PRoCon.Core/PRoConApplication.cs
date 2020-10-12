@@ -845,8 +845,6 @@ namespace PRoCon.Core
                         stwConfig.WriteLine("procon.private.options.minimizetotray {0}", this.OptionsSettings.MinimizeToTray);
                         stwConfig.WriteLine("procon.private.options.closetotray {0}", this.OptionsSettings.CloseToTray);
 
-                        stwConfig.WriteLine("procon.private.options.allowanonymoususagedata {0}", this.OptionsSettings.AllowAnonymousUsageData);
-
                         stwConfig.WriteLine("procon.private.options.runPluginsInSandbox {0}", this.OptionsSettings.RunPluginsInTrustedSandbox);
                         stwConfig.WriteLine("procon.private.options.allowAllODBCConnections {0}", this.OptionsSettings.AllowAllODBCConnections);
                         stwConfig.WriteLine("procon.private.options.allowAllSmtpConnections {0}", this.OptionsSettings.AllowAllSmtpConnections);
@@ -1394,15 +1392,6 @@ namespace PRoCon.Core
                 if (bool.TryParse(lstWords[1], out blEnabled) == true)
                 {
                     this.OptionsSettings.AutoCheckGameConfigsForUpdates = blEnabled;
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.allowanonymoususagedata", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AllowAnonymousUsageData = blEnabled;
                 }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.UseGeoIpFileOnly", true) == 0 && objSender == this)
@@ -2280,15 +2269,6 @@ namespace PRoCon.Core
                     this.OptionsSettings.AutoCheckGameConfigsForUpdates = blEnabled;
                 }
             }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.allowanonymoususagedata", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AllowAnonymousUsageData = blEnabled;
-                }
-            }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.consoleLogging", true) == 0 && objSender == this)
             {
                 bool blEnabled = false;
@@ -2910,9 +2890,7 @@ namespace PRoCon.Core
         #region Reconnection and Version Timer
 
         private int m_iVersionTicks = 0;
-        private int m_iUsageDataTicks = 0;
         private bool m_blInitialVersionCheck = false;
-        private bool m_blInitialUsageDataSent = false;
         private DateTime m_dtDayCheck = DateTime.Now;
 
         private XmlNode CreateNode(XmlDocument document, string key, string value)
@@ -3009,121 +2987,8 @@ namespace PRoCon.Core
             return FrameworkName;
         }
 
-        private void SendUsageData()
-        {
-
-            XmlDocument document = new XmlDocument();
-            XmlNode usage = document.CreateElement("usage");
-
-            XmlNode general = document.CreateElement("general");
-            general.AppendChild(this.CreateNode(document, "version", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-            general.AppendChild(this.CreateNode(document, "language", this.CurrentLanguage.FileName));
-            general.AppendChild(this.CreateNode(document, "accounts", this.AccountsList.Count.ToString()));
-            general.AppendChild(this.CreateNode(document, "uptime", (DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds.ToString()));
-            usage.AppendChild(general);
-
-            XmlNode environment = document.CreateElement("environment");
-            environment.AppendChild(this.CreateNode(document, "platform", "desktop"));
-            environment.AppendChild(this.CreateNode(document, "framework_name", this.GetFrameworkName()));
-            environment.AppendChild(this.CreateNode(document, "max_framework_version", this.HighestNetFrameworkVersion().ToString()));
-            usage.AppendChild(environment);
-
-            XmlNode connections = document.CreateElement("connections");
-            foreach (PRoConClient client in this.Connections)
-            {
-                XmlNode connection = document.CreateElement("connection");
-                connection.AppendChild(this.CreateNode(document, "ip", client.HostName));
-                connection.AppendChild(this.CreateNode(document, "port", client.Port.ToString()));
-                connection.AppendChild(this.CreateNode(document, "game", client.GameType));
-                connection.AppendChild(this.CreateNode(document, "servername", ""));
-                connection.AppendChild(this.CreateNode(document, "is_layer_connection", client.IsPRoConConnection.ToString()));
-
-                XmlNode layer = document.CreateElement("layer");
-                layer.AppendChild(this.CreateNode(document, "port", client.Layer.ListeningPort.ToString()));
-                layer.AppendChild(this.CreateNode(document, "is_enabled", client.Layer.IsOnline.ToString()));
-                connection.AppendChild(layer);
-
-                XmlNode plugins = document.CreateElement("plugins");
-
-                if (client.PluginsManager != null)
-                {
-                    foreach (string className in new List<string>(client.PluginsManager.Plugins.LoadedClassNames))
-                    {
-                        XmlNode plugin = document.CreateElement("plugin");
-
-                        PRoCon.Core.Plugin.PluginDetails details = client.PluginsManager.GetPluginDetails(className);
-
-                        plugin.AppendChild(this.CreateNode(document, "uid", details.ClassName));
-                        plugin.AppendChild(this.CreateNode(document, "name", details.Name));
-                        plugin.AppendChild(this.CreateNode(document, "version", details.Version));
-                        plugin.AppendChild(this.CreateNode(document, "is_enabled", client.PluginsManager.Plugins.EnabledClassNames.Contains(className).ToString()));
-
-                        plugins.AppendChild(plugin);
-                    }
-                }
-
-                connection.AppendChild(plugins);
-
-                connections.AppendChild(connection);
-            }
-
-            usage.AppendChild(connections);
-
-            document.AppendChild(usage);
-
-            /*
-             * Output should show the user everything regarding their procon instance that has been
-             * sent to myrcon.com
-             */
-            document.Save("usage.xml");
-
-            // Now append the license key for hosts and such so it's not saved to usage.xml
-            // and exposed to the user.
-            general.AppendChild(this.CreateNode(document, "licensekey", this.LicenseKey));
-
-            try
-            {
-                // Create a request using a URL that can receive a post. 
-                WebRequest request = WebRequest.Create("https://api.myrcon.net/procon/usage");
-                request.Method = "POST";
-
-                string postData = document.OuterXml;
-                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-                request.ContentType = "text/xml";//"application/x-www-form-urlencoded";
-                request.ContentLength = byteArray.Length;
-
-                Stream dataStream = request.GetRequestStream();
-                dataStream.Write(byteArray, 0, byteArray.Length);
-                dataStream.Close();
-
-                // Get the response.
-                WebResponse response = request.GetResponse();
-                Console.WriteLine(((HttpWebResponse)response).StatusDescription);
-                dataStream = response.GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string responseFromServer = reader.ReadToEnd();
-
-                reader.Close();
-                dataStream.Close();
-                response.Close();
-            }
-            catch (Exception)
-            {
-                // Say nada
-            }
-        }
-
         private void ReconnectVersionChecker()
         {
-            // Send a report naow, next in 30 mins.
-            if (this.m_blInitialUsageDataSent == false && this.OptionsSettings.AllowAnonymousUsageData == true)
-            {
-                this.SendUsageData();
-
-                this.m_blInitialUsageDataSent = true;
-            }
-
             if (this.m_blInitialVersionCheck == false && this.OptionsSettings.AutoCheckDownloadUpdates == true)
             {
                 this.AutoUpdater.CheckVersion();
@@ -3189,17 +3054,7 @@ namespace PRoCon.Core
 
                 this.m_iVersionTicks = 0;
             }
-
-            // Still sends usage data every 30 minutes
-            if (this.m_iUsageDataTicks >= 90 && this.OptionsSettings.AllowAnonymousUsageData == true)
-            {
-
-                this.SendUsageData();
-
-                this.m_iUsageDataTicks = 0;
-            }
-
-            this.m_iUsageDataTicks++;
+           
             this.m_iVersionTicks++;
         }
 

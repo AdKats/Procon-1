@@ -52,9 +52,6 @@ namespace PRoCon.Console
                 {
                     application = new PRoConApplication(true, args);
 
-                    // Note: The license states usage data must be enabled for procon.console.exe support
-                    application.OptionsSettings.AllowAnonymousUsageData = true;
-
                     System.Console.WriteLine("Procon Frostbite");
                     System.Console.WriteLine("================");
                     System.Console.WriteLine("By executing this application you agree to the license available at:");

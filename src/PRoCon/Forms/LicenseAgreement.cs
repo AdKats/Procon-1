@@ -196,7 +196,6 @@ For example, an APHP that has hosted an average of (210) layers per month would 
         {
             this.m_app.LicenseAgreements.Add(this.m_agreementRevision);
             this.m_app.SaveGspSettings();
-            this.m_app.OptionsSettings.AllowAnonymousUsageData = this.chkAgreeUsageReports.Checked;
 
             this.Close();
         }

@@ -27,7 +27,6 @@
             this.btnAgree = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.rtbLicense = new System.Windows.Forms.RichTextBox();
-            this.chkAgreeUsageReports = new System.Windows.Forms.CheckBox();
             this.lnkDownloadPdf = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
@@ -64,18 +63,7 @@
             this.rtbLicense.Size = new System.Drawing.Size(769, 465);
             this.rtbLicense.TabIndex = 3;
             this.rtbLicense.Text = "";
-            // 
-            // chkAgreeUsageReports
-            // 
-            this.chkAgreeUsageReports.AutoSize = true;
-            this.chkAgreeUsageReports.Checked = true;
-            this.chkAgreeUsageReports.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAgreeUsageReports.Location = new System.Drawing.Point(258, 502);
-            this.chkAgreeUsageReports.Name = "chkAgreeUsageReports";
-            this.chkAgreeUsageReports.Size = new System.Drawing.Size(397, 17);
-            this.chkAgreeUsageReports.TabIndex = 4;
-            this.chkAgreeUsageReports.Text = "I\'m awesome and wish to send anonymous usage reports to https://myrcon.net";
-            this.chkAgreeUsageReports.UseVisualStyleBackColor = true;
+            
             // 
             // lnkDownloadPdf
             // 
@@ -95,7 +83,6 @@
             this.ClientSize = new System.Drawing.Size(793, 535);
             this.ControlBox = false;
             this.Controls.Add(this.lnkDownloadPdf);
-            this.Controls.Add(this.chkAgreeUsageReports);
             this.Controls.Add(this.rtbLicense);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnAgree);
@@ -117,7 +104,6 @@
         private System.Windows.Forms.Button btnAgree;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.RichTextBox rtbLicense;
-        private System.Windows.Forms.CheckBox chkAgreeUsageReports;
         private System.Windows.Forms.LinkLabel lnkDownloadPdf;
     }
 }

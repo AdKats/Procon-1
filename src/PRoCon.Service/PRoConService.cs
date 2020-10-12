@@ -51,22 +51,6 @@ namespace PRoCon.Service
                     }
                 }
             }
-
-            if (PRoConApplication.IsProcessOpen() == false)
-            {
-                try
-                {
-                    application = new PRoConApplication(true, args);
-                    // Note: The license states usage data must be enabled for procon.console.exe support
-                    application.OptionsSettings.AllowAnonymousUsageData = true;
-                    application.Execute();
-                    GC.Collect();
-                }
-                catch (Exception e)
-                {
-                    FrostbiteConnection.LogError("PRoCon.Service.exe", "", e);
-                }
-            }
         }
 
         protected override void OnStop()

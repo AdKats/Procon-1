@@ -26,6 +26,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using PRoCon.Core.Options;
 
 namespace MaxMind
 {
@@ -157,6 +158,11 @@ namespace MaxMind
             {
                 try
                 {
+                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
+                    {
+                        return lookupCountryCodeGeoIpFile(addr);
+                    }
+                    
                     return ProxyCheckRequest(addr).CountryCode;
                 }
                 catch (Exception)
@@ -207,12 +213,23 @@ namespace MaxMind
             return lookupCountryNameGeoIpFile(addr);
         }
 
+        public OptionsSettings OptionsSettings
+        {
+            get;
+            private set;
+        }
+
         public string lookupCountryName(IPAddress addr)
         {
             if (!IPs.ContainsKey(addr.ToString()))
             {
                 try
                 {
+                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
+                    {
+                        return lookupCountryNameGeoIpFile(addr);
+                    }
+
                     return ProxyCheckRequest(addr).CountryName;
                 }
                 catch (Exception)

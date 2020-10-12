@@ -29,7 +29,7 @@ namespace PRoCon
 
             Program.Args = args;
 
-            bool dotNetCheck = CheckNetVersion("3.5");
+            bool dotNetCheck = CheckNetVersion("4");
 
             if (PRoConApplication.IsProcessOpen() == false && dotNetCheck == true)
             {

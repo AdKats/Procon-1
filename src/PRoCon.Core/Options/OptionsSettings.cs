@@ -39,8 +39,6 @@ namespace PRoCon.Core.Options
         public event OptionsEnabledHandler ShowCfmMsgRoundRestartNextChanged;
         public event OptionsEnabledHandler ShowDICESpecialOptionsChanged;
 
-        public event OptionsEnabledHandler AllowAnonymousUsageDataChanged;
-
         public event OptionsEnabledHandler UseGeoIpFileOnlyChanged;
         public event OptionsEnabledHandler BlockRssFeedNewsChanged;
 
@@ -468,25 +466,6 @@ namespace PRoCon.Core.Options
             }
         }
 
-        private bool m_isAnonymousUsageDataEnabled;
-        public bool AllowAnonymousUsageData
-        {
-            get
-            {
-                return this.m_isAnonymousUsageDataEnabled;
-            }
-            set
-            {
-                this.m_isAnonymousUsageDataEnabled = value;
-                this.m_praApplication.SaveMainConfig();
-
-                if (this.AllowAnonymousUsageDataChanged != null)
-                {
-                    this.AllowAnonymousUsageDataChanged(value);
-                }
-            }
-        }
-
         private bool m_isUseGeoIpFileOnlyEnabled;
         public bool UseGeoIpFileOnly
         {
@@ -720,7 +699,6 @@ namespace PRoCon.Core.Options
             this.m_praApplication = praApplication;
             this.AutoCheckDownloadUpdates = true;
             this.AutoCheckGameConfigsForUpdates = true;
-            this.AllowAnonymousUsageData = true;
 
             this.EnableAdminReason = false;
 
