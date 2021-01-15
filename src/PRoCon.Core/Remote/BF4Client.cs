@@ -173,6 +173,7 @@ namespace PRoCon.Core.Remote
 
             #region player.* / squad.* commands
 
+            ResponseDelegates.Add("player.onAuthenticated", DispatchPlayerOnAuthenticatedRequest);
             ResponseDelegates.Add("player.idleDuration", DispatchPlayerIdleDurationResponse);
             ResponseDelegates.Add("player.isAlive", DispatchPlayerIsAliveResponse);
             ResponseDelegates.Add("player.ping", DispatchPlayerPingResponse);
@@ -1922,6 +1923,23 @@ namespace PRoCon.Core.Remote
         #endregion
 
         #region R-38 player-squad command Response Handlers
+
+        #region player.onAuthenticated
+        
+        protected override void DispatchPlayerOnAuthenticatedRequest(FrostbiteConnection sender, Packet cpRequestPacket)
+        {
+            base.DispatchPlayerOnAuthenticatedRequest(sender, cpRequestPacket);
+
+            if (cpRequestPacket.Words.Count >= 2)
+            {
+                if (PlayerJoin != null)
+                {
+                    this.PlayerJoin(this, cpRequestPacket.Words[1]);
+                }
+            }
+        }
+        
+        #endregion
 
         #region player.idleDuration
 
