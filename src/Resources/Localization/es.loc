@@ -1,0 +1,2397 @@
+///////////////////////////////////
+// File information displayed in Options window.
+///////////////////////////////////
+file.Language=Español (España)
+file.flag=es
+file.author=C4BR3R4 v1.5.3.5 (18/04/2021)
+file.authorwebsite=http://c4br3r4.es/index.php?topic=15.0
+
+// ISO 3166-1 alpha-2 - Found at http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+// Will likely be the same as file.flag
+file.countrycode=es
+
+
+///////////////////////////////////
+// Global - Used in multiple areas of the interface.
+///////////////////////////////////
+global.cancel=Cancelar
+global.close=Cerrar
+
+global.Seconds.Singular=Segundo
+global.Seconds.Plural=Segundos
+global.Seconds.Short=s
+global.Minutes.Singular=Minuto
+global.Minutes.Plural=Minutos
+global.Minutes.Short=m
+global.Hours.Singular=Hora
+global.Hours.Plural=Horas
+global.Hours.Short=h
+global.Days.Singular=Día
+global.Days.Plural=Días
+global.Days.Short=d
+global.Weeks.Singular=Semana
+global.Weeks.Plural=Semanas
+global.Weeks.Short=S
+global.Months.Singular=Mes
+global.Months.Plural=Meses
+global.Months.Short=M
+global.Years.Singular=Año
+global.Years.Plural=Años
+global.Years.Short=A
+
+// BFHL Teams
+//////////////
+
+global.conquest.neutral=Neutro
+global.conquest.cop=Policías
+global.conquest.crim=Criminales
+
+global.tdm.neutral=Neutral
+global.tdm.cop=Policías
+global.tdm.crim=Criminales
+
+global.hostage.neutral=Neutro
+global.hostage.cop=Policías
+global.hostage.crim=Criminales
+
+global.hit.neutral=Neutro
+global.hit.cop=Policías
+global.hit.crim=Criminales
+
+global.heist.neutral=Neutro
+global.heist.cop=Policías
+global.heist.crim=Criminales
+
+global.hotwire.neutral=Neutro
+global.hotwire.cop=Policías
+global.hotwire.crim=Criminales
+
+global.bm.neutral=Neutro
+global.bm.cop=Policías
+global.bm.crim=Criminales
+
+global.cashgrab.neutral=Neutro
+global.cashgrab.cop=Policías
+global.cashgrab.crim=Criminales
+
+global.sqheist.neutral=Neutro
+global.sqheist.cop=Policías
+global.sqheist.crim=Criminales
+
+// BFBC2 Squads
+///////////////
+
+global.Squad0=Ninguno
+global.Squad1=Alfa
+global.Squad2=Bravo
+global.Squad3=Charlie
+global.Squad4=Delta
+global.Squad5=Echo
+global.Squad6=Foxtrot
+global.Squad7=Golf
+global.Squad8=Hotel
+global.Squad9=India
+global.Squad10=Juliet
+global.Squad11=Kilo
+global.Squad12=Lima
+global.Squad13=Mike
+global.Squad14=November
+global.Squad15=Oscar
+global.Squad16=Papa
+global.Squad17=Quebec
+global.Squad18=Romeo
+global.Squad19=Sierra
+global.Squad20=Tango
+global.Squad21=Uniform
+global.Squad22=Victor
+global.Squad23=Whiskey
+global.Squad24=Xray
+global.Squad25=Yankee
+global.Squad26=Zulu
+global.Squad27=Patrulla 28
+global.Squad28=Patrulla 29
+global.Squad29=Patrulla 30
+global.Squad30=Patrulla 31
+global.Squad31=Patrulla 32
+global.Squad32=Patrulla 33
+
+// BFBC2 Teams
+///////////////
+
+global.conquest.neutral=Neutro
+global.conquest.us=Equipo EEUU
+global.conquest.ru=Equipo RUSO
+global.conquest.nva=Equipo NorVietnamita
+global.conquest.cn=Equipo Chino
+
+global.rush.neutral=Neutro
+global.rush.defenders=Defensores
+global.rush.attackers=Atacantes
+
+// BF-3 Teams
+global.tdm.neutral=Neutro
+global.tdm.us=Equipo Americano
+global.tdm.ru=Equipo Ruso
+global.tdm.cn=Equipo Chino
+
+// MoHW Teams
+global.mohw.neutral=Neutro
+global.mohw.home=Propio
+global.mohw.away=Rival
+
+// MOH Teams
+//////////////
+
+global.combatmission.neutral=Neutro
+global.combatmission.coalition=Coalición
+global.combatmission.opfor=Fuerzas Opositoras
+
+global.sectorcontrol.neutral=Neutro
+global.sectorcontrol.coalition=Coalición
+global.sectorcontrol.opfor=Fuerzas Opositoras
+
+global.teamassault.neutral=Neutro
+global.teamassault.coalition=Coalición
+global.teamassault.opfor=OPFOR
+
+global.objectiveraid.neutral=Neutro
+global.objectiveraid.coalition=Coalición
+global.objectiveraid.opfor=OPFOR
+
+global.Kits.None=Ninguno
+global.Kits.Assault=Asalto
+global.Kits.Specialist=Op. Especiales
+global.Kits.Demolition=Ingeniero
+global.Kits.Support=Médico
+global.Kits.Recon=Francotirador
+
+global.Kits.None.Short=n
+global.Kits.Assault.Short=A
+global.Kits.Specialist.Short=E
+global.Kits.Demolition.Short=I
+global.Kits.Support.Short=M
+global.Kits.Recon.Short=F
+
+// Thanks to MaydaX at www.pbbans.com for supplying the weapons and specializations information, cheers mate.
+global.Specialization.sp_vehmosens=Paquete de Guerra Electrónica
+global.Specialization.sp_harveharm=Mejora de Armadura Activa
+global.Specialization.sp_vreload=Paquete de Recarga Rápida
+global.Specialization.sp_vdamage=Paquete de Misiles Mejorados
+global.Specialization.sp_tnsmk=Paquete de Medidas de Humo
+global.Specialization.sp_tnzm=Paquete de Ópticas de Largo Alcance
+global.Specialization.sp_coaxmg=Paquete de Armas Alternativo
+
+global.Specialization.sp_sprint=Equipamiento Ligero de Combate
+global.Specialization.sp_bodarm=Chaleco Antibalas Cerámico
+global.Specialization.sp_buldmplus=Munición Mágnum
+global.Specialization.sp_expdmplus=Demolición Mejorada
+global.Specialization.sp_assault_a=Empuñadura Delantera Ajustable
+global.Specialization.sp_shotgun_c=Shotgun Magazine Upgrade
+global.Specialization.sp_shotgun_s=12 Gauge Sabot Rounds
+global.Specialization.sp_expsupp=Explosives Leg Pouch
+global.Specialization.sp_assault_s=4x Rifle Scope
+global.Specialization.sp_ammsupp=Bandolera de Munición
+global.Specialization.sp_grsupp=Chaleco de Granadas
+
+global.Specialization.sp_medheal=Botiquín del Médico
+global.Specialization.sp_medradius=Mejora del Rango de Acción del Botiquín
+global.Specialization.sp_sczmplus=Mirilla de Largo Alcance 12x
+global.Specialization.sp_spscope=Mirilla Localizadora
+
+global.Specialization.sp_assault_r=Red Dot Sight (Assault)
+global.Specialization.sp_lmg_aim=Marksman LMG Training
+global.Specialization.sp_lmg_r=LMG Red Dot Sight
+global.Specialization.sp_smg_a=Marksman SMG Training
+global.Specialization.sp_smg_r=SMG Red Dot Sight
+global.Specialization.sp_smg_s=4x Rifle Scipe (SMG)
+global.Specialization.sp_sniper_s=4x Rifle Scope (Francotirador)
+global.Specialization.sp_sniper_r=Red Dot Sight (Francotirador)
+
+global.Weapons.aek971=AEK-971 Vintovka
+global.Weapons.xm8=Prototipo XM8
+global.Weapons.f2000=F2000 Asalto
+global.Weapons.aug=STG.77 AUG
+global.Weapons.an94=AN-94 Abakan
+global.Weapons.m416=M416
+global.Weapons.m16k=M16 SA
+global.Weapons.m16=M16
+global.Weapons.40mmgl=Granada de 40mm
+global.Weapons.40mmsg=Escopeta de 40mm
+global.Weapons.40mmsmk=Granada de Humo de 40mm
+global.Weapons.9a91=9A-91 Avtomat
+global.Weapons.scar=Carabina SCAR-L
+global.Weapons.xm8c=XM8 Compacta
+global.Weapons.aks74u=AKS-74u
+global.Weapons.uzi=UZI
+global.Weapons.pp2000=PP2000 Avtomat
+global.Weapons.ump=UMP-45
+global.Weapons.umpk=UMP-45 SA
+global.Weapons.rpg7=RPG-7 AT
+global.Weapons.m2cg=M2 Carl Gustav AT
+global.Weapons.m136=M136 AT4
+global.Weapons.atm-00=Mina Anti-Tanque
+global.Weapons.pkm=PKM LMG
+global.Weapons.m249=M249 SAW
+global.Weapons.qju88=LMG Tipo 88
+global.Weapons.m60=M60 LMG
+global.Weapons.xm8 lmg=XM8 LMG
+global.Weapons.mg36=MG36
+global.Weapons.mg3=MG3
+global.Weapons.mg3k=MG3 SA
+global.Weapons.defib=Desfibrilador
+global.Weapons.m24=M24 Francotirador
+global.Weapons.qbu88=Francotirador Tipo 88
+global.Weapons.sv98=SV98 Snayperskaya
+global.Weapons.svu=SVU Snaiperskaya Short
+global.Weapons.gol=Francotirador Magnum GOL 
+global.Weapons.vss=VSS Snaiperskaya Special
+global.Weapons.m95=Francotirador M95
+global.Weapons.m95k=M95 SA Sniper
+global.Weapons.mrtr-5=Ataque de Morteros
+global.Weapons.870mcs=870 Combat
+global.Weapons.s20k=Saiga 20K Semi
+global.Weapons.mk14ebr=Rifle de Batalla Mejorado Mk 14 Mod 0
+global.Weapons.g3=G3
+global.Weapons.m1a1 thompson=WWII M1A1 Thompson
+global.Weapons.garand=WWII M1 Garand
+global.Weapons.dtn-4=Explosivo C4
+global.Weapons.m9=Pistola M9
+global.Weapons.mp443=MP-443 Grach
+global.Weapons.m1911=WWII M1911 .45
+global.Weapons.mp412=MP-412 REX
+global.Weapons.m9-3=M93R Burst
+global.Weapons.trcr-357=Dardo Trazador
+global.Weapons.hg-2=Granada de Mano
+global.Weapons.ns2000=Neostead 2000 Combat
+global.Weapons.usas12=USAS-12 Auto
+global.Weapons.d2.0=Destrucción 2.0
+global.Weapons.pwr-700=Herramienta de Reparación
+global.Weapons.spas12=SPAS-12 Combat
+global.Weapons.knv-1=Cuchillo de Combate
+global.Weapons.life-33=Botiquín
+global.Weapons.ammo-2=Caja de Munición
+global.Weapons.mtn-55=Sensor de Movimiento
+
+// Vehicles
+global.Weapons.roadkill=Atropello
+
+// Vehicles.Stationary
+global.Weapons.zu23#cannons=Cañón Anti-Aéreo ZU-23-2
+global.Weapons.vads#autocannon=VADS Anti-Air Autocannon
+
+global.Weapons.korn#missile launcher=Lanzamisiles KORN
+global.Weapons.tow2#launcher=Lanzamisiles TOW2
+global.Weapons.x312#gun=Ametralladora Pesada XM312
+global.Weapons.kord#gun=Ametralladora Pesada KORD
+global.Weapons.x307#gun=Lanzagranadas X307
+
+// Vehicles.Water
+global.Weapons.pblb#gmg=Lanzagranadas PBLB XM307
+
+// Vehicles.Air
+global.Weapons.mi28#gunnercannnon=Cañón Artillero Mi-28 Havoc
+global.Weapons.mi28#dumbfirerocket starboard=Cohete Dumb-Fire Mi-28 Havoc
+global.Weapons.mi28#dumbfirerocket port=Cohete Dumb-Firere Mi-28 Havoc
+global.Weapons.mi28#tow=Misil TOW Mi-28
+
+global.Weapons.mi24#gunnercannon=Cañón Artillero Mi-24 Hind
+
+global.Weapons.uav1#bomb=Misil de UAV
+global.Weapons.uav1#mg=Ametralladora de UAV
+global.Weapons.uav1#smoke=Humo de UAV
+
+global.Weapons.ah64#heli autocannon=Cañón Artillero AH-64 Apache
+global.Weapons.ah64#rocketpod right=Cohete Dumb-Fire AH-64 Apache
+global.Weapons.ah64#rocketpod left=Cohete Dumb-Fire AH-64 Apache
+global.Weapons.ah64#tow=Misil TOW AH-64 Apache
+
+global.Weapons.ah60#minigun left=Ametralladora UH-60 Blackhawk
+global.Weapons.ah60#minigun right=Ametralladora UH-60 Blackhawk
+
+// Vehicles.Land
+global.Weapons.t90r#maingun=Arma Principal T-90 MBT
+global.Weapons.t90r#coaxmg=Metralleta Coaxial T-90 MBT
+global.Weapons.t90r#remotegun=Artillero T-90 MBT
+
+global.Weapons.cobr#kord=Artillero Cobra 4WD
+
+global.Weapons.humv#gun=Artillero HMMWV 4WD
+
+global.Weapons.m1a2#maingun=Arma Principal M1A2 Abrams
+global.Weapons.m1a2#coaxmg=Ametralladora Coaxial M1A2 Abrams
+global.Weapons.m1a2#remotegun=Artillero M1A2 Abrams MBT
+
+global.Weapons.bmda#cannon=Antiaéreo BMD-3 AA Bakhcha ZU-23-2
+global.Weapons.bmda#gmg=Lanzagranadas BMD-3 AA Bakhcha
+global.Weapons.bmd3#pfw rearright=BMD-3
+global.Weapons.bmd3#pfw rearleft=Pasajero BMD-3
+
+global.Weapons.m3a3#ifvautocannon=Cañón Automático 25mm M3A3 Bradley
+global.Weapons.m3a3#tow=Misil TOW M3A3 Bradley
+global.Weapons.m3a3#remotemg=Artillero M3A3 Bradley
+global.Weapons.m3a3#pfw rearleft=Pasajero M3A3 Bradley
+global.Weapons.m3a3#pfw rearright=Pasajero M3A3 Bradley
+
+global.Weapons.bmd3#ifvautocannon=Cañón Automático 30mm BMD-3 Bakhcha
+global.Weapons.bmd3#tow=Misil TOW BMD-3 Bakhcha
+global.Weapons.bmd3#remotemg=Artillero BMD-3 Bakhcha
+// Passenger gunners covered in BMD-3 AA
+
+global.Weapons.vodn#kord=Artillero Vodnik 4WD
+
+global.Weapons.cavj#xm-307=CAVJ XM-307 Lanza Granadas
+global.Weapons.cavj#kord=CAVJ Escopeta
+
+// BFBC2 Vietnam Weapons
+///////////////////////////////////
+global.Weapons.m16a1v=M16
+global.Weapons.tt33v=TT-33
+global.Weapons.ak47v=AK-47
+global.Weapons.m79v=M79
+global.Weapons.m14v=M14
+global.Weapons.m2v=Lanzallamas M2
+
+// RPG-7 AT
+// 870 Combat
+// Combat Knife
+// global.Weapons.m1911=WWII M1911 .45
+// global.Weapons.m1a1 thompson=WWII M1A1 Thompson
+
+global.Weapons.mac10v=M10
+global.Weapons.ppshv=PPSh
+global.Weapons.uziv=UZI
+
+// Anti-Tank Mine
+global.Weapons.torchv=Soplete
+
+global.Weapons.m60v=M60 LMG
+global.Weapons.rpkv=RPK LMG
+global.Weapons.xm22v=XM22 LMG
+
+global.Weapons.syringev=Syringe
+
+global.Weapons.m21v=Francotirador M21
+global.Weapons.svdv=Francotirador SVD
+global.Weapons.m40v=Francotirador M40
+
+global.Weapons.tntv=TNT
+global.Weapons.mortarv=Mortar Strike
+
+global.Weapons.flamethrower=Lanzallamas
+
+global.Weapons.t54v#maincannon=T54 Main Gun
+global.Weapons.t54v#topgun=T54 Gunner
+
+global.Weapons.hueyv#rocketpod right=Huey Rocketpod
+global.Weapons.hueyv#rocketpod left=Huey Rocketpod
+global.Weapons.hueyv#m60=Huey M60 LMG
+
+global.Weapons.m151v#hmg=M151V Gunner
+
+global.Weapons.m48v#maincannon=M48 Main Gun
+global.Weapons.m48v#topgun=M48 Gunner
+
+global.Weapons.g69v#hmg=G69 Gunner
+global.Weapons.pbrv#lefthmg=Patrol Boat Gunner
+global.Weapons.pbrv#fronthmg=Patrol Boat Front Gunner
+
+global.Weapons.qlz8#qlz87=QLZ-87 automatic grenade launcher
+
+// Roadkill
+
+// MoH Weapons
+///////////////////////////////////
+
+global.Weapons.kill_msg_suicide=Suicide
+global.Weapons.h_axe=Axe
+global.Weapons.h_knife=Combat Knife
+global.Weapons.h_hg=Hand Grenade
+
+global.Weapons.h_m9=M9 Pistol
+global.Weapons.h_tariq=Tariq Pistol
+
+
+// Scorechains
+///////////////
+global.Weapons.h_artillery=Artillery Strike
+global.Weapons.h_artilleryteam2=Artillery Strike
+global.Weapons.h_a10=A10 Strafing Run
+global.Weapons.h_a10team2=A10 Strafing Run
+global.Weapons.h_fighter=Airstrike
+global.Weapons.h_fighterteam2=MiG Raid
+global.Weapons.h_mortar=Mortar Strike
+global.Weapons.h_mortarteam2=Mortar Strike
+global.Weapons.h_hellfire=Missile Attack
+global.Weapons.h_shturm=Missile Attack
+global.Weapons.h_rocket=Rocket Strike
+global.Weapons.h_rocketteam2=Rocket Strike
+global.Weapons.h_scud=Cruise Missile
+global.Weapons.h_tomahawk=Cruise Missile
+
+// Stationary (mountable)
+///////////////
+global.Weapons.korn=KORN Missile Launcher
+
+
+// OPFOR Assault
+///////////////
+
+global.Weapons.h_ak47=AK-47 Assault Rifle
+global.Weapons.h_m16=M16A4 Assault Rifle
+
+global.Weapons.h_m16rgl=M203 Grenade Launcher
+global.Weapons.h_ak47rgl=GP-25 Grenade Launcher
+
+global.Weapons.h_m249=M249 Light Machine Gun
+global.Weapons.h_pkm=PKM Light Machine Gun
+
+global.Weapons.h_f2000=F2000 Assault Rifle
+global.Weapons.h_f2000rgl=GL1 Grenade Launcher
+
+global.Weapons.h_m60=M60 LMG
+
+// Spec Ops
+//////////////
+
+global.Weapons.h_m4=M4A1 Carbine
+global.Weapons.h_aks74u=AKS-74U
+
+global.Weapons.h_870mcs=870mcs Combat Shotgun
+global.Weapons.h_toz194=TOZ-194 Combat Shotgun
+
+global.Weapons.h_at4=AT4 Rocket Launcher
+global.Weapons.h_rpg=RPG-7 Rocket Launcher
+
+global.Weapons.h_p90=P90 PDW
+
+global.Weapons.h_mp7=Heckler & Koch MP7
+
+// Sniper
+//////////////
+global.Weapons.h_m21=M21 Battle Rifle
+global.Weapons.h_svd=SVD Battle Rifle
+
+global.Weapons.h_ied=Improvised Explosive Device
+global.Weapons.h_c4=C4 Demolition Charge
+
+global.Weapons.h_m24=Rifle de Francotirador M24
+global.Weapons.h_sv98=Rifle de Francotirador SV-98
+
+global.Weapons.h_g3=G3 Battle Rifle
+
+global.Specialization.IGM_CUST_REDDOTSCOPE=Red dot sight
+global.Specialization.IGM_CUST_SILENCED=Suppressor
+global.Specialization.IGM_CUST_M21_SLOT1=Red dot sight
+global.Specialization.IGM_CUST_M21_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_M21_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_HPAMMO=Open-tip ammo
+global.Specialization.IGM_CUST_4XSCOPE=Combat scope
+global.Specialization.IGM_CUST_M24_SLOT1=Sniper Scope
+global.Specialization.IGM_CUST_M24_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_AMMO=Extra magazine
+global.Specialization.IGM_CUST_HPSCOPE=HP sniper scope
+global.Specialization.IGM_CUST_RANGEFINDER=Rangefinder
+global.Specialization.IGM_CUST_M24_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_870MCS_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_870MCS_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_870MCS_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_M4_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_M4_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_M4_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_TOZ194_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_TOZ194_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_TOZ194_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_SLUGSAMMO=Shotgun slugs
+global.Specialization.IGM_CUST_LASERSIGHT=Laser sight
+global.Specialization.IGM_CUST_AKS74U_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_AKS74U_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_AKS74U_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_M16_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_M16_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_M16_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_AK47_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_AK47_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_AK47_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_PKM_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_PKM_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_PKM_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_MUZZLEBRAKE=Muzzle brake
+global.Specialization.IGM_CUST_F2000_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_F2000_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_F2000_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_SV98_SLOT1=Sniper scope
+global.Specialization.IGM_CUST_SV98_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_SV98_SLOT3=Standard magazine
+global.Specialization.IGM_CUST_SVD_SLOT1=Iron Sights
+global.Specialization.IGM_CUST_SVD_SLOT2=Stock barrel
+global.Specialization.IGM_CUST_SVD_SLOT3=Standard magazine
+
+// BF-3 diffs
+global.Weapons.aek-971=AEK-971 Assault Rifle
+global.Weapons.aks-74u=AKS-74u Assault Rifle
+global.Weapons.an-94 abakan=AN-94 Abakan Assault Rifle
+global.Weapons.as val=AS Val Supressed Assault Rifle
+global.Weapons.damagearea=Damagearea
+global.Weapons.dao-12=DAO-12 Striker Shotgun
+global.Weapons.death=Death
+global.Weapons.fgm-148=FGM-148 Javelin
+global.Weapons.fim92=FIM-92 Stinger
+global.Weapons.glock18=Glock 18 Pistol
+global.Weapons.m1014=M1014 Semi-automatic Shotgun
+global.Weapons.m15 at mine=M15 Anti Tank Mine
+global.Weapons.m16a4=M16A4 Assault Rifle
+global.Weapons.m240=M240 Maschine Gun
+global.Weapons.m26mass=M26 MASS Shotgun
+global.Weapons.m27iar=M27 IAR 
+global.Weapons.m320=M320 Grenade luncher
+global.Weapons.m39=M39 Sniper Rifle
+global.Weapons.m40a5=M40A5 Sniper Rifle
+global.Weapons.m4a1=M4A1 Carbine
+global.Weapons.m67=M67 Grenade
+global.Weapons.m93r=Baretta M93R
+global.Weapons.medkit=MedKit
+global.Weapons.melee=Melee
+global.Weapons.mk11=MK11 Sniper Rifle
+global.Weapons.model98b=Barrett M98B Sniper Rifle
+global.Weapons.mp7=MP7 Maschine Gun
+global.Weapons.pecheneg=Pecheneg Maschine Gun
+global.Weapons.pp-2000=PP-2000 SubMaschine Gun
+global.Weapons.repair tool=Repair Tool
+global.Weapons.rpg-7=RPG-7 Anti Tank rocket-propelled grenade launcher
+global.Weapons.rpk-74m=RPK-74M Light Maschine Gun
+global.Weapons.siaga20k=Saiga 20K Semi
+global.Weapons.sg 553 lb=SIG SG 550 Assault Rifle
+global.Weapons.sks=Simonow SKS-45 Rifle
+global.Weapons.smaw=SMAW Anti Tank weapon
+global.Weapons.soldiercollision=Soldier collision
+global.Weapons.suicide=Suicide
+global.Weapons.svd=SVD Sniper Rifle
+global.Weapons.taurus .44=Taurus .44 Mag revolver
+global.Weapons.type88=Type88 Maschine Gun
+global.Weapons.usas-12=USAS-12 automatic Shotgun
+global.Weapons.weapons/a91/a91=A-91 Assault Rifle
+global.Weapons.weapons/ak74m/ak74=AK-74 Assault Rifle
+global.Weapons.weapons/g36c/g36c=G36C Assault Rifle
+global.Weapons.weapons/g3a3/g3a3=G3A3 Battle Rifle
+global.Weapons.weapons/gadgets/c4/c4=C4 Explosive
+global.Weapons.weapons/gadgets/claymore/claymore=Claymore mine
+global.Weapons.weapons/kh2002/kh2002=KH2002 Assault Rifle
+global.Weapons.weapons/knife/knife=Knife
+global.Weapons.weapons/m416/m416=M416 Assault Rifle
+global.Weapons.weapons/magpulpdr/magpulpdr=Magpul Personal Defense Rifle
+global.Weapons.weapons/mp412rex/mp412rex=MP412 REX Revolver
+global.Weapons.weapons/mp443/mp443=MP-443 Grach Pistol
+global.Weapons.weapons/mp443/mp443_gm=MP-443 Grach Pistol (GM)
+global.Weapons.weapons/p90/p90=P90
+global.Weapons.weapons/p90/p90_gm=P90 (GM)
+global.Weapons.weapons/sa18igla/sa18igla=SA-18 IGLA Air Defense
+global.Weapons.weapons/scar-h/scar-h=SCAR-H Assault Rifle
+global.Weapons.weapons/ump45/ump45=UMP-45 SubMachine Gun
+// DLC XPack1
+global.Weapons.famas=FAMAS Assault Rifle
+global.Weapons.hk53=HK53/MP5 Assault Rifle
+global.Weapons.jackhammer=Jackhammer/MK3A1 Shotgun
+global.Weapons.jng90=JNG90 Sniper Rifle
+global.Weapons.l96=L96A1 Sniper Rifle
+global.Weapons.pp-19=PP-19 Bizon SubMachine Gun
+global.Weapons.qbb-95=QBB-95 Light Machine Gun
+global.Weapons.qbu-88=QBU-88 Sniper Rifle
+global.Weapons.qbz-95=QBZ-95 Assault Rifle
+global.Weapons.weapons/xp1_l85a2/l85a2=L85A2/SA80 Assault Rifle
+// DLC XPack2
+global.Weapons.knife_razorblade=BF Premium Knife
+global.Weapons.lsat=LSAT Light Machine Gun
+global.Weapons.m417=M417 Sniper Rifle
+global.Weapons.scar-l=SCAR-L Assault Rifle
+global.Weapons.spas-12=SPAS-12 Shotgun
+global.Weapons.steyr aug=Aug A3 Assault Rifle
+global.Weapons.weapons/xp2_acr/acr=ACW-R Assault Rifle
+global.Weapons.weapons/xp2_l86/l86=L86A2 Light Machine Gun
+global.Weapons.weapons/xp2_mp5k/mp5k=M5K Submachine Gun
+global.Weapons.weapons/xp2_mtar/mtar=MTAR-21 Assault Rifle
+// DLC XPack4
+global.Weapons.crossbow=CrossBow
+
+// MoHW weapons
+global.Weapons.hk416_mp=HK416 Assault Rifle
+global.Weapons.mohw/weapons/assault/ak_bullpup/ak_bullpup=AKU-94 Bullpop
+global.Weapons.mohw/weapons/assault/dd_m4/dd_m4=Daniel Defense DDM4 V1 Assault Rifle
+global.Weapons.mohw/weapons/assault/mk18/mk18=Daniel Defense DDM4 MK18
+global.Weapons.mohw/weapons/assault/scar_h/scar_h=FN SCAR-H
+global.Weapons.mohw/weapons/assault/scar_pdw/scar_pdw=Mk 16 PDW / SCAR PDW
+global.Weapons.mohw/weapons/assault/ak103/ak103=AK-103 Assault Rifle
+global.Weapons.mohw/weapons/assault/hk416_mohw/hk416_mohw=HK416 Assault Rifle (mohw)
+global.Weapons.mohw/weapons/assault/obr_556/obr_556=LaRue Tactical OBR 5.56 Assault Rifle
+global.Weapons.mohw/weapons/assault/suchka/suchka=AKS-74U Suchka Assault Rifle
+global.Weapons.mohw/weapons/explosives_charges/c4/c4=C4 Demolition Charge
+global.Weapons.mohw/weapons/explosives_charges/c4remote/c4remote=C4 remote controlled
+global.Weapons.mohw/weapons/explosives_mines/proximity_mine/proximity_mine=Proximity mine
+global.Weapons.mohw/weapons/explosives_rockets/smaw/smaw=Mk 153 Mod 0 SMAW rocket launcher
+global.Weapons.mohw/weapons/grenadelaunchers/m32/w_gl_m32_a_np=Milkor MGL Mk 1S grenade launcher
+global.Weapons.mohw/weapons/grenadelaunchers/rpg7/rpg7=RPG-7
+global.Weapons.mohw/weapons/grenadelaunchers/w_gl_m79s=M79 grenade launcher
+global.Weapons.mohw/weapons/grenades/m18_smoke/m18_smoke=M18 Smoke Grenade
+global.Weapons.mohw/weapons/grenades/m67_frag/m67_frag=M67 Hand Grenade
+global.Weapons.mohw/weapons/grenades/m84_flashbang/m84_flashbang=M84 stun grenade / Flashbang
+global.Weapons.mohw/weapons/grenades/v40_minifrag/v40_minifrag=V40 Mini Grenade
+global.Weapons.mohw/weapons/lmg/m249/m249=FN M249E3 SAW Light Machine Gun
+global.Weapons.mohw/weapons/lmg/mg4/mg4=H&K MG4 / MG4KE Light Machine Gun
+global.Weapons.mohw/weapons/lmg/m60/m60=M60 Light Machine Gun
+global.Weapons.mohw/weapons/lmg/pkp/pkp=PKP Pecheneg Light Machine Gun
+global.Weapons.mohw/weapons/melee/tomohawk/tomohawk=Tomahawk
+global.Weapons.mohw/weapons/melee/knife/knife=Knife
+global.Weapons.mohw/weapons/mp_weapons/aa12_mp=AA-12
+global.Weapons.mohw/weapons/mp_weapons/ak103_mp=AK-103 Bullpup
+global.Weapons.mohw/weapons/mp_weapons/ak5c_mp=Bofors Ak 5C
+global.Weapons.mohw/weapons/mp_weapons/cs5_mp=McMillan CS5
+global.Weapons.mohw/weapons/mp_weapons/ddm4_mp=Daniel Defense DDM4 V1
+global.Weapons.mohw/weapons/mp_weapons/ebr_mp=Mk. 14 Mod 0 Enhanced Battle Rifle
+global.Weapons.mohw/weapons/mp_weapons/f88_mp=F88 / Steyr AUG A3
+global.Weapons.mohw/weapons/mp_weapons/g36c_mp=Heckler & Koch G36C
+global.Weapons.mohw/weapons/mp_weapons/g3_mp=Heckler & Koch G3KA4
+global.Weapons.mohw/weapons/mp_weapons/hk416c_mp=HK416c Assault Rifle
+global.Weapons.mohw/weapons/mp_weapons/m240b_mp=FN M240B Machine Gun
+global.Weapons.mohw/weapons/mp_weapons/m249_mp=FN M249E3 SAW
+global.Weapons.mohw/weapons/mp_weapons/m870_mp=M870
+global.Weapons.mohw/weapons/mp_weapons/mg4_mp=MG4
+global.Weapons.mohw/weapons/mp_weapons/mk18_mp=Daniel Defense DDM4 MK18
+global.Weapons.mohw/weapons/mp_weapons/mp7_mp=MP7
+global.Weapons.mohw/weapons/mp_weapons/obr556_mp=LaRue Tactical OBR 5.56
+global.Weapons.mohw/weapons/mp_weapons/obr762_mp=LaRue Tactical OBR 7.62
+global.Weapons.mohw/weapons/mp_weapons/pkp_mp=PKP Pecheneg
+global.Weapons.mohw/weapons/mp_weapons/scarpdw_mp=Mk 16 PDW
+global.Weapons.mohw/weapons/mp_weapons/suchka_mp=AKS-74U Suchka
+global.Weapons.mohw/weapons/mp_weapons/tac300_mp=McMillan TAC-300
+global.Weapons.mohw/weapons/mp_weapons/tac50_mp=McMillan TAC-50
+global.Weapons.mohw/weapons/pistol/glock/glock17=Glock
+global.Weapons.mohw/weapons/pistol/glock18/glock18=Glock 18C
+global.Weapons.mohw/weapons/pistol/glock23/glock23=Glock 23
+global.Weapons.mohw/weapons/pistol/hk45c/hk45c=HK45C
+global.Weapons.mohw/weapons/pistol/m1911/m1911=Vickers 1911
+global.Weapons.mohw/weapons/pistol/p226/p226=SIG-Sauer P226R
+global.Weapons.mohw/weapons/shotgun/m870/m870=Remington 870 MCS Shotgun
+global.Weapons.mohw/weapons/shotgun/aa12/aa12=AA-12 Shotgun
+global.Weapons.mohw/weapons/smg/mp7/mp7=H&K MP7A1
+global.Weapons.mohw/weapons/sniper/cs5/cs5=McMillan CS5 Sniper Rifle
+global.Weapons.mohw/weapons/sniper/obr_762/obr_762=LaRue Tactical OBR 7.62 Sniper Rifle
+global.Weapons.mohw/weapons/sniper/tac300/tac300=McMillan TAC-300 Sniper Rifle
+global.Weapons.mohw/weapons/special_support_actions/mbitr_radio/mbitr_radio_weapon=MBITR Radio
+global.Weapons.mohw/weapons/special_support_actions/mk19/mk19_weapon=MK19 grenade launcher
+global.Weapons.mohw/weapons/special_support_actions/rq11/rq11=RQ-11 Raven UAV
+global.Weapons.mohw/weapons/special_support_actions/radar_jammer/radar_jammer_weapon=Radar Jammer
+global.Weapons.mohw/weapons/special_support_actions/switchblade_launcher/switchblade_launcher=Switchblade drone 
+global.Weapons.targetdesignator=Laser Target Locator Module
+
+// BF-4 diffs
+global.Weapons.vehicleupsidedown=Vehicle turned upside down
+global.Weapons.u_870=870 MCS
+global.Weapons.u_a91=A-91
+global.Weapons.aa mine=Anti-Air Mine
+global.Weapons.u_acr=ACW-R
+global.Weapons.u_aek971=AEK-971
+global.Weapons.u_aek971_m26_buck=M26 Mass under AEK-971
+global.Weapons.u_aek971_m26_flechette=M26 Mass Dart under AEK-971
+global.Weapons.u_aek971_m26_frag=M26 Mass Frag under AEK-971
+global.Weapons.u_aek971_m26_slug=M26 Mass Slug under AEK-971
+global.Weapons.u_aek971_m320_3gl=M320 3GL under AEK-971
+global.Weapons.u_aek971_m320_flash=M320 FB under AEK-971
+global.Weapons.u_aek971_m320_he=M320 HE under AEK-971
+global.Weapons.u_aek971_m320_lvg=M320 LVG under AEK-971
+global.Weapons.u_aek971_m320_shg=M320 Dart under AEK-971
+global.Weapons.u_aek971_m320_smk=M320 SMK under AEK-971
+global.Weapons.u_ak12=AK-12
+global.Weapons.u_ak12_m26_buck=M26 Mass under AK-12
+global.Weapons.u_ak12_m26_flechette=M26 Mass Dart under AK-12
+global.Weapons.u_ak12_m26_frag=M26 Mass Frag under AK-12
+global.Weapons.u_ak12_m26_slug=M26 Mass Slug under AK-12
+global.Weapons.u_ak12_m320_3gl=M320 3GL under AK-12
+global.Weapons.u_ak12_m320_flash=M320 FB under AK-12
+global.Weapons.u_ak12_m320_he=M320 HE under AK-12
+global.Weapons.u_ak12_m320_lvg=M320 LVG under AK-12
+global.Weapons.u_ak12_m320_shg=M320 Dart under AK-12
+global.Weapons.u_ak12_m320_smk=M320 SMK under AK-12
+global.Weapons.u_ak5c=AK 5C
+global.Weapons.u_aku12=AKU-12
+global.Weapons.u_ammobag=Ammobag
+global.Weapons.u_amr2=AMR2-2
+global.Weapons.u_amr2_cqb=AMR-2 CQB
+global.Weapons.u_amr2_med=AMR-2 MID
+global.Weapons.u_an94=AN-94 Abakan Assault Rifle
+global.Weapons.u_an94_m26_buck=M26 Mass under AN-94
+global.Weapons.u_an94_m26_flechette=M26 Mass Dart under AN-94
+global.Weapons.u_an94_m26_frag=M26 Mass Frag under AN-94
+global.Weapons.u_an94_m26_slug=M26 Mass Slug under AN-94
+global.Weapons.u_an94_m320_3gl_v1=M320 3GL under AN-94
+global.Weapons.u_an94_m320_flash_v1=M320 FB under AN-94
+global.Weapons.u_an94_m320_he_v1=M320 HE under AN-94
+global.Weapons.u_an94_m320_lvg_v1=M320 LVG under AN-94
+global.Weapons.u_an94_m320_shg_v1=M320 Dart under AN-94
+global.Weapons.u_an94_m320_smk_v1=M320 SMK under AN-94
+global.Weapons.u_ar160=AR-160
+global.Weapons.u_ar160_m26_buck=M26 Buckshot under ARX 160
+global.Weapons.u_ar160_m26_flechette=M26 Flechette under ARX 160
+global.Weapons.u_ar160_m26_frag=M26 Frag under ARX 160
+global.Weapons.u_ar160_m26_slug=M26 Slug under ARX 160
+global.Weapons.u_ar160_m320_3gl=M320 3GL under ARX 160
+global.Weapons.u_ar160_m320_flash=M320 FB under ARX 160
+global.Weapons.u_ar160_m320_he=M320 HE under ARX 160
+global.Weapons.u_ar160_m320_lvg=M320 LVG under ARX 160
+global.Weapons.u_ar160_m320_shg=M320 Dart under ARX 160
+global.Weapons.u_ar160_m320_smk=M320 SMK under ARX 160
+global.Weapons.u_asval=AS VAL
+global.Weapons.u_at4=M136 CS
+global.Weapons.u_aws=AWS
+global.Weapons.u_ballisticshield=Ballistic Shield
+global.Weapons.u_bulldog=Bulldog
+global.Weapons.u_c4=C4
+global.Weapons.u_c4_support=C4
+global.Weapons.u_cbj-ms=CBJ-MS
+global.Weapons.u_claymore=Claymore
+global.Weapons.u_claymore_recon=Claymore
+global.Weapons.u_sp_claymore=Claymore
+global.Weapons.u_cs-lr4=CS-LR4
+global.Weapons.u_cs5=CS5
+global.Weapons.u_cz805=CZ-805
+global.Weapons.u_cz805_m26_buck=M26 Mass under CZ-805
+global.Weapons.u_cz805_m26_flechette=M26 Mass Dart under CZ-805
+global.Weapons.u_cz805_m26_frag=M26 Mass Frag under CZ-805
+global.Weapons.u_cz805_m26_slug=M26 Mass Slug under CZ-805
+global.Weapons.u_cz805_m320_3gl=M320 3GL under CZ-805
+global.Weapons.u_cz805_m320_flash=M320 FB under CZ-805
+global.Weapons.u_cz805_m320_he=M320 HE under CZ-805
+global.Weapons.u_cz805_m320_lvg=M320 LVG under CZ-805
+global.Weapons.u_cz805_m320_shg=M320 Dart under CZ-805
+global.Weapons.u_cz805_m320_smk=M320 SMK under CZ-805
+global.Weapons.u_cz75=CZ-75
+global.Weapons.u_dao12=DAO-12
+global.Weapons.u_dbv12=DBV-12
+global.Weapons.u_defib=Defibrillator
+global.Weapons.u_deserteagle=Desert Eagle
+global.Weapons.dlshtr=Phantom Bow
+global.Weapons.eodbot=EOD Bot
+global.Weapons.eodbot_pda=EOD Bot PDA
+global.Weapons.u_f2000=F2000
+global.Weapons.u_famas=FAMAS
+global.Weapons.u_fgm148=FGM-148 Javelin
+global.Weapons.u_fim92=FIM-92 Stinger
+global.Weapons.u_flashbang=Flashbang
+global.Weapons.u_fn57=FN57
+global.Weapons.u_fy-js=FY-JS
+global.Weapons.u_g36c=G36C
+global.Weapons.u_galilace=ACE 21 CQB
+global.Weapons.u_galilace23=ACE 23
+global.Weapons.u_galilace52=ACE 52 CQB
+global.Weapons.u_galilace53=ACE 53 SV
+global.Weapons.u_glock18=G18
+global.Weapons.u_gol=GOL Magnum
+global.Weapons.u_grenade_rgo=RGO Impact
+global.Weapons.u_groza-1=Groza-1
+global.Weapons.u_groza-4=Groza-4
+global.Weapons.u_handflare=Handflare
+global.Weapons.u_hawk=Hawk 12G
+global.Weapons.u_hk45c=Compact 45
+global.Weapons.u_jng90=JNG-90
+global.Weapons.u_js2=JS2
+global.Weapons.u_l85a2=L85A2
+global.Weapons.u_l85a2_m320_3gl_v2=M320 3GL under L85A2
+global.Weapons.u_l85a2_m320_flash_v2=M320 FB under L85A2
+global.Weapons.u_l85a2_m320_he_v2=M320 HE under L85A2
+global.Weapons.u_l85a2_m320_lvg_v2=M320 LVG under L85A2
+global.Weapons.u_l85a2_m320_shg_v2=M320 Dart under L85A2
+global.Weapons.u_l85a2_m320_smk_v2=M320 SMK under L85A2
+global.Weapons.u_l86a1=L86A2 Light Machine Gun
+global.Weapons.u_l96a1=L96A1
+global.Weapons.u_lsat=LSAT
+global.Weapons.u_knife=Knife
+global.Weapons.u_m1014=M1014
+global.Weapons.u_m15=M15 AT Mine
+global.Weapons.u_m16a4=M16A4
+global.Weapons.u_m16a4_m26_buck=M26 Mass under M16A4
+global.Weapons.u_m16a4_m26_flechette=M26 Mass Dart under M16A4
+global.Weapons.u_m16a4_m26_frag=M26 Mass Frag under M16A4
+global.Weapons.u_m16a4_m26_slug=M26 Mass Slug under M16A4
+global.Weapons.u_m16a4_m320_3gl=M320 3GL under M16A4
+global.Weapons.u_m16a4_m320_flash=M320 FB under M16A4
+global.Weapons.u_m16a4_m320_he=M320 HE under M16A4
+global.Weapons.u_m16a4_m320_lvg=M320 LVG under M16A4
+global.Weapons.u_m16a4_m320_shg=M320 Dart under M16A4
+global.Weapons.u_m16a4_m320_smk=M320 SMK under M16A4
+global.Weapons.u_m18=M18 Smoke
+global.Weapons.u_m1911=M1911
+global.Weapons.u_m200=SRR-61
+global.Weapons.m224=M224 Mortar
+global.Weapons.u_m224=M224 Mortar
+global.Weapons.u_m240=M240B
+global.Weapons.u_m249=M249
+global.Weapons.u_m26mass=M26 Mass
+global.Weapons.u_m26mass_flechette=M26 Mass Dart
+global.Weapons.u_m26mass_frag=M26 Mass Frag
+global.Weapons.u_m26mass_slug=M26 Mass Slug
+global.Weapons.u_m320_3gl=M320 3GL
+global.Weapons.u_m320_flash=M320 FB
+global.Weapons.u_m320_he=M320 HE
+global.Weapons.u_m320_lvg=M320 LVG
+global.Weapons.u_m320_shg=M320 Dart
+global.Weapons.u_m320_smk=M320 SMK
+global.Weapons.u_m34=M34 Incendiary
+global.Weapons.u_m39ebr=M39 EMR
+global.Weapons.u_m40a5=M40A5
+global.Weapons.u_m416=M416
+global.Weapons.u_m416_m26_buck=M26 Mass under M416
+global.Weapons.u_m416_m26_flechette=M26 Mass Dart under M416
+global.Weapons.u_m416_m26_frag=M26 Mass Frag under M416
+global.Weapons.u_m416_m26_slug=M26 Mass Slug under M416
+global.Weapons.u_m416_m320_3gl=M320 3GL under M416
+global.Weapons.u_m416_m320_flash=M320 FB under M416
+global.Weapons.u_m416_m320_he=M320 HE under M416
+global.Weapons.u_m416_m320_lvg=M320 LVG under M416
+global.Weapons.u_m416_m320_shg=M320 Dart under M416
+global.Weapons.u_m416_m320_smk=M320 SMK under M416
+global.Weapons.u_m4a1=M4
+global.Weapons.u_m60e4=M60-E4
+global.Weapons.u_m60ult=M60-ULT
+global.Weapons.u_m67=M67 Frag
+global.Weapons.u_m82a3=M82A3
+global.Weapons.u_m82a3_cqb=M82A3 CQB
+global.Weapons.u_m82a3_med=M82A3 MID
+global.Weapons.u_m82a3_sp=M82A3 SP
+global.Weapons.u_m9=M9
+global.Weapons.u_m93r=93R
+global.Weapons.u_m98b=M98B
+global.Weapons.u_magpulpdr=PDW-R
+global.Weapons.gameplay/gadgets/mav/mav=MAV
+global.Weapons.u_medkit=Medkit
+global.Weapons.u_mg4=MG4
+global.Weapons.u_mgl=M320 MGL
+global.Weapons.u_mk11=MK11 Mod 0
+global.Weapons.u_mp7=MP7
+global.Weapons.u_mp412rex=M412 Rex
+global.Weapons.u_mp443=MP443
+global.Weapons.u_mpx=MPX
+global.Weapons.xp4/gameplay/gadgets/mkv/mkv=XD-1 Accipiter
+global.Weapons.u_mtar21=MTAR-21
+global.Weapons.u_mx4=MX4
+global.Weapons.u_nlaw=MBT NLAW
+global.Weapons.u_p226=P226
+global.Weapons.u_p90=P90
+global.Weapons.u_pecheneg=PKP Pechneg
+global.Weapons.u_portablemedicpack=Portable Medkit
+global.Weapons.u_pp2000=PP-2000
+global.Weapons.u_qbb95=QBB-95-1
+global.Weapons.u_qbs09=QBS-09
+global.Weapons.u_qbu88=QBU-88
+global.Weapons.u_qbz951=QBZ-95-1
+global.Weapons.u_qbz951_m26_buck=M26 Mass under QBZ-95-1
+global.Weapons.u_qbz951_m26_flechette=M26 Mass Dart under QBZ-95-1
+global.Weapons.u_qbz951_m26_frag=M26 Mass Frag under QBZ-95-1
+global.Weapons.u_qbz951_m26_slug=M26 Mass Slug under QBZ-95-1
+global.Weapons.u_qbz951_m320_3gl=M320 3GL under QBZ-95-1
+global.Weapons.u_qbz951_m320_flash=M320 FB under QBZ-95-1
+global.Weapons.u_qbz951_m320_he=M320 HE under QBZ-95-1
+global.Weapons.u_qbz951_m320_lvg=M320 LVG under QBZ-95-1
+global.Weapons.u_qbz951_m320_shg=M320 Dart under QBZ-95-1
+global.Weapons.u_qbz951_m320_smk=M320 SMK under QBZ-95-1
+global.Weapons.u_qsz92=QSZ-92
+global.Weapons.u_railgun=Rorsch MK-1
+global.Weapons.u_repairtool=Repair Tool
+global.Weapons.u_rfb=RFB
+global.Weapons.u_rpg7=RPG-7V2
+global.Weapons.u_rpk12=RPK-12
+global.Weapons.u_rpk-74=RPK-74
+global.Weapons.u_sa18igla=SA-18 IGLA
+global.Weapons.u_saddlegunsnp=Mare's Leg Saddle Gun Sniper
+global.Weapons.u_saiga_20k=Saiga 12K
+global.Weapons.u_sar21=SAR-21
+global.Weapons.u_sar21_m26_buck=M26 Mass under SAR-21
+global.Weapons.u_sar21_m26_flechette=M26 Mass Dart under SAR-21
+global.Weapons.u_sar21_m26_frag=M26 Mass Frag under SAR-21
+global.Weapons.u_sar21_m26_slug=M26 Mass Slug under SAR-21
+global.Weapons.u_sar21_m320_3gl=M320 3GL under SAR-21
+global.Weapons.u_sar21_m320_flash=M320 FB under SAR-21
+global.Weapons.u_sar21_m320_he=M320 HE under SAR-21
+global.Weapons.u_sar21_m320_lvg=M320 LVG under SAR-21
+global.Weapons.u_sar21_m320_shg=M320 Dart under SAR-21
+global.Weapons.u_sar21_m320_smk=M320 SMK under SAR-21
+global.Weapons.u_scar-h=SCAR-H
+global.Weapons.u_scar-h_m26_buck=M26 Mass under SCAR-H
+global.Weapons.u_scar-h_m26_flechette=M26 Mass Dart under SCAR-H
+global.Weapons.u_scar-h_m26_frag=M26 Mass Frag under SCAR-H
+global.Weapons.u_scar-h_m26_slug=M26 Mass Slug under SCAR-H
+global.Weapons.u_scar-h_m320_3gl=M320 3GL under SCAR-H
+global.Weapons.u_scar-h_m320_flash=M320 FB under SCAR-H
+global.Weapons.u_scar-h_m320_he=M320 HE under SCAR-H
+global.Weapons.u_scar-h_m320_lvg=M320 LVG under SCAR-H
+global.Weapons.u_scar-h_m320_shg=M320 Dart under SCAR-H
+global.Weapons.u_scar-h_m320_smk=M320 SMK under SCAR-H
+global.Weapons.u_scar-hsv=SCAR-H SV
+global.Weapons.u_scorpion=CZ-3A1
+global.Weapons.u_scout=Scout
+global.Weapons.u_serbushorty=Shorty 12G
+global.Weapons.u_sg553lb=SG553
+global.Weapons.u_sks=SKS
+global.Weapons.u_slam=M2 SLAM
+global.Weapons.u_smaw=MK153 SMAW
+global.Weapons.u_spas12=SPAS-12
+global.Weapons.u_sr2=SR-2
+global.Weapons.u_sraw=FGM-172 SRAW
+global.Weapons.u_sr338=SR338
+global.Weapons.u_srs=338-Recon
+global.Weapons.u_starstreak=Starstreak HVM-II
+global.Weapons.u_steyraug=AUG A3
+global.Weapons.u_steyraug_m26_buck=M26 Mass under AUG A3
+global.Weapons.u_steyraug_m26_flechette=M26 Mass Dart under AUG A3
+global.Weapons.u_steyraug_m26_frag=M26 Mass Frag under AUG A3
+global.Weapons.u_steyraug_m26_slug=M26 Mass Slug under AUG A3
+global.Weapons.u_steyraug_m320_3gl=M320 3GL under AUG A3
+global.Weapons.u_steyraug_m320_flash=M320 FB under AUG A3
+global.Weapons.u_steyraug_m320_he=M320 HE under AUG A3
+global.Weapons.u_steyraug_m320_lvg=M320 LVG under AUG A3
+global.Weapons.u_steyraug_m320_shg=M320 Dart under AUG A3
+global.Weapons.u_steyraug_m320_smk=M320 SMK under AUG A3
+global.Weapons.u_suav=SUAV
+global.Weapons.u_sv98=SV-98
+global.Weapons.u_svd12=SVD-12
+global.Weapons.u_sw40=SW40
+global.Weapons.u_taurus44=.44 Magnum
+global.Weapons.u_tomahawk=Tomahawk
+global.Weapons.u_type88=Type 88 LMG
+global.Weapons.u_type95b=Type-95B-1
+global.Weapons.ucav=UCAV
+global.Weapons.xp1/gameplay/gadgets/ucav/ucav_launcher=UCAV Launcher
+global.Weapons.xp3/gameplay/vehicles/rawr/rawr=RAWR
+global.Weapons.u_ultimax=Ultimax-100 MK5
+global.Weapons.u_ump9=UMP-9
+global.Weapons.u_ump45=UMP-45
+global.Weapons.u_unica6=Unica 6
+global.Weapons.u_usas-12=USAS-12
+global.Weapons.u_usas-12_nightvision=USAS-12 FLIR
+global.Weapons.u_usas-12_sp=USAS-12
+global.Weapons.u_utas=UTS 15
+global.Weapons.u_v40=V40 Mini
+global.Weapons.u_xm25=XM25 Airburst
+global.Weapons.u_xm25_flechette=XM25 Airburst Dart
+global.Weapons.u_xm25_smoke=XM25 Airburst SMK
+
+// BF4 vehicles
+// Personal vehicles
+global.Weapons.xp1/gameplay/vehicles/klr650/klr650=KLR650 Dirtbike
+global.Weapons.xp2/gameplay/vehicles/patrolhovercraft/patrolhovercraft=Hovercraft
+global.Weapons.xp4/gameplay/vehicles/podlauncher/launcher_pod_platform=Pod Launcher
+global.Weapons.gameplay/vehicles/pwc_jetski/pwc_jetski=Jet Ski
+global.Weapons.gameplay/vehicles/quadbike/quadbike=Quad bike
+global.Weapons.gameplay/vehicles/quadbike/spec/quadbike_night=Quad bike
+global.Weapons.xp0/gameplay/vehicles/skidLoader/skidloader=SkidLoader
+global.Weapons.xp4/gameplay/vehicles/snowmobile/snowmobile=SkidLoader
+// Transport vehicles
+global.Weapons.gameplay/vehicles/aav-7a1/aav-7a1=AAV-7A1 AMTRAC
+global.Weapons.dpv=Desert Patrol Vehicle
+global.Weapons.gameplay/vehicles/ch_lthe_z-9/ch_lthe_z-9=Z-9 Transport Helicopter
+global.Weapons.gameplay/vehicles/ch_fav_lyt2021/ch_fav_lyt2021=LYT2021 Jeep
+global.Weapons.gameplay/vehicles/growleritv/growleritv=Growler ITV
+global.Weapons.ka-60=Kamov Ka-60 Transport Helicopter
+global.Weapons.gameplay/vehicles/ch_mrap-zfb-05/ch_mrap-zfb-05=ZFB05 MRAP
+global.Weapons.gameplay/vehicles/ru_mrap_spm3/ru_mrap_spm3=SPM-3 MRAP
+global.Weapons.gameplay/vehicles/ru_mrap_spm3/spec/ru_mrap_spm3_night=SPM-3 MRAP
+global.Weapons.gameplay/vehicles/us_mrap-cougar/us_mrap-cougar=Cougar MRAP
+global.Weapons.gameplay/vehicles/us_mrap-cougar/spec/us_mrap-cougar_night=Cougar MRAP
+global.Weapons.gameplay/vehicles/train_01/train_01=Train
+global.Weapons.vdv buggy=VDV Buggy
+global.Weapons.gameplay/vehicles/venom/venom=UH-1Y Venom Transport Helicopter
+global.Weapons.gameplay/vehicles/venom/spec/venom_night=UH-1Y Venom Transport Helicopter
+global.Weapons.gameplay/vehicles/venom/spec/venom_cmp=UH-1Y Venom Transport Helicopter
+// Light armored vehicles
+global.Weapons.gameplay/vehicles/ch_aa_pgz-95/ch_aa_pgz-95=PGZ95 Anti Air
+global.Weapons.gameplay/vehicles/btr-90/btr90=BTR-90 APC
+global.Weapons.gameplay/vehicles/btr-90/spec/btr90_night=BTR-90 APC
+global.Weapons.gameplay/vehicles/ch_ifv_zbd09/ch_ifv_zbd09=ZBD-09 APC
+global.Weapons.gameplay/vehicles/himars/himars=M142 HIMARS Artillery
+global.Weapons.gameplay/vehicles/himars/spec/himars_night=M142 HIMARS Artillery
+global.Weapons.gameplay/vehicles/lav25/lav_ad=LAV-25 Anti Air
+global.Weapons.gameplay/vehicles/lav25/lav25=LAV-25 APC
+global.Weapons.gameplay/vehicles/lav25/spec/lav25_night=LAV-25 APC
+global.Weapons.gameplay/vehicles/9k22_tunguska_m/9k22_tunguska_m=9K22 Tunguska Anti Air
+// Heavy armored vehicles
+global.Weapons.gameplay/vehicles/m1a2/m1abrams=M1 Abrams MBT
+global.Weapons.gameplay/vehicles/m1a2/spec/m1abrams_night=M1 Abrams MBT
+global.Weapons.t90=T90 MBT
+global.Weapons.gameplay/vehicles/ch_mbt_type99/ch_mbt_type99=Type 99 MBT
+global.Weapons.xp4/gameplay/vehicles/hovertank/xp4_hovertank=HT-95 Levkov Hover Tank
+// Air vehicles
+global.Weapons.gameplay/vehicles/a-10_thunderbolt/a10_thunderbolt=A-10 Thunderbolt Attack Jet
+global.Weapons.gameplay/vehicles/ac130/ac130_gunship=A-130 Gunship
+global.Weapons.gameplay/vehicles/ah1z/ah1z=AH-1Z Viper Attack Helicopter
+global.Weapons.gameplay/vehicles/ah6/ah6_littlebird=AH-6 Little Bird Scout Helicopter
+global.Weapons.xp1/gameplay/vehicles/b1lancer/b1lancer=B-1 Lancer Bomber
+global.Weapons.gameplay/vehicles/f35/f35b=F-35 Stealth Jet
+global.Weapons.gameplay/vehicles/ch_fjet_j-20/ch_fjet_j-20=J-20 Stealth Jet
+global.Weapons.xp1/gameplay/vehicles/h6k/h6k=Xian H-6 Bomber
+global.Weapons.gameplay/vehicles/mi28/mi28=Mi-28 Havoc Attack Helicopter
+global.Weapons.gameplay/vehicles/su-25tm/su-25tm=Su-25TM Attack Jet
+global.Weapons.gameplay/vehicles/ru_fjet_t-50_pak_fa/ru_fjet_t-50_pak_fa=Su-50 Stealth Jet
+global.Weapons.gameplay/vehicles/uav_globalhawk/uav_globalhawk=Global Hawk UAV
+global.Weapons.gameplay/vehicles/ch_jet_qiang-5-fantan/ch_jet_q5_fantan=Q-5 Fantan Attack Jet
+global.Weapons.z-10w=Z-10 Attack Helicopter
+global.Weapons.gameplay/vehicles/z11w/z-11w=Z-11W Scout Helicopter
+global.Weapons.gameplay/vehicles/z11w/spec/z-11w_ch=Z-11W Scout Helicopter
+// Water vehicles
+global.Weapons.gameplay/vehicles/us_fac-cb90/us_fac-cb90=CB90 Fast Assault Craft
+global.Weapons.gameplay/vehicles/ch_fac_dv15/ch_fac_dv15=DV-15 Fast Assault Craft
+global.Weapons.gameplay/vehicles/ch_fac_dv15/spec/ch_fac_dv15_ru=DV-15 Fast Assault Craft
+global.Weapons.rhib=RHIB Boat
+// Stationary vehicles
+global.Weapons.gameplay/vehicles/ch_atgm_hj-8/ch_atgm_hj-8=HJ-8 Launcher
+global.Weapons.xp1/gameplay/vehicles/bomber/bombing_station=Bombing Station
+global.Weapons.gameplay/vehicles/ch_ciws-ld-2000/ch_ciws-ld-2000=LD-2000 Anti Air
+global.Weapons.gameplay/vehicles/centurion_c-ram/centurion_c-ram=Centurion C-RAM Anti Air
+global.Weapons.gameplay/vehicles/centurion_c-ram/centurion_c-ram_mp_naval=Centurion C-RAM Anti Air
+global.Weapons.gameplay/vehicles/gunshieldandtripod/gunshieldtripod=Stationary gun with shield
+global.Weapons.gameplay/vehicles/gunshieldandtripod/gunshieldtripod_night=Stationary gun with shield
+global.Weapons.gameplay/vehicles/gunshieldandtripod/spec/gunshieldtripod_noshield=Stationary gun without shield
+global.Weapons.xp4/gameplay/vehicles/metalstorm/xp4_metalstorm=Schipunov 42
+global.Weapons.kornet=9M133 Kornet Launcher
+global.Weapons.xp2/gameplay/vehicles/oldcannon/oldcannon=Old Cannon
+global.Weapons.gameplay/vehicles/pantsir/pantsir-s1=Pantsir-S1 Anti Air
+global.Weapons.gameplay/vehicles/tow2/tow2=M220 TOW Launcher
+
+// BF-HL Weapons diff
+global.Weapons.u_acb-90=ACB-90 Knife
+global.Weapons.u_acwr=ACWR
+global.Weapons.u_akm=AKM
+global.Weapons.u_aks74u=AKS-74U
+global.Weapons.u_augpara=AUG PARA
+global.Weapons.u_aws=AWS
+global.Weapons.u_baseballbat=Baseball Bat
+global.Weapons.u_blackjack=Blackjack
+global.Weapons.u_breachingcharge=Breaching Charge
+global.Weapons.u_breachinghammer=Breaching Hammer
+global.Weapons.u_car556=CAR-556
+global.Weapons.u_collapsingbaton=Collapsible Baton
+global.Weapons.u_crowbar=Crow Bar
+global.Weapons.u_defib=Defibrillator
+global.Weapons.u_cs_gas=Gas Grenade
+global.Weapons.u_f2000=F2000
+global.Weapons.u_famas=Famas
+global.Weapons.u_fim92=Stinger
+global.Weapons.u_fireaxe=Fire Axe
+global.Weapons.u_gold_fireaxe=Gold Fire Axe
+global.Weapons.u_flashbang=Flashbang
+global.Weapons.u_fmg9=FMG9
+global.Weapons.u_fnfal=FAL
+global.Weapons.u_fn57=FN57
+global.Weapons.u_g17=G17
+global.Weapons.u_g17race=G17 RACE Pistol
+global.Weapons.u_g18c=G18C
+global.Weapons.u_galil_ar=ARM
+global.Weapons.u_golfclub=Golf Club
+global.Weapons.u_golfclub_gold=Gold Golf Club
+global.Weapons.u_hcar=HCAR
+global.Weapons.u_hk45c=45T
+global.Weapons.u_hk51=HK51
+global.Weapons.u_imi50baldeagle=Bald Eagle
+global.Weapons.u_incendiarydevice=Incendiary Device
+global.Weapons.u_inf9=TEC-9
+global.Weapons.u_isc9=UZI
+global.Weapons.u_jury410=.410 JURY
+global.Weapons.u_k10=K10
+global.Weapons.u_knife=Knife
+global.Weapons.u_knifeboot=Boot Knife
+global.Weapons.u_knifeboot_gold=Gold Boot Knife
+global.Weapons.u_knifebowie=Bowie Knife
+global.Weapons.u_knifecarbon=Carbon Fiber Knife
+global.Weapons.u_knifeseal=Seal Knife
+global.Weapons.u_knifeseal_gold=Gold Seal Knife
+global.Weapons.u_knifescout=Scout Knife
+global.Weapons.u_knifescout_gold=Gold Scout Knife
+global.Weapons.u_knifesurvival=Survival Knife
+global.Weapons.u_knifetrench=Trench Knife
+global.Weapons.u_ksg12=KSG12
+global.Weapons.u_l85a2=L85A2
+global.Weapons.u_l96a1=AWM
+global.Weapons.u_leadpipe=Lead Pipe
+global.Weapons.u_m110K5=M110K5
+global.Weapons.u_m12mod1=RO933 M1
+global.Weapons.u_m12s=M12S
+global.Weapons.u_m16a4=M16A3
+global.Weapons.u_m18=M18 Smoke Grenade
+global.Weapons.u_m1911=M1911A1
+global.Weapons.u_m240=M240B
+global.Weapons.u_m320_csg=M320 Gas Grenade
+global.Weapons.u_m320_he=M320 Grenade Launcher
+global.Weapons.u_mac_10=MAC-10
+global.Weapons.u_machete=Machete
+global.Weapons.u_m2=M1
+global.Weapons.u_m39ebr=M39 EMR
+global.Weapons.u_m416=M416
+global.Weapons.u_m45=M45
+global.Weapons.u_m67=M67 Grenade
+global.Weapons.u_m79_csg=M79 Gas Grenade
+global.Weapons.u_m79_he=M79 Grenade Launcher
+global.Weapons.u_m82=M82 .416
+global.Weapons.u_m9=92FS
+global.Weapons.u_m93r=M93R
+global.Weapons.u_mdr=MDC
+global.Weapons.u_le_medicbag=Medic Bag
+global.Weapons.u_mg36=MG36
+global.Weapons.u_molotov=Molotov
+global.Weapons.u_mp5navy=M5 Navy
+global.Weapons.u_mp5k=MP5K
+global.Weapons.u_mp5sd=MP5SD
+global.Weapons.u_mp7=MP7
+global.Weapons.u_mpx=MPX
+global.Weapons.u_nailgun=Nail Gun
+global.Weapons.u_nightstick=Nightstick
+global.Weapons.u_p90=P90
+global.Weapons.u_policebaton=Police Baton
+global.Weapons.u_prisonshank=Shank
+global.Weapons.u_pti91=PTR-91
+global.Weapons.u_r700ltr=R700 LTR
+global.Weapons.u_r700blackout=.300 Knockout
+global.Weapons.u_rem870p=Remington 870P Magnum
+global.Weapons.u_repairtool=Repair Tool
+global.Weapons.u_rfjammer=Rf Jammer
+global.Weapons.u_cr_revive=Revive Syringe
+global.Weapons.u_ro933_blk=RO933 .300 BLK
+global.Weapons.u_ro933=RO993
+global.Weapons.u_rpg7=RPG7
+global.Weapons.u_sp_rpg7=RPG7
+global.Weapons.u_rpk=RPK
+global.Weapons.u_rs357=.357 RS
+global.Weapons.u_sa58=SA-58 OSW
+global.Weapons.u_sabotagetool=Sabotage Tool
+global.Weapons.u_saiga12=Saiga 12
+global.Weapons.u_sar21=SAR-21
+global.Weapons.u_sbs12short=Double-Barrel Shotgun
+global.Weapons.u_scarh=SCAR-H
+global.Weapons.u_scorpion=SCORPION
+global.Weapons.u_scout=Scout
+global.Weapons.u_scr308=Saiga 308
+global.Weapons.u_sg510=SG510
+global.Weapons.u_sg533lb=SG553
+global.Weapons.u_sledgehammer=Sledge Hammer
+global.Weapons.u_smaw=SMAW
+global.Weapons.u_sp_smaw=SMAW
+global.Weapons.u_socom16=SOCOM16
+global.Weapons.u_spas12=Spas-12
+global.Weapons.u_sr25ecc=SR-25 ECC
+global.Weapons.u_srs=388-RECON
+global.Weapons.u_stakeout37=37 STAKEOUT
+global.Weapons.u_sw40p=.40 PRO
+global.Weapons.u_sw38snub=.38 SNUB
+global.Weapons.u_tasergun=T62 Cew Taser Gun
+global.Weapons.u_taurus44=Taurus .44 Magnum
+global.Weapons.u_tommygun=M1A1 Tommygun
+global.Weapons.u_tracerdartgun=Tracer Dart
+global.Weapons.u_tripmine=Laser Tripmine
+global.Weapons.u_throwingknife=Throwing Knife
+global.Weapons.u_ump45=UMP45
+global.Weapons.u_ump9=UMP-9
+global.Weapons.u_winchester1887=1887
+global.Weapons.u_ziplinegun=Zip Line
+global.Weapons.u_fantasyknife=Devils Toothpick
+global.Weapons.u_a_8s=A 8S
+global.Weapons.u_karambit=Karambit
+global.Weapons.u_shovel=Shovel
+global.Weapons.u_cleaver=Cleaver
+global.Weapons.u_model_98b=M98B
+global.Weapons.u_auga3=AUG A3
+global.Weapons.u_mx4=MX4
+global.Weapons.u_m1014=M4 Shotgun
+global.Weapons.u_m1903=M1903
+global.Weapons.u_fnar=SP-AR
+global.Weapons.u_mp9=MP9
+global.Weapons.u_improvisedgun=Improvised Gun
+global.Weapons.u_skorpion=Dual VZ. 61
+global.Weapons.u_elephantgun=Mammoth Gun
+global.Weapons.u_lewisgun=Syndicate Gun
+global.Weapons.u_inquisitionsword=Inquisition Sword
+global.Weapons.u_rpk74=RPK-74
+global.Weapons.u_a_8s_ex=A 8S Explosive Tip
+
+
+// BF-HL Vehicles
+// Personal vehicles
+global.Weapons.havana/vehicles/offroad_motorcycle_cr/offroad_motorcycle_cr=Offroad Motorcycle
+global.Weapons.havana/vehicles/street_motorcycle_cr/street_motorcycle_cr=Street Motorcycle
+global.Weapons.havana/vehicles/street_motorcycle_cr/street_motorcycle_cr_hw=Street Motorcycle
+global.Weapons.havana/vehicles/street_motorcycle_le/street_motorcycle_le=Street Motorcycle
+
+// Transport vehicles
+global.Weapons.havana/vehicles/coupe_cr/coupe_cr=Coupe
+global.Weapons.havana/vehicles/coupe_cr/coupe_cr_hw0=Coupe
+global.Weapons.havana/vehicles/coupe_le/coupe_le=Coupe
+global.Weapons.havana/vehicles/fuel_tanker/fuel_tanker=Fuel Tanker
+global.Weapons.havana/vehicles/fuel_tanker/fuel_tanker_hw=Fuel Tanker
+global.Weapons.havana/Vehicles/mathusmobile/mathuscouch=Merica Couch
+global.Weapons.havana/vehicles/msp_cr/msp_cr=Mobile Spawn Point
+global.Weapons.havana/vehicles/msp_le/msp_le=Mobile Spawn Point
+global.Weapons.havana/vehicles/sedan_cr/sedan_cr=Sedan
+global.Weapons.havana/vehicles/sedan_cr/sedan_cr_hw=Sedan
+global.Weapons.havana/vehicles/sedan_le/sedan_le=Sedan
+global.Weapons.havana/vehicles/suv_cr/suv_cr=SUV
+global.Weapons.havana/vehicles/suv_le/suv_le=SUV
+global.Weapons.havana/vehicles/utility_van/utility_van=Utility Van
+global.Weapons.havana/vehicles/utility_van/utility_van_hw=Utility Van
+global.Weapons.havana/vehicles/lowrider_cr/lowrider_cr=Lowrider
+global.Weapons.havana/vehicles/pickup_truck/pickup_truck_hw=Pickup Truck
+global.Weapons.havanaxp1/vehicles/pickup_truck/pickup_truck=pickup truck
+global.Weapons.havanaxp1/vehicles/pickup_truck/pickup_truck_hw=pickup truck
+global.Weapons.havanaxp1/vehicles/lowrider_cr/lowrider_cr=lowrider
+global.Weapons.havanaxp2/vehicles/pickup_truck_cr/pickup_truck_cr=pickup truck
+global.Weapons.havanaxp2/vehicles/pickup_truck/pickup_truck_hw=pickup truck
+global.Weapons.havanaxp2/vehicles/pickup_truck/pickup_truck_hw=pickup truck
+global.Weapons.havanaxp3/vehicles/exotic/exotic=Luxury Coupe
+global.Weapons.havanaxp3/vehicles/exotic/exotic_hw=Luxury Coupe
+global.Weapons.havanaxp3/vehicles/exotic/exotic_le=Luxury Coupe
+global.Weapons.havanaxp3/vehicles/limo/limo=Limo
+global.Weapons.havanaxp3/vehicles/tuner_cr/tuner_cr=Import Tuner
+global.Weapons.havanaxp3/vehicles/tuner_cr/tuner_cr_hw=Import Tuner
+global.Weapons.havanaxp3/vehicles/tuner_le/tuner_le=Import Tuner
+
+// Light armored vehicles
+global.Weapons.havana/vehicles/cat_cr/cat_cr=Counter Attack Truck
+global.Weapons.havana/vehicles/cat_le/cat_le=Counter Attack Truck
+
+// Heavy armored vehicles
+
+// Air vehicles
+global.Weapons.havana/vehicles/attack_heli_cr/attack_heli_cr=Attack Helicopter
+global.Weapons.havana/vehicles/attack_heli_le/attack_heli_le=Attack Helicopter
+global.Weapons.havana/vehicles/transport_heli_cr/transport_heli_cr=Transport Helicopter
+global.Weapons.havana/vehicles/transport_heli_le/transport_heli_le=Transport Helicopter
+global.Weapons.havana/gameplay/gamemodes/heist/helicopter_heistpickup_vehicle=Heist Pickup Helicopter
+global.Weapons.havanaxp2/vehicles/scout_heli_cr/scout_heli_cr=Scout Helicopter
+global.Weapons.havanaxp2/vehicles/scout_heli_le/scout_heli_le=Scout Helicopter
+
+// Water vehicles
+global.Weapons.havana/vehicles/airboat/airboat_test2=Airboat
+global.Weapons.havana/vehicles/gunboat_cr/gunboat_cr=Gun Boat
+global.Weapons.havana/vehicles/gunboat_le/gunboat_le=Gun Boat
+
+
+///////////////////////////////////
+// Main window
+///////////////////////////////////
+frmMain.toolsToolStripMenuItem=Herramientas
+frmMain.optionsToolStripMenuItem=Configuración.
+frmMain.manageAccountsToolStripMenuItem=Gestionar Administradores.
+frmMain.checkForUpdatesToolStripMenuItem=Comprobar Actualizaciones...
+frmMain.aboutToolStripMenuItem=Acerca de.
+frmMain.changelogToolStripMenuItem=Registro de Cambios...
+
+frmMain.lblHost=Servidor
+frmMain.lblPort=Puerto
+frmMain.lblUsername=Usuario
+frmMain.txtUsername.Tooltip=(opcional) No es necesario si te vas a conectar directamente a un servidor de BFBC2.
+frmMain.lblPassword=Contraseña
+frmMain.btnConnect=Conectar
+
+frmMain.lblUpdateAvailable=¡Hay una actualización disponible!
+frmMain.toolStripDownloading.Error=Error al descargar la actualización:{0}
+frmMain.toolStripDownloading.Complete=La actualización descargada ya está lista para ser instalada.
+frmMain.toolStripDownloading=Descargando actualización...
+frmMain.toolStripDownloading.Checking=Comprobando actualizaciones...
+frmMain.MessageBox.GameConfigUpdated=Los archivos de configuración (.def) se han actualizado. Por favor reinicia Procon.
+frmMain.MessageBox.NoUpdateAvailable=¡Ya tienes la última versión!
+frmMain.MessageBox.RestartProcon=La actualización descargada está lista para instalarse. ¿Deseas instalar la nueva actualización? Procon se reinicirá al terminar este proceso.
+
+fmrMain.tlsConnections.btnNewConnection=Nuevo servidor
+fmrMain.tlsConnections.btnStartPage=Página Principal
+fmrMain.tlsConnections.btnShiftServerPrevious=Anterior Servidor
+fmrMain.tlsConnections.btnShiftServerNext=Siguiente Servidor
+fmrMain.tlsConnections.btnConnectDisconnect.Connect=Conectar
+fmrMain.tlsConnections.btnConnectDisconnect.Disconnect=Desconectar
+
+fmrMain.tlsConnections.chkAutomaticallyConnect=Reconectar Automáticamente
+
+///////////////////////////////////
+// About Window
+///////////////////////////////////
+frmAbout.Title=Acerca de... {0}
+
+frmAbout.tabAbout.Title=Acerca de...
+frmAbout.tabAbout.lblVersion=Versión {0}
+frmAbout.tabAbout.lnkVisitForum=Visita el foro para obtener ayuda y enviar errores
+frmAbout.tabThanks.Title=Agradecimientos
+frmAbout.tabCopyright.Title=Copyright
+
+
+
+///////////////////////////////////
+// Options Window
+///////////////////////////////////
+frmOptions.Title=Opciones
+
+frmOptions.tabBasics=General
+frmOptions.tabBasics.lblBasicsLanguage=Idioma
+frmOptions.tabBasics.btnBasicsSetLanguage=Aplicar
+frmOptions.tabBasics.lblBasicsAuthor=Traducido por:
+frmOptions.tabBasics.lblBasicsLogging=Registros
+frmOptions.tabBasics.chkBasicsEnableChatLogging=Activar registro del chat.
+frmOptions.tabBasics.chkBasicsEnableEventsLogging=Activar registro de eventos.
+frmOptions.tabBasics.chkBasicsEnableConsoleLogging=Activar registro de la consola.
+frmOptions.tabBasics.chkBasicsEnablePluginLogging=Activar registro de inicio de complementos.
+frmOptions.tabBasics.lblBasicsPrivacy=Actualizaciones
+frmOptions.tabBasics.chkBasicsAutoCheckDownloadForUpdates=Descargar actualizaciones automáticamente.
+frmOptions.tabBasics.chkBasicsAutoApplyUpdates=Desconectar y actualizar automáticamente.
+frmOptions.tabBasics.chkBasicsAutoCheckGameConfigsForUpdates=Actualizar configuración al comprobar.
+
+frmOptions.tabBasics.AutoApplyUpdateInfo=¡Las actualizaciones descargadas se instalarán en el próximo reinicio!|*||*|Si no quieres que ocurra esto, debes desactivar las actualizaciones automáticas.
+
+frmOptions.tabBasics.lblBasicPreferences=Visualización
+frmOptions.tabBasics.lblBasicsShowWindow=Mostrar la aplicación:
+frmOptions.tabBasics.cboBasicsShowWindow.TaskTray=En Barra de Tareas y Bandeja del Sistema.
+frmOptions.tabBasics.cboBasicsShowWindow.Task=Solo en Barra de Tareas.
+frmOptions.tabBasics.chkBasicsCloseToTray=Cerrar en la Bandeja del Sistema.
+frmOptions.tabBasics.chkBasicsMinimizeToTray=Iniciar minimizado.
+
+
+frmOptions.tabPlugins=Complementos
+
+frmOptions.tabPlugins.lblPluginsSecurity=Seguridad de los Complementos
+frmOptions.tabPlugins.cboSandboxOptions.Sandbox=Cargar complementos en modo sandbox (*)
+frmOptions.tabPlugins.cboSandboxOptions.Trusted=Cargar complementos sin restricciones
+
+frmOptions.tabPlugins.lblPluginsOutgoingConnections=Conexiones externas
+frmOptions.tabPlugins.lblPluginsTrustedHostDomain=IP/Dominio:
+frmOptions.tabPlugins.lblPluginsPort=Puerto:
+
+frmOptions.tabPlugins.lblPluginsDatabases=Base de Datos
+frmOptions.tabPlugins.chkAllowODBCConnections=Permitir todas las conexiones de salida ODBC.
+frmOptions.tabPlugins.lblPluginsMail=Correo
+frmOptions.tabPlugins.chkAllowSmtpConnections=Permitir todas las conexiones de salida SMTP.
+
+frmOptions.tabPlugins.lblPluginMaxRuntime=Tiempo de carga de cada complemento
+frmOptions.tabPlugins.lblPluginMaxRuntimeMin=min
+frmOptions.tabPlugins.lblPluginMaxRuntimeSec=seg
+
+frmOptions.tabPlugins.lblPluginDebugging=Modo depuración
+frmOptions.tabPlugins.chkEnablePluginDebugging=Activar el modo depuración de complementos.
+
+frmOptions.tabAdvanced.lblAdvSpecialSwitches.chkAdvStartup=Inicio
+frmOptions.tabAdvanced.lblAdvSpecialSwitches.chkAdvUsePluginOldStyleLoad=Activar el sistema de carga de complementos antiguos.
+frmOptions.tabAdvanced.lblAdvSpecialSwitches.lblAdvStartupChangeNotice=Desactivar esta función puede provocar que los complementos antiguos no se carguen. Para que sea efectivo el cambio, ha de reiniciarse la aplicación.
+
+frmOptions.tabPlugins.lblPluginsChangesAfterRestart=Los cambios en la configuración de seguridad, serán efectivos en el próximo reinicio.
+
+
+frmOptions.lblHttpServerTitle=Servidor HTTP
+frmOptions.lnkStartStopHttpServer.Start=Iniciar servidor HTTP
+frmOptions.lnkStartStopHttpServer.Stop=Detener servidor HTTP
+frmOptions.lblHttpServerServerStatus.Online=En línea y escuchando el puerto {0}
+frmOptions.lblHttpServerServerStatus.Offline=Servidor desconectado
+frmOptions.lblHttpServerServerStatus.Error=Error: {0}
+
+frmOptions.lnkHttpServerForwardedTest=Prueba de conexión del servidor HTTP
+frmOptions.lblHttpServerForwardedTestStatus.Unknown=Iniciar la prueba determina si se puede conectar con el servidor
+frmOptions.lblHttpServerForwardedTestStatus.Running=Comprobando puerto {0}...
+frmOptions.lblHttpServerForwardedTestStatus.Open=El puerto {0} está abierto en {1}. La conexión esta configurada correctamente.
+frmOptions.lblHttpServerForwardedTestStatus.Closed=¡Ha ocurrido un error! El puerto {0} parece que no esta abierto. Visita www.portforward.com para obtener ayuda.
+
+frmOptions.lblHttpServerStartPort=Puerto:
+frmOptions.lblHttpServerBindingIP=IP:
+frmOptions.lblBindingExplanation=Para buscar en cualquier dirección usar '0.0.0.0'.
+
+frmOptions.tabAdvanced=Avanzado
+frmOptions.tabAdvanced.lblAdvPlayerTab=Pestaña de Jugadores
+frmOptions.tabAdvanced.lblAdvChatTab=Pestaña del Chat
+frmOptions.tabBasics.chkAdvEnableAdminMoveMsg=Activar mensajes Movido por Admin
+frmOptions.tabBasics.chkAdvEnableChatAdminName=Activar Alias Admin en mensajes de chat
+
+frmOptions.tabAdvanced.lblAdvLayerTabs=Pestañas
+frmOptions.tabAdvanced.lblAdvLayerTabs.chkAdvHideLocalPluginsTab=Ocultar pestaña de Complementos locales
+frmOptions.tabAdvanced.lblAdvLayerTabs.chkAdvHideLocalAccountsTab=Ocultar pestaña de Administradores locales
+frmOptions.tabAdvanced.lblAdvLayerTabs.lblAdvLayerTabsChangeNotice=Para aplicar los cambios necesitas reiniciar el Procon.
+
+frmOptions.tabAdvanced.lblAdvConVisuals=Detalles de conexión
+frmOptions.tabAdvanced.lblAdvConVisuals.chkAdvShowRoundTimerConstantly=Mostrar el Tiempo de la Ronda Constantemente
+frmOptions.tabAdvanced.lblAdvConVisuals.chkAdvShowCfmMsgRoundRestartNext=Necesario para confirmar el reinicio o ejecutar la siguiente ronda.
+
+frmOptions.tabAdvanced.lblAdvSpecialSwitches=Interruptores Especiales
+frmOptions.tabAdvanced.lblAdvSpecialSwitches.chkAdvShowDICESpecialOptions=Activar los interruptores internos de DICE.
+frmOptions.tabAdvanced.lblAdvSpecialSwitches.lblAdvShowDICESpecialOptionsNotice=Activar solo si sabes lo que estás haciendo y la repercusión que tendrán estos ajustes. (Necesario reiniciar).
+
+frmOptions.tabAdvanced2=Avanzado-2
+frmOptions.lblAdv2BanTab=Baneados
+frmOptions.tabBasics.chkAdv2EnableAdminReason=Mostrar el administrador que ha efectuado la expulsión.
+
+frmOptions.tabPlayerLookup=Enlace de Estadísticas
+frmOptions.tabPlayerLookup.colStatsLinksName=Nombre
+frmOptions.tabPlayerLookup.colStatsLinkUrl=URL
+frmOptions.tabPlayerLookup.lblStatsLinkName=Nombre
+frmOptions.tabPlayerLookup.lblStatsLinkUrl=URL
+frmOptions.tabPlayerLookup.lblStatsLinkHelpText=Los enlaces personalizados se separan con {0}.|*|Puedes usar los siguientes valores dinámicos:|*|%game%|*|%srv_ip_port%  %srv_ip%  %srv_port%|*|%player_name%|*|%player_EAguid%|*|%player_PBguid%|*|%player_IP%
+
+///////////////////////////////////
+// Manage Accounts Window
+///////////////////////////////////
+frmManageAccounts.Title=Gestionar Administradores
+
+frmManageAccounts.lblSelectAccountTitle=Si seleccionas un Administrador puedes modificar sus permisos.
+frmManageAccounts.lnkCreateNewAccount=Añadir Administrador
+
+frmManageAccounts.lblCreateNewAccountTitle=Añadir un nuevo Administrador
+frmManageAccounts.lblUsername=Nombre de Usuario
+frmManageAccounts.lblPassword=Contraseña
+frmManageAccounts.lblUserNameExistsError=El nombre de usuario ya existe
+frmManageAccounts.btnCreateAccount=Añadir Administrador
+
+frmManageAccounts.lblEditingAccountTitle=Modificando el administrador {0}
+frmManageAccounts.lblChangePassword=Cambiar contraseña
+frmManageAccounts.lnkUpdatePassword=Actualizar contraseña
+frmManageAccounts.lnkSetGlobalPrivileges=Configurar permisos en todos los paneles del servidor
+frmManageAccounts.lnkSetGlobalPrivileges.ToolTip=Sobrescribe los permisos individuales de cada panel con un nuevo conjunto de reglas
+frmManageAccounts.lnkRemovePrivileges=Eliminar permisos de todos los paneles del servidor
+frmManageAccounts.lnkRemovePrivileges.ToolTip=Revoca los accesos de este Administrador en todos los servidores, simplemente reiniciando el Administrador.
+frmManageAccounts.lnkDeleteUser=Quitar Administrador
+frmManageAccounts.lnkDeleteUser.ToolTip=Elimina el usuario y su acceso a todos los servidores.
+frmManageAccounts.lnkEditAnotherAccount=Modificar otro Administrador
+
+frmManageAccounts.lblConfirmationTitle.DeleteAccount=Confirmar
+frmManageAccounts.lblExtraInformation.DeleteAccount=Quitar la Administración de {0} hará que el usuario se desconecte inmediatamente de cualquier panel en el que esté conectado.
+frmManageAccounts.lblConfirmationQuestion.DeleteAccount=¿Estás seguro que quieres quitar el Administrador {0}?
+frmManageAccounts.btnConfirm.DeleteAccount=Eliminar Administrador
+
+frmManageAccounts.lblConfirmationTitle.UpdatePassword=Confirmar
+frmManageAccounts.lblExtraInformation.UpdatePassword=Cambiar la contraseña de {0} desconectará inmediatamente al usuario de cualquier panel al que esté conectado.
+frmManageAccounts.lblConfirmationQuestion.UpdatePassword=¿Estás seguro que quieres cambiar la contraseña de {0}?
+frmManageAccounts.btnConfirm.UpdatePassword=Actualizar contraseña
+
+frmManageAccounts.lblConfirmationTitle.RemovePrivileges=Confirmar
+frmManageAccounts.lblExtraInformation.RemovePrivileges=Eliminar los permisos de {0} desconectará inmediatamente al usuario de cualquier panel al que esté conectado.
+frmManageAccounts.lblConfirmationQuestion.RemovePrivileges=¿Estás seguro que quieres eliminar los permisos de {0}?
+frmManageAccounts.btnConfirm.RemovePrivileges=Eliminar Permisos
+
+frmManageAccounts.lblConfirmationTitle.AssignPrivileges=Información
+frmManageAccounts.lblExtraInformation.AssignPrivileges=Procon asigna los permisos en base al servidor. Desde aquí puedes configurar todos los permisos de Administración para todos los servidores, sobrescribiendo cualquier configuración existente. Los permisos que se establecen son los  valores predeterminados de nivel más bajo que se pueden conceder.
+frmManageAccounts.lblConfirmationQuestion.AssignPrivileges=Clica sobre 'Continuar' para asignar los permisos al Administrador {0}.
+frmManageAccounts.btnConfirm.AssignPrivileges=Continuar
+
+
+///////////////////////////////////
+// Player treeview on the left side of the interface.
+///////////////////////////////////
+// uscServerPlayerTreeview.expandAllToolStripMenuItem=Mostrar Jugadores
+// uscServerPlayerTreeview.connectDisconnectToolStripMenuItem.Connect=Conectar
+// uscServerPlayerTreeview.connectDisconnectToolStripMenuItem.Disconnect=Desconectar
+// uscServerPlayerTreeview.deleteServerToolStripMenuItem=Borrar Servidor
+// uscServerPlayerTreeview.automaticallyConnectServerToolStripMenuItem=Conectar Automáticamente
+
+
+///////////////////////////////////
+// Start Page
+///////////////////////////////////
+uscStartPage.Title=Página de inicio
+
+
+
+///////////////////////////////////
+// Connection Panel
+///////////////////////////////////
+uscServerConnection.lblPlayerCount=Jugadores: {0}/{1}
+uscServerConnection.lblVersion=Versión: {0}
+uscServerConnection.lblMappack=Mapas: {0}
+uscServerConnection.lblCurrentGameMode=Modo de Juego: {0}
+uscServerConnection.lblCurrentMapName=Mapa: {0}
+uscServerConnection.lblCurrentRound=Ronda: {0}/{1}
+uscServerConnection.lblServerUptime=Funcionando: {0}
+
+uscServerConnection.btnNextRound.ToolTip=Siguiente Ronda
+uscServerConnection.btnRestartRound.ToolTip=Reiniciar Ronda
+
+uscServerConnection.lblPlasmaStatus.NotConnected=No Conectado
+uscServerConnection.lblPlasmaStatus.NotConnected.ToolTip=El servidor de juego no está conectado al Plasma backend
+uscServerConnection.lblPlasmaStatus.ConnectedToBackend=Conectado al Backend
+uscServerConnection.lblPlasmaStatus.ConnectedToBackend.ToolTip=El servidor está conectado al Plasma backend, pero no es visible todavía por los jugadores
+uscServerConnection.lblPlasmaStatus.AcceptingPlayers=Se aceptan jugadores
+uscServerConnection.lblPlasmaStatus.AcceptingPlayers.ToolTip=El servidor está conectado al Plasma backend, es visible en la lista de servidores y los jugadores pueden conectarse al servidor
+
+uscServerConnection.extServerInfo.ExternalGameIpandPort.ToolTip=IP y Puerto Externos:
+uscServerConnection.extServerInfo.JoinQueueEnabled.ToolTip=Petición de Conexión Activada:
+uscServerConnection.extServerInfo.JoinQueueEnabled.True.ToolTip=Si
+uscServerConnection.extServerInfo.JoinQueueEnabled.False.ToolTip=No
+uscServerConnection.extServerInfo.QuickMatch.ToolTip=QuickMatch Detected:
+uscServerConnection.extServerInfo.QuickMatch.True.ToolTip=Si
+uscServerConnection.extServerInfo.QuickMatch.False.ToolTip=No
+uscServerConnection.extServerInfo.MatchMaking.ToolTip=MatchMaking Enabled:
+uscServerConnection.extServerInfo.MatchMaking.True.ToolTip=Si
+uscServerConnection.extServerInfo.MatchMaking.False.ToolTip=No
+uscServerConnection.extServerInfo.ServerRegion.ToolTip=Región del Servidor:
+uscServerConnection.extServerInfo.ServerRegion.NAm.ToolTip=Norte América
+uscServerConnection.extServerInfo.ServerRegion.SAm.ToolTip=Sur América
+uscServerConnection.extServerInfo.ServerRegion.AC.ToolTip=Antártida
+uscServerConnection.extServerInfo.ServerRegion.Afr.ToolTip=África
+uscServerConnection.extServerInfo.ServerRegion.EU.ToolTip=Europa
+uscServerConnection.extServerInfo.ServerRegion.Asia.ToolTip=Asia
+uscServerConnection.extServerInfo.ServerRegion.OC.ToolTip=Oceanía
+uscServerConnection.extServerInfo.ServerRegion..ToolTip=desconocido
+uscServerConnection.extServerInfo.ServerCountry.ToolTip=Localización del Servidor:
+uscServerConnection.extServerInfo.PingSite.ToolTip=Lugar del Ping:
+uscServerConnection.extServerInfo.PingSite.iad.ToolTip=Washington/Dulles
+uscServerConnection.extServerInfo.PingSite.dfw.ToolTip=Dallas
+uscServerConnection.extServerInfo.PingSite.ams.ToolTip=Amsterdam
+uscServerConnection.extServerInfo.PingSite.lax.ToolTip=Los Ángeles
+uscServerConnection.extServerInfo.PingSite.lhr.ToolTip=Londres
+uscServerConnection.extServerInfo.PingSite.syd.ToolTip=Sydney
+uscServerConnection.extServerInfo.PingSite.nrt.ToolTip=Tokyo/Narita
+uscServerConnection.extServerInfo.PingSite..ToolTip=desconocido
+uscServerConnection.extServerInfo.PunkBusterVersion.ToolTip=Versión del Servidor PunkBuster:
+uscServerConnection.extServerInfo.BlazePlayerCount.ToolTip=Recuento de Jugadores en Blaze:
+uscServerConnection.extServerInfo.BlazeGameState.ToolTip=Estado del Jugo en Blaze:
+
+uscServerConnection.lblLayerVersion.Same.ToolTip=El Servidor está funcionando con la misma versión de Procon
+uscServerConnection.lblLayerVersion.Newer.ToolTip=El Servidor está funcionando con una versión superior de Procon
+uscServerConnection.lblLayerVersion.Older.ToolTip=El Servidor está funcionando con una versión antigua de Procon
+
+uscServerConnection.MessageBox.NextRound=¿Ejecutar siguiente ronda?
+uscServerConnection.MessageBox.RestartRound=¿Reiniciar ronda?
+
+uscServerConnection.tabPlayerList=JUGADORES
+uscServerConnection.tabChat=Chat
+uscServerConnection.tabMapView=Mapa
+uscServerConnection.tabEvents=Eventos
+uscServerConnection.tabLists=Administración
+uscServerConnection.tabServerSettings=Servidor
+uscServerConnection.tabPlugins=Complementos
+uscServerConnection.tabAccounts=Administradores
+uscServerConnection.tabConsole=Consola
+uscServerConnection.tabParentLayerControl=Servidor de Procon
+
+// Hidden for the time being, expect more shortly.
+uscServerConnection.tabLayerControl=Panel de Control
+
+uscServerConnection.OnServerCommandConnectionAttempt=Intentando conectar con {0}..
+uscServerConnection.OnServerCommandConnectionSuccess=Conectado a {0}
+uscServerConnection.OnServerEventsConnectionAttempt=Intentando conectar con la lista de eventos de {0}..
+uscServerConnection.OnServerEventsConnectionSuccess=Conexión establecida con la lista de eventos de {0}
+
+uscServerConnection.OnServerConnectionClosed=Conexión con {0} cerrada
+uscServerConnection.OnServerConnectionFailure=Error de conexión: {0}
+
+uscServerConnection.OnLoginAttempt=Intentando conectar...
+uscServerConnection.OnLoginEventsAttempt=Intentando conectar con eventos...
+uscServerConnection.OnLoginSuccess=Conexión establecida correctamente
+uscServerConnection.OnLoginEventsSuccess=Conexión con eventos establecida correctamente
+uscServerConnection.OnLoginAuthenticationFailure=Fallo de conexión
+uscServerConnection.OnLogoutSuccess=Desconectado
+
+
+
+///////////////////////////////////
+// Login Panel
+///////////////////////////////////
+uscLoginPanel.lblConnectionUsername=Usuario
+uscLoginPanel.lblConnectionPassword=Contraseña
+uscLoginPanel.chkAutomaticallyConnect=Conectar automáticamente
+uscLoginPanel.lnkConnectionsConnect=CONECTAR
+uscLoginPanel.ErrorMessage.InsufficientPrivileges=No tienes permisos suficientes para poder conectarte a este panel
+uscLoginPanel.ErrorMessage.InvalidUsername=El nombre de usuario introducido no existe.
+uscLoginPanel.ErrorMessage.InvalidPassword=La contraseña introducida es incorrecta.
+
+
+
+///////////////////////////////////
+// Player List Panel
+///////////////////////////////////
+uscPlayerListPanel.lsvPlayers.colSlotID=ID#
+uscPlayerListPanel.lsvPlayers.colTags=TAG
+uscPlayerListPanel.lsvPlayers.colPlayerName=ALIAS
+uscPlayerListPanel.lsvPlayers.colSquad=Patrulla
+uscPlayerListPanel.lsvPlayers.colKit=Equipamiento
+uscPlayerListPanel.lsvPlayers.colKills=Asesinatos
+uscPlayerListPanel.lsvPlayers.colDeaths=Muertes
+uscPlayerListPanel.lsvPlayers.colKdr=Tasa A/M
+uscPlayerListPanel.lsvPlayers.colScore=Puntuación
+uscPlayerListPanel.lsvPlayers.colPing=PING
+uscPlayerListPanel.lsvPlayers.colRank=Rango
+uscPlayerListPanel.lsvPlayers.colTime=Tiempo de Juego
+uscPlayerListPanel.lsvPlayers.colType=Tipo
+
+uscPlayerListPanel.lsvPlayers.Groups.Tickets=Tickets
+
+uscPlayerListPanel.lsvPlayers.Type.Player=Jugador
+uscPlayerListPanel.lsvPlayers.Type.Spectator=Espectador
+uscPlayerListPanel.lsvPlayers.Type.CommanderPC=Comandante (en PC)
+uscPlayerListPanel.lsvPlayers.Type.CommanderTablet=Comandante (en Tablet)
+uscPlayerListPanel.lsvPlayers.Type.Developer=Desarrollador de Procon
+uscPlayerListPanel.lsvPlayers.Type.Staff=Moderador
+uscPlayerListPanel.lsvPlayers.Type.PluginDeveloper=Desarrollador de Plugin
+
+// Cheese button takes a pb_sv_ss of the selected player.  This is hidden for now but will appear shortly in a later version.
+uscPlayerListPanel.btnPlayerListSelectedCheese=¡Patata!
+
+uscPlayerListPanel.chkPlayerListShowTeams=Mostrar equipos
+
+uscPlayerListPanel.tabCourtMartialBFBC=BFBC2
+uscPlayerListPanel.tabCourtMartialPunkbuster=PunkBuster
+
+uscPlayerListPanel.lblInventory=Inventario
+
+uscPlayerListPanel.ctxPlayerOptions.moveToSquadToolStripMenuItem=Mover {0} a...
+uscPlayerListPanel.ctxPlayerOptions.moveToSquadToolStripMenuItem.Team=Equipo {0}
+uscPlayerListPanel.ctxPlayerOptions.moveToSquadToolStripMenuItem.Squad=Patrulla {0}
+
+uscPlayerListPanel.ctxPlayerOptions.textChatModerationToolStripMenuItem=Moderación del Chat
+uscPlayerListPanel.ctxPlayerOptions.reservedSlotToolStripMenuItem=Huecos Reservados
+uscPlayerListPanel.ctxPlayerOptions.spectatorListToolStripMenuItem=Lista de Espectadores
+
+uscPlayerListPanel.ctxPlayerOptions.statsLookupToolStripMenuItem=Ver sus Estadísticas
+uscPlayerListPanel.ctxPlayerOptions.punkBusterScreenshotToolStripMenuItem=Activar Captura de PB
+
+uscPlayerListPanel.ctxPlayerOptions.EndRound.Label=Selecciona el equipo ganador de la ronda:
+uscPlayerListPanel.ctxPlayerOptions.EndRound.Team1=Equipo 1
+uscPlayerListPanel.ctxPlayerOptions.EndRound.Team2=Equipo 2
+uscPlayerListPanel.ctxPlayerOptions.EndRound.Team3=Equipo 3
+uscPlayerListPanel.ctxPlayerOptions.EndRound.Team4=Equipo 4
+uscPlayerListPanel.MessageBox.EndRound=¿Finalizar esta ronda con {0} ganadores?
+
+///////////////////////////////////
+// Player List Panel -> Punish Player Panel
+///////////////////////////////////
+uscPlayerPunishPanel.rdoKill=Asesinar
+uscPlayerPunishPanel.rdoKick=Expulsar
+uscPlayerPunishPanel.rdoPermanentlyBan=Banear Permanentemente
+uscPlayerPunishPanel.rdoTemporaryBan=Expulsión Temporal
+uscPlayerPunishPanel.lblTime=Tiempo
+uscPlayerPunishPanel.lblReason=Razón
+uscPlayerPunishPanel.btnPunish=APLICAR Castigo
+
+uscPlayerPunishPanel.rdoPunishOnName=Nombre
+uscPlayerPunishPanel.rdoPunishOnIP=IP
+uscPlayerPunishPanel.rdoPunishOnGUID=GUID
+
+uscPlayerPunishPanel.lblConfirmation.Kill=Matar a {0}
+uscPlayerPunishPanel.lblConfirmation.Kick=Expulsar a {0}
+uscPlayerPunishPanel.lblConfirmation.TemporaryBan=Banear temporalmente a {0}{1}
+uscPlayerPunishPanel.lblConfirmation.TemporaryBan.Time=durante {0}
+uscPlayerPunishPanel.lblConfirmation.TemporaryBan.ToLong=No puedes banear a los jugadores más de {0}.
+uscPlayerPunishPanel.lblConfirmation.PermanentBan=Banear permanentemente a {0}
+
+
+
+///////////////////////////////////
+// Chat Panel
+///////////////////////////////////
+uscChatPanel.btnChatSend=Enviar
+uscChatPanel.lblAudience=Enviar a:
+uscChatPanel.lblDisplayFor=Mostrar durante
+uscChatPanel.cboPlayerList.AllPlayers=Todos los Jugadores
+uscChatPanel.rtbChatBox.Admin=Administrador
+uscChatPanel.rtbChatBox.Private=Privado
+
+uscChatPanel.chkDisplayOnKilledEvents.Killed=MUERTO
+uscChatPanel.chkDisplayOnKilledEvents.HeadShot=Disparo en la Cabeza
+uscChatPanel.chkDisplayOnKilledEvents.TeamKill=Fuego Amigo
+uscChatPanel.chkDisplayScrolling=Desplazamiento automático
+uscChatPanel.chkDisplayOnJoinLeaveEvents.Joined=Se CONECTA al servidor: {0}
+uscChatPanel.chkDisplayOnJoinLeaveEvents.Left=Se DESCONECTA del servidor: {0}
+
+uscChatPanel.lblDisplay=Mostrar en
+uscChatPanel.cboDisplayList.Say=CHAT
+uscChatPanel.cboDisplayList.Yell=CENTRO
+
+
+uscChatPanel.chkDisplayOnJoinLeaveEvents=Mostrar las conexiones y desconexiones de los jugadores.
+uscChatPanel.chkDisplayOnKilledEvents=Mostrar asesinatos y muertes de los jugadores.
+uscChatPanel.btnclearchat=Vaciar Mensajes
+
+uscChatPanel.chkDisplayComRoseMsg=Mostrar Mensajes Commo Rose
+uscChatPanel.ID_CHAT_ATTACK_DEFEND=[Commo Rose] ¡Ataca/Defiende!
+uscChatPanel.ID_CHAT_REQUEST_MEDIC=[Commo Rose] ¡Solicito Médico!
+uscChatPanel.ID_CHAT_REQUEST_ORDER=[Commo Rose] ¡Solicito Órdenes!
+uscChatPanel.ID_CHAT_REQUEST_REPAIRS=[Commo Rose] ¡Solicito Reparaciones!
+uscChatPanel.ID_CHAT_GOGOGO=[Commo Rose] ¡Vamos! ¡Vamos! ¡Vamos!
+uscChatPanel.ID_CHAT_AFFIRMATIVE=[Commo Rose] ¡Afirmativo!
+uscChatPanel.ID_CHAT_THANKS=[Commo Rose] ¡Gracias!
+uscChatPanel.ID_CHAT_REQUEST_AMMO=[Commo Rose] ¡Solicito Munición!
+uscChatPanel.ID_CHAT_REQUEST_RIDE=[Commo Rose] ¡Solicito transporte!
+uscChatPanel.ID_CHAT_GET_OUT=[Commo Rose] ¡Salir!
+uscChatPanel.ID_CHAT_GET_IN=[Commo Rose] ¡Entrar!
+uscChatPanel.ID_CHAT_NEGATIVE=[Commo Rose] ¡Negativo!
+uscChatPanel.ID_CHAT_SORRY=[Commo Rose] ¡Lo siento!
+
+uscChatPanel.chkDisplayPlayerDisconnected=Mostrar eventos como "Jugador Desconectado"
+uscChatPanel.chkDisplayPlayerDisconnected.Disconnected={0} se ha DESCONECTADO del servidor..
+uscChatPanel.chkDisplayPlayerDisconnected.DisconnectedReason={0} ha sido EXPULSADO del servidor (por: {1})..
+uscChatPanel.BLAZESERVER_CONN_LOST=Se ha perdido la conexión con el backend de Blaze
+uscChatPanel.GAME_DESTROYED=El objetivo ha sido destruido
+uscChatPanel.GAME_ENDED=El juego ha finalizado
+uscChatPanel.GROUP_LEFT=Ha dejado el grupo
+uscChatPanel.MIGRATION_FAILED=Fallo de migración
+uscChatPanel.PLAYER_CONN_LOST=El Jugador ha perdido la conexión
+uscChatPanel.PLAYER_JOIN_EXTERNAL_SESSION_FAILED=Ha fallado la conexión del Jugador
+uscChatPanel.PLAYER_JOIN_FROM_QUEUE_FAILED=El Jugador en cola no ha podido unirse
+uscChatPanel.PLAYER_JOIN_TIMEOUT=El jugador ha alcanzado el tiempo de espera
+uscChatPanel.PLAYER_KICKED=Jugador expulsado
+uscChatPanel.PLAYER_KICKED_WITH_BAN=Jugador baneado permanentemente
+uscChatPanel.PLAYER_LEFT=El jugador se ha ido
+uscChatPanel.PLAYER_RESERVATION_TIMEOUT=El jugador ha alcanzado el tiempo del hueco reservado
+
+
+///////////////////////////////////
+// Battlemap	
+///////////////////////////////////
+uscMapViewer.tsbPointer=Puntero
+uscMapViewer.tsbTeamColours.TeamColours=Colores del Equipo
+uscMapViewer.tsbTeamColours.EnemyColours=Colores del Enemigo
+uscMapViewer.tsbMeasuringTool=Herramienta de Medición
+uscMapViewer.tsbMapZonesTools=Zona del Mapa
+uscMapViewer.lblImagePack=Paquete de Imágenes
+uscMapViewer.tsbCalibration=Calibrar
+
+uscMapViewer.grpZoneTags.Title=Etiquetar Zonas
+uscMapViewer.grpZoneTags.lblTagsHelp=Las etiquetas y la funcionalidad del mapa son proporcionados por complementos.
+
+uscMapViewer.grpMarkerCollection.Title=Colección de marcadores
+uscMapViewer.grpMarkerCollection.lblTrackPlayersList=Marcar suicidios por
+uscMapViewer.grpMarkerCollection.btnClearMarkers=Vaciar Marcas
+
+uscMapViewer.grpOffset.Title=Compensación
+uscMapViewer.grpOffset.chkLockAxis=Bloquear Ejes
+
+uscMapViewer.grpZoom.Title=Zoom
+uscMapViewer.grpRotation.Title=Rotar
+
+
+uscMapViewer.lblMapPackFilePath.ReadOnly=Este paquete de mapas está protegido contra sobre escritura por su creador para evitar cambios involuntarios. Por favor, ponte en contacto con el autor si crees que la información es incorrecta.
+uscMapViewer.btnSaveCalibration=Guardar
+
+
+///////////////////////////////////
+// Events Panel
+///////////////////////////////////
+uscEvents.colSource=Fuente
+uscEvents.colTime=Fecha y Hora
+uscEvents.colAdmin=Administrador
+uscEvents.colEvent=Evento
+uscEvents.colMessage=Mensaje
+
+uscEvents.lnkShowHide.Hide=Ocultar Opciones
+uscEvents.lnkShowHide.Show=Mostrar Opciones
+
+uscEvents.gpbCaptures=Mostrar eventos
+uscEvents.gpbCaptures.lblMaximumDisplayed=Nº máx. de Eventos a mostrar
+uscEvents.gpbCaptures.lblEvents=Añadir Evento a mostrar
+uscEvents.gpbCaptures.lblCapturingEvents=Eventos que se muestran
+uscEvents.gpbCaptures.lnkAddCapture=Añadir
+uscEvents.gpbCaptures.btncleareventbox=Limpiar la Lista de Eventos
+uscEvents.gpbCaptures.chkEventsEnableScrolling=Activar desplazamiento
+
+uscEvents.lsvEvents.PlayerJoin={0} se ha conectado al servidor.
+uscEvents.lsvEvents.PlayerLeave={0} ha abandonado el servidor.
+uscEvents.lsvEvents.PlayerDisconnected={0} se ha desconectado del servidor (por: {1})
+uscEvents.lsvEvents.PlayerKilled={0} ha asesinado a {1}.
+uscEvents.lsvEvents.PlayerKilled.HeadShot=-DISPARO EN LA CABEZA-
+uscEvents.lsvEvents.PlayerKicked={0} ha sido EXPULSADO del servidor.
+uscEvents.lsvEvents.PlayerKickedByAdmin={0} ha sido EXPULSADO del servidor por un administrador
+uscEvents.lsvEvents.PlayerTimedBanned={0} ha sido BANEADO del servidor durante {1} minutos.
+uscEvents.lsvEvents.PlayerPermanentBanned={0} ha sido BANEADO PERMANENTEMENTE del servidor.
+uscEvents.lsvEvents.PlayerRoundBanned={0} ha sido BANEADO el resto de la ronda.
+uscEvents.lsvEvents.PlayerUnbanned={0} ha sido desbaneado.
+uscEvents.lsvEvents.IPTimedBanned={0} ha sido BANEADO del servidor durante {1} minutos.
+uscEvents.lsvEvents.IPPermanentBanned={0} ha sido BANEADO PERMANENTEMENTE del servidor.
+uscEvents.lsvEvents.IPRoundBanned={0} ha sido BANEADO el resto de la ronda.
+uscEvents.lsvEvents.IPUnbanned={0} ha sido desbaneado.
+uscEvents.lsvEvents.GUIDTimedBanned={0} ha sido baneado del servidor durante {1} minutos.
+uscEvents.lsvEvents.GUIDPermanentBanned={0} ha sido BANEADO PERMANENTEMENTE del servidor.
+uscEvents.lsvEvents.GUIDRoundBanned={0} ha sido BANEADO el resto de la ronda.
+uscEvents.lsvEvents.GUIDUnbanned={0} ha sido desbaneado.
+
+uscEvents.lsvEvents.PlayerKilledByAdmin={0} lo ha matado un administrador.
+uscEvents.lsvEvents.PlayerMovedByAdmin={0} se ha movido a otro equipo/patrulla por un administrador.
+
+uscEvents.lsvEvents.AttemptingConnection=Intentando conectar con {0} a través del puerto {1}.
+uscEvents.lsvEvents.Connected=Conectado a {0}, puerto {1}.
+
+uscEvents.lsvEvents.PluginLoaded={0}
+uscEvents.lsvEvents.PluginEnabled={0}
+uscEvents.lsvEvents.PluginDisabled={0}
+
+uscEvents.lsvEvents.PluginAction={0}
+	
+uscEvents.lsvEvents.PlayerSuicide={0}
+uscEvents.lsvEvents.PlayerSwitchedTeams={0} se ha cambiado del equipo {1} al equipo {2}
+uscEvents.lsvEvents.PlayerTeamKilled={0} ha ASESINADO a su compañero {1}
+
+uscEvents.lsvEvents.LayerOnline=Escuchando en el puerto {0}
+uscEvents.lsvEvents.LayerError={0}
+uscEvents.lsvEvents.AccountLogin={0} en {1}
+uscEvents.lsvEvents.AccountLogout={0}
+
+uscEvents.lsvEvents.PlayerSwitchedSquads={0} se a cambiado de la patrulla {1} a la patrulla {2}.
+uscEvents.lsvEvents.PlayerSwitchedTeams={0} se ha cambiado del equipo {1} al equipo {2}.
+
+uscEvents.lsvEvents.LevelLoading={0}
+uscEvents.lsvEvents.LevelLoaded={1} {0}
+
+
+///////////////////////////////////
+// Lists Panel
+///////////////////////////////////
+uscListControlPanel.tabBanlist=BANEADOS
+uscListControlPanel.tabBanlist.lsvBanlist.colName=Alias
+uscListControlPanel.tabBanlist.lsvBanlist.colIP=IP
+uscListControlPanel.tabBanlist.lsvBanlist.colGUID=GUID
+uscListControlPanel.tabBanlist.lsvBanlist.colType=Tipo
+uscListControlPanel.tabBanlist.lsvBanlist.colTime=Tiempo
+uscListControlPanel.tabBanlist.lsvBanlist.colType.Name=Alias
+uscListControlPanel.tabBanlist.lsvBanlist.colBanLength=Duración
+uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining=Restante
+uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Round=Ronda
+uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Permanent=Permanente
+uscListControlPanel.tabBanlist.lsvBanlist.colTimeRemaining.Unbanned=Desbaneado
+uscListControlPanel.tabBanlist.lsvBanlist.colReason=Razón
+uscListControlPanel.tabBanlist.btnBanlistClearBanlist=Desbanear a todos
+uscListControlPanel.tabBanlist.btnBanlistClearBanlist.Title=Confirmación
+uscListControlPanel.tabBanlist.btnBanlistClearBanlist.Question=¿Seguro que quieres eliminar la lista de jugadores expulsados?
+uscListControlPanel.tabBanlist.btnBanlistUnban=Desbanear Jugador
+uscListControlPanel.tabBanlist.lnkCloseOpenManualBans.Close=Colapsar panel
+uscListControlPanel.tabBanlist.lnkCloseOpenManualBans.Open=BANEAR manualmente
+uscListControlPanel.tabBanlist.rdoBanlistName=Alias
+uscListControlPanel.tabBanlist.rdoBanlistGUID=GUID (32 caracteres)
+uscListControlPanel.tabBanlist.lblBanlistReason=Razón del castigo
+uscListControlPanel.tabBanlist.rdoBanlistPermanent=Permanente
+uscListControlPanel.tabBanlist.rdoBanlistTemporary=Temporal
+uscListControlPanel.tabBanlist.lblBanlistTime=Tiempo
+uscListControlPanel.tabBanlist.btnBanlistAddBan=BANEAR
+
+uscListControlPanel.tabMaplist=Rotación de Mapas
+uscListControlPanel.tabMaplist.lblMaplistCurrentPlayList=Modo de Juego
+uscListControlPanel.tabMaplist.cboMaplistPlaylists.SupportedMaps={0} mapas disponibles
+uscListControlPanel.tabMaplist.lnkMaplistChangePlaylist=Cambiar modo de juego
+uscListControlPanel.tabMaplist.lblMaplistCurrentMaplist=Rotación actual de mapas
+uscListControlPanel.tabMaplist.lsvMaplist.colGametype=Tipo
+uscListControlPanel.tabMaplist.lsvMaplist.colMapname=Nombre del mapa
+uscListControlPanel.tabMaplist.lsvMaplist.colMapFilename=Nombre del archivo
+uscListControlPanel.tabMaplist.lblMaplistMustChangeWarning=Debes cambiar el modo de juego para poder añadir estos mapas
+uscListControlPanel.tabMaplist.lblMaplistPool=Mapas disponibles
+uscListControlPanel.tabMaplist.lnkMaplistAddMapToList=Añadir mapa a la rotación
+uscListControlPanel.tabMaplist.lnkMaplistSetNextMap=Fijar como siguiente mapa
+uscListControlPanel.tabMaplist.lblMaplistMapControls=Controles del mapa
+uscListControlPanel.tabMaplist.lnkMaplistRunNextMap=Cambiar al siguiente mapa
+uscListControlPanel.tabMaplist.lnkMaplistRestartMap=Reiniciar el mapa actual
+uscListControlPanel.tabMaplist.ctxMapOptions.setNextMapToolStripMenuItem=Establecer como siguiente mapa
+uscListControlPanel.tabMaplist.lsvMaplist.MaplistRefreshToolTip=Actualizar la lista de mapas y recargar maplist.txt
+uscListControlPanel.tabMaplist.lsvMaplist.MaplistClearToolTip=Limpiar la lista de mapas sin guardar
+uscListControlPanel.tabMaplist.lsvMaplist.colMapRounds=Rondas
+uscListControlPanel.tabMaplist.lblMaplistRounds=Rondas
+
+uscListControlPanel.tabMaplist.lblMaplistPlaylistChangeConfirmation=Cambiar modo de juego
+uscListControlPanel.tabMaplist.lblExtraInformation=Al cambiar el modo de juego se borrará tu lista actual de mapas. Procon cargará todos los mapas disponibles para el nuevo modo de juego. Puedes editar la lista más tarde.
+uscListControlPanel.tabMaplist.lblConfirmationQuestion=¿Seguro que quieres cambiar el modo de juego?
+uscListControlPanel.tabMaplist.btnMaplistConfirmPlaylistChange=Cambiar el modo de juego
+
+uscListControlPanel.tabReservedSlots=Huecos Reservados
+uscListControlPanel.tabReservedSlots.lblReservedCurrent=Huecos reservados actualmente
+uscListControlPanel.tabReservedSlots.lsvReservedList.colSoldierNames=Alias
+uscListControlPanel.tabReservedSlots.lblReservedAddSoldierName=Reservar un hueco para:
+uscListControlPanel.tabReservedSlots.lnkReservedAddSoldierName=Añadir Jugador
+
+uscListControlPanel.tabSpectatorSlots=Huecos de Espectador
+uscListControlPanel.tabSpectatorSlots.lblSpectatorCurrent=Huecos reservados actualmente
+uscListControlPanel.tabSpectatorSlots.lsvSpectatorList.colSpectatorSoldierNames=Alias
+uscListControlPanel.tabSpectatorSlots.lblSpectatorAddSoldierName=Reservar un hueco para:
+uscListControlPanel.tabSpectatorSlots.lnkSpectatorAddSoldierName=Añadir Jugador
+
+
+
+/////////////////////////////////////////////
+// Lists Panel -> Text Chat Moderation Slots
+/////////////////////////////////////////////
+uscTextChatModerationList.Title=Moderación Chat
+uscTextChatModerationList.lblTextChatModerationCurrent=Jugadores Moderadores
+uscTextChatModerationList.lblTextChatModerationAddSoldierName=Introducir el Alias del jugador
+uscTextChatModerationList.lnkTextChatModerationAddSoldierName=Añadir Jugador
+
+
+
+///////////////////////////////////
+// Server settings panel
+///////////////////////////////////
+uscServerSettingsPanel.lblAlterServerSettings=Modificar configuración del servidor
+
+uscServerSettingsPanel.lblSettingsPassword=Contraseña
+uscServerSettingsPanel.lblSettingsGamePassword=Contraseña del servidor
+uscServerSettingsPanel.lnkSettingsSetGamePassword=Aplicar
+uscServerSettingsPanel.lblSettingsAdminPassword=Contraseña de la RCON
+uscServerSettingsPanel.lnkSettingsSetAdminPassword=Aplicar
+
+uscServerSettingsPanel.lblSettingsConfiguration=Configuración
+uscServerSettingsPanel.chkSettingsPunkbuster=PunkBuster
+uscServerSettingsPanel.chkSettingsFairFight=FairFight
+uscServerSettingsPanel.chkSettingsCommander=Comandante
+uscServerSettingsPanel.lblSettingsServerType=Tipo de Servidor
+uscServerSettingsPanel.lblSettingsMpExperience=Experiencia MP
+uscServerSettingsPanel.chkSettingsRanked=Clasificado
+uscServerSettingsPanel.chkSettingsPremiumStatus=Exclusivo para Jugadores Premium
+uscServerSettingsPanel.chkSettingsNoRankLimit=Sin límite de Rango
+uscServerSettingsPanel.lnkSettingsSetRankLimit=Aplicar
+uscServerSettingsPanel.chkSettingsTeamBalance=Auto-Equilibrado de Equipos
+uscServerSettingsPanel.chkSettingsFriendlyFire=Fuego Amigo
+uscServerSettingsPanel.chkSettingsAlwaysAllowSpectators=Espectadores públicos
+
+uscServerSettingsPanel.lblSettingsPlayerLimit=Límite de jugadores
+uscServerSettingsPanel.lnkSettingsSetPlayerLimit=Aplicar
+uscServerSettingsPanel.lblSettingsEffectivePlayerLimit=Límite efectivo de jugadores
+uscServerSettingsPanel.lblSettingsCurrentPlayerLimit=Límite de jugadores efectivo: {0}
+uscServerSettingsPanel.lblSettingsMaxSpectator=Límite de espectadores
+uscServerSettingsPanel.lnkSettingsSetMaxSpectators=Aplicar
+
+uscServerSettingsPanel.lblSettingsGameplay=Jugabilidad
+uscServerSettingsPanel.chkSettingsHardcore=HARDCORE
+uscServerSettingsPanel.chkSettingsKillCam=Cámara de Muerte
+
+uscServerSettingsPanel.chkSettingsMinimap=Minimapa
+uscServerSettingsPanel.chkSettingsCrosshair=Cruceta
+uscServerSettingsPanel.chkSettings3DSpotting=Señalización 3D
+uscServerSettingsPanel.chkSettingsMinimapSpotting=Señalización en el minimapa
+uscServerSettingsPanel.chkSettingsThirdPersonVehicleCameras=Cámaras externas del vehículo
+
+uscServerSettingsPanel.lblSettingsDetails=Detalles
+uscServerSettingsPanel.lblSettingsDescription=Descripción
+uscServerSettingsPanel.lnkSettingsSetDescription=Aplicar
+uscServerSettingsPanel.lblSettingsMessage=Mensaje
+uscServerSettingsPanel.lnkSettingsSetMessage=Aplicar
+uscServerSettingsPanel.lblSettingsBannerURL=URL de la Imagen
+uscServerSettingsPanel.lnkSettingsSetBannerURL=Aplicar
+
+uscServerSettingsPanel.lblSettingsDownloadedBannerURLError=Error al descargar la imagen
+
+uscServerSettingsPanel.cmiExportSettings=Exportar Configuración
+uscServerSettingsPanel.cmiImportSettings=Importar Configuración
+uscServerSettingsPanel.cmiConfigGenerator=Generador de Configuraciones
+
+
+uscServerSettingsPanel.chkSettingsProfanityFilter=Filtro de Palabras Soeces
+uscServerSettingsPanel.chkSettingsNoIdleKickLimit=Desactivar Expulsión por Inactividad
+uscServerSettingsPanel.chkSettingsNoIdleBanRoundsLimit=Desactivar Expulsión Permanente por Inactividad
+uscServerSettingsPanel.chkSettingsSetIdleBanRoundsLimit=Banear por rondas
+uscServerSettingsPanel.lnkSettingsSetidleKickLimit=Aplicar
+uscServerSettingsPanel.lnkSettingsSetIdleBanRoundsLimit=Aplicar
+
+uscServerSettingsPanel.chkSettingsAggressiveJoin=Entrada Agresiva
+
+uscServerSettingsPanel.lblSettingsTeamKill=Fuego Amigo
+
+uscServerSettingsPanel.chkSettingsTeamkillCountLimit=Desactivar castigos por TK
+uscServerSettingsPanel.lnkSettingsTeamkillCountLimit=Aplicar
+
+uscServerSettingsPanel.lblSettingsTkCountExplanation=El jugador será expulsado de la partida después de matar a {0} compañeros en una ronda.
+
+uscServerSettingsPanel.chkSettingsTeamkillValueLimit=Desactivar opciones avanzadas
+uscServerSettingsPanel.lnkSettingsTeamkillValueLimit=Aplicar
+
+uscServerSettingsPanel.chkSettingsTeamkillValueLimit=Sin límite de TK
+uscServerSettingsPanel.lnkSettingsTeamkillValueLimit=Aplicar
+
+uscServerSettingsPanel.lblSettingsTeamKillValueIncrease=Valor de cada TK
+uscServerSettingsPanel.lnkSettingsTeamKillValueIncrease=Aplicar
+
+uscServerSettingsPanel.lblTeamKillValueDecreasePerSecond=Velocidad de descenso (en segundos)
+uscServerSettingsPanel.lnkTeamKillValueDecreasePerSecond=Aplicar
+
+uscServerSettingsPanel.lblSettingsTkValueExplanation.Minimums=El jugador será expulsado de la partida por matar a un mínimo de {0} compañero(s) en un segundo o por una tasa mínima de {1} compañero(s) por minuto.
+// uscServerSettingsPanel.lblSettingsTkValueExplanation.MinimumRateMinute=El jugador será expulsado por TK a una velocidad mínima de {0} compañero (s) por minuto
+uscServerSettingsPanel.lblSettingsTkValueExplanation.ForgivenSingle=Al jugador se le perdona la muerte de UN compañero cada {0} segundos.
+
+uscServerSettingsPanel.lblSettingsServerName=Nombre del servidor
+uscServerSettingsPanel.lnkSettingsSetServerName=Aplicar
+
+uscServerSettingsPanel.lblSettingsLevelVariables=Variables del Mapa
+
+uscServerSettingsPanel.lblSettingsLevelContext=Contexto
+uscServerSettingsPanel.rdoSettingsLevelContextAll=Global
+uscServerSettingsPanel.rdoSettingsLevelContextGamemode=Modo de Juego
+uscServerSettingsPanel.rdoSettingsLevelContextLevel=Mapa
+
+uscServerSettingsPanel.btnClearLevelSettings=Restaurar
+
+uscServerSettingsPanel.lblLevelTickets=Tickets
+uscServerSettingsPanel.lnkLevelTickets=Aplicar
+
+uscServerSettingsPanel.lblLevelTicketBleedSpeed=Velocidad de descenso de los Tickets
+uscServerSettingsPanel.lnkLevelTicketBleedSpeed=Aplicar
+
+uscServerSettingsPanel.lblLevelVehicleSpawnRate=Velocidad de Regeneración de Vehículos
+uscServerSettingsPanel.lnkLevelVehicleSpawnRate=Aplicar
+
+uscServerSettingsPanel.lblLevelStartDelay=Empezar la ronda después de
+uscServerSettingsPanel.lnkLevelStartDelay=Aplicar
+
+uscServerSettingsPanel.lblLevelRespawnDelay=Retraso de Regeneración
+uscServerSettingsPanel.lnkLevelRespawnDelay=Aplicar
+
+uscServerSettingsPanel.chkLevelVehiclesDisabled=Modo Infantería (Sin Vehículos)
+
+uscServerSettingsPanel.lblLevelEvaluatedEffects=Efectos aplicados a los contextos seleccionados
+
+uscServerSettingsPanel.lsvEvaluatedEffect.context=Contexto
+uscServerSettingsPanel.lsvEvaluatedEffect.tickets=Tickets
+uscServerSettingsPanel.lsvEvaluatedEffect.ticketBleedSpeed=Velocidad de Descenso de los Tickets
+uscServerSettingsPanel.lsvEvaluatedEffect.vehicleSpawnRate=Velocidad de Regeneración de Vehículos
+uscServerSettingsPanel.lsvEvaluatedEffect.vehiclesDisabled=Sin Vehículos
+uscServerSettingsPanel.lsvEvaluatedEffect.startDelay=Retraso Inicial
+uscServerSettingsPanel.lsvEvaluatedEffect.respawnDelay=Retraso de Regeneración
+
+
+uscServerSettingsPanel.lsvEvaluatedEffect.items.totalEvaluatedEffects=Efectos
+uscServerSettingsPanel.lsvEvaluatedEffect.items.all=Global	
+
+
+uscServerSettingsMoHGameplay.chkSettingsClanTeams=Clan
+uscServerSettingsMoHGameplay.chkSettingsNoCrosshairs=Sin Cruceta
+uscServerSettingsMoHGameplay.chkSettingsRealisticHealth=Salud realista
+uscServerSettingsMoHGameplay.chkSettingsNoUnlocks=Sin desbloqueables
+uscServerSettingsMoHGameplay.chkSettingsNoAmmoPickups=Sin especializaciones
+
+uscServerSettingsMoHGameplay.chkSettingsNoSkillLimit=Limitar habilidad
+uscServerSettingsMoHGameplay.lblSettingsSkillLimitLower=Mínimo
+uscServerSettingsMoHGameplay.lblSettingsSkillLimitUpper=Máximo
+uscServerSettingsMoHGameplay.lnkSettingsSkillLimitApply=Aplicar
+
+uscServerSettingsMoHGameplay.chkSettingsTDMScoreCounterLimit=TDM límite de puntos
+uscServerSettingsMoHGameplay.lnkSettingsTDMScoreCounterLimit=Aplicar
+
+uscServerSettingsMoHGameplay.lblPreroundSettingsTitle=Configuración Ronda
+
+uscServerSettingsMoHGameplay.chkSettingsRoundStartTimer=Tiempo Inicial de Ronda
+
+uscServerSettingsMoHGameplay.chkSettingsPreroundLimit=Sin límite de rondas
+uscServerSettingsMoHGameplay.lblSettingsPreroundLimitLower=Mínimo
+uscServerSettingsMoHGameplay.lblSettingsPreroundLimitUpper=Máximo
+uscServerSettingsMoHGameplay.lnkSettingsPreroundLimitApply=Aplicar
+uscServerSettingsMoHGameplay.lblSettingsPreroundLimitExplanation=Mínimo 2 a 4 jugadores para clasificar.
+
+uscServerSettingsMoHGameplay.lblSettingsRoundStartTimerPlayersLimit=Jugadores necesarios para comenzar
+uscServerSettingsMoHGameplay.lnkSettingsRoundStartTimerPlayersLimit=Aplicar
+
+uscServerSettingsMoHGameplay.chkSettingsRoundStartTimerDelay=Sin retraso
+uscServerSettingsMoHGameplay.lnkSettingsRoundStartTimerDelay=Aplicar
+
+uscServerSettingsTextChatModeration.DisplayName=Moderación del Chat
+uscServerSettingsTextChatModeration.lblSettingsModerationMode=Moderación
+uscServerSettingsTextChatModeration.rdoSettingsModerationModeFree=Normal: Puede chatear y hablar cualquiera.
+uscServerSettingsTextChatModeration.rdoSettingsModerationModeModerated=Moderado: Solo los administradores pueden chatear y hablar.
+uscServerSettingsTextChatModeration.rdoSettingsModerationModeMuted=Privado: Solo los administradores pueden chatear.
+
+uscServerSettingsTextChatModeration.lblSettingsModerationTriggerCount=Mensajes necesarios para activar el filtro
+uscServerSettingsTextChatModeration.lnkSettingsModerationTriggerCount=Aplicar
+
+uscServerSettingsTextChatModeration.lblSettingsModerationDetectionTime=Longitud de tiempo para detectar el spam (seg.)
+uscServerSettingsTextChatModeration.lnkSettingsModerationDetectionTime=Aplicar
+
+uscServerSettingsTextChatModeration.lblSettingsModerationCooldownTime=Longitud de tiempo para silenciar a los spamers (seg.)
+uscServerSettingsTextChatModeration.lnkSettingsModerationCooldownTime=Aplicar
+
+// BF3 Gameplay panel
+uscServerSettingsPanel.chkSettingsNameTag=Mostrar Alias
+uscServerSettingsPanel.chkSettingsRegenerateHealth=AutoRegenerar Salud
+uscServerSettingsPanel.chkSettingsHud=Mostrar HUD
+uscServerSettingsPanel.chkSettingsOnlySquadLeaderSpawn=Aparecer solo en Jefe de Patrulla
+uscServerSettingsPanel.chkSettingsAllUnlocksUnlocked=Todas las Armas desbloqueadas al inicio
+uscServerSettingsPanel.lblSettingsUnlockMode=Desbloquear, bloqueado
+uscServerSettingsPanel.cboSettingsUnlockMode.None=Nada
+uscServerSettingsPanel.cboSettingsUnlockMode.All=Todo
+uscServerSettingsPanel.cboSettingsUnlockMode.Common=Común
+uscServerSettingsPanel.cboSettingsUnlockMode.Stats=Basado en Estadísticas
+uscServerSettingsPanel.lnkSettingsUnlockMode=Aplicar
+uscServerSettingsPanel.lblSettingsBF4preset=Perfil de Juego (lado del servidor)
+uscServerSettingsPanel.cboSettingsBF4preset.Normal=Normal
+uscServerSettingsPanel.cboSettingsBF4preset.Classic=Clásico
+uscServerSettingsPanel.cboSettingsBF4preset.Hardcore=Hardcore
+uscServerSettingsPanel.cboSettingsBF4preset.Infantry=Infantería
+uscServerSettingsPanel.cboSettingsBF4preset.Custom=Personalizado
+uscServerSettingsPanel.lnkSettingsBF4preset=Aplicar
+uscServerSettingsPanel.chkSettingsBF4presetLock=Bloquear los valores relacionados con el perfil
+uscServerSettingsPanel.chkSettingsVehicleSpawnAllowed=Vehículos
+uscServerSettingsPanel.lblSettingsVehicleSpawnDelay=Regeneración de Vehículos (%)
+uscServerSettingsPanel.lnkSettingsVehicleSpawnDelay=Aplicar
+uscServerSettingsPanel.lblSettingsBulletDamage=Daño de las balas (%)
+uscServerSettingsPanel.lnkSettingsBulletDamage=Aplicar
+uscServerSettingsPanel.lblSettingsRoundRestartPlayerCount=Tiempo de espera al finalizar la ronda
+uscServerSettingsPanel.lnkSettingsRoundRestartPlayerCount=Aplicar
+uscServerSettingsPanel.lblSettingsRoundStartPlayerCount=Tiempo de espera al comenzar
+uscServerSettingsPanel.lnkSettingsRoundStartPlayerCount=Aplicar
+uscServerSettingsPanel.lblSettingsSoldierHealth=Salud del soldado (%)
+uscServerSettingsPanel.lnkSettingsSoldierHealth=Aplicar
+uscServerSettingsPanel.lblSettingsPlayerManDownTime=Tiempo de Cuerpo muerto (%)
+uscServerSettingsPanel.lnkSettingsPlayerManDownTime=Aplicar
+uscServerSettingsPanel.lblSettingsPlayerRespawnTime=Tiempo de reaparición del jugador (%)
+uscServerSettingsPanel.lnkSettingsPlayerRespawnTime=Aplicar
+uscServerSettingsPanel.lblSettingsGameModeCounter=Contador de GameMode (%)
+uscServerSettingsPanel.lnkSettingsGameModeCounter=Aplicar
+uscServerSettingsPanel.lblSettingsCtfRoundTimeModifier=Modificador del tiempo de ronda CTF (%)
+uscServerSettingsPanel.lnkSettingsCtfRoundTimeModifier=Aplicar
+uscServerSettingsPanel.lblSettingsRoundTimeLimit=Tiempo de Ronda (%)
+uscServerSettingsPanel.lnkSettingsRoundTimeLimit=Aplicar
+uscServerSettingsPanel.lblSettingsTicketBleedRate=Tasa de Sangrado de Ticket (%)
+uscServerSettingsPanel.lnkSettingsTicketBleedRate=Aplicar
+uscServerSettingsPanel.lblSettingsLockdownCountdown=Bloquear Cuenta Atrás
+uscServerSettingsPanel.lnkSettingsLockdownCountdown=Aplicar
+uscServerSettingsPanel.lblSettingsWarmupTimeout=Tiempo de Espera
+uscServerSettingsPanel.lnkSettingsWarmupTimeout=Aplicar
+
+uscServerSettingsPanel.lblSettingsGunMasterWeaponsPreset=Perfil de Armas
+uscServerSettingsPanel.lnkSettingsGunMasterWeaponsPreset=Aplicar
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.Standard=Estándar
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.Reversed=Estándar invertido
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.LightWeight=Armamento Ligero
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.HeavyGear=Equipo Pesado
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.PistolRun=Pistolas
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.SnipersHeaven=Francotiradores
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.UsArmsRace=Armamento de US
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.RuArmsRace=Armamento de RU
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.EuArmsRace=Armamento de EU
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.Classic=Clásico
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.Secondary=Pistolas
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.DLC=Armamento DLC
+uscServerSettingsPanel.cboSettingsGunMasterWeaponsPreset.Troll=Troll
+
+// BF4 Gameplay panel
+uscServerSettingsPanel.chkSettingsIsHitIndicators=Indicadores de Impacto
+uscServerSettingsPanel.chkSettingsIsForceReloadWholeMags=Forzar la recarga de cargadores completos
+
+// MoHW Gameplay panel
+uscServerSettingsPanel.chkSettingsBuddyOutline=Esquema Aliado
+uscServerSettingsPanel.lblHudSettings=Configuración del HUD:
+uscServerSettingsPanel.chkSettingsHudBuddyInfo=Información Aliada
+uscServerSettingsPanel.chkSettingsHudClassAbility=Habilidad de la Clase
+uscServerSettingsPanel.chkSettingsHudEnemyTag=Etiqueta del Enemigo
+uscServerSettingsPanel.chkSettingsHudExplosiveIcons=Iconos de Explosivos
+uscServerSettingsPanel.chkSettingsHudGameMode=Modo de Juego
+uscServerSettingsPanel.chkSettingsHudHealthAmmo=Salud y Munición
+uscServerSettingsPanel.chkSettingsHudObiturary=Obituario
+uscServerSettingsPanel.chkSettingsHudPointsTracker=Rastreador de Puntos
+uscServerSettingsPanel.chkSettingsHudUnlocks=Desbloqueables
+
+uscServerSettingsPanel.lblSettingsPlaylist=Perfil de Reproducción
+uscServerSettingsPanel.lnkSettingsPlaylist=Aplicar
+uscServerSettingsPanel.cboSettingsPlaylist.BombSquadPL=Todas las Zonas Calientes
+uscServerSettingsPanel.cboSettingsPlaylist.CombatMissionPL=Todas las Misiones de Combate
+uscServerSettingsPanel.cboSettingsPlaylist.CustomPL=Reproducción Personalizada (maplist.txt)
+uscServerSettingsPanel.cboSettingsPlaylist.PlatoonPL=Pelotones
+uscServerSettingsPanel.cboSettingsPlaylist.RealOpsPL=Operaciones Reales
+uscServerSettingsPanel.cboSettingsPlaylist.SectorControlPL=Todos los Sectores de Control
+uscServerSettingsPanel.cboSettingsPlaylist.SportPL=Todos los Deportes
+uscServerSettingsPanel.cboSettingsPlaylist.TeamDeathMatchPL=Todos contra todos por Equipos
+uscServerSettingsPanel.cboSettingsPlaylist.WarfighterPL=Warfighter
+
+// BF4 ServerConfiguration panel
+
+uscServerSettingsPanel.lblSettingsTeam1FactionOverride=Equipo 1 Anular Facción
+uscServerSettingsPanel.lblSettingsTeam2FactionOverride=Equipo 2 Anular Facción
+uscServerSettingsPanel.lblSettingsTeam3FactionOverride=Equipo 3 Anular Facción
+uscServerSettingsPanel.lblSettingsTeam4FactionOverride=Equipo 4 Anular Facción
+uscServerSettingsPanel.lnkSettingsTeamFactionOverride=Aplicar
+
+uscServerSettingsPanel.TeamFactions.US=Ejercito de Estados Unidos
+uscServerSettingsPanel.TeamFactions.RU=Ejercito Ruso
+uscServerSettingsPanel.TeamFactions.CN=Ejercito Chino
+
+uscServerSettingsPanel.TeamFactions.US=Policías
+uscServerSettingsPanel.TeamFactions.RU=Criminales
+
+///////////////////////////////////
+// Plugins Panel
+///////////////////////////////////
+uscPluginPanel.lblLoadedPlugins=Complementos Disponibles
+uscPluginPanel.lnkReloadPlugins=Recargar complementos
+uscPluginPanel.lnkMorePlugins=Más...
+uscPluginPanel.tabPluginDetails=Detalles
+uscPluginPanel.tabPluginDetails.lblPluginName=Nombre
+uscPluginPanel.tabPluginDetails.lblPluginAuthor=Autor
+uscPluginPanel.tabPluginDetails.lblPluginDescription=Descripción
+uscPluginPanel.tabPluginDetails.lblPluginVersion=Versión
+uscPluginPanel.tabPluginDetails.lblPluginWebsite=Web
+uscPluginPanel.tabPluginSettings=Configuración del Complemento
+
+
+
+///////////////////////////////////
+// Server settings panel
+///////////////////////////////////
+uscAccountsPanel.Title=Servidor de Procon
+
+uscAccountsPanel.lblLayerServerSetupTitle=Configuración del Servidor de Procon
+uscAccountsPanel.lnkStartStopLayer.Start=Activar el Servidor de Procon
+uscAccountsPanel.lnkStartStopLayer.Stop=Desactivar el Servidor de Procon
+uscAccountsPanel.lblLayerServerStatus.Online=En línea y escuchando las conexiones entrantes a través del puerto {0}
+uscAccountsPanel.lblLayerServerStatus.Offline=El servidor está desconectado
+uscAccountsPanel.lblLayerServerStatus.Error=Error: {0}
+
+uscAccountsPanel.lnkLayerForwardedTest=Probar la conexión al servidor de Procon
+uscAccountsPanel.lblLayerForwardedTestStatus.Unknown=Ejecutar una prueba para determinar si se puede establecer conexión
+uscAccountsPanel.lblLayerForwardedTestStatus.Running=Comprobando puerto {0}...
+uscAccountsPanel.lblLayerForwardedTestStatus.Open=El puerto {0} se está abierto en {1}. La Red está configurada correctamente.
+uscAccountsPanel.lblLayerForwardedTestStatus.Closed=¡A Ocurrido un error! El puerto {0} parece que no está abierto. Visita www.portforward.com para obtener más ayuda.
+
+uscAccountsPanel.lnkWhatIsProconLayer=¿Qué es el Servidor Procon?
+
+uscAccountsPanel.lblLayerAssignAccountPrivilegesTitle=Lista de Administradores
+
+uscAccountsPanel.lstLayerAccounts.colAccounts=Administrador
+uscAccountsPanel.lstLayerAccounts.colPrivileges=Acceso Local
+uscAccountsPanel.lstLayerAccounts.colRConAccess=Acceso RCON
+uscAccountsPanel.lstLayerAccounts.colIPPort=IP:Puerto
+
+uscAccountsPanel.lstLayerAccounts.Privileges.None=Sin acceso
+uscAccountsPanel.lstLayerAccounts.Privileges.Limited=Limitado
+uscAccountsPanel.lstLayerAccounts.Privileges.Full=Completo
+
+uscAccountsPanel.lnkManageAccounts=Gestionar Administradores
+
+uscAccountsPanel.lblLayerStartTitle=Iniciar el Servidor Procon
+uscAccountsPanel.lblLayerStartPort=Puerto de escucha
+uscAccountsPanel.lblLayerBindingIP=Dirección IP
+uscAccountsPanel.lblBindingExplanation=Para redireccionar en cualquier dirección usar "0.0.0.0"
+uscAccountsPanel.lblLayerName=Nombre del Servidor Procon
+uscAccountsPanel.btnInsertName=Introducir Nombre
+uscAccountsPanel.lblExampleLayerName=Ejemplo: {0}
+uscAccountsPanel.btnLayerStart=Iniciar Servidor
+uscAccountsPanel.btnCancelLayerStart=Cancelar
+
+uscAccountsPanel.lblAccountPrivilegesTitle=Permisos asignados a {0}
+
+uscAccountsPanel.chkAllowConnectionLogin=Permitir acceso al Panel Procon
+
+uscAccountsPanel.rdoNoProconAccess=Sin acceso a los comandos extendidos de Procon
+uscAccountsPanel.rdoLimitedProconAccess=Permitir gestionar Administradores y Complementos
+uscAccountsPanel.rdoLimitedProconPluginAccess=Permitir gestionar complementos
+uscAccountsPanel.rdoFullProconAccess=Permitir gestionar Administradores, Complementos y ejecutar comandos en la Consola
+
+uscAccountsPanel.chkCanShutdownServer=Permitir detener el servidor
+
+uscAccountsPanel.lblCommandsviaRconConsolePlugins=Acceso a los comandos y complementos vía Consola
+
+uscAccountsPanel.lblServerStateTitle=SERVIDOR
+uscAccountsPanel.chkAlterServerSettings=Modificar la configuración del servidor
+uscAccountsPanel.chkChangeCurrentMapFunctions=Cambiar y Reiniciar el Mapa
+
+uscAccountsPanel.lblPlayersTitle=Jugadores
+uscAccountsPanel.rdoNoPlayerPunishment=Sin autoridad para castigar a los jugadores
+uscAccountsPanel.rdoKillingPlayersOnly=Sólo Asesinar a los jugadores
+uscAccountsPanel.rdoKickingPlayers=Asesinar y Expulsar a los jugadores
+uscAccountsPanel.rdoKickingTemporaryOnly=Asesinar, Expulsar y Banear temporalmente a los jugadores
+uscAccountsPanel.rdoKicingTemporaryPermanent=Asesinar, Expulsar y Banear temporal y permanentemente a los jugadores
+uscAccountsPanel.chkMovePlayers=Permitir mover jugadores entre equipos y patrullas
+
+uscAccountsPanel.lblPunkbusterTitle=PunkBuster
+uscAccountsPanel.rdoNotAllowedToIssuePunkbusterCommands=Sin posibilidad de ejecutar comandos de PunkBuster
+uscAccountsPanel.rdoLimitedPunkbusterAccess=Acceso limitado a los comandos de PunkBuster (capturas de pantalla y listado de jugadores)
+uscAccountsPanel.rdoFullPunkbusterAccess=Acceso completo a PunkBuster
+
+uscAccountsPanel.lblBattlemapTitle=Mapa
+uscAccountsPanel.chkEditMapZones=Editar zonas del mapa
+
+uscAccountsPanel.lblListsTitle=ADMINISTRACIÓN
+uscAccountsPanel.chkEditMapList=Modificar Rotación de Mapas
+uscAccountsPanel.chkEditBanList=Modificar BANEADOS
+uscAccountsPanel.chkEditReservedSlotsList=Modificar Huecos Reservados
+uscAccountsPanel.chkEditTextModerationList=Editar la lista de moderadores del chat
+
+uscAccountsPanel.btnSavePrivileges=Guardar Permisos
+uscAccountsPanel.btnCancelPrivileges=Cancelar
+
+
+
+///////////////////////////////////
+// Console Panel
+///////////////////////////////////
+uscConsolePanel.btnConsoleSend=Enviar
+uscConsolePanel.chkEnableOutput=Mostrar datos
+uscConsolePanel.chkEvents=Eventos
+uscConsolePanel.chkDebug=Desarrollador
+
+
+
+///////////////////////////////////
+// Parent Layer Control
+///////////////////////////////////
+uscParentLayerControl.tabAccounts.lnkEditAccount=Editar Permisos
+uscParentLayerControl.tabAccounts.lnkDeleteAccount=Borrar Administrador
+
+uscParentLayerControl.tabAccounts.lblCreateNewAccount=Añadir nuevo Administrador
+uscParentLayerControl.tabAccounts.lblUsername=Nombre de usuario
+uscParentLayerControl.tabAccounts.lblPassword=Contraseña
+uscParentLayerControl.tabAccounts.lnkCreateAccount=Añadir Administrador
+uscParentLayerControl.tabAccounts.lblUserNameExistsError=Ya existe este nombre de usuario
+uscParentLayerControl.tabAccounts.lnkChangeAccountPassword.Blank=Cambiar contraseña
+uscParentLayerControl.tabAccounts.lnkChangeAccountPassword.Username=Cambiar la contraseña de {0}
+
+
+
+///////////////////////////////////
+// Notification menu
+///////////////////////////////////
+m_cnmNotificationMenu.m_mnuHideTrayIcon=Ocultar icono de la Bandeja del Sistema
+m_cnmNotificationMenu.m_mnuExit=Cerrar Procon
+
+
+
+///////////////////////////////////
+// Config Generator
+///////////////////////////////////
+ConfigGenerator.Title=Generador de Configuraciones
+ConfigGenerator.btnCopyToClipboard=Copiar al Portapapeles
+
+
+///////////////////////////////////
+// Start Page - HTML
+///////////////////////////////////
+pStartPage-lblMyConnections=Mis Servidores
+pStartPage-lblNoConnections=No hay ningún servidor. Crea una nueva conexión para tu servidor, clicando en 'Añadir Servidor'
+pStartPage-lblCreateConnection=Añadir Servidor
+pStartPage-lblCreateConnectionLegend=Añadir Servidor
+pStartPage-lblConnectionsHostnameIp=Host/IP
+pStartPage-lblConnectionsPort=Puerto
+pStartPage-lblConnectionsUsername=Usuario
+pStartPage-lblConnectionsUsernameExplanation=Solo se necesita el usuario para acceder al Panel de Procon
+pStartPage-lblConnectionsPassword=Contraseña
+pStartPage-lblCancelCreateConnection=Cancelar
+pStartPage-lblConnectCreateConnection=Conectar
+
+pStartPage-lblConnectionsSummary={0} de {1} huecos usados
+
+pStartPage-lblQuickConnect=[Conectar]
+pStartPage-lblQuickDisconnect=[Desconectar]
+pStartPage-lblQuickDelete=[Eliminar]
+
+pStartPage-tabPhogueNetNewsFeed=Noticias
+pStartPage-tabPackages=Paquetes
+
+pStartPage-lblDonate=Donar
+pStartPage-lblDonationAmount=Cantidad de la Donación
+// Note: The currency is static and always USD, regardless of the country/language.
+pStartPage-lblDonationAmount-Currency=Moneda: USD
+pStartPage-lblRecognize=¡Quiero felicitaros!
+pStartPage-chkRecognize-lblShowOnWall=Mostrar en el Muro
+pStartPage-chkRecognize-optDoNotShow=No mostrar ninguna información
+pStartPage-chkRecognize-optAmountDetailsComments=Cantidad, detalles y Comentarios
+pStartPage-chkRecognize-optDetailsCommentsOnly=Solo los Detalles y los Comentarios
+
+pStartPage-chkRecognize-lblName=Nombre
+pStartPage-chkRecognize-lblEmail=e-mail
+pStartPage-chkRecognize-lblWebsite=Sitio web
+pStartPage-chkRecognize-lblComments=Comentarios
+pStartPage-chkRecognize-lblRecognizeTime=El mensaje puede tardar hasta una hora en aparecer en el muro.
+
+pStartPage-lblMonthlySummary=Resumen Mensual
+pStartPage-lblMonthlySummary-users={0} usuarios
+pStartPage-lblMonthlySummary-donations={0}$ de apoyo
+pStartPage-lblMonthlySummary-donationspercapita={0}$ de apoyo por usuario
+
+pStartPage-lblDonationWall=Muro de Apoyo
+
+pStartPage-tblPackages-thUid=UID
+pStartPage-tblPackages-thType=Tipo
+pStartPage-tblPackages-thName=Nombre
+pStartPage-tblPackages-thVersion=Versión
+pStartPage-tblPackages-thLastUpdate=Última Actualización
+pStartPage-tblPackages-thStatus=Estado
+pStartPage-tblPackages-thDownloads=Descargas
+pStartPage-tblPackages-thDiscussFeedback=Discusión/Feedback
+pStartPage-tblPackages-thAuthor=Autor
+pStartPage-tblPackages-thDescription=Descripción
+pStartPage-tblPackages-thLayerInstallStatus=Panel de Instalación
+pStartPage-tblPackages-thInstallPackage=Instalar Paquete
+
+m_pStartPage_lblDeleteConnection=¿Seguro que quieres eliminar este servidor?
