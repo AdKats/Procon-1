@@ -2,7 +2,7 @@
 
 [assembly: AssemblyCompany("Myrcon")]
 [assembly: AssemblyProduct("Procon Frostbite")]
-[assembly: AssemblyCopyright("Copyright © Myrcon 2020")]
+[assembly: AssemblyCopyright("Copyright © Myrcon 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -16,5 +16,5 @@
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.5.3.5")]
-[assembly: AssemblyFileVersion("1.5.3.5")]
+[assembly: AssemblyVersion("1.5.3.6")]
+[assembly: AssemblyFileVersion("1.5.3.6")]
