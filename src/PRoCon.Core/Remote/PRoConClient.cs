@@ -3231,8 +3231,13 @@ namespace PRoCon.Core.Remote
             // If it is a punkbuster pb_plist update
             if (mMatch.Success == true && mMatch.Groups.Count >= 5)
             {
-                var newPbInfo = new CPunkbusterInfo(mMatch.Groups["slotid"].Value, mMatch.Groups["name"].Value, mMatch.Groups["guid"].Value, mMatch.Groups["ip"].Value, Parent.GetCountryName(mMatch.Groups["ip"].Value), Parent.GetCountryCode(mMatch.Groups["ip"].Value));
+                string pbip = mMatch.Groups["ip"].Value;
+                var newPbInfo = new CPunkbusterInfo(mMatch.Groups["slotid"].Value, mMatch.Groups["name"].Value, mMatch.Groups["guid"].Value, pbip, Parent.GetCountryName(pbip), Parent.GetCountryCode(pbip));
 
+                // if the proxy checker doesn't have the record
+                // call for fetch, pass in the client and new pb info
+                // when the check returns, update the pbinfo object and call the below line again to update the clients
+                
                 if (PunkbusterPlayerInfo != null)
                 {
                     this.PunkbusterPlayerInfo(this, newPbInfo);

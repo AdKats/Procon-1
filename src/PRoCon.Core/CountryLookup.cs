@@ -30,6 +30,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PRoCon.Core.Options;
 using System.Net.Http;
 using Newtonsoft.Json;
+using PRoCon.Core.ProxyChecker;
 
 namespace MaxMind
 {
@@ -159,38 +160,43 @@ namespace MaxMind
 
             return IPs[addr.ToString()];
         }
-
+        
         public string lookupCountryCode(IPAddress addr)
         {
-            if (!IPs.ContainsKey(addr.ToString()))
-            {
-                try
-                {
-                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
-                    {
-                        return lookupCountryCodeGeoIpFile(addr);
-                    }
-                    
-                    return ProxyCheckRequest(addr).CountryCode;
-                }
-                catch (Exception)
-                {
-                    // If that fails, fall back to the outdated stuff.
-                    return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
-                }
-            }
+            return lookupCountryCodeGeoIpFile(addr);
+            
+            //if (this.OptionsSettings.UseGeoIpFileOnly == true)
+            //{
+            //    return lookupCountryCodeGeoIpFile(addr);
+            //}
 
-            return IPs[addr.ToString()].CountryCode;
+            //if (!IPs.ContainsKey(addr.ToString()))
+            //{
+            //    try
+            //    {                    
+            //        return ProxyCheckRequest(addr).CountryCode;
+            //    } 
+            //    catch (Exception)
+            //    {
+            //        // If that fails, fall back to the outdated stuff.
+            //        return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            //    }
+            //}
+
+            ////return IPs[addr.ToString()].CountryCode;
+            //return IPs[addr.ToString()].CountryCode;
         }
 
         public string lookupCountryCodeGeoIpFile(IPAddress addr)
         {
-            if (!IPs.ContainsKey(addr.ToString()))
-            {
-                return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
-            }
+            return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            
+            //if (!IPs.ContainsKey(addr.ToString()))
+            //{
+            //    return (countryCode[(int)seekCountry(0, addrToNum(addr), 31)]);
+            //}
 
-            return IPs[addr.ToString()].CountryCode;
+            //return IPs[addr.ToString()].CountryCode;
         }
 
         public string lookupCountryName(string str)
@@ -229,35 +235,39 @@ namespace MaxMind
 
         public string lookupCountryName(IPAddress addr)
         {
-            if (!IPs.ContainsKey(addr.ToString()))
-            {
-                try
-                {
-                    if (this.OptionsSettings.UseGeoIpFileOnly == true)
-                    {
-                        return lookupCountryNameGeoIpFile(addr);
-                    }
+            return lookupCountryNameGeoIpFile(addr);
+            
+            //if (this.OptionsSettings.UseGeoIpFileOnly == true)
+            //{
+            //    return lookupCountryNameGeoIpFile(addr);
+            //}
+            
+            //if (!IPs.ContainsKey(addr.ToString()))
+            //{
+            //    try
+            //    {
+            //        return ProxyCheckRequest(addr).CountryName;
+            //    }
+            //    catch (Exception)
+            //    {
+            //        // If that fails, fall back to the outdated stuff.
+            //        return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
+            //    }
+            //}
 
-                    return ProxyCheckRequest(addr).CountryName;
-                }
-                catch (Exception)
-                {
-                    // If that fails, fall back to the outdated stuff.
-                    return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
-                }
-            }
-
-            return IPs[addr.ToString()].CountryName;
+            //return IPs[addr.ToString()].CountryName;
         }
 
         public string lookupCountryNameGeoIpFile(IPAddress addr)
         {
-            if (!IPs.ContainsKey(addr.ToString()))
-            {
-                return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
-            }
+            return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
+            
+            //if (!IPs.ContainsKey(addr.ToString()))
+            //{
+            //    return (countryName[(int)seekCountry(0, addrToNum(addr), 31)]);
+            //}
 
-            return IPs[addr.ToString()].CountryName;
+            //return IPs[addr.ToString()].CountryName;
         }
 
         private long seekCountry(long offset, long ipnum, int depth)

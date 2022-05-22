@@ -26,6 +26,8 @@ namespace PRoCon.Console
 {
     using Core;
     using Core.Remote;
+    using System.Net.Sockets;
+
     class Program
     {
 
@@ -65,6 +67,53 @@ namespace PRoCon.Console
                     application.Execute();
 
                     GC.Collect();
+                    
+                    // Check if we are running in a docker container
+                    if (System.IO.File.Exists("/proc/1/cgroup") == true)
+                    {
+                        string strCGroup = System.IO.File.ReadAllText("/proc/1/cgroup");
+                        if (strCGroup.Contains("/docker/") == true)
+                        {
+                            System.Console.WriteLine("[PRoCon] Running in a Docker container.");
+                        }
+                    }
+
+                    // Check if the environemnt variable "PROCON_GAMESERVER_IP" exists
+                    string PROCON_GAMESERVER_IP = System.Environment.GetEnvironmentVariable("PROCON_GAMESERVER_IP") ?? "";
+                    
+                    if (PROCON_GAMESERVER_IP != "")
+                    {
+                        // Run a background thread to keep checking if the connection is still alive, otherwise close application.
+                        Thread t = new Thread(new ThreadStart(delegate
+                        {
+                            Int32.TryParse(System.Environment.GetEnvironmentVariable("PROCON_GAMESERVER_PORT"), out int PROCON_GAMESERVER_PORT);
+
+                            while (true)
+                            {
+                                Thread.Sleep(5000);
+
+                                // Check if port is alive using the ip PROCON_GAMESERVER_IP and port PROCON_GAMESERVER_PORT
+                                using (TcpClient tcpClient = new TcpClient())
+                                {
+                                    try
+                                    {
+                                        tcpClient.Connect(PROCON_GAMESERVER_IP, PROCON_GAMESERVER_PORT);
+                                    }
+                                    catch (Exception)
+                                    {
+                                        System.Console.WriteLine("[PRoCon] Connection lost, exiting.");
+                                        application.Shutdown();
+                                        // Exit the application
+                                        Environment.Exit(0);
+                                        break;
+                                    }
+                                }
+                            }
+                        }));
+                        
+                        t.Start();
+                    }
+
                     System.Console.WriteLine("Running... (Press any key to shutdown)");
                     System.Console.ReadKey();
                 }

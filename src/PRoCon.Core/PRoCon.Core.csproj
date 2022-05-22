@@ -212,6 +212,7 @@
     <Compile Include="Plugin\PluginCache.cs" />
     <Compile Include="Plugin\PluginCacheEntry.cs" />
     <Compile Include="Plugin\PluginInvocation.cs" />
+    <Compile Include="ProxyChecker\ProconProxyChecker.cs" />
     <Compile Include="Remote\BF4Client.cs" />
     <Compile Include="Remote\BFHLClient.cs" />
     <Compile Include="Remote\Cache\CacheManager.cs" />
