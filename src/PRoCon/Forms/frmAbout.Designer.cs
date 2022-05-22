@@ -273,7 +273,7 @@
             // 
             // discordIcon
             // 
-            this.discordIcon.Image = global::PRoCon.Properties.Resources.Discord_Logo_Wordmark_Color__1_;
+            this.discordIcon.Image = global::PRoCon.Properties.Resources.Discord_Logo;
             this.discordIcon.Location = new System.Drawing.Point(223, 6);
             this.discordIcon.Name = "discordIcon";
             this.discordIcon.Size = new System.Drawing.Size(244, 52);
