@@ -9,6 +9,7 @@ using System.Xml;
 
 namespace PRoCon.Controls
 {
+    using Newtonsoft.Json;
     using PRoCon.Core;
     using PRoCon.Core.Remote;
 
@@ -221,8 +222,10 @@ namespace PRoCon.Controls
 
                         if (this._isDocumentReady == true)
                         {
+                            // Convert to JSON the connectionsArray using Newtonsoft.Json
+                            string json = JsonConvert.SerializeObject(connectionsArray);
 
-                            this.webBrowser1.Document.InvokeScript("fnUpdateConnectionsList", new object[] { JSON.JsonEncode(connectionsArray) });
+                            this.webBrowser1.Document.InvokeScript("fnUpdateConnectionsList", new object[] { json });
                         }
                     }
                 }

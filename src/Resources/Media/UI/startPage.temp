@@ -1,0 +1,19 @@
+// Use onClick="window.external.HREF('http://phogue.net')" will instruct procon to open the link
+// in the default web browser, instead of a new page being opened in IE.
+
+connections.connect-attempt.noInfo=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/ajax-loader.gif" width="16" height="16"/> <span class="connectioninfo">%server_hostnameport%</span></a> %connections.online.options%
+connections.online.additional={0} - <b>{1}</b> [{2}/{3}]
+connections.online=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/online.png"/> <span class="connectioninfo">[%players%/%max_players%] %server_name% [%server_hostnameport%]</span>%connections.online.options%<p class="additionalinfo">%server_additonal%</p></a>
+connections.online.noInfo=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/online.png"/> <span class="connectioninfo">%server_hostnameport%</span></a> %connections.online.options%
+connections.offline=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/offline.png"/> <span class="connectioninfo">%server_name% [%server_hostnameport%]</span></a> %connections.offline.options%
+connections.offline.noInfo=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/offline.png"/> <span class="connectioninfo">%server_hostnameport%</span></a> %connections.offline.options%
+connections.error=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/error.png"/> <span class="connectioninfo">[%players%/%max_players%] %server_name% [%server_hostnameport%]</span></a> %connections.offline.options%
+connections.error.noInfo=<a onClick="window.external.GoToConnectionPage('%server_hostnameport%')"><img src="images/error.png"/> <span class="connectioninfo">%server_hostnameport%</span></a> %connections.offline.options%
+
+connections.online.options=<span class="connectionOptions"><img src="images/pixel.gif" width="6px"><a onClick="window.external.DisconnectConnection('%server_hostnameport%')"><img src="images/plug-disconnect.png">%pStartPage-lblQuickDisconnect%</a> <a class="deleteConnectionLink" hostnameport="%server_hostnameport%"><img src="images/bin.png">%pStartPage-lblQuickDelete%</a></span>
+connections.offline.options=<span class="connectionOptions"><img src="images/pixel.gif" width="6px"><a onClick="window.external.AttemptConnection('%server_hostnameport%')"><img src="images/plug-connect.png">%pStartPage-lblQuickConnect%</a> <a class="deleteConnectionLink" hostnameport="%server_hostnameport%"><img src="images/bin.png">%pStartPage-lblQuickDelete%</a></span>
+
+donationWall.donation=<div class="donorbox"><div class="datetime">%donation_date%</div><span class=donator><a onClick="window.external.HREF('%donation_link%')" rel="external" class="name url">%donation_name%</a></span><br /><span class="amount">(%donation_amount%<small class="currency"> %donation_currency%</small>)</span><div class="commentbox"><span class="commenttext">%donation_comment%</span></div></div>
+donationWall.summary=<p>%pStartPage-lblMonthlySummary-users%</p><p>%pStartPage-lblMonthlySummary-donations%</p><p>%pStartPage-lblMonthlySummary-donationspercapita%</p>
+
+newsFeed.article=<p><h3><a onclick="window.external.HREF('%article_link%')">%article_title%</a></h3><br /><span class="articledate">%article_date%</span><br /><span class="rsstext">%article_content%</span></p>

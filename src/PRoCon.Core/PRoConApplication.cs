@@ -539,8 +539,7 @@ namespace PRoCon.Core
 
         public void Execute()
         {
-            // Load all of the accounts.
-            this.UpdateRss();
+            // Load all of the accounts.  
 
             this.ExecuteMainConfig("accounts.cfg");
             this.LoadingAccountsFile = false;
@@ -2669,7 +2668,7 @@ namespace PRoCon.Core
         #region RSS Feed
 
         public void UpdateRss()
-        {
+        {            
             // Begin RSS Update
             if (this.BeginRssUpdate != null)
             {
@@ -2681,10 +2680,10 @@ namespace PRoCon.Core
             downloadRssFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadRssFeed_DownloadError);
             downloadRssFeed.BeginDownload();
 
-            CDownloadFile downloadPromoFeed = new CDownloadFile("https://myrcon.com/procon/streams/banners/format/xml");
-            downloadPromoFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadComplete);
-            downloadPromoFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadError);
-            downloadPromoFeed.BeginDownload();
+            //CDownloadFile downloadPromoFeed = new CDownloadFile("https://myrcon.com/procon/streams/banners/format/xml");
+            //downloadPromoFeed.DownloadComplete += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadComplete);
+            //downloadPromoFeed.DownloadError += new CDownloadFile.DownloadFileEventDelegate(downloadPromoFeed_DownloadError);
+            //downloadPromoFeed.BeginDownload();
         }
 
         private void downloadRssFeed_DownloadComplete(CDownloadFile cdfSender)

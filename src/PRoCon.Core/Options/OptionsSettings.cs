@@ -490,6 +490,11 @@ namespace PRoCon.Core.Options
         {
             get
             {
+                if (this.m_isBlockRssFeedNewsEnabled == true)
+                {
+                    this.m_praApplication.UpdateRss();
+                }
+                
                 return this.m_isBlockRssFeedNewsEnabled;
             }
             set

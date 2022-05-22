@@ -1343,6 +1343,8 @@ frmOptions.tabBasics.cboBasicsShowWindow.TaskTray=in taskbar and tray
 frmOptions.tabBasics.cboBasicsShowWindow.Task=in taskbar only
 frmOptions.tabBasics.chkBasicsCloseToTray=Close to tray
 frmOptions.tabBasics.chkBasicsMinimizeToTray=Minimize to tray
+frmOptions.tabBasics.rssFeedOptCheckbox=Show RSS Feed
+frmOptions.tabBasics.localGeoIPCheckbox=Use Local GeoIP Data
 
 
 frmOptions.tabPlugins=Plugins

@@ -26,6 +26,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmOptions));
             this.tbcOptions = new System.Windows.Forms.TabControl();
             this.tabBasics = new System.Windows.Forms.TabPage();
+            this.rssFeedOptCheckbox = new System.Windows.Forms.CheckBox();
+            this.localGeoIPCheckbox = new System.Windows.Forms.CheckBox();
             this.chkBasicsAutoCheckGameConfigsForUpdates = new System.Windows.Forms.CheckBox();
             this.chkBasicsEnablePluginLogging = new System.Windows.Forms.CheckBox();
             this.chkBasicsAutoApplyUpdates = new System.Windows.Forms.CheckBox();
@@ -179,6 +181,8 @@
             // 
             // tabBasics
             // 
+            this.tabBasics.Controls.Add(this.rssFeedOptCheckbox);
+            this.tabBasics.Controls.Add(this.localGeoIPCheckbox);
             this.tabBasics.Controls.Add(this.chkBasicsAutoCheckGameConfigsForUpdates);
             this.tabBasics.Controls.Add(this.chkBasicsEnablePluginLogging);
             this.tabBasics.Controls.Add(this.chkBasicsAutoApplyUpdates);
@@ -209,6 +213,28 @@
             this.tabBasics.TabIndex = 0;
             this.tabBasics.Text = "Basics";
             this.tabBasics.UseVisualStyleBackColor = true;
+            // 
+            // rssFeedOptCheckbox
+            // 
+            this.rssFeedOptCheckbox.AutoSize = true;
+            this.rssFeedOptCheckbox.Location = new System.Drawing.Point(220, 172);
+            this.rssFeedOptCheckbox.Name = "rssFeedOptCheckbox";
+            this.rssFeedOptCheckbox.Size = new System.Drawing.Size(105, 19);
+            this.rssFeedOptCheckbox.TabIndex = 30;
+            this.rssFeedOptCheckbox.Text = "Show RSS Feed";
+            this.rssFeedOptCheckbox.UseVisualStyleBackColor = true;
+            this.rssFeedOptCheckbox.CheckedChanged += new System.EventHandler(this.rssFeedOptCheckbox_CheckedChanged);
+            // 
+            // localGeoIPCheckbox
+            // 
+            this.localGeoIPCheckbox.AutoSize = true;
+            this.localGeoIPCheckbox.Location = new System.Drawing.Point(220, 147);
+            this.localGeoIPCheckbox.Name = "localGeoIPCheckbox";
+            this.localGeoIPCheckbox.Size = new System.Drawing.Size(137, 19);
+            this.localGeoIPCheckbox.TabIndex = 29;
+            this.localGeoIPCheckbox.Text = "Use Local GeoIP Data";
+            this.localGeoIPCheckbox.UseVisualStyleBackColor = true;
+            this.localGeoIPCheckbox.CheckedChanged += new System.EventHandler(this.localGeoIPCheckbox_CheckedChanged);
             // 
             // chkBasicsAutoCheckGameConfigsForUpdates
             // 
@@ -443,7 +469,7 @@
             this.lblBasicsAuthor.AutoSize = true;
             this.lblBasicsAuthor.Location = new System.Drawing.Point(31, 72);
             this.lblBasicsAuthor.Name = "lblBasicsAuthor";
-            this.lblBasicsAuthor.Size = new System.Drawing.Size(78, 15);
+            this.lblBasicsAuthor.Size = new System.Drawing.Size(76, 15);
             this.lblBasicsAuthor.TabIndex = 2;
             this.lblBasicsAuthor.Text = "Translated by";
             // 
@@ -618,7 +644,7 @@
             this.chkAllowSmtpConnections.AutoSize = true;
             this.chkAllowSmtpConnections.Location = new System.Drawing.Point(29, 250);
             this.chkAllowSmtpConnections.Name = "chkAllowSmtpConnections";
-            this.chkAllowSmtpConnections.Size = new System.Drawing.Size(225, 19);
+            this.chkAllowSmtpConnections.Size = new System.Drawing.Size(224, 19);
             this.chkAllowSmtpConnections.TabIndex = 29;
             this.chkAllowSmtpConnections.Text = "Allow all outgoing SMTP connections";
             this.chkAllowSmtpConnections.UseVisualStyleBackColor = true;
@@ -772,7 +798,7 @@
             this.lblPluginsTrustedHostDomain.AutoSize = true;
             this.lblPluginsTrustedHostDomain.Location = new System.Drawing.Point(22, 4);
             this.lblPluginsTrustedHostDomain.Name = "lblPluginsTrustedHostDomain";
-            this.lblPluginsTrustedHostDomain.Size = new System.Drawing.Size(119, 15);
+            this.lblPluginsTrustedHostDomain.Size = new System.Drawing.Size(117, 15);
             this.lblPluginsTrustedHostDomain.TabIndex = 20;
             this.lblPluginsTrustedHostDomain.Text = "Trusted host/domain";
             // 
@@ -929,7 +955,7 @@
             this.lnkHttpServerExampleLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(220)))));
             this.lnkHttpServerExampleLink.Location = new System.Drawing.Point(57, 66);
             this.lnkHttpServerExampleLink.Name = "lnkHttpServerExampleLink";
-            this.lnkHttpServerExampleLink.Size = new System.Drawing.Size(51, 15);
+            this.lnkHttpServerExampleLink.Size = new System.Drawing.Size(52, 15);
             this.lnkHttpServerExampleLink.TabIndex = 13;
             this.lnkHttpServerExampleLink.TabStop = true;
             this.lnkHttpServerExampleLink.Text = "Example";
@@ -966,7 +992,7 @@
             this.lnkHttpServerForwardedTest.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(220)))));
             this.lnkHttpServerForwardedTest.Location = new System.Drawing.Point(57, 8);
             this.lnkHttpServerForwardedTest.Name = "lnkHttpServerForwardedTest";
-            this.lnkHttpServerForwardedTest.Size = new System.Drawing.Size(173, 15);
+            this.lnkHttpServerForwardedTest.Size = new System.Drawing.Size(169, 15);
             this.lnkHttpServerForwardedTest.TabIndex = 2;
             this.lnkHttpServerForwardedTest.TabStop = true;
             this.lnkHttpServerForwardedTest.Text = "Test connection to HTTP server";
@@ -982,7 +1008,7 @@
             this.lnkStartStopHttpServer.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(220)))));
             this.lnkStartStopHttpServer.Location = new System.Drawing.Point(75, 168);
             this.lnkStartStopHttpServer.Name = "lnkStartStopHttpServer";
-            this.lnkStartStopHttpServer.Size = new System.Drawing.Size(116, 15);
+            this.lnkStartStopHttpServer.Size = new System.Drawing.Size(113, 15);
             this.lnkStartStopHttpServer.TabIndex = 28;
             this.lnkStartStopHttpServer.TabStop = true;
             this.lnkStartStopHttpServer.Text = "Turn HTTP server on";
@@ -1108,7 +1134,7 @@
             this.chkAdvShowCfmMsgRoundRestartNext.AutoSize = true;
             this.chkAdvShowCfmMsgRoundRestartNext.Location = new System.Drawing.Point(29, 253);
             this.chkAdvShowCfmMsgRoundRestartNext.Name = "chkAdvShowCfmMsgRoundRestartNext";
-            this.chkAdvShowCfmMsgRoundRestartNext.Size = new System.Drawing.Size(238, 19);
+            this.chkAdvShowCfmMsgRoundRestartNext.Size = new System.Drawing.Size(239, 19);
             this.chkAdvShowCfmMsgRoundRestartNext.TabIndex = 33;
             this.chkAdvShowCfmMsgRoundRestartNext.Text = "Need to confirm round restart / run next";
             this.chkAdvShowCfmMsgRoundRestartNext.UseVisualStyleBackColor = true;
@@ -1672,5 +1698,7 @@
         private System.Windows.Forms.CheckBox chkEnablePluginDebugging;
         private System.Windows.Forms.Label lblPluginsDebug;
         private System.Windows.Forms.Panel panel19;
+        private System.Windows.Forms.CheckBox rssFeedOptCheckbox;
+        private System.Windows.Forms.CheckBox localGeoIPCheckbox;
     }
 }

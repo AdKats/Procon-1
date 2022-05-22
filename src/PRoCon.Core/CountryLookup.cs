@@ -25,8 +25,11 @@ using System.Net;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PRoCon.Core.Options;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace MaxMind
 {
@@ -125,31 +128,36 @@ namespace MaxMind
             return ipnum;
         }
 
+        // Create function to make a async web request. Expecting a json response.
+        private async Task<string> makeWebRequest(string url)
+        {
+            HttpClient client = new HttpClient();
+            HttpResponseMessage response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            string responseBody = await response.Content.ReadAsStringAsync();
+            return responseBody;
+        }
+        
+
         public PIP ProxyCheckRequest(IPAddress addr)
         {
-            using (WebClient client = new WebClient())
+            string url = "https://api.myrcon.net/proxycheck/" + addr.ToString();
+
+            string response = makeWebRequest(url).Result;
+
+            // Decode the json response into a Hashtable
+            Hashtable ht = JsonConvert.DeserializeObject<Hashtable>(response);
+
+            PIP apipc = new PIP()
             {
-                //manipulate request headers (optional)
-                client.Headers.Add(HttpRequestHeader.UserAgent, "Procon/" + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                CountryCode = ((Hashtable)ht[addr.ToString()])["isocode"].ToString(),
+                CountryName = ((Hashtable)ht[addr.ToString()])["country"].ToString(),
+                IP_Address = addr.ToString()
+            };
 
-                //execute request and read response as string to console
-                using (StreamReader reader = new StreamReader(client.OpenRead("https://api.myrcon.net/proxycheck/" + addr.ToString())))
-                {
-                    string s = reader.ReadToEnd();
-                    Hashtable a = (Hashtable)JSON.JsonDecode(s);
+            IPs.Add(addr.ToString(), apipc);
 
-                    PIP apipc = new PIP()
-                    {
-                        CountryCode = ((Hashtable)a[addr.ToString()])["isocode"].ToString(),
-                        CountryName = ((Hashtable)a[addr.ToString()])["country"].ToString(),
-                        IP_Address = addr.ToString()
-                    };
-
-                    IPs.Add(addr.ToString(), apipc);
-
-                    return IPs[addr.ToString()];
-                }
-            }
+            return IPs[addr.ToString()];
         }
 
         public string lookupCountryCode(IPAddress addr)

@@ -53,7 +53,6 @@ namespace PRoCon.Forms
             this.lblVersion.Text = this.m_clocLanguage.GetLocalized("frmAbout.tabAbout.lblVersion", new string[] { this.AssemblyVersion });
             this.lnkVisitForum.Text = this.m_clocLanguage.GetLocalized("frmAbout.tabAbout.lnkVisitForum", null);
             //this.lnkVisitForum.LinkArea = new LinkArea(0, this.lnkVisitForum.Text.Length);
-            this.tabThanks.Text = this.m_clocLanguage.GetLocalized("frmAbout.tabThanks.Title", null);
             this.tabCopyright.Text = this.m_clocLanguage.GetLocalized("frmAbout.tabCopyright.Title", null);
         }
 
@@ -198,6 +197,18 @@ namespace PRoCon.Forms
         {
             System.Diagnostics.Process.Start("http://www.z-gaming.org/");
 
+        }
+
+        private void pictureBox2_Click(object sender, EventArgs e)
+        {
+            // Open link https://myrcon.net/discord/invite/general/ in a new browser window
+            System.Diagnostics.Process.Start("https://myrcon.net/discord/invite/general/");
+        }
+
+        private void ezscaleLogo_Click(object sender, EventArgs e)
+        {
+            // Open link https://discord.gg/JSmVeJjRhj in a new browser window
+            System.Diagnostics.Process.Start("https://discord.gg/JSmVeJjRhj");
         }
     }
 }

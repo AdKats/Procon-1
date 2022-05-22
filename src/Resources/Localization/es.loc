@@ -1343,6 +1343,8 @@ frmOptions.tabBasics.cboBasicsShowWindow.TaskTray=En Barra de Tareas y Bandeja d
 frmOptions.tabBasics.cboBasicsShowWindow.Task=Solo en Barra de Tareas.
 frmOptions.tabBasics.chkBasicsCloseToTray=Cerrar en la Bandeja del Sistema.
 frmOptions.tabBasics.chkBasicsMinimizeToTray=Iniciar minimizado.
+frmOptions.tabBasics.rssFeedOptCheckbox=Mostrar fuente RSS
+frmOptions.tabBasics.localGeoIPCheckbox=Usar datos GeoIP locales
 
 
 frmOptions.tabPlugins=Complementos

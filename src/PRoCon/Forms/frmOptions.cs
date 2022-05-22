@@ -177,6 +177,13 @@ namespace PRoCon.Forms
 
                 this.m_praApplication.OptionsSettings.UsePluginOldStyleLoad = this.m_praApplication.OptionsSettings.UsePluginOldStyleLoad;
 
+                this.m_praApplication.OptionsSettings.UseGeoIpFileOnly = this.m_praApplication.OptionsSettings.UseGeoIpFileOnly;
+                this.localGeoIPCheckbox.Checked = this.m_praApplication.OptionsSettings.UseGeoIpFileOnly;
+                
+                this.m_praApplication.OptionsSettings.BlockRssFeedNews = this.m_praApplication.OptionsSettings.BlockRssFeedNews;
+                this.rssFeedOptCheckbox.Checked = this.m_praApplication.OptionsSettings.BlockRssFeedNews;
+                
+
                 this.m_praApplication.OptionsSettings.PluginMaxRuntime_m = this.m_praApplication.OptionsSettings.PluginMaxRuntime_m;
                 this.m_praApplication.OptionsSettings.PluginMaxRuntime_s = this.m_praApplication.OptionsSettings.PluginMaxRuntime_s;
                 if (this.m_praApplication.OptionsSettings.PluginMaxRuntimeLocked == true)
@@ -238,6 +245,8 @@ namespace PRoCon.Forms
             this.cboBasicsShowWindow.Items[1] = clocLanguage.GetLocalized("frmOptions.tabBasics.cboBasicsShowWindow.Task");
             this.chkBasicsCloseToTray.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsCloseToTray");
             this.chkBasicsMinimizeToTray.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.chkBasicsMinimizeToTray");
+            this.rssFeedOptCheckbox.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.rssFeedOptCheckbox");
+            this.localGeoIPCheckbox.Text = clocLanguage.GetLocalized("frmOptions.tabBasics.localGeoIPCheckbox");
 
             this.tabPlugins.Text = clocLanguage.GetLocalized("frmOptions.tabPlugins");
 
@@ -1036,6 +1045,21 @@ namespace PRoCon.Forms
         private void chkEnablePluginDebugging_CheckedChanged(object sender, EventArgs e)
         {
             this.m_praApplication.OptionsSettings.EnablePluginDebugging = this.chkEnablePluginDebugging.Checked;
+        }
+
+        private void lsvStatsLinksList_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void rssFeedOptCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_praApplication.OptionsSettings.BlockRssFeedNews = this.rssFeedOptCheckbox.Checked;        
+        }
+
+        private void localGeoIPCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.m_praApplication.OptionsSettings.UseGeoIpFileOnly = this.localGeoIPCheckbox.Checked;
         }
     }
 }
