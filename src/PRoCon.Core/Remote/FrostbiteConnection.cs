@@ -262,7 +262,6 @@ namespace PRoCon.Core.Remote
 
             lock (this.QueueUnqueuePacketLock)
             {
-
                 if (isSending == true)
                 {
                     // If we have something that has been sent and is awaiting a response
@@ -308,7 +307,6 @@ namespace PRoCon.Core.Remote
                     {
                         response = false;
                     }
-
                 }
             }
 
@@ -349,7 +347,6 @@ namespace PRoCon.Core.Remote
         {
             try
             {
-
                 bool isProcessed = false;
 
                 if (this.BeforePacketSend != null)
@@ -439,135 +436,121 @@ namespace PRoCon.Core.Remote
 
         private void ReceiveCallback(IAsyncResult ar)
         {
-
-            if (this.NetworkStream != null)
+            if (this.NetworkStream == null)
             {
+                return;
+            }
+            int iBytesRead = this.NetworkStream.EndRead(ar);
+
+            if (iBytesRead == 0)
+            {
+                this.Shutdown();
+                return;
+            }
+
+            // Create or resize our packet stream to hold the new data.
+            if (this.PacketStream == null)
+            {
+                this.PacketStream = new byte[iBytesRead];
+            }
+            else
+            {
+                Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
+            }
+
+            Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
+
+            UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+
+            while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
+            {
+                // Copy the complete packet from the beginning of the stream.
+                byte[] completePacket = new byte[ui32PacketSize];
+                Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
+
+                Packet packet = new Packet(completePacket);
+                //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
+
+                // Dispatch the completed packet.
                 try
                 {
-                    int iBytesRead = this.NetworkStream.EndRead(ar);
+                    bool isProcessed = false;
 
-                    if (iBytesRead > 0)
+                    if (this.BeforePacketDispatch != null)
                     {
-
-                        // Create or resize our packet stream to hold the new data.
-                        if (this.PacketStream == null)
-                        {
-                            this.PacketStream = new byte[iBytesRead];
-                        }
-                        else
-                        {
-                            Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
-                        }
-
-                        Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
-
-                        UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
-
-                        while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
-                        {
-
-                            // Copy the complete packet from the beginning of the stream.
-                            byte[] completePacket = new byte[ui32PacketSize];
-                            Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
-
-                            Packet packet = new Packet(completePacket);
-                            //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
-
-                            // Dispatch the completed packet.
-                            try
-                            {
-                                bool isProcessed = false;
-
-                                if (this.BeforePacketDispatch != null)
-                                {
-                                    this.BeforePacketDispatch(this, packet, out isProcessed);
-                                }
-
-                                if (this.PacketReceived != null)
-                                {
-                                    this.LastPacketReceived = packet;
-
-                                    this.Cache.Response(packet);
-
-                                    this.PacketReceived(this, isProcessed, packet);
-                                }
-
-                                if (packet.OriginatedFromServer == true && packet.IsResponse == false)
-                                {
-                                    this.SendAsync(new Packet(true, true, packet.SequenceNumber, "OK"));
-                                }
-
-                                Packet cpNextPacket = null;
-                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
-                                {
-                                    this.SendAsync(cpNextPacket);
-                                }
-
-                                // Shutdown if we're just waiting for a response to an old packet.
-                                this.RestartConnectionOnQueueFailure();
-                            }
-                            catch (Exception e)
-                            {
-
-                                Packet cpRequest = this.GetRequestPacket(packet);
-
-                                if (cpRequest != null)
-                                {
-                                    LogError(packet.ToDebugString(), cpRequest.ToDebugString(), e);
-                                }
-                                else
-                                {
-                                    LogError(packet.ToDebugString(), String.Empty, e);
-                                }
-
-                                // Now try to recover..
-                                Packet cpNextPacket = null;
-                                if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
-                                {
-                                    this.SendAsync(cpNextPacket);
-                                }
-
-                                // Shutdown if we're just waiting for a response to an old packet.
-                                this.RestartConnectionOnQueueFailure();
-                            }
-
-                            // Now remove the completed packet from the beginning of the stream
-                            if (this.PacketStream != null)
-                            {
-                                byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
-                                Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
-                                this.PacketStream = updatedSteam;
-
-                                ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
-                            }
-                        }
-
-                        // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
-                        // We went really wrong somewhere =)
-                        if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
-                        {
-                            this.ReceivedBuffer = null; // GC.collect()
-                            this.Shutdown(new Exception("Exceeded maximum garbage packet"));
-                        }
-
-                        if (this.NetworkStream != null)
-                        {
-                            this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
-                        }
+                        this.BeforePacketDispatch(this, packet, out isProcessed);
                     }
-                    else if (iBytesRead == 0)
+
+                    if (this.PacketReceived != null)
                     {
-                        this.Shutdown();
+                        this.LastPacketReceived = packet;
+
+                        this.Cache.Response(packet);
+
+                        this.PacketReceived(this, isProcessed, packet);
                     }
-                }
-                catch (SocketException se)
-                {
-                    this.Shutdown(se);
+
+                    if (packet.OriginatedFromServer == true && packet.IsResponse == false)
+                    {
+                        this.SendAsync(new Packet(true, true, packet.SequenceNumber, "OK"));
+                    }
+
+                    Packet cpNextPacket = null;
+                    if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                    {
+                        this.SendAsync(cpNextPacket);
+                    }
+
+                    // Shutdown if we're just waiting for a response to an old packet.
+                    this.RestartConnectionOnQueueFailure();
                 }
                 catch (Exception e)
                 {
-                    this.Shutdown(e);
+
+                    Packet cpRequest = this.GetRequestPacket(packet);
+
+                    if (cpRequest != null)
+                    {
+                        LogError(packet.ToDebugString(), cpRequest.ToDebugString(), e);
+                    }
+                    else
+                    {
+                        LogError(packet.ToDebugString(), String.Empty, e);
+                    }
+
+                    // Now try to recover..
+                    Packet cpNextPacket = null;
+                    if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                    {
+                        this.SendAsync(cpNextPacket);
+                    }
+
+                    // Shutdown if we're just waiting for a response to an old packet.
+                    this.RestartConnectionOnQueueFailure();
                 }
+
+                // Now remove the completed packet from the beginning of the stream
+                if (this.PacketStream != null)
+                {
+                    byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
+                    Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
+                    this.PacketStream = updatedSteam;
+
+                    ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+                }
+            }
+
+            // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
+            // We went really wrong somewhere =)
+            if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
+            {
+                this.ReceivedBuffer = null; // GC.collect()
+                this.Shutdown(new Exception("Exceeded maximum garbage packet"));
+            }
+
+            if (this.NetworkStream != null)
+            {
+                this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
             }
         }
 
@@ -635,7 +618,6 @@ namespace PRoCon.Core.Remote
 
         private void ConnectedCallback(IAsyncResult ar)
         {
-
             try
             {
                 this.Client.EndConnect(ar);
@@ -668,23 +650,24 @@ namespace PRoCon.Core.Remote
         {
             IPAddress ipReturn = IPAddress.None;
 
-            if (IPAddress.TryParse(hostName, out ipReturn) == false)
+            if (IPAddress.TryParse(hostName, out ipReturn) != false)
             {
-
-                ipReturn = IPAddress.None;
-
-                try
-                {
-                    IPHostEntry iphHost = Dns.GetHostEntry(hostName);
-
-                    if (iphHost.AddressList.Length > 0)
-                    {
-                        ipReturn = iphHost.AddressList[0];
-                    }
-                    // ELSE return IPAddress.None..
-                }
-                catch (Exception) { } // Returns IPAddress.None..
+                return ipReturn;
             }
+
+            ipReturn = IPAddress.None;
+
+            try
+            {
+                IPHostEntry iphHost = Dns.GetHostEntry(hostName);
+
+                if (iphHost.AddressList.Length > 0)
+                {
+                    ipReturn = iphHost.AddressList[0];
+                }
+                // ELSE return IPAddress.None..
+            }
+            catch (Exception) { } // Returns IPAddress.None..
 
             return ipReturn;
         }
@@ -755,45 +738,45 @@ namespace PRoCon.Core.Remote
 
         protected void ShutdownConnection()
         {
-
-            if (this.Client != null)
+            if (this.Client == null)
             {
-                lock (this.ShutdownConnectionLock)
+                return;
+            }
+
+            lock (this.ShutdownConnectionLock)
+            {
+                try
                 {
-                    try
+                    this.ClearConnection();
+
+                    if (this.NetworkStream != null)
                     {
-
-                        this.ClearConnection();
-
-                        if (this.NetworkStream != null)
-                        {
-                            this.NetworkStream.Close();
-                            this.NetworkStream.Dispose();
-                            this.NetworkStream = null;
-                        }
-
-                        this.Client.Close();
-                        this.Client = null;
-
-                        if (this.ConnectionClosed != null)
-                        {
-                            this.ConnectionClosed(this);
-                        }
+                        this.NetworkStream.Close();
+                        this.NetworkStream.Dispose();
+                        this.NetworkStream = null;
                     }
-                    catch (SocketException se)
+
+                    this.Client.Close();
+                    this.Client = null;
+
+                    if (this.ConnectionClosed != null)
                     {
-                        if (this.SocketException != null)
-                        {
-                            this.SocketException(this, se);
-                            //this.SocketException(se);
-                        }
+                        this.ConnectionClosed(this);
                     }
-                    catch (Exception e)
+                }
+                catch (SocketException se)
+                {
+                    if (this.SocketException != null)
                     {
-                        if (this.ConnectionFailure != null)
-                        {
-                            this.ConnectionFailure(this, e);
-                        }
+                        this.SocketException(this, se);
+                        //this.SocketException(se);
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (this.ConnectionFailure != null)
+                    {
+                        this.ConnectionFailure(this, e);
                     }
                 }
             }
