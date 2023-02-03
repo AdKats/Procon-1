@@ -27,6 +27,10 @@
             this.okButton = new System.Windows.Forms.Button();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabAbout = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.ezscaleLogo = new System.Windows.Forms.PictureBox();
+            this.discordIcon = new System.Windows.Forms.PictureBox();
             this.lnkVisitForum = new System.Windows.Forms.LinkLabel();
             this.lblVersion = new System.Windows.Forms.Label();
             this.lblProductName = new System.Windows.Forms.Label();
@@ -37,23 +41,19 @@
             this.lnlDotNetLibLibrary = new System.Windows.Forms.LinkLabel();
             this.lblDotNetZipLibrary = new System.Windows.Forms.Label();
             this.lnkMaxMind = new System.Windows.Forms.LinkLabel();
+            this.picMaxMind = new System.Windows.Forms.PictureBox();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.discordToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ezscaleTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.ezscaleLogo = new System.Windows.Forms.PictureBox();
-            this.discordIcon = new System.Windows.Forms.PictureBox();
-            this.picMaxMind = new System.Windows.Forms.PictureBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.tabAbout.SuspendLayout();
-            this.tabCopyright.SuspendLayout();
-            this.pnlCopyright.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ezscaleLogo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.discordIcon)).BeginInit();
+            this.tabCopyright.SuspendLayout();
+            this.pnlCopyright.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picMaxMind)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // okButton
@@ -96,6 +96,48 @@
             this.tabAbout.TabIndex = 0;
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(210, 174);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(252, 15);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Click the logo above to join EZSCALE\'s discord";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(220, 61);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(247, 15);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Click the logo above to join MyRCON discord";
+            // 
+            // ezscaleLogo
+            // 
+            this.ezscaleLogo.Image = global::PRoCon.Properties.Resources.ezscale_logo;
+            this.ezscaleLogo.Location = new System.Drawing.Point(242, 121);
+            this.ezscaleLogo.Name = "ezscaleLogo";
+            this.ezscaleLogo.Size = new System.Drawing.Size(215, 50);
+            this.ezscaleLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.ezscaleLogo.TabIndex = 4;
+            this.ezscaleLogo.TabStop = false;
+            this.ezscaleTooltip.SetToolTip(this.ezscaleLogo, "Click to join EZSCALE Discord Server");
+            this.ezscaleLogo.Click += new System.EventHandler(this.ezscaleLogo_Click);
+            // 
+            // discordIcon
+            // 
+            this.discordIcon.Image = global::PRoCon.Properties.Resources.Discord_Logo;
+            this.discordIcon.Location = new System.Drawing.Point(223, 6);
+            this.discordIcon.Name = "discordIcon";
+            this.discordIcon.Size = new System.Drawing.Size(244, 52);
+            this.discordIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.discordIcon.TabIndex = 3;
+            this.discordIcon.TabStop = false;
+            this.discordToolTip.SetToolTip(this.discordIcon, "Click to join the MyRCON Discord.\r\n");
+            this.discordIcon.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // lnkVisitForum
             // 
@@ -223,6 +265,15 @@
             this.lnkMaxMind.UseCompatibleTextRendering = true;
             this.lnkMaxMind.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkMaxMind_LinkClicked);
             // 
+            // picMaxMind
+            // 
+            this.picMaxMind.Image = ((System.Drawing.Image)(resources.GetObject("picMaxMind.Image")));
+            this.picMaxMind.Location = new System.Drawing.Point(8, 3);
+            this.picMaxMind.Name = "picMaxMind";
+            this.picMaxMind.Size = new System.Drawing.Size(117, 35);
+            this.picMaxMind.TabIndex = 0;
+            this.picMaxMind.TabStop = false;
+            // 
             // linkLabel1
             // 
             this.linkLabel1.ActiveLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(100)))), ((int)(((byte)(220)))));
@@ -236,18 +287,9 @@
             this.linkLabel1.Size = new System.Drawing.Size(148, 21);
             this.linkLabel1.TabIndex = 2;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "Copyright © 2022 Myrcon";
+            this.linkLabel1.Text = "Copyright © 2023 Myrcon";
             this.linkLabel1.UseCompatibleTextRendering = true;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(220, 61);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(247, 15);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Click the logo above to join MyRCON discord";
             // 
             // pictureBox1
             // 
@@ -258,48 +300,6 @@
             this.pictureBox1.Size = new System.Drawing.Size(71, 200);
             this.pictureBox1.TabIndex = 26;
             this.pictureBox1.TabStop = false;
-            // 
-            // ezscaleLogo
-            // 
-            this.ezscaleLogo.Image = global::PRoCon.Properties.Resources.ezscale_logo;
-            this.ezscaleLogo.Location = new System.Drawing.Point(242, 121);
-            this.ezscaleLogo.Name = "ezscaleLogo";
-            this.ezscaleLogo.Size = new System.Drawing.Size(215, 50);
-            this.ezscaleLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.ezscaleLogo.TabIndex = 4;
-            this.ezscaleLogo.TabStop = false;
-            this.ezscaleTooltip.SetToolTip(this.ezscaleLogo, "Click to join EZSCALE Discord Server");
-            this.ezscaleLogo.Click += new System.EventHandler(this.ezscaleLogo_Click);
-            // 
-            // discordIcon
-            // 
-            this.discordIcon.Image = global::PRoCon.Properties.Resources.Discord_Logo;
-            this.discordIcon.Location = new System.Drawing.Point(223, 6);
-            this.discordIcon.Name = "discordIcon";
-            this.discordIcon.Size = new System.Drawing.Size(244, 52);
-            this.discordIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.discordIcon.TabIndex = 3;
-            this.discordIcon.TabStop = false;
-            this.discordToolTip.SetToolTip(this.discordIcon, "Click to join the MyRCON Discord.\r\n");
-            this.discordIcon.Click += new System.EventHandler(this.pictureBox2_Click);
-            // 
-            // picMaxMind
-            // 
-            this.picMaxMind.Image = ((System.Drawing.Image)(resources.GetObject("picMaxMind.Image")));
-            this.picMaxMind.Location = new System.Drawing.Point(8, 3);
-            this.picMaxMind.Name = "picMaxMind";
-            this.picMaxMind.Size = new System.Drawing.Size(117, 35);
-            this.picMaxMind.TabIndex = 0;
-            this.picMaxMind.TabStop = false;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(210, 174);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(252, 15);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Click the logo above to join EZSCALE\'s discord";
             // 
             // frmAbout
             // 
@@ -325,13 +325,13 @@
             this.tabControl.ResumeLayout(false);
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ezscaleLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.discordIcon)).EndInit();
             this.tabCopyright.ResumeLayout(false);
             this.pnlCopyright.ResumeLayout(false);
             this.pnlCopyright.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ezscaleLogo)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.discordIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.picMaxMind)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

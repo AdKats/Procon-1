@@ -27,14 +27,19 @@ namespace PRoCon.Console
     using Core;
     using Core.Remote;
     using System.Net.Sockets;
-
+    
     class Program
     {
-
+        
+            
         static void Main(string[] args)
         {
+            int connectionIntrupts = 0;
+
+            int maxConnectionIntruppts = 5;
 
             int iValue;
+            
             if (args != null && args.Length >= 2)
             {
                 for (int i = 0; i < args.Length; i = i + 2)
@@ -90,6 +95,9 @@ namespace PRoCon.Console
 
                             while (true)
                             {
+                                string currentTimestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                
+                                System.Console.WriteLine("[" + currentTimestamp + "] [PRoCon] Testing connection to games server...");
                                 Thread.Sleep(5000);
 
                                 // Check if port is alive using the ip PROCON_GAMESERVER_IP and port PROCON_GAMESERVER_PORT
@@ -97,15 +105,36 @@ namespace PRoCon.Console
                                 {
                                     try
                                     {
+                                        // Reset the connectionIntrupts upponse successful connect.
+                                        if(connectionIntrupts > 0)
+                                        {
+                                            connectionIntrupts = 0;
+                                        }
+                                        
                                         tcpClient.Connect(PROCON_GAMESERVER_IP, PROCON_GAMESERVER_PORT);
+
+                                        // If we get here, the connection is alive.
+                                        // Now lets clean up the tcpClient by closing the connection
+                                        tcpClient.Close();
+
+                                        System.Console.WriteLine("[" + currentTimestamp + "] Game server connection successful.");
+
                                     }
                                     catch (Exception)
                                     {
-                                        System.Console.WriteLine("[PRoCon] Connection lost, exiting.");
-                                        application.Shutdown();
-                                        // Exit the application
-                                        Environment.Exit(0);
-                                        break;
+                                        // Once we reach the max amount of connection attempts, kill the application.
+                                        if (connectionIntrupts > maxConnectionIntruppts)
+                                        {
+                                            System.Console.WriteLine("[" + currentTimestamp + "] Connection to game server lost, closing application.");
+                                            application.Shutdown();
+                                            // Exit the application
+                                            Environment.Exit(1);
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            connectionIntrupts++;
+                                        }
                                     }
                                 }
                             }
