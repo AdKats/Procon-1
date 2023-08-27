@@ -1781,6 +1781,7 @@ uscEvents.gpbCaptures.chkEventsEnableScrolling=Enable scrolling
 uscEvents.lsvEvents.PlayerJoin={0} joined the server
 uscEvents.lsvEvents.PlayerLeave={0} left the server
 uscEvents.lsvEvents.PlayerDisconnected={0} disconnected from the server (reason: {1})
+uscEvents.lsvEvents.PlayerSpawned={0} spawned
 uscEvents.lsvEvents.PlayerKilled={0} killed {1} {2}
 uscEvents.lsvEvents.PlayerKilled.HeadShot=-HEADSHOT-
 uscEvents.lsvEvents.PlayerKicked={0} was kicked from the server

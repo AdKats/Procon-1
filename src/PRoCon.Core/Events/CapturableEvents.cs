@@ -6,6 +6,7 @@
         PlayerJoin,
         PlayerLeave,
         PlayerDisconnected,
+        PlayerSpawned,
         PlayerKilled,
         PlayerKicked,
         IPKicked,

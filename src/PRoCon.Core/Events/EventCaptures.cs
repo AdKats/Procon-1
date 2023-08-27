@@ -204,6 +204,7 @@ namespace PRoCon.Core.Events
                 this.m_prcClient.Game.PlayerKilledByAdmin += new FrostbiteClient.PlayerKilledByAdminHandler(Game_PlayerKilledByAdmin);
                 this.m_prcClient.Game.PlayerMovedByAdmin += new FrostbiteClient.PlayerMovedByAdminHandler(Game_PlayerMovedByAdmin);
 
+                this.m_prcClient.Game.PlayerSpawned += new FrostbiteClient.PlayerSpawnedHandler(m_prcClient_PlayerSpawned);
                 this.m_prcClient.PlayerKilled += new PRoConClient.PlayerKilledHandler(m_prcClient_PlayerKilled);
                 this.m_prcClient.PunkbusterPlayerUnbanned += new PRoConClient.PunkbusterBanHandler(m_prcClient_PlayerUnbanned);
 
@@ -276,6 +277,13 @@ namespace PRoCon.Core.Events
             if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true)
             {
                 this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedTeams, strSoldierName, this.m_prcClient.GetLocalizedTeamName(this.m_prcClient.PlayerList[strSoldierName].TeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode), this.m_prcClient.GetLocalizedTeamName(iTeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode));
+            }
+        }
+        
+        private void m_prcClient_PlayerSpawned(FrostbiteClient sender, string strSoldierName, string strKit, List<string> lstWeapons, List<string> lstSpecializations)
+        {
+            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true) {
+                this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSpawned, strSoldierName);
             }
         }
 
