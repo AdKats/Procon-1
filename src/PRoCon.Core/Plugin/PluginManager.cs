@@ -1027,10 +1027,20 @@ namespace PRoCon.Core.Plugin
                 if (AppDomainSandbox != null)
                 {
                     AppDomain.Unload(AppDomainSandbox);
+                    AppDomainSandbox = null;
+                }
+            }
+            catch (CannotUnloadAppDomainException e)
+            {
+                AppDomainSandbox = null;
+                if (ProconClient != null)
+                {
+                    WritePluginConsole("^1Failed to unload plugin domain: {0}", e.Message);
                 }
             }
             catch (Exception e)
             {
+                AppDomainSandbox = null;
                 if (ProconClient != null)
                 {
                     WritePluginConsole("^1{0}", e.Message);
