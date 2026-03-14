@@ -3631,8 +3631,8 @@ namespace PRoCon.Core.Remote
                         stwConfig.Flush();
                         stwConfig.Close();
 
-                        File.Copy(strSaveFile + ".temp", strSaveFile, true);
-                        File.Delete(strSaveFile + ".temp");
+                        if (File.Exists(strSaveFile)) File.Delete(strSaveFile);
+                        File.Move(strSaveFile + ".temp", strSaveFile);
                     }
                 }
                 catch (Exception e)
@@ -3697,8 +3697,8 @@ namespace PRoCon.Core.Remote
                         pluginConfigWriter.Flush();
                         pluginConfigWriter.Close();
 
-                        File.Copy(string.Format("{0}.temp", pluginConfigPath), pluginConfigPath, true);
-                        File.Delete(string.Format("{0}.temp", pluginConfigPath));
+                        if (File.Exists(pluginConfigPath)) File.Delete(pluginConfigPath);
+                        File.Move(string.Format("{0}.temp", pluginConfigPath), pluginConfigPath);
                     }
                     catch (Exception e)
                     {
