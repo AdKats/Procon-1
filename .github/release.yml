@@ -1,0 +1,70 @@
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+    authors:
+      - dependabot
+      - dependabot[bot]
+
+  categories:
+    - title: "⚠️ Breaking Changes"
+      labels:
+        - breaking-change
+        - breaking
+
+    - title: "🔒 Security"
+      labels:
+        - security
+
+    - title: "🚀 New Features"
+      labels:
+        - feature
+        - enhancement
+
+    - title: "🎮 Game Support"
+      labels:
+        - game-support
+        - battlefield
+        - venice-unleashed
+
+    - title: "🔌 Plugin System"
+      labels:
+        - plugins
+        - plugin-api
+
+    - title: "🐛 Bug Fixes"
+      labels:
+        - bug
+        - bugfix
+        - fix
+
+    - title: "🐧 Linux / Docker"
+      labels:
+        - linux
+        - docker
+        - cross-platform
+
+    - title: "⚡ Performance"
+      labels:
+        - performance
+        - optimization
+
+    - title: "🧹 Maintenance"
+      labels:
+        - chore
+        - refactor
+        - cleanup
+        - code-quality
+
+    - title: "📦 Dependencies"
+      labels:
+        - dependencies
+
+    - title: "📖 Documentation"
+      labels:
+        - documentation
+        - docs
+
+    - title: "🔧 Other Changes"
+      labels:
+        - "*"
