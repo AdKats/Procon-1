@@ -65,7 +65,7 @@ namespace PRoCon.Core.ProxyChecker
 
                 var t = Task<bool>.Run(async () =>
                 {
-                    using (var client = new System.Net.Http.HttpClient())
+                    using (var httpClient = new System.Net.Http.HttpClient())
                     {
                         // Set the API URL.
                         string url = "https://api.myrcon.net/proxycheck/";
@@ -74,7 +74,7 @@ namespace PRoCon.Core.ProxyChecker
                         url += ipAddress;
 
                         // Make the web request.
-                        response = await client.GetStringAsync(url);
+                        response = await httpClient.GetStringAsync(url);
 
                         Hashtable ht = JsonConvert.DeserializeObject<Hashtable>(response);
 
@@ -95,7 +95,7 @@ namespace PRoCon.Core.ProxyChecker
         }
 
         // Get a record from the IPDB or return null when empty.
-        public static Hashtable? GetRecord(string ipAddress)
+        public static Hashtable GetRecord(string ipAddress)
         {
             if (HasRecord(ipAddress))
             {

@@ -27,11 +27,11 @@ namespace PRoCon.Console
     using Core;
     using Core.Remote;
     using System.Net.Sockets;
-    
+
     class Program
     {
-        
-            
+
+
         static void Main(string[] args)
         {
             int connectionIntrupts = 0;
@@ -39,7 +39,7 @@ namespace PRoCon.Console
             int maxConnectionIntruppts = 5;
 
             int iValue;
-            
+
             if (args != null && args.Length >= 2)
             {
                 for (int i = 0; i < args.Length; i = i + 2)
@@ -55,6 +55,8 @@ namespace PRoCon.Console
 
             if (PRoConApplication.IsProcessOpen() == false)
             {
+                var exitEvent = new ManualResetEvent(false);
+
                 try
                 {
                     application = new PRoConApplication(true, args);
@@ -72,7 +74,7 @@ namespace PRoCon.Console
                     application.Execute();
 
                     GC.Collect();
-                    
+
                     // Check if we are running in a docker container
                     if (System.IO.File.Exists("/proc/1/cgroup") == true)
                     {
@@ -85,7 +87,7 @@ namespace PRoCon.Console
 
                     // Check if the environemnt variable "PROCON_GAMESERVER_IP" exists
                     string PROCON_GAMESERVER_IP = System.Environment.GetEnvironmentVariable("PROCON_GAMESERVER_IP") ?? "";
-                    
+
                     if (PROCON_GAMESERVER_IP != "")
                     {
                         // Run a background thread to keep checking if the connection is still alive, otherwise close application.
@@ -95,56 +97,71 @@ namespace PRoCon.Console
 
                             while (true)
                             {
+                                Thread.Sleep(60000);
+
                                 string currentTimestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                
-                                System.Console.WriteLine("[" + currentTimestamp + "] [PRoCon] Testing connection to games server...");
-                                Thread.Sleep(5000);
 
                                 // Check if port is alive using the ip PROCON_GAMESERVER_IP and port PROCON_GAMESERVER_PORT
                                 using (TcpClient tcpClient = new TcpClient())
                                 {
                                     try
                                     {
-                                        // Reset the connectionIntrupts upponse successful connect.
-                                        if(connectionIntrupts > 0)
-                                        {
-                                            connectionIntrupts = 0;
-                                        }
-                                        
                                         tcpClient.Connect(PROCON_GAMESERVER_IP, PROCON_GAMESERVER_PORT);
-
-                                        // If we get here, the connection is alive.
-                                        // Now lets clean up the tcpClient by closing the connection
                                         tcpClient.Close();
 
-                                        System.Console.WriteLine("[" + currentTimestamp + "] Game server connection successful.");
+                                        // Reset counter only after a successful connection
+                                        if (connectionIntrupts > 0)
+                                        {
+                                            System.Console.WriteLine("[" + currentTimestamp + "] [PRoCon] Game server reconnected after " + connectionIntrupts + " failed attempt(s).");
+                                            connectionIntrupts = 0;
+                                        }
 
+                                        System.Console.WriteLine("[" + currentTimestamp + "] Game server connection successful.");
                                     }
                                     catch (Exception)
                                     {
-                                        // Once we reach the max amount of connection attempts, kill the application.
-                                        if (connectionIntrupts > maxConnectionIntruppts)
+                                        connectionIntrupts++;
+
+                                        System.Console.WriteLine("[" + currentTimestamp + "] [PRoCon] Connection check failed (" + connectionIntrupts + "/" + maxConnectionIntruppts + ").");
+
+                                        // Once we reach the max amount of connection attempts, shut down gracefully.
+                                        if (connectionIntrupts >= maxConnectionIntruppts)
                                         {
-                                            System.Console.WriteLine("[" + currentTimestamp + "] Connection to game server lost, closing application.");
+                                            System.Console.WriteLine("[" + currentTimestamp + "] [PRoCon] Connection lost after " + connectionIntrupts + " attempts. Shutting down.");
                                             application.Shutdown();
-                                            // Exit the application
-                                            Environment.Exit(1);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            connectionIntrupts++;
+                                            application = null; // Prevent double shutdown in finally block
+                                            exitEvent.Set();
+                                            return;
                                         }
                                     }
                                 }
                             }
                         }));
-                        
+
+                        t.IsBackground = true;
                         t.Start();
                     }
 
-                    System.Console.WriteLine("Running... (Press any key to shutdown)");
-                    System.Console.ReadKey();
+                    // Register signal handlers for graceful shutdown (works in Docker without a TTY)
+                    PRoConApplication shutdownApp = application;
+                    System.Console.CancelKeyPress += (sender, e) =>
+                    {
+                        e.Cancel = true;
+                        System.Console.WriteLine("[PRoCon] Received shutdown signal (SIGINT). Shutting down gracefully...");
+                        if (shutdownApp != null) shutdownApp.Shutdown();
+                        application = null; // Prevent double shutdown in finally block
+                        exitEvent.Set();
+                    };
+
+                    // ProcessExit has a ~2 second time limit on .NET Framework/Mono
+                    AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+                    {
+                        System.Console.WriteLine("[PRoCon] Process exit. Shutting down gracefully...");
+                        if (shutdownApp != null) shutdownApp.Shutdown();
+                    };
+
+                    System.Console.WriteLine("Running... (Send SIGINT or SIGTERM to shutdown)");
+                    exitEvent.WaitOne();
                 }
                 catch (Exception e)
                 {

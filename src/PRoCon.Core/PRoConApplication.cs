@@ -404,6 +404,8 @@ namespace PRoCon.Core
 
         public static bool IsProcessOpen()
         {
+            // Docker containers guarantee single instance; MainModule.FileName is unreliable on Mono/Linux
+            if (Environment.OSVersion.Platform == PlatformID.Unix) return false;
 
             int processCount = 0;
 
@@ -2925,33 +2927,43 @@ namespace PRoCon.Core
                         highest_version = MonoVersion;
                     }
                 }
-                else
+                else if (Environment.OSVersion.Platform != PlatformID.Unix)
                 {
-                    // normal .Net check
-                    RegistryKey installed_versions = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP");
-
-                    string[] version_keys = installed_versions.GetSubKeyNames();
-
-                    foreach (string version_key in version_keys)
+                    // Windows-only .NET Framework check via Registry
+                    try
                     {
-                        Match version_match = version_regex.Match(version_key);
+                        RegistryKey installed_versions = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP");
 
-                        if (version_match.Success == true)
+                        if (installed_versions != null)
                         {
-                            int service_pack = Convert.ToInt32(installed_versions.OpenSubKey(version_key).GetValue("SP", 0));
+                            string[] version_keys = installed_versions.GetSubKeyNames();
 
-                            Version version = new Version(
-                                version_match.Groups["major"].Value.Length > 0 ? int.Parse(version_match.Groups["major"].Value) : 0,
-                                version_match.Groups["minor"].Value.Length > 0 ? int.Parse(version_match.Groups["minor"].Value) : 0,
-                                version_match.Groups["build"].Value.Length > 0 ? int.Parse(version_match.Groups["build"].Value) : 0,
-                                service_pack
-                            );
-
-                            if (version > highest_version)
+                            foreach (string version_key in version_keys)
                             {
-                                highest_version = version;
+                                Match version_match = version_regex.Match(version_key);
+
+                                if (version_match.Success == true)
+                                {
+                                    int service_pack = Convert.ToInt32(installed_versions.OpenSubKey(version_key).GetValue("SP", 0));
+
+                                    Version version = new Version(
+                                        version_match.Groups["major"].Value.Length > 0 ? int.Parse(version_match.Groups["major"].Value) : 0,
+                                        version_match.Groups["minor"].Value.Length > 0 ? int.Parse(version_match.Groups["minor"].Value) : 0,
+                                        version_match.Groups["build"].Value.Length > 0 ? int.Parse(version_match.Groups["build"].Value) : 0,
+                                        service_pack
+                                    );
+
+                                    if (version > highest_version)
+                                    {
+                                        highest_version = version;
+                                    }
+                                }
                             }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        // Registry access may fail on non-Windows or restricted environments
                     }
                 } // end of mono check
             }
