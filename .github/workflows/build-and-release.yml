@@ -12,7 +12,21 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-latest
+            rid: linux-arm64
+          - os: windows-latest
+            rid: win-x64
+          - os: macos-latest
+            rid: osx-x64
+          - os: macos-latest
+            rid: osx-arm64
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout
@@ -20,129 +34,91 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v2
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
         with:
-          path: src/packages
-          key: nuget-${{ hashFiles('src/**/packages.config') }}
-          restore-keys: nuget-
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('src/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
 
       - name: Update version from tag
         if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           $version = $env:TAG_NAME.TrimStart('v')
-          # Ensure 4-part version number (e.g. v1.5.4 -> 1.5.4.0)
           $parts = $version.Split('.')
           while ($parts.Count -lt 4) { $parts += '0' }
           $version = ($parts[0..3]) -join '.'
           Write-Host "Setting version to: $version"
-          $file = "src/VersionInfo.cs"
+          $file = "src/Directory.Build.props"
           $content = Get-Content $file -Raw
-          $content = $content -replace 'AssemblyVersion\(".*?"\)', "AssemblyVersion(`"$version`")"
-          $content = $content -replace 'AssemblyFileVersion\(".*?"\)', "AssemblyFileVersion(`"$version`")"
+          $content = $content -replace '<Version>.*?</Version>', "<Version>$version</Version>"
+          $content = $content -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$version</AssemblyVersion>"
+          $content = $content -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$version</FileVersion>"
           Set-Content -Path $file -Value $content -NoNewline
-          Write-Host "Updated $file"
-          Get-Content $file
-        shell: pwsh
 
-      - name: Restore NuGet packages
-        run: nuget restore src/PRoCon-VS2008E.sln
+      - name: Restore
+        run: dotnet restore src/PRoCon.sln
 
-      - name: Build solution
-        run: msbuild src/PRoCon-VS2008E.sln /p:Configuration=Release /p:Platform="Any CPU" /m
+      - name: Build
+        run: dotnet build src/PRoCon.sln --configuration Release --no-restore
 
-      - name: Upload build artifacts
+      - name: Publish Console
+        run: dotnet publish src/PRoCon.Console/PRoCon.Console.csproj -c Release -r ${{ matrix.rid }} --self-contained -o publish/console-${{ matrix.rid }}
+
+      - name: Publish UI
+        if: matrix.rid != 'linux-arm64'
+        run: dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r ${{ matrix.rid }} --self-contained -o publish/ui-${{ matrix.rid }}
+
+      - name: Upload artifacts
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: Procon-Release
-          path: builds/Release/
+          name: procon-${{ matrix.rid }}
+          path: publish/
           retention-days: 30
 
   release:
     needs: build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup NuGet
-        uses: nuget/setup-nuget@v2
-
-      - name: Cache NuGet packages
-        uses: actions/cache@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: src/packages
-          key: nuget-${{ hashFiles('src/**/packages.config') }}
-          restore-keys: nuget-
+          path: artifacts/
 
-      - name: Update version from tag
-        env:
-          TAG_NAME: ${{ github.ref_name }}
+      - name: Create release archives
+        shell: bash
         run: |
-          $version = $env:TAG_NAME.TrimStart('v')
-          # Ensure 4-part version number (e.g. v1.5.4 -> 1.5.4.0)
-          $parts = $version.Split('.')
-          while ($parts.Count -lt 4) { $parts += '0' }
-          $version = ($parts[0..3]) -join '.'
-          Write-Host "Setting version to: $version"
-          $file = "src/VersionInfo.cs"
-          $content = Get-Content $file -Raw
-          $content = $content -replace 'AssemblyVersion\(".*?"\)', "AssemblyVersion(`"$version`")"
-          $content = $content -replace 'AssemblyFileVersion\(".*?"\)', "AssemblyFileVersion(`"$version`")"
-          Set-Content -Path $file -Value $content -NoNewline
-          Write-Host "Updated $file"
-          Get-Content $file
-        shell: pwsh
-
-      - name: Restore NuGet packages
-        run: nuget restore src/PRoCon-VS2008E.sln
-
-      - name: Build solution
-        run: msbuild src/PRoCon-VS2008E.sln /p:Configuration=Release /p:Platform="Any CPU" /m
-
-      - name: Verify build output
-        run: |
-          if (!(Test-Path "builds/Release/PRoCon.exe")) {
-            Write-Error "PRoCon.exe not found in build output"
-            exit 1
-          }
-          $version = (Get-Item "builds/Release/PRoCon.exe").VersionInfo.FileVersion
-          Write-Host "Built PRoCon version: $version"
-        shell: pwsh
-
-      - name: Create release archive
-        env:
-          TAG_NAME: ${{ github.ref_name }}
-        run: Compress-Archive -Path builds/Release/* -DestinationPath "Procon-${env:TAG_NAME}.zip"
-        shell: pwsh
+          cd artifacts
+          for dir in procon-*/; do
+            rid=$(echo "$dir" | sed 's/procon-//' | sed 's/\///')
+            for type in console ui; do
+              if [ -d "$dir/$type-$rid" ]; then
+                cd "$dir/$type-$rid"
+                tar czf "../../../Procon-${type}-${rid}.tar.gz" .
+                cd ../..
+              fi
+            done
+          done
+          cd ..
 
       - name: Generate checksums
-        env:
-          TAG_NAME: ${{ github.ref_name }}
-        run: |
-          $hash = (Get-FileHash "Procon-${env:TAG_NAME}.zip" -Algorithm SHA256).Hash
-          "$hash  Procon-${env:TAG_NAME}.zip" | Out-File -Encoding utf8 -FilePath "checksums-sha256.txt"
-          Write-Host "SHA256: $hash"
-        shell: pwsh
+        run: sha256sum Procon-*.tar.gz > checksums-sha256.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: |
-            Procon-${{ github.ref_name }}.zip
+            Procon-*.tar.gz
             checksums-sha256.txt

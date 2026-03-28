@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  procon:
+    build: .
+    container_name: procon
+    restart: unless-stopped
+    ports:
+      - "27260:27260"   # Layer port (SignalR)
+      - "27360:27360"   # HTTP server
+    volumes:
+      - ./data/Configs:/app/Configs
+      - ./data/Plugins:/app/Plugins
+      - ./data/Logs:/app/Logs
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      # Optional: Set these to enable automatic connection monitoring
+      # - PROCON_GAMESERVER_IP=your.server.ip
+      # - PROCON_GAMESERVER_PORT=47200
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "PRoCon.Console"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
