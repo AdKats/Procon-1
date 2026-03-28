@@ -14,7 +14,8 @@
  * 1. PARTIAL CLASSES — Split a class across multiple .cs files:
  *      SdkTemplatePlugin.cs              ← Main file (class name = file name)
  *      SdkTemplatePlugin.Commands.cs     ← Partial: chat command handling
- *      SdkTemplatePlugin.Database.cs     ← Partial: database operations
+ *      SdkTemplatePlugin.Database.cs     ← Partial: database operations (MySqlConnector + Dapper)
+ *      SdkTemplatePlugin.Http.cs         ← Partial: HTTP requests (HttpClient + Flurl)
  *
  *    Any file matching <ClassName>.*.cs is compiled as part of the plugin.
  *    Each file must use `partial class` and the same namespace.
@@ -126,7 +127,8 @@ namespace PRoConEvents
 <ul>
   <li><b>SdkTemplatePlugin.cs</b> — Main: metadata, lifecycle, variables, player events</li>
   <li><b>SdkTemplatePlugin.Commands.cs</b> — Chat command handling</li>
-  <li><b>SdkTemplatePlugin.Database.cs</b> — Database operations example</li>
+  <li><b>SdkTemplatePlugin.Database.cs</b> — Database operations (raw SQL + Dapper ORM)</li>
+  <li><b>SdkTemplatePlugin.Http.cs</b> — HTTP requests (HttpClient + Flurl)</li>
 </ul>
 
 <h3>Settings</h3>

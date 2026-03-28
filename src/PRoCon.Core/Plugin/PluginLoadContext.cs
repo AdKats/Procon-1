@@ -18,6 +18,8 @@ namespace PRoCon.Core.Plugin
             "Newtonsoft.Json",
             "MySqlConnector",
             "Dapper",
+            "Flurl",
+            "Flurl.Http",
             "Microsoft.CodeAnalysis",
             "Microsoft.CodeAnalysis.CSharp",
         };

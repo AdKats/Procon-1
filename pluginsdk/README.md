@@ -420,20 +420,79 @@ Dapper uses the same `MySqlConnection` — just add `using Dapper;` and call ext
 
 ## HTTP Requests
 
+Two options — raw HttpClient or Flurl (axios-style):
+
+### Option 1: HttpClient (built-in)
+
 ```csharp
 using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
-private void FetchFromApi()
+var client = new HttpClient();
+
+// GET
+string json = client.GetStringAsync("https://api.example.com/data").Result;
+var obj = JObject.Parse(json);
+
+// POST JSON
+var content = new StringContent(
+    Newtonsoft.Json.JsonConvert.SerializeObject(new { player = "PlayerA" }),
+    System.Text.Encoding.UTF8, "application/json");
+var response = client.PostAsync("https://api.example.com/report", content).Result;
+```
+
+### Option 2: Flurl (axios-style, recommended)
+
+```csharp
+using Flurl;
+using Flurl.Http;
+
+// GET with query params
+var data = "https://api.example.com/player"
+    .SetQueryParam("name", "PlayerA")
+    .GetJsonAsync<JObject>()
+    .Result;
+
+// GET with headers
+var authed = "https://api.example.com/data"
+    .WithHeader("Authorization", "Bearer my-token")
+    .GetJsonAsync<JObject>()
+    .Result;
+
+// POST JSON body
+var response = "https://api.example.com/report"
+    .PostJsonAsync(new { player = "PlayerA", reason = "Cheating" })
+    .Result;
+
+// POST form data
+var login = "https://api.example.com/login"
+    .PostUrlEncodedAsync(new { username = "admin", password = "secret" })
+    .Result;
+
+// GET string
+string html = "https://example.com/page"
+    .GetStringAsync()
+    .Result;
+
+// With timeout
+var slow = "https://api.example.com/slow"
+    .WithTimeout(5)
+    .GetStringAsync()
+    .Result;
+
+// Error handling
+try
 {
-    var client = new HttpClient();
-    // Synchronous (use within plugin timeout limits)
-    string json = client.GetStringAsync("https://api.example.com/data").Result;
-
-    // Parse with Newtonsoft.Json
-    var obj = Newtonsoft.Json.Linq.JObject.Parse(json);
-    string value = obj["key"]?.ToString();
+    var resp = "https://api.example.com/check".GetAsync().Result;
+}
+catch (FlurlHttpException ex)
+{
+    // ex.StatusCode, ex.Message
+    Log("Info", "API error {0}: {1}", ex.StatusCode, ex.Message);
 }
 ```
+
+Flurl turns URLs into fluent request builders — chain `.WithHeader()`, `.SetQueryParam()`, `.WithTimeout()`, then call `.GetJsonAsync<T>()`, `.PostJsonAsync()`, etc.
 
 ---
 
