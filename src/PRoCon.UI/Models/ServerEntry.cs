@@ -89,7 +89,6 @@ namespace PRoCon.UI.Models
         public HashSet<string> SupportedCommands { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         public ConcurrentDictionary<string, string> PlayerIPs { get; } = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         internal bool _pendingAdminHelp;
-        internal int _adminHelpLineCount;
         public Dictionary<int, List<PlayerDisplayInfo>> TeamPlayers { get; set; } = new Dictionary<int, List<PlayerDisplayInfo>>
         {
             { 1, new List<PlayerDisplayInfo>() },
