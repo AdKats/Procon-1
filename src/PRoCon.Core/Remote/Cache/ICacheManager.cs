@@ -21,5 +21,12 @@ namespace PRoCon.Core.Remote.Cache
         /// </summary>
         /// <param name="response">The response from the server.</param>
         void Response(Packet response);
+
+        /// <summary>
+        /// Invalidate all cached entries whose key matches the given pattern.
+        /// Used to force a fresh server request after a mutation (e.g. banList.save).
+        /// </summary>
+        /// <param name="pattern">Regex pattern to match cache keys against.</param>
+        void Invalidate(System.Text.RegularExpressions.Regex pattern);
     }
 }

@@ -12,9 +12,7 @@ namespace PRoCon.UI.Views
     public partial class BanListPanel : UserControl
     {
         private PRoConClient _client;
-        private FrostbiteClient _wiredGame;
         private readonly List<CBanInfo> _banList = new List<CBanInfo>();
-        private bool _pendingRefresh;
 
         private static readonly Regex GuidRegex = new Regex(@"^EA_[0-9A-Fa-f]{32}$", RegexOptions.Compiled);
         private static readonly Regex Ipv4Regex = new Regex(@"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", RegexOptions.Compiled);
@@ -32,63 +30,17 @@ namespace PRoCon.UI.Views
             if (_client != null)
             {
                 _client.FullBanListList += OnFullBanListList;
-                WireGameEvents();
-                System.Console.WriteLine("[BanListPanel] Client set: " + client.HostNamePort);
             }
-        }
-
-        private void WireGameEvents()
-        {
-            if (_client?.Game == null || _client.Game == _wiredGame) return;
-            if (_wiredGame != null)
-                _wiredGame.BanListSave -= OnBanListSaved;
-
-            _wiredGame = _client.Game;
-            _wiredGame.BanListSave += OnBanListSaved;
-            System.Console.WriteLine("[BanListPanel] Wired BanListSave");
         }
 
         private void UnwireEvents()
         {
             if (_client != null) _client.FullBanListList -= OnFullBanListList;
-            if (_wiredGame != null) { _wiredGame.BanListSave -= OnBanListSaved; _wiredGame = null; }
         }
 
         public void LoadData()
         {
-            WireGameEvents();
-            System.Console.WriteLine("[BanListPanel] LoadData");
             if (_client?.Game != null) _client.Game.SendBanListListPacket(0);
-        }
-
-        private int _saveGeneration;
-        private int _expectedBanCountAfterMutation = -1;
-        private string _lastMutationType = "";
-
-        private void OnBanListSaved(FrostbiteClient sender)
-        {
-            int gen = _saveGeneration;
-            System.Console.WriteLine("[BanListPanel] >>> BanListSave OK! pendingRefresh=" + _pendingRefresh + " gen=" + gen + " mutation=" + _lastMutationType);
-            if (_pendingRefresh && _client?.Game != null)
-            {
-                _pendingRefresh = false;
-                int capturedGen = gen;
-                var capturedClient = _client;
-                string mutation = _lastMutationType;
-
-                // For bulk operations or clears, use a longer delay
-                int delay = mutation == "bulk" ? 2000 : mutation == "clear" ? 1000 : 500;
-
-                System.Threading.Tasks.Task.Run(async () =>
-                {
-                    await System.Threading.Tasks.Task.Delay(delay);
-                    if (_saveGeneration == capturedGen && capturedClient?.Game != null)
-                    {
-                        System.Console.WriteLine("[BanListPanel] >>> Requesting banList.list 0 (gen=" + capturedGen + " delay=" + delay + "ms)");
-                        capturedClient.Game.SendBanListListPacket(0);
-                    }
-                });
-            }
         }
 
         private void OnFullBanListList(PRoConClient sender, List<CBanInfo> lstBans)
@@ -239,7 +191,6 @@ namespace PRoCon.UI.Views
 
         private void OnAddBan(object sender, RoutedEventArgs e)
         {
-            WireGameEvents();
             if (_client?.Game == null) return;
 
             string idType = "name";
@@ -289,10 +240,6 @@ namespace PRoCon.UI.Views
             }
             words.Add(reason);
 
-            System.Console.WriteLine("[BanListPanel] ADD: " + string.Join(" ", words));
-            _saveGeneration++;
-            _pendingRefresh = true;
-            _lastMutationType = "add";
             _client.SendRequest(words);
             _client.Game.SendBanListSavePacket();
 
@@ -302,7 +249,6 @@ namespace PRoCon.UI.Views
 
         private void OnUnban(object sender, RoutedEventArgs e)
         {
-            WireGameEvents();
             if (_client?.Game == null) return;
 
             int index = BanListBox.SelectedIndex;
@@ -313,41 +259,24 @@ namespace PRoCon.UI.Views
             string id = ban.SoldierName ?? ban.Guid ?? ban.IpAddress ?? "";
             if (string.IsNullOrEmpty(id)) return;
 
-            System.Console.WriteLine("[BanListPanel] REMOVE: " + idType + " " + id);
-            _saveGeneration++;
-            _pendingRefresh = true;
-            _lastMutationType = "remove";
             _client.SendRequest(new List<string> { "banList.remove", idType, id });
             _client.Game.SendBanListSavePacket();
-
-            _banList.RemoveAt(index);
-            RefreshListDisplay();
         }
 
         private void OnClearAllBans(object sender, RoutedEventArgs e)
         {
-            WireGameEvents();
             if (_client?.Game == null) return;
 
-            System.Console.WriteLine("[BanListPanel] CLEAR ALL BANS");
-            _saveGeneration++;
-            _pendingRefresh = true;
-            _lastMutationType = "clear";
             _client.Game.SendBanListClearPacket();
             _client.Game.SendBanListSavePacket();
-
-            _banList.Clear();
-            RefreshListDisplay();
         }
 
         private void OnBulkAddBans(object sender, RoutedEventArgs e)
         {
-            WireGameEvents();
             if (_client?.Game == null) return;
 
             var rng = new Random();
             int count = 300;
-            System.Console.WriteLine("[BanListPanel] BULK ADD " + count + " test bans");
 
             for (int i = 0; i < count; i++)
             {
@@ -356,17 +285,11 @@ namespace PRoCon.UI.Views
                 _client.SendRequest(new List<string> { "banList.add", "name", name, "perm", reason });
             }
 
-            // Save after all added
-            _saveGeneration++;
-            _pendingRefresh = true;
-            _lastMutationType = "bulk";
             _client.Game.SendBanListSavePacket();
-            System.Console.WriteLine("[BanListPanel] Bulk add complete, save sent");
         }
 
         private void OnRefresh(object sender, RoutedEventArgs e)
         {
-            System.Console.WriteLine("[BanListPanel] Manual refresh");
             LoadData();
         }
     }

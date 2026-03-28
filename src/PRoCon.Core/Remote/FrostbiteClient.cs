@@ -3113,6 +3113,9 @@ namespace PRoCon.Core.Remote
             }
         }
 
+        private static readonly System.Text.RegularExpressions.Regex BanListCachePattern =
+            new System.Text.RegularExpressions.Regex(@"^banList\.list", System.Text.RegularExpressions.RegexOptions.Compiled);
+
         protected virtual void DispatchBanListSaveResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
         {
             if (cpRequestPacket.Words.Count >= 1)
@@ -3121,6 +3124,11 @@ namespace PRoCon.Core.Remote
                 {
                     this.BanListSave(this);
                 }
+
+                // Invalidate cached banList.list responses so the refresh
+                // fetches fresh data from the server instead of stale cache.
+                sender.Cache.Invalidate(BanListCachePattern);
+                SendBanListListPacket();
             }
         }
 
@@ -3190,6 +3198,9 @@ namespace PRoCon.Core.Remote
             }
         }
 
+        private static readonly System.Text.RegularExpressions.Regex ReservedSlotsListCachePattern =
+            new System.Text.RegularExpressions.Regex(@"^reservedSlotsList\.list", System.Text.RegularExpressions.RegexOptions.Compiled);
+
         protected virtual void DispatchReservedSlotsSaveResponse(FrostbiteConnection sender, Packet cpRecievedPacket, Packet cpRequestPacket)
         {
             if (cpRequestPacket.Words.Count >= 1)
@@ -3198,6 +3209,11 @@ namespace PRoCon.Core.Remote
                 {
                     this.ReservedSlotsSave(this);
                 }
+
+                // Invalidate cached reservedSlotsList.list responses so the
+                // refresh fetches fresh data from the server.
+                sender.Cache.Invalidate(ReservedSlotsListCachePattern);
+                SendReservedSlotsListPacket();
             }
         }
 
