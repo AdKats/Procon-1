@@ -707,25 +707,20 @@ namespace PRoCon.UI.Views
 
                 entry.ConsoleLines.Add(line);
 
-                // Parse admin.help response to learn supported commands
+                // Parse admin.help response: single line "OK cmd1 cmd2 cmd3 ..."
                 if (entry._pendingAdminHelp)
                 {
                     string clean = ColorCodeRegex.Replace(strLoggedText, "").Trim();
-                    // admin.help response contains command names like "admin.kickPlayer"
-                    // They contain a dot, no spaces, and are short
-                    if (clean.Contains('.') && !clean.Contains(' ') && clean.Length > 3 && clean.Length < 60)
-                    {
-                        entry.SupportedCommands.Add(clean);
-                    }
-                    // Stop parsing after we've seen some commands and hit a non-command line
-                    if (entry.SupportedCommands.Count > 5 && (!clean.Contains('.') || clean.Contains(' ')))
+                    if (clean.StartsWith("OK ") && clean.Contains("admin.help"))
                     {
                         entry._pendingAdminHelp = false;
+                        var parts = clean.Split(' ');
+                        foreach (string part in parts)
+                        {
+                            if (part != "OK" && part.Contains('.'))
+                                entry.SupportedCommands.Add(part);
+                        }
                     }
-                    // Safety: stop after 200 lines regardless
-                    entry._adminHelpLineCount++;
-                    if (entry._adminHelpLineCount > 200)
-                        entry._pendingAdminHelp = false;
                 }
 
                 // Log to file
