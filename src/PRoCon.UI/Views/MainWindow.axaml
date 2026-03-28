@@ -79,6 +79,11 @@
                    VerticalAlignment="Center" />
 
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+          <Button Content="Settings"
+                  Background="{DynamicResource SurfaceElevatedBrush}"
+                  Foreground="{DynamicResource TextSecondaryBrush}"
+                  Padding="12,6" CornerRadius="4" FontSize="12"
+                  Click="OnOpenSettings" />
           <Button Name="ThemeToggleButton"
                   Content="Toggle Theme"
                   Background="{DynamicResource ButtonSecondaryBrush}"
@@ -235,8 +240,6 @@
             <Button Content="Console" Tag="11" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Layer" Tag="12" Padding="10,7" Background="Transparent" FontSize="12"
-                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
-            <Button Content="Options" Tag="13" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
           </WrapPanel>
         </Border>
@@ -817,13 +820,6 @@
               <ContentControl Name="LayerContent" />
             </Border>
 
-            <!-- Tab 13: Options -->
-            <Border Name="Tab13" IsVisible="False"
-                    Background="{DynamicResource SurfaceBrush}"
-                    CornerRadius="8" Padding="0"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-              <ContentControl Name="OptionsContent" />
-            </Border>
           </Panel>
         </Border>
       </DockPanel>

@@ -465,8 +465,7 @@ namespace PRoCon.UI.Views
             if (settingsContent != null) settingsContent.Content = _serverSettingsPanel;
             var layerContent = this.FindControl<ContentControl>("LayerContent");
             if (layerContent != null) layerContent.Content = _layerPanel;
-            var optionsContent = this.FindControl<ContentControl>("OptionsContent");
-            if (optionsContent != null) optionsContent.Content = _optionsPanel;
+            // Options panel is shown in a dialog, not embedded in tabs
 
             // Load existing connections
             foreach (PRoConClient client in _application.Connections)
@@ -888,6 +887,7 @@ namespace PRoCon.UI.Views
                 }
 
                 UpdateConnectionCount();
+                UpdateLandingStats();
             });
 
             game.PlayerJoin += (sender, playerName) => Dispatcher.UIThread.Post(() =>
@@ -1604,6 +1604,14 @@ namespace PRoCon.UI.Views
 
         private void OnThemeToggle(object sender, RoutedEventArgs e) => App.ThemeManager.ToggleTheme();
 
+        private async void OnOpenSettings(object sender, RoutedEventArgs e)
+        {
+            _optionsPanel.SetApplication(_application);
+            var dialog = new SettingsDialog();
+            dialog.SetContent(_optionsPanel);
+            await dialog.ShowDialog(this);
+        }
+
         private void UpdateStatus(string color, string text)
         {
             var indicator = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator");
@@ -1666,21 +1674,7 @@ namespace PRoCon.UI.Views
             }
 
             // Update landing page stats
-            int totalServers = _servers.Count;
-            int connectedCount = 0;
-            int totalPlayers = 0;
-            foreach (var s in _servers)
-            {
-                if (s.IsConnected) connectedCount++;
-                if (s.LastServerInfo != null) totalPlayers += s.LastServerInfo.PlayerCount;
-            }
-
-            var sc = this.FindControl<TextBlock>("LandingServerCount");
-            var cc = this.FindControl<TextBlock>("LandingConnectedCount");
-            var tp = this.FindControl<TextBlock>("LandingTotalPlayers");
-            if (sc != null) sc.Text = totalServers.ToString();
-            if (cc != null) cc.Text = connectedCount.ToString();
-            if (tp != null) tp.Text = totalPlayers.ToString();
+            UpdateLandingStats();
         }
 
         private void UpdateDashboard(ServerEntry entry, FrostbiteClient game)
@@ -1885,6 +1879,30 @@ namespace PRoCon.UI.Views
                 var span = points[points.Count - 1].Time - points[0].Time;
                 rangeLabel.Text = span.TotalMinutes < 2 ? "Just started" : $"Last {(int)span.TotalMinutes} minutes";
             }
+        }
+
+        private void UpdateLandingStats()
+        {
+            int totalServers = _servers.Count;
+            int connectedCount = 0;
+            int totalPlayers = 0;
+            int totalSlots = 0;
+            foreach (var s in _servers)
+            {
+                if (s.IsConnected) connectedCount++;
+                if (s.LastServerInfo != null)
+                {
+                    totalPlayers += s.LastServerInfo.PlayerCount;
+                    totalSlots += s.LastServerInfo.MaxPlayerCount;
+                }
+            }
+
+            var sc = this.FindControl<TextBlock>("LandingServerCount");
+            var cc = this.FindControl<TextBlock>("LandingConnectedCount");
+            var tp = this.FindControl<TextBlock>("LandingTotalPlayers");
+            if (sc != null) sc.Text = totalServers.ToString();
+            if (cc != null) cc.Text = connectedCount.ToString();
+            if (tp != null) tp.Text = totalSlots > 0 ? $"{totalPlayers}/{totalSlots}" : totalPlayers.ToString();
         }
 
         private void UpdateSidebarButtons()
