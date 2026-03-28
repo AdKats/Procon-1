@@ -37,6 +37,8 @@ namespace PRoCon.UI.Views
     public class ServerEntry : INotifyPropertyChanged
     {
         public string HostPort { get; set; }
+        public bool IsLayerConnection { get; set; }
+        public string LayerUsername { get; set; }
 
         private string _serverName;
         public string ServerName
@@ -612,14 +614,11 @@ namespace PRoCon.UI.Views
                 }
             });
 
-            // Wire console RCON traffic
+            // Wire console RCON traffic — retry multiple times as Console may init late
             WireConsoleEvents(client, entry);
-            if (client.Console == null)
+            foreach (int delay in new[] { 2000, 5000, 10000, 20000 })
             {
-                // Console may not exist yet — retry
-                System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
-                    Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry)));
-                System.Threading.Tasks.Task.Delay(5000).ContinueWith(_ =>
+                System.Threading.Tasks.Task.Delay(delay).ContinueWith(_ =>
                     Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry)));
             }
 
@@ -627,6 +626,8 @@ namespace PRoCon.UI.Views
             {
                 if (sender.Game != null)
                     WireGameEvents(sender.Game, entry);
+                // Also try wiring console when game type discovered
+                Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry));
             };
 
             // Wire PunkBuster player info for IP tracking
@@ -975,6 +976,10 @@ namespace PRoCon.UI.Views
 
         private void SwitchTab(int index)
         {
+            // Block Layer tab for layer connections
+            if (index == 12 && _selectedServer?.IsLayerConnection == true)
+                return;
+
             _activeTab = index;
             for (int i = 0; i <= 13; i++)
             {
@@ -1051,6 +1056,8 @@ namespace PRoCon.UI.Views
                     // The layer protocol will be handled at the PRoConClient level
                     var entry = EnsureServerEntry(hostPort);
                     entry.GameType = "Layer";
+                    entry.IsLayerConnection = true;
+                    entry.LayerUsername = username;
 
                     PRoConClient client;
                     if (_application.Connections.Contains(hostPort))
@@ -1397,8 +1404,10 @@ namespace PRoCon.UI.Views
                 return;
 
             string msg = chatInput.Text;
+            string chatName = _selectedServer.IsLayerConnection && !string.IsNullOrEmpty(_selectedServer.LayerUsername)
+                ? _selectedServer.LayerUsername : "Admin";
             client.Game.SendAdminSayPacket(msg, new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
-            AppendChat(_selectedServer, $"[Admin] {msg}");
+            AppendChat(_selectedServer, $"[{chatName}] {msg}");
             chatInput.Text = "";
         }
 
@@ -1689,6 +1698,11 @@ namespace PRoCon.UI.Views
 
             if (overlay != null) overlay.IsVisible = !connected;
             if (tabBarBorder != null) tabBarBorder.IsVisible = connected;
+
+            // Hide Layer tab for layer connections (can't manage a layer from a layer)
+            var layerTabBtn = this.FindControl<Button>("LayerTabButton");
+            if (layerTabBtn != null)
+                layerTabBtn.IsVisible = !(_selectedServer?.IsLayerConnection == true);
 
             // Hide all tab content when disconnected
             if (!connected)

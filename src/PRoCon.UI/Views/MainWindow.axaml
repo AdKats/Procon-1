@@ -239,7 +239,7 @@
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Console" Tag="11" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
-            <Button Content="Layer" Tag="12" Padding="10,7" Background="Transparent" FontSize="12"
+            <Button Name="LayerTabButton" Content="Layer" Tag="12" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
           </WrapPanel>
         </Border>
