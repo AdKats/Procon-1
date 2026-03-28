@@ -480,10 +480,7 @@ namespace PRoCon.UI.Views
                     entry.State = ServerConnectionState.Connected;
             }
 
-            // Ensure test servers exist
-            EnsureServer("65.75.210.194", 47300, "REDACTED");   // BF4
-            EnsureServer("104.238.220.182", 47210, "REDACTED"); // BF3
-            EnsureServer("65.75.210.194", 47250, "REDACTED");  // BFH
+            // Servers are loaded from config — use Add Server dialog to add new ones
 
             UpdateConnectionCount();
             UpdateContentVisibility();
@@ -1034,17 +1031,58 @@ namespace PRoCon.UI.Views
             var dialog = new AddServerDialog();
             await dialog.ShowDialog(this);
 
-            if (dialog.Confirmed)
+            if (!dialog.Confirmed) return;
+
+            string host = dialog.Host;
+            ushort port = dialog.Port;
+            string password = dialog.Password;
+            string username = dialog.Username;
+            bool isLayer = dialog.IsLayerConnection;
+            string hostPort = $"{host}:{port}";
+
+            UpdateStatus("#ffab40", $"Connecting to {hostPort}...");
+
+            try
             {
-                string host = dialog.Host;
-                ushort port = dialog.Port;
-                string password = dialog.Password;
-                string hostPort = $"{host}:{port}";
-
-                UpdateStatus("#ffab40", $"Connecting to {hostPort}...");
-
-                try
+                if (isLayer)
                 {
+                    // Layer connection — connect to remote PRoCon via SignalR
+                    // For now, use the same RCON connection path with username as the account
+                    // The layer protocol will be handled at the PRoConClient level
+                    var entry = EnsureServerEntry(hostPort);
+                    entry.GameType = "Layer";
+
+                    PRoConClient client;
+                    if (_application.Connections.Contains(hostPort))
+                    {
+                        client = _application.Connections[hostPort];
+                    }
+                    else
+                    {
+                        client = _application.AddConnection(host, port, username, password);
+                    }
+
+                    if (client != null)
+                    {
+                        WireClientEvents(client, entry);
+                        _selectedServer = entry;
+                        entry.State = ServerConnectionState.Connecting;
+                        client.AutomaticallyConnect = true;
+
+                        var serverList = this.FindControl<ListBox>("ServerList");
+                        if (serverList != null) serverList.SelectedItem = entry;
+
+                        LoadServerView(entry);
+                        UpdateSidebarButtons();
+                        UpdateContentVisibility();
+                        UpdateConnectionCount();
+
+                        _application.SaveMainConfig();
+                    }
+                }
+                else
+                {
+                    // Direct RCON connection
                     PRoConClient client;
                     if (_application.Connections.Contains(hostPort))
                     {
@@ -1072,15 +1110,16 @@ namespace PRoCon.UI.Views
 
                     LoadServerView(entry);
                     UpdateSidebarButtons();
+                    UpdateContentVisibility();
                     UpdateConnectionCount();
                     SwitchTab(6);
 
                     _application.SaveMainConfig();
                 }
-                catch (System.Exception ex)
-                {
-                    UpdateStatus("#ef5350", $"Error: {ex.Message}");
-                }
+            }
+            catch (System.Exception ex)
+            {
+                UpdateStatus("#ef5350", $"Error: {ex.Message}");
             }
         }
 
@@ -1188,14 +1227,18 @@ namespace PRoCon.UI.Views
             _selectedServer = null;
 
             UpdateStatus("#8899aa", "Server removed");
-            UpdateServerInfoPanel("", "");
             ShowConnectButton(false);
             ShowDisconnectButton(false);
             ShowRemoveButton(false);
             UpdateConnectionCount();
             _application.SaveMainConfig();
 
-            if (_servers.Count == 0) SwitchTab(6);
+            // Go back to home — clear context and show landing page
+            ClearServerContext();
+            UpdateContentVisibility();
+
+            var serverList = this.FindControl<ListBox>("ServerList");
+            if (serverList != null) serverList.SelectedItem = null;
         }
 
         // --- Load Server View (switch main panel to selected server's data) ---
