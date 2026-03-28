@@ -21,7 +21,6 @@ using MaxMind;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -168,7 +167,7 @@ namespace PRoCon.Core
             set;
         }
 
-        public Rectangle SavedWindowBounds
+        public WindowBounds SavedWindowBounds
         {
             get;
             set;
@@ -516,7 +515,7 @@ namespace PRoCon.Core
 
             this.m_clIpToCountry = new CountryLookup(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeoIP.dat"));
 
-            this.SavedWindowBounds = new Rectangle();
+            this.SavedWindowBounds = new WindowBounds();
 
             this.RegexMatchPunkbusterPlist = new Regex(@":[ ]+?(?<slotid>[0-9]+)[ ]+?(?<guid>[A-Fa-f0-9]+)\(.*?\)[ ]+?(?<ip>[0-9\.:]+).*?\(.*?\)[ ]+?""(?<name>.*?)\""", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             this.RegexMatchPunkbusterGuidComputed = new Regex(@":[ ]+?Player Guid Computed[ ]+?(?<guid>[A-Fa-f0-9]+)\(.*?\)[ ]+?\(slot #(?<slotid>[0-9]+)\)[ ]+?(?<ip>[0-9\.:]+)[ ]+?(?<name>.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -751,10 +750,38 @@ namespace PRoCon.Core
 
                 this.Languages.Clear();
 
+                // Extract embedded localization files to disk if they don't exist
+                string locDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization");
+                try
+                {
+                    if (!Directory.Exists(locDir))
+                        Directory.CreateDirectory(locDir);
+
+                    var assembly = typeof(PRoConApplication).Assembly;
+                    string resPrefix = "PRoCon.Core.Resources.Localization.";
+                    foreach (string resourceName in assembly.GetManifestResourceNames())
+                    {
+                        if (resourceName.StartsWith(resPrefix) && resourceName.EndsWith(".loc"))
+                        {
+                            string fileName = resourceName.Substring(resPrefix.Length);
+                            string destPath = Path.Combine(locDir, fileName);
+                            if (!File.Exists(destPath))
+                            {
+                                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                                using (var fs = File.Create(destPath))
+                                {
+                                    stream?.CopyTo(fs);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+
                 try
                 {
 
-                    DirectoryInfo diLocalizationDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization"));
+                    DirectoryInfo diLocalizationDir = new DirectoryInfo(locDir);
                     FileInfo[] a_fiLocalizations = diLocalizationDir.GetFiles("*.loc");
 
                     foreach (FileInfo fiLocalization in a_fiLocalizations)
@@ -1264,7 +1291,7 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 6 && String.Compare(lstWords[0], "procon.private.window.position", true) == 0 && objSender == this)
             {
 
-                Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
+                WindowBounds recWindowBounds = new WindowBounds(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
                 if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
@@ -2139,7 +2166,7 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 6 && String.Compare(lstWords[0], "procon.private.window.position", true) == 0 && objSender == this)
             {
 
-                Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
+                WindowBounds recWindowBounds = new WindowBounds(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
                 if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
