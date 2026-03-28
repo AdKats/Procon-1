@@ -46,7 +46,6 @@ namespace PRoCon.UI.Views
         private void WireClient()
         {
             if (_client?.Game == null) return;
-            System.Console.WriteLine("[ServerSettingsPanel] WireClient");
 
             // General
             _client.Game.ServerType += OnServerType;
@@ -520,13 +519,11 @@ namespace PRoCon.UI.Views
         // --- General ---
         private void OnServerName(FrostbiteClient sender, string value)
         {
-            System.Console.WriteLine("[ServerSettingsPanel] ServerName response: " + value);
             Dispatcher.UIThread.Post(() => SetText("ServerNameInput", value));
         }
 
         private void OnServerDescription(FrostbiteClient sender, string value)
         {
-            System.Console.WriteLine("[ServerSettingsPanel] ServerDescription response: " + value);
             Dispatcher.UIThread.Post(() => SetText("ServerDescriptionInput", value));
         }
 
@@ -553,7 +550,6 @@ namespace PRoCon.UI.Views
         // --- Gameplay ---
         private void OnFriendlyFire(FrostbiteClient sender, bool value)
         {
-            System.Console.WriteLine("[ServerSettingsPanel] FriendlyFire response: " + value);
             Dispatcher.UIThread.Post(() => SetCheck("FriendlyFireCheck", value));
         }
 
@@ -743,7 +739,6 @@ namespace PRoCon.UI.Views
 
         private void OnApplyGeneral(object sender, RoutedEventArgs e)
         {
-            System.Console.WriteLine("[ServerSettingsPanel] ApplyGeneral clicked");
             var game = _client?.Game;
             if (game == null) return;
 
@@ -779,7 +774,6 @@ namespace PRoCon.UI.Views
             }
 
             SetStatus("General settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] General settings sent to server");
         }
 
         private void OnGameplayToggle(object sender, RoutedEventArgs e)
@@ -850,7 +844,6 @@ namespace PRoCon.UI.Views
                         break;
                 }
 
-                System.Console.WriteLine("[ServerSettingsPanel] GameplayToggle: " + controlName + " = " + isChecked);
                 SetStatus($"{cb.Content} set to {isChecked}.");
             }
         }
@@ -879,7 +872,6 @@ namespace PRoCon.UI.Views
                 game.SendSetVarsVehicleSpawnDelayPacket(vehicleDelay);
 
             SetStatus("Damage / Health settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] Damage/Health settings sent to server");
         }
 
         private void OnApplyTicketsRounds(object sender, RoutedEventArgs e)
@@ -918,7 +910,6 @@ namespace PRoCon.UI.Views
             // do not have dedicated Send methods -- values shown read-only from RCON responses
 
             SetStatus("Tickets / Rounds settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] Tickets/Rounds settings sent to server");
         }
 
         private void OnApplyTeamKill(object sender, RoutedEventArgs e)
@@ -952,7 +943,6 @@ namespace PRoCon.UI.Views
                 game.SendSetVarsTeamKillValueForKickPacket(tkValueForKick);
 
             SetStatus("Team kill settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] TeamKill settings sent to server");
         }
 
         private void OnApplyIdle(object sender, RoutedEventArgs e)
@@ -976,7 +966,6 @@ namespace PRoCon.UI.Views
                 game.SendSetVarsIdleBanRoundsPacket(banRounds);
 
             SetStatus("Idle settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] Idle settings sent to server");
         }
 
         private void OnApplyMisc(object sender, RoutedEventArgs e)
@@ -1001,7 +990,6 @@ namespace PRoCon.UI.Views
             }
 
             SetStatus("Misc settings applied.");
-            System.Console.WriteLine("[ServerSettingsPanel] Misc settings sent to server");
         }
 
         // =====================================================================

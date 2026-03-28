@@ -354,13 +354,11 @@ namespace PRoCon.UI.Views
                 _client.Game.MapListSave += OnMapListSaved;
 
                 PopulateAvailableMaps();
-                System.Console.WriteLine("[MapListPanel] Client set: " + client.HostNamePort);
             }
         }
 
         public void LoadData()
         {
-            System.Console.WriteLine("[MapListPanel] LoadData");
             if (_client?.Game != null)
             {
                 _client.Game.SendMapListListRoundsPacket();
@@ -369,7 +367,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListSaved(FrostbiteClient sender)
         {
-            System.Console.WriteLine("[MapListPanel] MapListSave OK received — refreshing map list");
             // Server confirmed save — now re-list
             if (_pendingRefresh && _client?.Game != null)
             {
@@ -446,7 +443,6 @@ namespace PRoCon.UI.Views
             if (rounds < 1) rounds = 1;
 
             var entry = new MaplistEntry(gamemode, _selectedMapInfo.FileName, rounds);
-            System.Console.WriteLine("[MapListPanel] ADD: " + _selectedMapInfo.FileName + " " + gamemode + " rounds=" + rounds);
             _pendingRefresh = true;
             _client.Game.SendMapListAppendPacket(entry);
             _client.Game.SendMapListSavePacket();
@@ -456,7 +452,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListListed(FrostbiteClient sender, List<MaplistEntry> lstMapList)
         {
-            System.Console.WriteLine("[MapListPanel] MapListListed: " + lstMapList.Count + " maps");
             Dispatcher.UIThread.Post(() =>
             {
                 _mapList.Clear();
@@ -467,7 +462,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListMapAppended(FrostbiteClient sender, MaplistEntry mapEntry)
         {
-            System.Console.WriteLine("[MapListPanel] MapAppended: " + mapEntry.MapFileName);
             Dispatcher.UIThread.Post(() =>
             {
                 _mapList.Add(mapEntry);
@@ -477,7 +471,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListMapInserted(FrostbiteClient sender, MaplistEntry entry)
         {
-            System.Console.WriteLine("[MapListPanel] MapInserted: " + entry.MapFileName);
             Dispatcher.UIThread.Post(() =>
             {
                 LoadData();
@@ -486,7 +479,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListMapRemoved(FrostbiteClient sender, int index)
         {
-            System.Console.WriteLine("[MapListPanel] MapRemoved at index: " + index);
             Dispatcher.UIThread.Post(() =>
             {
                 if (index >= 0 && index < _mapList.Count)
@@ -499,7 +491,6 @@ namespace PRoCon.UI.Views
 
         private void OnMapListCleared(FrostbiteClient sender)
         {
-            System.Console.WriteLine("[MapListPanel] MapListCleared");
             Dispatcher.UIThread.Post(() =>
             {
                 _mapList.Clear();
@@ -519,7 +510,6 @@ namespace PRoCon.UI.Views
                 items.Add($"{i + 1}.  {mapDisplay}  |  {gamemodeDisplay}  |  Rounds: {entry.Rounds}");
             }
             MapRotationList.ItemsSource = items;
-            System.Console.WriteLine("[MapListPanel] UI refreshed: " + items.Count + " items");
         }
 
         // --- Right column actions ---
@@ -531,7 +521,6 @@ namespace PRoCon.UI.Views
             int index = MapRotationList.SelectedIndex;
             if (index < 0 || index >= _mapList.Count) return;
 
-            System.Console.WriteLine("[MapListPanel] REMOVE at index: " + index);
             _pendingRefresh = true;
             _client.Game.SendMapListRemovePacket(index);
             _client.Game.SendMapListSavePacket();
@@ -548,7 +537,6 @@ namespace PRoCon.UI.Views
             int index = MapRotationList.SelectedIndex;
             if (index <= 0 || index >= _mapList.Count) return;
 
-            System.Console.WriteLine("[MapListPanel] MOVE UP index: " + index);
             _pendingRefresh = true;
             var entry = _mapList[index];
             _client.Game.SendMapListRemovePacket(index);
@@ -574,7 +562,6 @@ namespace PRoCon.UI.Views
             int index = MapRotationList.SelectedIndex;
             if (index < 0 || index >= _mapList.Count - 1) return;
 
-            System.Console.WriteLine("[MapListPanel] MOVE DOWN index: " + index);
             _pendingRefresh = true;
             var entry = _mapList[index];
             _client.Game.SendMapListRemovePacket(index);

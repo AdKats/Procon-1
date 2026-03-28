@@ -45,7 +45,6 @@ namespace PRoCon.UI.Views
 
         private void OnFullBanListList(PRoConClient sender, List<CBanInfo> lstBans)
         {
-            System.Console.WriteLine("[BanListPanel] FullBanListList: " + lstBans.Count + " bans");
             Dispatcher.UIThread.Post(() =>
             {
                 _banList.Clear();
@@ -68,7 +67,6 @@ namespace PRoCon.UI.Views
             }
             BanListBox.ItemsSource = null;
             BanListBox.ItemsSource = items;
-            System.Console.WriteLine("[BanListPanel] UI refreshed: " + items.Count + " items");
         }
 
         private static string FormatBanDuration(TimeoutSubset timeout)
