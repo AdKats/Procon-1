@@ -75,14 +75,18 @@ namespace PRoCon.Console
 
                     GC.Collect();
 
-                    // Check if we are running in a docker container
-                    if (System.IO.File.Exists("/proc/1/cgroup") == true)
+                    // Check if we are running in a container
+                    bool isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"
+                        || System.IO.File.Exists("/.dockerenv");
+                    if (!isContainer && System.IO.File.Exists("/proc/1/cgroup"))
                     {
                         string strCGroup = System.IO.File.ReadAllText("/proc/1/cgroup");
-                        if (strCGroup.Contains("/docker/") == true)
-                        {
-                            System.Console.WriteLine("[PRoCon] Running in a Docker container.");
-                        }
+                        isContainer = strCGroup.Contains("/docker/") || strCGroup.Contains("/kubepods/");
+                    }
+                    if (isContainer)
+                    {
+                        System.Console.WriteLine("[PRoCon] Running in a container. Auto-updater disabled.");
+                        // Auto-updater is disabled in container mode — containers are immutable
                     }
 
                     // Check if the environemnt variable "PROCON_GAMESERVER_IP" exists
