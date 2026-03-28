@@ -136,59 +136,70 @@ namespace PRoCon.Core.Layer
         {
             if (_app != null) return;
 
-            try
+            // Run Kestrel startup on a background thread to avoid blocking the UI
+            Task.Run(() =>
             {
-                var builder = WebApplication.CreateBuilder();
-                builder.Logging.ClearProviders();
-                builder.Logging.AddConsole();
-                builder.Logging.SetMinimumLevel(LogLevel.Warning);
-                builder.WebHost.UseUrls($"http://{BindingAddress}:{ListeningPort}");
-                builder.Services.AddSignalR();
-                builder.Services.AddSingleton(_registry);
-                builder.Services.AddSingleton(new LayerAuthService());
-
-                _app = builder.Build();
-                _app.MapHub<LayerHub>("/layer");
-
-                // Wire hub connection events via the registry
-                LayerHub.OnClientConnected = (connectionId, username) =>
+                try
                 {
-                    var hubClient = _registry.GetOrAdd(connectionId);
-                    var adapter = new SignalRLayerClientAdapter(hubClient);
-                    _clientAdapters[connectionId] = adapter;
-                    ClientConnected?.Invoke(adapter);
-                };
+                    var builder = WebApplication.CreateBuilder();
+                    builder.Logging.ClearProviders();
+                    builder.Logging.AddConsole();
+                    builder.Logging.SetMinimumLevel(LogLevel.Warning);
+                    builder.WebHost.UseUrls($"http://{BindingAddress}:{ListeningPort}");
+                    builder.Services.AddSignalR();
+                    builder.Services.AddSingleton(_registry);
+                    builder.Services.AddSingleton(new LayerAuthService());
 
-                LayerHub.OnClientDisconnected = connectionId =>
+                    _app = builder.Build();
+                    _app.MapHub<LayerHub>("/layer");
+
+                    // Wire hub connection events via the registry
+                    LayerHub.OnClientConnected = (connectionId, username) =>
+                    {
+                        var hubClient = _registry.GetOrAdd(connectionId);
+                        var adapter = new SignalRLayerClientAdapter(hubClient);
+                        _clientAdapters[connectionId] = adapter;
+                        ClientConnected?.Invoke(adapter);
+                    };
+
+                    LayerHub.OnClientDisconnected = connectionId =>
+                    {
+                        _clientAdapters.TryRemove(connectionId, out _);
+                    };
+
+                    _app.StartAsync().Wait();
+                    LayerStarted?.Invoke();
+                }
+                catch (SocketException se)
                 {
-                    _clientAdapters.TryRemove(connectionId, out _);
-                };
-
-                _app.StartAsync().GetAwaiter().GetResult();
-                LayerStarted?.Invoke();
-            }
-            catch (SocketException se)
-            {
-                _app = null;
-                SocketError?.Invoke(se);
-            }
-            catch (Exception ex)
-            {
-                _app = null;
-                System.Console.Error.WriteLine($"[LayerHostService] Failed to start: {ex.Message}");
-            }
+                    _app = null;
+                    SocketError?.Invoke(se);
+                }
+                catch (Exception ex)
+                {
+                    _app = null;
+                    System.Console.Error.WriteLine($"[LayerHostService] Failed to start: {ex.Message}");
+                }
+            });
         }
 
         public void Shutdown()
         {
-            if (_app == null) return;
+            var app = _app;
+            _app = null;
+            if (app == null) return;
 
-            try
+            // Run shutdown on background thread to avoid UI deadlock
+            Task.Run(() =>
             {
-                _app.StopAsync().GetAwaiter().GetResult();
-                _app.DisposeAsync().GetAwaiter().GetResult();
-            }
-            catch { }
+                try
+                {
+                    using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    app.StopAsync(cts.Token).Wait();
+                    app.DisposeAsync().AsTask().Wait(5000);
+                }
+                catch { }
+            });
 
             _app = null;
             _clientAdapters.Clear();
