@@ -57,10 +57,11 @@ namespace PRoCon.UI.Views
         public ServerConnectionState State
         {
             get => _state;
-            set { _state = value; Notify(nameof(State)); Notify(nameof(IsConnected)); Notify(nameof(StatusColor)); Notify(nameof(DisplayName)); }
+            set { _state = value; Notify(nameof(State)); Notify(nameof(IsConnected)); Notify(nameof(IsPulsing)); Notify(nameof(StatusColor)); Notify(nameof(DisplayName)); }
         }
 
         public bool IsConnected => _state == ServerConnectionState.Connected;
+        public bool IsPulsing => _state == ServerConnectionState.Connected || _state == ServerConnectionState.Connecting;
 
         // Display label: ServerName if available, otherwise HostPort
         public string DisplayLabel
@@ -1377,7 +1378,16 @@ namespace PRoCon.UI.Views
         {
             var indicator = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator");
             var statusText = this.FindControl<TextBlock>("StatusText");
-            if (indicator != null) indicator.Fill = new SolidColorBrush(Color.Parse(color));
+            if (indicator != null)
+            {
+                indicator.Fill = new SolidColorBrush(Color.Parse(color));
+                // Pulse when connected (green) or connecting (orange)
+                bool shouldPulse = color == "#66bb6a" || color == "#ffab40";
+                if (shouldPulse && !indicator.Classes.Contains("pulse"))
+                    indicator.Classes.Add("pulse");
+                else if (!shouldPulse)
+                    indicator.Classes.Remove("pulse");
+            }
             if (statusText != null) statusText.Text = text;
         }
 
