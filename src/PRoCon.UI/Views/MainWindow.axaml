@@ -229,6 +229,10 @@
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Reserved" Tag="5" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Spectators" Tag="14" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="PunkBuster" Tag="15" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Settings" Tag="7" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Plugins" Tag="8" Padding="10,7" Background="Transparent" FontSize="12"
@@ -818,6 +822,22 @@
                     CornerRadius="8" Padding="0"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
               <ContentControl Name="LayerContent" />
+            </Border>
+
+            <!-- Tab 14: Spectator List -->
+            <Border Name="Tab14" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="SpectatorContent" />
+            </Border>
+
+            <!-- Tab 15: PunkBuster -->
+            <Border Name="Tab15" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="PunkBusterContent" />
             </Border>
 
           </Panel>

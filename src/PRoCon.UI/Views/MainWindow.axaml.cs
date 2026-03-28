@@ -55,8 +55,138 @@ namespace PRoCon.UI.Views
         private ServerSettingsPanel _serverSettingsPanel;
         private PlayerActionsPanel _playerActionsPanel;
         private LayerPanel _layerPanel;
+        private SpectatorListPanel _spectatorListPanel;
+        private PunkBusterPanel _punkBusterPanel;
         private OptionsPanel _optionsPanel;
         private PRoCon.Core.Network.IPCheckService _ipCheckService;
+
+        // Cached control references (populated by CacheControls)
+        private ListBox _serverList;
+        private ContentControl _mapListContent;
+        private ContentControl _banListContent;
+        private ContentControl _reservedSlotsContent;
+        private ContentControl _pluginsContent;
+        private ContentControl _accountsContent;
+        private ContentControl _eventsContent;
+        private ContentControl _serverSettingsContent;
+        private ContentControl _layerContent;
+        private ListBox _consoleLogList;
+        private TextBlock _chatLog;
+        private ScrollViewer _chatScroller;
+        private TextBox _chatInput;
+        private ListBox _killFeedList;
+        private Canvas _playerGraphCanvas;
+        private TextBlock _statusText;
+        private Avalonia.Controls.Shapes.Ellipse _statusIndicator;
+        private Border _disconnectedOverlay;
+        private Border _tabBarBorder;
+        private WrapPanel _tabBar;
+        private Button _layerTabButton;
+        private TextBlock _overlayTitle;
+        private TextBlock _overlayIcon;
+        private TextBlock _disconnectedSubtext;
+        private TextBlock _dashServerName;
+        private TextBlock _dashGameType;
+        private TextBlock _dashServerVersion;
+        private TextBlock _dashMapMode;
+        private TextBlock _dashPlayerCount;
+        private Border _dashRankedBadge;
+        private TextBlock _dashRankedText;
+        private Border _dashPbBadge;
+        private TextBlock _dashRound;
+        private TextBlock _dashUptime;
+        private TextBlock _dashRoundTime;
+        private TextBlock _dashRegion;
+        private TextBlock _dashConnectionInfo;
+        private TextBlock _dashGraphRange;
+        private Button _connectSelectedButton;
+        private Button _disconnectButton;
+        private Button _removeServerButton;
+        private TextBlock _connectionCountText;
+        private TextBlock _landingServerCount;
+        private TextBlock _landingConnectedCount;
+        private TextBlock _landingTotalPlayers;
+        private Grid _teamGrid;
+        private TextBox _consoleInput;
+        private ListBox _consoleSuggestions;
+
+        // Array-cached controls for indexed lookups
+        private Border[] _tabs; // Tab0..Tab13
+        private ListBox[] _teamLists; // TeamList1..TeamList4
+        private TextBlock[] _teamHeaders; // TeamHeader1..TeamHeader4
+        private Border[] _teamPanels; // TeamPanel1..TeamPanel4
+        private TextBlock[] _dashTeamScores; // DashTeam1Score, DashTeam2Score
+
+        private void CacheControls()
+        {
+            _serverList = this.FindControl<ListBox>("ServerList");
+            _mapListContent = this.FindControl<ContentControl>("MapListContent");
+            _banListContent = this.FindControl<ContentControl>("BanListContent");
+            _reservedSlotsContent = this.FindControl<ContentControl>("ReservedSlotsContent");
+            _pluginsContent = this.FindControl<ContentControl>("PluginsContent");
+            _accountsContent = this.FindControl<ContentControl>("AccountsContent");
+            _eventsContent = this.FindControl<ContentControl>("EventsContent");
+            _serverSettingsContent = this.FindControl<ContentControl>("ServerSettingsContent");
+            _layerContent = this.FindControl<ContentControl>("LayerContent");
+            _consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
+            _chatLog = this.FindControl<TextBlock>("ChatLog");
+            _chatScroller = this.FindControl<ScrollViewer>("ChatScroller");
+            _chatInput = this.FindControl<TextBox>("ChatInput");
+            _killFeedList = this.FindControl<ListBox>("KillFeedList");
+            _playerGraphCanvas = this.FindControl<Canvas>("PlayerGraphCanvas");
+            _statusText = this.FindControl<TextBlock>("StatusText");
+            _statusIndicator = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator");
+            _disconnectedOverlay = this.FindControl<Border>("DisconnectedOverlay");
+            _tabBarBorder = this.FindControl<Border>("TabBarBorder");
+            _tabBar = this.FindControl<WrapPanel>("TabBar");
+            _layerTabButton = this.FindControl<Button>("LayerTabButton");
+            _overlayTitle = this.FindControl<TextBlock>("OverlayTitle");
+            _overlayIcon = this.FindControl<TextBlock>("OverlayIcon");
+            _disconnectedSubtext = this.FindControl<TextBlock>("DisconnectedSubtext");
+            _dashServerName = this.FindControl<TextBlock>("DashServerName");
+            _dashGameType = this.FindControl<TextBlock>("DashGameType");
+            _dashServerVersion = this.FindControl<TextBlock>("DashServerVersion");
+            _dashMapMode = this.FindControl<TextBlock>("DashMapMode");
+            _dashPlayerCount = this.FindControl<TextBlock>("DashPlayerCount");
+            _dashRankedBadge = this.FindControl<Border>("DashRankedBadge");
+            _dashRankedText = this.FindControl<TextBlock>("DashRankedText");
+            _dashPbBadge = this.FindControl<Border>("DashPbBadge");
+            _dashRound = this.FindControl<TextBlock>("DashRound");
+            _dashUptime = this.FindControl<TextBlock>("DashUptime");
+            _dashRoundTime = this.FindControl<TextBlock>("DashRoundTime");
+            _dashRegion = this.FindControl<TextBlock>("DashRegion");
+            _dashConnectionInfo = this.FindControl<TextBlock>("DashConnectionInfo");
+            _dashGraphRange = this.FindControl<TextBlock>("DashGraphRange");
+            _connectSelectedButton = this.FindControl<Button>("ConnectSelectedButton");
+            _disconnectButton = this.FindControl<Button>("DisconnectButton");
+            _removeServerButton = this.FindControl<Button>("RemoveServerButton");
+            _connectionCountText = this.FindControl<TextBlock>("ConnectionCountText");
+            _landingServerCount = this.FindControl<TextBlock>("LandingServerCount");
+            _landingConnectedCount = this.FindControl<TextBlock>("LandingConnectedCount");
+            _landingTotalPlayers = this.FindControl<TextBlock>("LandingTotalPlayers");
+            _teamGrid = this.FindControl<Grid>("TeamGrid");
+            _consoleInput = this.FindControl<TextBox>("ConsoleInput");
+            _consoleSuggestions = this.FindControl<ListBox>("ConsoleSuggestions");
+
+            // Array-cached controls
+            _tabs = new Border[14];
+            for (int i = 0; i <= 15; i++)
+                _tabs[i] = this.FindControl<Border>($"Tab{i}");
+
+            _teamLists = new ListBox[4];
+            _teamHeaders = new TextBlock[4];
+            _teamPanels = new Border[4];
+            for (int t = 0; t < 4; t++)
+            {
+                _teamLists[t] = this.FindControl<ListBox>($"TeamList{t + 1}");
+                _teamHeaders[t] = this.FindControl<TextBlock>($"TeamHeader{t + 1}");
+                _teamPanels[t] = this.FindControl<Border>($"TeamPanel{t + 1}");
+            }
+
+            _dashTeamScores = new TextBlock[2];
+            _dashTeamScores[0] = this.FindControl<TextBlock>("DashTeam1Score");
+            _dashTeamScores[1] = this.FindControl<TextBlock>("DashTeam2Score");
+        }
 
         public MainWindow()
         {
@@ -89,6 +219,8 @@ namespace PRoCon.UI.Views
                 _serverSettingsPanel = new ServerSettingsPanel();
                 _playerActionsPanel = new PlayerActionsPanel();
                 _layerPanel = new LayerPanel();
+                _spectatorListPanel = new SpectatorListPanel();
+                _punkBusterPanel = new PunkBusterPanel();
                 _optionsPanel = new OptionsPanel();
             }
             catch (Exception ex)
@@ -141,6 +273,8 @@ namespace PRoCon.UI.Views
                 _application.Execute();
             }
 
+            // Note: CacheControls() is called at the end of this method.
+            // For these early assignments, use FindControl directly since cache isn't populated yet.
             var serverList = this.FindControl<ListBox>("ServerList");
             if (serverList != null)
                 serverList.ItemsSource = _servers;
@@ -162,6 +296,10 @@ namespace PRoCon.UI.Views
             if (settingsContent != null) settingsContent.Content = _serverSettingsPanel;
             var layerContent = this.FindControl<ContentControl>("LayerContent");
             if (layerContent != null) layerContent.Content = _layerPanel;
+            var spectatorContent = this.FindControl<ContentControl>("SpectatorContent");
+            if (spectatorContent != null) spectatorContent.Content = _spectatorListPanel;
+            var pbContent = this.FindControl<ContentControl>("PunkBusterContent");
+            if (pbContent != null) pbContent.Content = _punkBusterPanel;
             // Options panel is shown in a dialog, not embedded in tabs
 
             // Load existing connections
@@ -197,6 +335,8 @@ namespace PRoCon.UI.Views
                     UpdateConnectionCount();
                 });
             };
+
+            CacheControls();
             }
             catch (Exception ex)
             {
@@ -545,9 +685,8 @@ namespace PRoCon.UI.Views
                     {
                         try
                         {
-                            var list = this.FindControl<ListBox>("ConsoleLogList");
-                            if (list != null && list.ItemCount > 0)
-                                list.ScrollIntoView(list.ItemCount - 1);
+                            if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
+                                _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
                         }
                         catch { }
                     }, Avalonia.Threading.DispatcherPriority.Background);
@@ -677,16 +816,14 @@ namespace PRoCon.UI.Views
                 return;
 
             _activeTab = index;
-            for (int i = 0; i <= 13; i++)
+            for (int i = 0; i <= 15; i++)
             {
-                var tab = this.FindControl<Border>($"Tab{i}");
-                if (tab != null) tab.IsVisible = (i == index);
+                if (_tabs[i] != null) _tabs[i].IsVisible = (i == index);
             }
 
-            var tabBar = this.FindControl<WrapPanel>("TabBar");
-            if (tabBar != null)
+            if (_tabBar != null)
             {
-                foreach (var child in tabBar.Children)
+                foreach (var child in _tabBar.Children)
                 {
                     if (child is Button tabBtn && tabBtn.Tag is string ts && int.TryParse(ts, out int ti))
                     {
@@ -703,9 +840,8 @@ namespace PRoCon.UI.Views
                 {
                     try
                     {
-                        var list = this.FindControl<ListBox>("ConsoleLogList");
-                        if (list != null && list.ItemCount > 0)
-                            list.ScrollIntoView(list.ItemCount - 1);
+                        if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
+                            _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
                     }
                     catch { }
                 }, Avalonia.Threading.DispatcherPriority.Background);
@@ -718,8 +854,7 @@ namespace PRoCon.UI.Views
         {
             // Deselect server, show landing page
             _selectedServer = null;
-            var serverList = this.FindControl<ListBox>("ServerList");
-            if (serverList != null) serverList.SelectedItem = null;
+            if (_serverList != null) _serverList.SelectedItem = null;
 
             ClearServerContext();
             UpdateStatus("#8899aa", "PRoCon Frostbite 2.0");
@@ -772,8 +907,7 @@ namespace PRoCon.UI.Views
                         entry.State = ServerConnectionState.Connecting;
                         client.AutomaticallyConnect = true;
 
-                        var serverList = this.FindControl<ListBox>("ServerList");
-                        if (serverList != null) serverList.SelectedItem = entry;
+                        if (_serverList != null) _serverList.SelectedItem = entry;
 
                         LoadServerView(entry);
                         UpdateSidebarButtons();
@@ -808,8 +942,7 @@ namespace PRoCon.UI.Views
                     entry.State = ServerConnectionState.Connecting;
                     client.AutomaticallyConnect = true;
 
-                    var serverList = this.FindControl<ListBox>("ServerList");
-                    if (serverList != null) serverList.SelectedItem = entry;
+                    if (_serverList != null) _serverList.SelectedItem = entry;
 
                     LoadServerView(entry);
                     UpdateSidebarButtons();
@@ -828,8 +961,7 @@ namespace PRoCon.UI.Views
 
         private void OnServerSelected(object sender, SelectionChangedEventArgs e)
         {
-            var serverList = this.FindControl<ListBox>("ServerList");
-            if (serverList?.SelectedItem is not ServerEntry entry) return;
+            if (_serverList?.SelectedItem is not ServerEntry entry) return;
 
             _selectedServer = entry;
             ShowRemoveButton(true);
@@ -940,8 +1072,7 @@ namespace PRoCon.UI.Views
             ClearServerContext();
             UpdateContentVisibility();
 
-            var serverList = this.FindControl<ListBox>("ServerList");
-            if (serverList != null) serverList.SelectedItem = null;
+            if (_serverList != null) _serverList.SelectedItem = null;
         }
 
         // --- Load Server View (switch main panel to selected server's data) ---
@@ -958,36 +1089,31 @@ namespace PRoCon.UI.Views
             _serverSettingsPanel?.SetClient(null);
             _playerActionsPanel?.SetClient(null);
             _layerPanel?.SetClient(null);
+            _spectatorListPanel?.SetClient(null);
+            _punkBusterPanel?.SetClient(null);
 
-            var chatLog = this.FindControl<TextBlock>("ChatLog");
-            if (chatLog != null) chatLog.Text = "";
+            if (_chatLog != null) _chatLog.Text = "";
 
-            var consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
-            if (consoleLogList != null) consoleLogList.ItemsSource = null;
+            if (_consoleLogList != null) _consoleLogList.ItemsSource = null;
 
-            var killList = this.FindControl<ListBox>("KillFeedList");
-            if (killList != null) killList.ItemsSource = null;
+            if (_killFeedList != null) _killFeedList.ItemsSource = null;
 
             // Clear team panels
-            for (int t = 1; t <= 4; t++)
+            for (int t = 0; t < 4; t++)
             {
-                var teamList = this.FindControl<ListBox>($"TeamList{t}");
-                if (teamList != null) teamList.ItemsSource = null;
-                var teamHeader = this.FindControl<TextBlock>($"TeamHeader{t}");
-                if (teamHeader != null) teamHeader.Text = $"Team {t} (0)";
+                if (_teamLists[t] != null) _teamLists[t].ItemsSource = null;
+                if (_teamHeaders[t] != null) _teamHeaders[t].Text = $"Team {t + 1} (0)";
             }
 
             // Clear dashboard
-            var canvas = this.FindControl<Canvas>("PlayerGraphCanvas");
-            if (canvas != null) canvas.Children.Clear();
+            if (_playerGraphCanvas != null) _playerGraphCanvas.Children.Clear();
 
-            string[] dashFields = { "DashServerName", "DashGameType", "DashServerVersion",
-                "DashMapMode", "DashPlayerCount", "DashRound", "DashUptime",
-                "DashRoundTime", "DashRegion", "DashTeam1Score", "DashTeam2Score",
-                "DashConnectionInfo", "DashGraphRange" };
-            foreach (string name in dashFields)
+            TextBlock[] dashFields = { _dashServerName, _dashGameType, _dashServerVersion,
+                _dashMapMode, _dashPlayerCount, _dashRound, _dashUptime,
+                _dashRoundTime, _dashRegion, _dashTeamScores[0], _dashTeamScores[1],
+                _dashConnectionInfo, _dashGraphRange };
+            foreach (var tb in dashFields)
             {
-                var tb = this.FindControl<TextBlock>(name);
                 if (tb != null) tb.Text = "--";
             }
         }
@@ -1010,6 +1136,8 @@ namespace PRoCon.UI.Views
             _serverSettingsPanel?.SetClient(client);
             _playerActionsPanel?.SetClient(client);
             _layerPanel?.SetClient(client);
+            _spectatorListPanel?.SetClient(client);
+            _punkBusterPanel?.SetClient(client);
             _optionsPanel?.SetApplication(_application);
 
             // Load data for connected servers
@@ -1043,8 +1171,7 @@ namespace PRoCon.UI.Views
             }
 
             // Chat
-            var chatLog = this.FindControl<TextBlock>("ChatLog");
-            if (chatLog != null) chatLog.Text = string.Join("\n", entry.ChatLines);
+            if (_chatLog != null) _chatLog.Text = string.Join("\n", entry.ChatLines);
 
             // Players
             UpdateTeamPanels(entry);
@@ -1055,21 +1182,19 @@ namespace PRoCon.UI.Views
                 UpdateDashboard(entry, dashClient.Game);
 
             // Kill feed
-            var killList = this.FindControl<ListBox>("KillFeedList");
-            if (killList != null) killList.ItemsSource = entry.KillFeed;
+            if (_killFeedList != null) _killFeedList.ItemsSource = entry.KillFeed;
 
             // Console
-            var consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
-            if (consoleLogList != null)
+            if (_consoleLogList != null)
             {
-                consoleLogList.ItemsSource = entry.ConsoleLines;
+                _consoleLogList.ItemsSource = entry.ConsoleLines;
                 // Scroll to bottom after loading
                 Dispatcher.UIThread.Post(() =>
                 {
                     try
                     {
-                        if (consoleLogList.ItemCount > 0)
-                            consoleLogList.ScrollIntoView(consoleLogList.ItemCount - 1);
+                        if (_consoleLogList.ItemCount > 0)
+                            _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
                     }
                     catch { }
                 }, Avalonia.Threading.DispatcherPriority.Background);
@@ -1087,26 +1212,23 @@ namespace PRoCon.UI.Views
 
             if (_selectedServer == entry)
             {
-                var chatLog = this.FindControl<TextBlock>("ChatLog");
-                if (chatLog != null) chatLog.Text = string.Join("\n", entry.ChatLines);
-                var scroller = this.FindControl<ScrollViewer>("ChatScroller");
-                scroller?.ScrollToEnd();
+                if (_chatLog != null) _chatLog.Text = string.Join("\n", entry.ChatLines);
+                _chatScroller?.ScrollToEnd();
             }
         }
 
         private void OnSendChat(object sender, RoutedEventArgs e)
         {
-            var chatInput = this.FindControl<TextBox>("ChatInput");
             var client = SelectedClient;
-            if (chatInput == null || string.IsNullOrWhiteSpace(chatInput.Text) || client?.Game == null || _selectedServer == null)
+            if (_chatInput == null || string.IsNullOrWhiteSpace(_chatInput.Text) || client?.Game == null || _selectedServer == null)
                 return;
 
-            string msg = chatInput.Text;
+            string msg = _chatInput.Text;
             string chatName = _selectedServer.IsLayerConnection && !string.IsNullOrEmpty(_selectedServer.LayerUsername)
                 ? _selectedServer.LayerUsername : "Admin";
             client.Game.SendAdminSayPacket(msg, new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
             AppendChat(_selectedServer, $"[{chatName}] {msg}");
-            chatInput.Text = "";
+            _chatInput.Text = "";
         }
 
         private void OnChatInputKeyDown(object sender, Avalonia.Input.KeyEventArgs e)
@@ -1127,8 +1249,7 @@ namespace PRoCon.UI.Views
 
             if (e.Key == Avalonia.Input.Key.Enter)
             {
-                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
-                if (suggestionsBox != null) suggestionsBox.IsVisible = false;
+                if (_consoleSuggestions != null) _consoleSuggestions.IsVisible = false;
                 OnSendConsoleCommand(sender, e);
                 e.Handled = true;
             }
@@ -1163,16 +1284,15 @@ namespace PRoCon.UI.Views
             else if (e.Key == Avalonia.Input.Key.Tab)
             {
                 // Auto-complete: pick suggestion or complete common prefix
-                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
-                if (suggestionsBox != null && suggestionsBox.IsVisible && suggestionsBox.ItemCount > 0)
+                if (_consoleSuggestions != null && _consoleSuggestions.IsVisible && _consoleSuggestions.ItemCount > 0)
                 {
-                    string selected = (suggestionsBox.SelectedItem ?? suggestionsBox.Items.Cast<object>().First())?.ToString();
+                    string selected = (_consoleSuggestions.SelectedItem ?? _consoleSuggestions.Items.Cast<object>().First())?.ToString();
                     if (selected != null)
                     {
                         string cmdName = selected.Split(' ')[0];
                         consoleInput.Text = cmdName + " ";
                         consoleInput.CaretIndex = consoleInput.Text.Length;
-                        suggestionsBox.IsVisible = false;
+                        _consoleSuggestions.IsVisible = false;
                     }
                 }
                 else
@@ -1195,20 +1315,18 @@ namespace PRoCon.UI.Views
             }
             else if (e.Key == Avalonia.Input.Key.Escape)
             {
-                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
-                if (suggestionsBox != null) suggestionsBox.IsVisible = false;
+                if (_consoleSuggestions != null) _consoleSuggestions.IsVisible = false;
                 e.Handled = true;
             }
         }
 
         private void OnSendConsoleCommand(object sender, RoutedEventArgs e)
         {
-            var consoleInput = this.FindControl<TextBox>("ConsoleInput");
             var client = SelectedClient;
-            if (consoleInput == null || string.IsNullOrWhiteSpace(consoleInput.Text) || client?.Game == null || _selectedServer == null)
+            if (_consoleInput == null || string.IsNullOrWhiteSpace(_consoleInput.Text) || client?.Game == null || _selectedServer == null)
                 return;
 
-            string cmd = consoleInput.Text.Trim();
+            string cmd = _consoleInput.Text.Trim();
             var words = new List<string>(cmd.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             if (words.Count == 0) return;
 
@@ -1228,9 +1346,8 @@ namespace PRoCon.UI.Views
                         ColorBrush = new SolidColorBrush(Color.Parse("#ef5350")),
                         Weight = Avalonia.Media.FontWeight.Bold
                     });
-                    var list2 = this.FindControl<ListBox>("ConsoleLogList");
-                    if (list2 != null && list2.ItemCount > 0)
-                        list2.ScrollIntoView(list2.ItemCount - 1);
+                    if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
+                        _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
                     return;
                 }
                 if (cmdDef.MaxParams >= 0 && paramCount > cmdDef.MaxParams)
@@ -1243,9 +1360,8 @@ namespace PRoCon.UI.Views
                         ColorBrush = new SolidColorBrush(Color.Parse("#ef5350")),
                         Weight = Avalonia.Media.FontWeight.Bold
                     });
-                    var list2 = this.FindControl<ListBox>("ConsoleLogList");
-                    if (list2 != null && list2.ItemCount > 0)
-                        list2.ScrollIntoView(list2.ItemCount - 1);
+                    if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
+                        _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
                     return;
                 }
             }
@@ -1265,11 +1381,10 @@ namespace PRoCon.UI.Views
             };
             _selectedServer.ConsoleLines.Add(line);
             _selectedServer.ConsoleLogger?.WriteLine(line.Text);
-            consoleInput.Text = "";
+            _consoleInput.Text = "";
 
-            var list = this.FindControl<ListBox>("ConsoleLogList");
-            if (list != null && list.ItemCount > 0)
-                list.ScrollIntoView(list.ItemCount - 1);
+            if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
+                _consoleLogList.ScrollIntoView(_consoleLogList.ItemCount - 1);
 
             client.SendRequest(words);
         }
@@ -1277,8 +1392,7 @@ namespace PRoCon.UI.Views
         private void OnConsoleInputTextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
         {
             var consoleInput = sender as TextBox;
-            var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
-            if (consoleInput == null || suggestionsBox == null) return;
+            if (consoleInput == null || _consoleSuggestions == null) return;
 
             string text = consoleInput.Text ?? "";
             string prefix = text.Split(' ')[0];
@@ -1294,41 +1408,39 @@ namespace PRoCon.UI.Views
 
                 if (matches.Count > 0 && matches.Count <= 20)
                 {
-                    suggestionsBox.ItemsSource = matches;
-                    suggestionsBox.IsVisible = true;
+                    _consoleSuggestions.ItemsSource = matches;
+                    _consoleSuggestions.IsVisible = true;
                 }
                 else
                 {
-                    suggestionsBox.IsVisible = false;
+                    _consoleSuggestions.IsVisible = false;
                 }
             }
             else
             {
-                suggestionsBox.IsVisible = false;
+                _consoleSuggestions.IsVisible = false;
             }
         }
 
         private void OnSuggestionSelected(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             var suggestionsBox = sender as ListBox;
-            var consoleInput = this.FindControl<TextBox>("ConsoleInput");
-            if (suggestionsBox?.SelectedItem == null || consoleInput == null) return;
+            if (suggestionsBox?.SelectedItem == null || _consoleInput == null) return;
 
             // Extract just the command name from the signature
             string selected = suggestionsBox.SelectedItem.ToString();
             string cmdName = selected.Split(' ')[0];
-            consoleInput.Text = cmdName + " ";
-            consoleInput.CaretIndex = consoleInput.Text.Length;
+            _consoleInput.Text = cmdName + " ";
+            _consoleInput.CaretIndex = _consoleInput.Text.Length;
             suggestionsBox.IsVisible = false;
-            consoleInput.Focus();
+            _consoleInput.Focus();
         }
 
         private void OnCopyConsoleSelected(object sender, RoutedEventArgs e)
         {
-            var list = this.FindControl<ListBox>("ConsoleLogList");
-            if (list?.SelectedItems == null) return;
+            if (_consoleLogList?.SelectedItems == null) return;
             var sb = new StringBuilder();
-            foreach (var item in list.SelectedItems)
+            foreach (var item in _consoleLogList.SelectedItems)
                 if (item is ConsoleLine line) sb.AppendLine(line.Text);
             if (sb.Length > 0)
                 TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(sb.ToString());
@@ -1364,19 +1476,17 @@ namespace PRoCon.UI.Views
 
         private void UpdateStatus(string color, string text)
         {
-            var indicator = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator");
-            var statusText = this.FindControl<TextBlock>("StatusText");
-            if (indicator != null)
+            if (_statusIndicator != null)
             {
-                indicator.Fill = new SolidColorBrush(Color.Parse(color));
+                _statusIndicator.Fill = new SolidColorBrush(Color.Parse(color));
                 // Pulse when connected (green) or connecting (orange)
                 bool shouldPulse = color == "#66bb6a" || color == "#ffab40";
-                if (shouldPulse && !indicator.Classes.Contains("pulse"))
-                    indicator.Classes.Add("pulse");
+                if (shouldPulse && !_statusIndicator.Classes.Contains("pulse"))
+                    _statusIndicator.Classes.Add("pulse");
                 else if (!shouldPulse)
-                    indicator.Classes.Remove("pulse");
+                    _statusIndicator.Classes.Remove("pulse");
             }
-            if (statusText != null) statusText.Text = text;
+            if (_statusText != null) _statusText.Text = text;
         }
 
         private void UpdateServerInfoPanel(string title, string details)
@@ -1391,39 +1501,31 @@ namespace PRoCon.UI.Views
                 (_selectedServer.State == ServerConnectionState.Connected ||
                  _selectedServer.State == ServerConnectionState.Connecting);
 
-            var overlay = this.FindControl<Border>("DisconnectedOverlay");
-            var tabBarBorder = this.FindControl<Border>("TabBarBorder");
-
-            if (overlay != null) overlay.IsVisible = !connected;
-            if (tabBarBorder != null) tabBarBorder.IsVisible = connected;
+            if (_disconnectedOverlay != null) _disconnectedOverlay.IsVisible = !connected;
+            if (_tabBarBorder != null) _tabBarBorder.IsVisible = connected;
 
             // Hide Layer tab for layer connections (can't manage a layer from a layer)
-            var layerTabBtn = this.FindControl<Button>("LayerTabButton");
-            if (layerTabBtn != null)
-                layerTabBtn.IsVisible = !(_selectedServer?.IsLayerConnection == true);
+            if (_layerTabButton != null)
+                _layerTabButton.IsVisible = !(_selectedServer?.IsLayerConnection == true);
 
             // Hide all tab content when disconnected
             if (!connected)
             {
-                for (int i = 1; i <= 13; i++)
+                for (int i = 1; i <= 15; i++)
                 {
-                    var tab = this.FindControl<Border>($"Tab{i}");
-                    if (tab != null) tab.IsVisible = false;
+                    if (_tabs[i] != null) _tabs[i].IsVisible = false;
                 }
             }
 
             // Update overlay content based on state
-            var title = this.FindControl<TextBlock>("OverlayTitle");
-            var icon = this.FindControl<TextBlock>("OverlayIcon");
-            var subtext = this.FindControl<TextBlock>("DisconnectedSubtext");
 
             if (!hasServer || _selectedServer.State == ServerConnectionState.Disconnected)
             {
                 bool isLanding = !hasServer || _servers.Count == 0;
-                if (title != null) title.Text = isLanding ? "Welcome" : "Disconnected";
-                if (icon != null) icon.Text = isLanding ? "+" : "/";
-                if (subtext != null)
-                    subtext.Text = isLanding
+                if (_overlayTitle != null) _overlayTitle.Text = isLanding ? "Welcome" : "Disconnected";
+                if (_overlayIcon != null) _overlayIcon.Text = isLanding ? "+" : "/";
+                if (_disconnectedSubtext != null)
+                    _disconnectedSubtext.Text = isLanding
                         ? "Add a game server to get started."
                         : $"Disconnected from {_selectedServer?.DisplayName ?? "server"}.\nClick Connect in the sidebar to reconnect.";
             }
@@ -1437,78 +1539,62 @@ namespace PRoCon.UI.Views
             var info = entry.LastServerInfo;
             if (info == null) return;
 
-            var mapPanel = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator"); // just to check we have UI
-
             // Hero
-            var dashName = this.FindControl<TextBlock>("DashServerName");
-            if (dashName != null) dashName.Text = info.ServerName ?? "Unknown";
+            if (_dashServerName != null) _dashServerName.Text = info.ServerName ?? "Unknown";
 
-            var dashGame = this.FindControl<TextBlock>("DashGameType");
-            if (dashGame != null) dashGame.Text = game?.GameType ?? entry.GameType ?? "??";
+            if (_dashGameType != null) _dashGameType.Text = game?.GameType ?? entry.GameType ?? "??";
 
-            var dashVer = this.FindControl<TextBlock>("DashServerVersion");
-            if (dashVer != null) dashVer.Text = entry.GameVersion ?? "??";
+            if (_dashServerVersion != null) _dashServerVersion.Text = entry.GameVersion ?? "??";
 
-            var dashMap = this.FindControl<TextBlock>("DashMapMode");
             string mapName = GameData.GetMapName(info.Map ?? "") ?? info.Map ?? "Unknown";
             string modeName = GameData.GetModeName(info.GameMode ?? "") ?? info.GameMode ?? "Unknown";
-            if (dashMap != null) dashMap.Text = $"{mapName} — {modeName}";
+            if (_dashMapMode != null) _dashMapMode.Text = $"{mapName} — {modeName}";
 
-            var dashPlayers = this.FindControl<TextBlock>("DashPlayerCount");
-            if (dashPlayers != null) dashPlayers.Text = $"{info.PlayerCount}/{info.MaxPlayerCount}";
+            if (_dashPlayerCount != null) _dashPlayerCount.Text = $"{info.PlayerCount}/{info.MaxPlayerCount}";
 
             // Badges
-            var rankedBadge = this.FindControl<Border>("DashRankedBadge");
-            var rankedText = this.FindControl<TextBlock>("DashRankedText");
-            if (rankedBadge != null)
+            if (_dashRankedBadge != null)
             {
-                rankedBadge.Background = new SolidColorBrush(Color.Parse(info.Ranked ? "#66bb6a" : "#ef5350"));
-                if (rankedText != null) rankedText.Text = info.Ranked ? "RANKED" : "UNRANKED";
+                _dashRankedBadge.Background = new SolidColorBrush(Color.Parse(info.Ranked ? "#66bb6a" : "#ef5350"));
+                if (_dashRankedText != null) _dashRankedText.Text = info.Ranked ? "RANKED" : "UNRANKED";
             }
-            var pbBadge = this.FindControl<Border>("DashPbBadge");
-            if (pbBadge != null) pbBadge.IsVisible = info.PunkBuster;
+            if (_dashPbBadge != null) _dashPbBadge.IsVisible = info.PunkBuster;
 
             // Stats cards
-            var dashRound = this.FindControl<TextBlock>("DashRound");
-            if (dashRound != null) dashRound.Text = $"{info.CurrentRound + 1} / {info.TotalRounds}";
+            if (_dashRound != null) _dashRound.Text = $"{info.CurrentRound + 1} / {info.TotalRounds}";
 
-            var dashUptime = this.FindControl<TextBlock>("DashUptime");
-            if (dashUptime != null && info.ServerUptime > 0)
+            if (_dashUptime != null && info.ServerUptime > 0)
             {
                 var ts = TimeSpan.FromSeconds(info.ServerUptime);
-                dashUptime.Text = ts.TotalHours >= 24
+                _dashUptime.Text = ts.TotalHours >= 24
                     ? $"{(int)ts.TotalDays}d {ts.Hours}h"
                     : ts.TotalHours >= 1
                         ? $"{(int)ts.TotalHours}h {ts.Minutes}m"
                         : $"{ts.Minutes}m";
             }
 
-            var dashRoundTime = this.FindControl<TextBlock>("DashRoundTime");
-            if (dashRoundTime != null && info.RoundTime > 0)
+            if (_dashRoundTime != null && info.RoundTime > 0)
             {
                 var rt = TimeSpan.FromSeconds(info.RoundTime);
-                dashRoundTime.Text = rt.TotalHours >= 1 ? $"{(int)rt.TotalHours}h {rt.Minutes}m" : $"{rt.Minutes}m {rt.Seconds}s";
+                _dashRoundTime.Text = rt.TotalHours >= 1 ? $"{(int)rt.TotalHours}h {rt.Minutes}m" : $"{rt.Minutes}m {rt.Seconds}s";
             }
 
-            var dashRegion = this.FindControl<TextBlock>("DashRegion");
-            if (dashRegion != null) dashRegion.Text = info.ServerCountry ?? info.ServerRegion ?? info.PingSite ?? "--";
+            if (_dashRegion != null) _dashRegion.Text = info.ServerCountry ?? info.ServerRegion ?? info.PingSite ?? "--";
 
             // Team scores
             if (info.TeamScores != null)
             {
                 for (int i = 0; i < info.TeamScores.Count && i < 2; i++)
                 {
-                    var scoreText = this.FindControl<TextBlock>($"DashTeam{i + 1}Score");
-                    if (scoreText != null)
-                        scoreText.Text = info.TeamScores[i].Score.ToString("F0");
+                    if (_dashTeamScores[i] != null)
+                        _dashTeamScores[i].Text = info.TeamScores[i].Score.ToString("F0");
                 }
             }
 
             // Connection details
-            var connInfo = this.FindControl<TextBlock>("DashConnectionInfo");
-            if (connInfo != null)
+            if (_dashConnectionInfo != null)
             {
-                connInfo.Text = $"IP: {entry.HostPort}\n" +
+                _dashConnectionInfo.Text = $"IP: {entry.HostPort}\n" +
                                 $"Game: {game?.GameType ?? "?"} {entry.GameVersion}\n" +
                                 $"Build: {game?.VersionNumber ?? "?"}\n" +
                                 $"PunkBuster: {(info.PunkBuster ? $"Active ({info.PunkBusterVersion})" : "Inactive")}\n" +
@@ -1518,8 +1604,7 @@ namespace PRoCon.UI.Views
             }
 
             // Kill feed
-            var killList = this.FindControl<ListBox>("KillFeedList");
-            if (killList != null) killList.ItemsSource = entry.KillFeed;
+            if (_killFeedList != null) _killFeedList.ItemsSource = entry.KillFeed;
 
             // Player graph
             DrawPlayerGraph(entry);
@@ -1527,13 +1612,12 @@ namespace PRoCon.UI.Views
 
         private void DrawPlayerGraph(ServerEntry entry)
         {
-            var canvas = this.FindControl<Canvas>("PlayerGraphCanvas");
-            if (canvas == null || entry.PlayerHistory.Count < 2) return;
+            if (_playerGraphCanvas == null || entry.PlayerHistory.Count < 2) return;
 
-            canvas.Children.Clear();
+            _playerGraphCanvas.Children.Clear();
 
-            double w = canvas.Bounds.Width > 0 ? canvas.Bounds.Width : 300;
-            double h = canvas.Bounds.Height > 0 ? canvas.Bounds.Height : 120;
+            double w = _playerGraphCanvas.Bounds.Width > 0 ? _playerGraphCanvas.Bounds.Width : 300;
+            double h = _playerGraphCanvas.Bounds.Height > 0 ? _playerGraphCanvas.Bounds.Height : 120;
             int maxPlayers = entry.LastServerInfo?.MaxPlayerCount ?? 64;
             if (maxPlayers <= 0) maxPlayers = 64;
 
@@ -1551,7 +1635,7 @@ namespace PRoCon.UI.Views
                     Stroke = new SolidColorBrush(Color.Parse("#1a2a3a")),
                     StrokeThickness = 1
                 };
-                canvas.Children.Add(gridLine);
+                _playerGraphCanvas.Children.Add(gridLine);
 
                 // Label
                 int val = maxPlayers * i / 4;
@@ -1563,7 +1647,7 @@ namespace PRoCon.UI.Views
                 };
                 Canvas.SetLeft(label, 2);
                 Canvas.SetTop(label, y - 12);
-                canvas.Children.Add(label);
+                _playerGraphCanvas.Children.Add(label);
             }
 
             // Draw filled area + line
@@ -1587,7 +1671,7 @@ namespace PRoCon.UI.Views
                 Data = geometry,
                 Fill = new SolidColorBrush(Color.Parse("#1a4fc3f7")),
             };
-            canvas.Children.Add(fill);
+            _playerGraphCanvas.Children.Add(fill);
 
             // Line on top
             var lineGeometry = new Avalonia.Media.StreamGeometry();
@@ -1610,7 +1694,7 @@ namespace PRoCon.UI.Views
                 Stroke = new SolidColorBrush(Color.Parse("#4fc3f7")),
                 StrokeThickness = 2
             };
-            canvas.Children.Add(line);
+            _playerGraphCanvas.Children.Add(line);
 
             // Current value dot
             if (points.Count > 0)
@@ -1624,15 +1708,14 @@ namespace PRoCon.UI.Views
                 };
                 Canvas.SetLeft(dot, lastX - 3);
                 Canvas.SetTop(dot, lastY - 3);
-                canvas.Children.Add(dot);
+                _playerGraphCanvas.Children.Add(dot);
             }
 
             // Time range label
-            var rangeLabel = this.FindControl<TextBlock>("DashGraphRange");
-            if (rangeLabel != null && points.Count > 1)
+            if (_dashGraphRange != null && points.Count > 1)
             {
                 var span = points[points.Count - 1].Time - points[0].Time;
-                rangeLabel.Text = span.TotalMinutes < 2 ? "Just started" : $"Last {(int)span.TotalMinutes} minutes";
+                _dashGraphRange.Text = span.TotalMinutes < 2 ? "Just started" : $"Last {(int)span.TotalMinutes} minutes";
             }
         }
 
@@ -1652,12 +1735,9 @@ namespace PRoCon.UI.Views
                 }
             }
 
-            var sc = this.FindControl<TextBlock>("LandingServerCount");
-            var cc = this.FindControl<TextBlock>("LandingConnectedCount");
-            var tp = this.FindControl<TextBlock>("LandingTotalPlayers");
-            if (sc != null) sc.Text = totalServers.ToString();
-            if (cc != null) cc.Text = connectedCount.ToString();
-            if (tp != null) tp.Text = totalSlots > 0 ? $"{totalPlayers}/{totalSlots}" : totalPlayers.ToString();
+            if (_landingServerCount != null) _landingServerCount.Text = totalServers.ToString();
+            if (_landingConnectedCount != null) _landingConnectedCount.Text = connectedCount.ToString();
+            if (_landingTotalPlayers != null) _landingTotalPlayers.Text = totalSlots > 0 ? $"{totalPlayers}/{totalSlots}" : totalPlayers.ToString();
         }
 
         private void UpdateSidebarButtons()
@@ -1672,32 +1752,28 @@ namespace PRoCon.UI.Views
 
         private void ShowConnectButton(bool show)
         {
-            var btn = this.FindControl<Button>("ConnectSelectedButton");
-            if (btn != null) btn.IsVisible = show;
+            if (_connectSelectedButton != null) _connectSelectedButton.IsVisible = show;
         }
 
         private void ShowDisconnectButton(bool show)
         {
-            var btn = this.FindControl<Button>("DisconnectButton");
-            if (btn != null) btn.IsVisible = show;
+            if (_disconnectButton != null) _disconnectButton.IsVisible = show;
         }
 
         private void ShowRemoveButton(bool show)
         {
-            var btn = this.FindControl<Button>("RemoveServerButton");
-            if (btn != null) btn.IsVisible = show;
+            if (_removeServerButton != null) _removeServerButton.IsVisible = show;
         }
 
         private void UpdateConnectionCount()
         {
-            var text = this.FindControl<TextBlock>("ConnectionCountText");
-            if (text == null) return;
+            if (_connectionCountText == null) return;
 
             int connected = 0;
             foreach (var s in _servers)
                 if (s.IsConnected) connected++;
 
-            text.Text = $"{connected}/{_servers.Count} connected";
+            _connectionCountText.Text = $"{connected}/{_servers.Count} connected";
         }
 
         private void SortAndGroupServers()
@@ -1732,38 +1808,33 @@ namespace PRoCon.UI.Views
             bool hasFourTeams = hasTeam3 || hasTeam4;
 
             // Update grid layout: 2 cols always, add second row only for 4-team modes
-            var teamGrid = this.FindControl<Grid>("TeamGrid");
-            if (teamGrid != null)
+            if (_teamGrid != null)
             {
-                teamGrid.RowDefinitions.Clear();
+                _teamGrid.RowDefinitions.Clear();
                 if (hasFourTeams)
                 {
-                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
-                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                    _teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                    _teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
                 }
                 else
                 {
-                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                    _teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
                 }
             }
 
-            for (int t = 1; t <= 4; t++)
+            for (int t = 0; t < 4; t++)
             {
-                var teamList = this.FindControl<ListBox>($"TeamList{t}");
-                var teamHeader = this.FindControl<TextBlock>($"TeamHeader{t}");
-                var teamPanel = this.FindControl<Border>($"TeamPanel{t}");
+                var players = entry.TeamPlayers.ContainsKey(t + 1) ? entry.TeamPlayers[t + 1] : new List<PlayerDisplayInfo>();
 
-                var players = entry.TeamPlayers.ContainsKey(t) ? entry.TeamPlayers[t] : new List<PlayerDisplayInfo>();
+                if (_teamLists[t] != null)
+                    _teamLists[t].ItemsSource = players;
 
-                if (teamList != null)
-                    teamList.ItemsSource = players;
-
-                if (teamHeader != null)
-                    teamHeader.Text = $"Team {t} ({players.Count})";
+                if (_teamHeaders[t] != null)
+                    _teamHeaders[t].Text = $"Team {t + 1} ({players.Count})";
 
                 // Show teams 3 and 4 only if they have players
-                if (t >= 3 && teamPanel != null)
-                    teamPanel.IsVisible = players.Count > 0;
+                if (t >= 2 && _teamPanels[t] != null)
+                    _teamPanels[t].IsVisible = players.Count > 0;
             }
         }
 
