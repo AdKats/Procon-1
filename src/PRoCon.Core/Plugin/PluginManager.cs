@@ -285,6 +285,17 @@ namespace PRoCon.Core.Plugin
             return new List<MatchCommand>(MatchedInGameCommands.Values);
         }
 
+        private static Assembly TryGetAssembly(string name)
+        {
+            try
+            {
+                return AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name == name)
+                    ?? Assembly.Load(name);
+            }
+            catch { return null; }
+        }
+
         private void WritePluginConsole(string strFormat, params object[] arguments)
         {
             if (PluginOutput != null)
@@ -554,17 +565,36 @@ namespace PRoCon.Core.Plugin
                 }
 
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string[] dllsToCopy = { "PRoCon.Core.dll", "MySqlConnector.dll", "Newtonsoft.Json.dll", "Dapper.dll", "Flurl.dll", "Flurl.Http.dll" };
-                foreach (string dll in dllsToCopy)
+
+                // Map DLL names to their loaded assemblies for single-file fallback
+                var dllAssemblyMap = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase)
                 {
-                    string src = Path.Combine(baseDir, dll);
+                    { "PRoCon.Core.dll", typeof(PluginManager).Assembly },
+                    { "MySqlConnector.dll", TryGetAssembly("MySqlConnector") },
+                    { "Newtonsoft.Json.dll", TryGetAssembly("Newtonsoft.Json") },
+                    { "Dapper.dll", TryGetAssembly("Dapper") },
+                    { "Flurl.dll", TryGetAssembly("Flurl") },
+                    { "Flurl.Http.dll", TryGetAssembly("Flurl.Http") },
+                };
+
+                foreach (var kvp in dllAssemblyMap)
+                {
+                    string dest = Path.Combine(PluginBaseDirectory, kvp.Key);
+                    string src = Path.Combine(baseDir, kvp.Key);
+
                     if (File.Exists(src))
                     {
-                        File.Copy(src, Path.Combine(PluginBaseDirectory, dll), true);
+                        // Normal build — copy loose DLL
+                        File.Copy(src, dest, true);
+                    }
+                    else if (kvp.Value != null && !string.IsNullOrEmpty(kvp.Value.Location) && File.Exists(kvp.Value.Location))
+                    {
+                        // Single-file fallback — copy from assembly location in NuGet cache or runtime
+                        File.Copy(kvp.Value.Location, dest, true);
                     }
                     else
                     {
-                        WritePluginConsole("^3Warning: {0} not found in {1}", dll, baseDir);
+                        WritePluginConsole("^3Warning: {0} not available for plugin compilation", kvp.Key);
                     }
                 }
 
