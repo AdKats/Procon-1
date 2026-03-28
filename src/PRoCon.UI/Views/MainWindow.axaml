@@ -3,6 +3,7 @@
         x:Class="PRoCon.UI.Views.MainWindow"
         x:CompileBindings="False"
         Title="PRoCon Frostbite"
+        Icon="/procon.ico"
         Width="1200" Height="800"
         MinWidth="900" MinHeight="600"
         Background="{DynamicResource BackgroundBrush}"

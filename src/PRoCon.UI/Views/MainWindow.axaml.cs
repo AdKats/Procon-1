@@ -498,19 +498,16 @@ namespace PRoCon.UI.Views
 
                 if (_selectedServer == entry)
                 {
-                    // Auto-scroll: find the ScrollViewer inside the ListBox and scroll to end
                     Dispatcher.UIThread.Post(() =>
                     {
                         try
                         {
                             var list = this.FindControl<ListBox>("ConsoleLogList");
-                            if (list != null && entry.ConsoleLines.Count > 0)
-                            {
-                                list.ScrollIntoView(entry.ConsoleLines[entry.ConsoleLines.Count - 1]);
-                            }
+                            if (list != null && list.ItemCount > 0)
+                                list.ScrollIntoView(list.ItemCount - 1);
                         }
                         catch { }
-                    }, Avalonia.Threading.DispatcherPriority.Loaded);
+                    }, Avalonia.Threading.DispatcherPriority.Background);
                 }
             });
         }
