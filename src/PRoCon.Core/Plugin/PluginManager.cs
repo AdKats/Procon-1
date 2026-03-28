@@ -554,13 +554,24 @@ namespace PRoCon.Core.Plugin
                 }
 
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                File.Copy(Path.Combine(baseDir, "PRoCon.Core.dll"), Path.Combine(PluginBaseDirectory, "PRoCon.Core.dll"), true);
-                File.Copy(Path.Combine(baseDir, "MySqlConnector.dll"), Path.Combine(PluginBaseDirectory, "MySqlConnector.dll"), true);
-                File.Copy(Path.Combine(baseDir, "Newtonsoft.Json.dll"), Path.Combine(PluginBaseDirectory, "Newtonsoft.Json.dll"), true);
-
-                if (File.Exists(Path.Combine(baseDir, "PRoCon.Core.pdb")))
+                string[] dllsToCopy = { "PRoCon.Core.dll", "MySqlConnector.dll", "Newtonsoft.Json.dll" };
+                foreach (string dll in dllsToCopy)
                 {
-                    File.Copy(Path.Combine(baseDir, "PRoCon.Core.pdb"), Path.Combine(PluginBaseDirectory, "PRoCon.Core.pdb"), true);
+                    string src = Path.Combine(baseDir, dll);
+                    if (File.Exists(src))
+                    {
+                        File.Copy(src, Path.Combine(PluginBaseDirectory, dll), true);
+                    }
+                    else
+                    {
+                        WritePluginConsole("^3Warning: {0} not found in {1}", dll, baseDir);
+                    }
+                }
+
+                string pdbSrc = Path.Combine(baseDir, "PRoCon.Core.pdb");
+                if (File.Exists(pdbSrc))
+                {
+                    File.Copy(pdbSrc, Path.Combine(PluginBaseDirectory, "PRoCon.Core.pdb"), true);
                 }
 
                 // Extract default plugins from embedded resources
@@ -581,8 +592,9 @@ namespace PRoCon.Core.Plugin
                     File.Delete(file);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                WritePluginConsole("^1Error preparing plugins directory: {0}", ex.Message);
             }
         }
 
@@ -627,7 +639,23 @@ namespace PRoCon.Core.Plugin
                         // Shared .inc file (directly under DefaultPlugins/)
                         if (remainder.EndsWith(".inc"))
                         {
-                            fileName = remainder;
+                            // Shared includes go to parent Plugins/ dir so #include "../file.inc" resolves
+                            string sharedDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName);
+                            string sharedDest = Path.Combine(sharedDir, remainder);
+                            if (!File.Exists(sharedDest))
+                            {
+                                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                                {
+                                    if (stream != null)
+                                    {
+                                        using (var fileStream = File.Create(sharedDest))
+                                        {
+                                            stream.CopyTo(fileStream);
+                                        }
+                                    }
+                                }
+                            }
+                            continue;
                         }
                     }
 
@@ -713,20 +741,39 @@ namespace PRoCon.Core.Plugin
 
             var references = new List<MetadataReference>();
 
-            // Add .NET runtime references
+            // Add .NET runtime references — plugins may use any of these
             string[] runtimeAssemblies = new[]
             {
                 "System.Runtime",
                 "System.Collections",
+                "System.Collections.Specialized",
                 "System.Linq",
                 "System.Data.Common",
                 "System.Xml",
+                "System.Xml.ReaderWriter",
                 "System.Net.Http",
+                "System.Net.Primitives",
+                "System.Net.Sockets",
+                "System.Net.WebClient",
+                "System.Net.Requests",
                 "System.ComponentModel",
                 "System.ComponentModel.Primitives",
                 "System.Text.RegularExpressions",
+                "System.Text.Encoding.Extensions",
                 "System.Threading",
+                "System.Threading.Thread",
+                "System.Threading.Timer",
+                "System.IO",
+                "System.IO.FileSystem",
                 "System.Console",
+                "System.Runtime.InteropServices",
+                "System.ObjectModel",
+                "System.Globalization",
+                "System.Reflection",
+                "System.Reflection.Primitives",
+                "System.Diagnostics.Debug",
+                "System.Web.HttpUtility",
+                "Microsoft.CSharp",
                 "netstandard",
                 "System.Private.CoreLib"
             };

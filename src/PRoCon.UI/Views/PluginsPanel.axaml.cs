@@ -106,22 +106,35 @@ namespace PRoCon.UI.Views
             }
             else if (_client != null)
             {
-                // PluginsManager may not exist yet — retry after a delay
-                System.Threading.Tasks.Task.Delay(2000).ContinueWith(_ =>
-                {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        if (_client?.PluginsManager != null)
-                        {
-                            _client.PluginsManager.PluginLoaded += OnPluginLoadedEvent;
-                            _client.PluginsManager.PluginEnabled += OnPluginEnabledEvent;
-                            _client.PluginsManager.PluginDisabled += OnPluginDisabledEvent;
-                            _client.PluginsManager.PluginVariableAltered += OnPluginVariableAlteredEvent;
-                            RefreshPluginList();
-                        }
-                    });
-                });
+                // PluginsManager may not exist yet — retry with backoff
+                RetryWirePluginsManager(_client, 0);
             }
+        }
+
+        private void RetryWirePluginsManager(PRoConClient client, int attempt)
+        {
+            int[] delays = { 1000, 2000, 4000, 8000, 15000 };
+            if (attempt >= delays.Length) return;
+
+            System.Threading.Tasks.Task.Delay(delays[attempt]).ContinueWith(_ =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (_client != client) return; // client changed, abort
+                    if (_client?.PluginsManager != null)
+                    {
+                        _client.PluginsManager.PluginLoaded += OnPluginLoadedEvent;
+                        _client.PluginsManager.PluginEnabled += OnPluginEnabledEvent;
+                        _client.PluginsManager.PluginDisabled += OnPluginDisabledEvent;
+                        _client.PluginsManager.PluginVariableAltered += OnPluginVariableAlteredEvent;
+                        RefreshPluginList();
+                    }
+                    else
+                    {
+                        RetryWirePluginsManager(client, attempt + 1);
+                    }
+                });
+            });
         }
 
         private void RefreshPluginList()

@@ -593,7 +593,7 @@ namespace PRoCon.Core.Plugin
         /// for plugin API compatibility but is never called.
         /// </summary>
         [Obsolete("The built-in HTTP server has been removed. Use SignalR instead.")]
-        public virtual object OnHttpRequest(object data)
+        public virtual HttpServer.HttpWebServerResponseData OnHttpRequest(HttpServer.HttpWebServerRequestData data)
         {
             return null;
         }
