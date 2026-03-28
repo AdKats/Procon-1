@@ -153,6 +153,7 @@ namespace PRoCon.UI.Views
             public string Signature; // display: "command <param1> <param2> [optional]"
             public int MinParams;    // minimum required params (excluding command name)
             public int MaxParams;    // max params (-1 = unlimited)
+            public string Games;     // null = all games, otherwise comma-separated: "BF4,BF3,BFHL"
         }
 
         private static readonly RconCommandDef[] RconCommands = {
@@ -176,7 +177,7 @@ namespace PRoCon.UI.Views
             new RconCommandDef { Name = "admin.say", Signature = "admin.say <message> <all|team <teamId>|player <name>>", MinParams = 2, MaxParams = 4 },
             new RconCommandDef { Name = "admin.shutDown", Signature = "admin.shutDown", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "admin.yell", Signature = "admin.yell <message> [duration] [all|team <teamId>|player <name>]", MinParams = 1, MaxParams = 5 },
-            new RconCommandDef { Name = "admin.effectiveMaxPlayers", Signature = "admin.effectiveMaxPlayers", MinParams = 0, MaxParams = 0 },
+            new RconCommandDef { Name = "admin.effectiveMaxPlayers", Signature = "admin.effectiveMaxPlayers", MinParams = 0, MaxParams = 0, Games = "BF3" },
             // Ban List
             new RconCommandDef { Name = "banList.add", Signature = "banList.add <name|ip|guid> <id> <perm|rounds <n>|seconds <n>> [reason]", MinParams = 3, MaxParams = 5 },
             new RconCommandDef { Name = "banList.remove", Signature = "banList.remove <name|ip|guid> <id>", MinParams = 2, MaxParams = 2 },
@@ -206,19 +207,19 @@ namespace PRoCon.UI.Views
             new RconCommandDef { Name = "reservedSlotsList.load", Signature = "reservedSlotsList.load", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "reservedSlotsList.save", Signature = "reservedSlotsList.save", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "reservedSlotsList.aggressiveJoin", Signature = "reservedSlotsList.aggressiveJoin [true|false]", MinParams = 0, MaxParams = 1 },
-            // Player queries
-            new RconCommandDef { Name = "player.idleDuration", Signature = "player.idleDuration <soldierName>", MinParams = 1, MaxParams = 1 },
-            new RconCommandDef { Name = "player.isAlive", Signature = "player.isAlive <soldierName>", MinParams = 1, MaxParams = 1 },
-            new RconCommandDef { Name = "player.ping", Signature = "player.ping <soldierName>", MinParams = 1, MaxParams = 1 },
+            // Player queries (BF4 only)
+            new RconCommandDef { Name = "player.idleDuration", Signature = "player.idleDuration <soldierName>", MinParams = 1, MaxParams = 1, Games = "BF4" },
+            new RconCommandDef { Name = "player.isAlive", Signature = "player.isAlive <soldierName>", MinParams = 1, MaxParams = 1, Games = "BF4" },
+            new RconCommandDef { Name = "player.ping", Signature = "player.ping <soldierName>", MinParams = 1, MaxParams = 1, Games = "BF4" },
             // PunkBuster
             new RconCommandDef { Name = "punkBuster.activate", Signature = "punkBuster.activate", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "punkBuster.deactivate", Signature = "punkBuster.deactivate", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "punkBuster.isActive", Signature = "punkBuster.isActive", MinParams = 0, MaxParams = 0 },
             new RconCommandDef { Name = "punkBuster.pb_sv_command", Signature = "punkBuster.pb_sv_command <command>", MinParams = 1, MaxParams = -1 },
-            // FairFight
-            new RconCommandDef { Name = "fairFight.activate", Signature = "fairFight.activate", MinParams = 0, MaxParams = 0 },
-            new RconCommandDef { Name = "fairFight.deactivate", Signature = "fairFight.deactivate", MinParams = 0, MaxParams = 0 },
-            new RconCommandDef { Name = "fairFight.isActive", Signature = "fairFight.isActive", MinParams = 0, MaxParams = 0 },
+            // FairFight (BF4 only)
+            new RconCommandDef { Name = "fairFight.activate", Signature = "fairFight.activate", MinParams = 0, MaxParams = 0, Games = "BF4" },
+            new RconCommandDef { Name = "fairFight.deactivate", Signature = "fairFight.deactivate", MinParams = 0, MaxParams = 0, Games = "BF4" },
+            new RconCommandDef { Name = "fairFight.isActive", Signature = "fairFight.isActive", MinParams = 0, MaxParams = 0, Games = "BF4" },
             // Vars - boolean
             new RconCommandDef { Name = "vars.3dSpotting", Signature = "vars.3dSpotting [true|false]", MinParams = 0, MaxParams = 1 },
             new RconCommandDef { Name = "vars.3pCam", Signature = "vars.3pCam [true|false]", MinParams = 0, MaxParams = 1 },
@@ -276,6 +277,14 @@ namespace PRoCon.UI.Views
             RconCommandLookup = new Dictionary<string, RconCommandDef>(StringComparer.OrdinalIgnoreCase);
             foreach (var cmd in RconCommands)
                 RconCommandLookup[cmd.Name] = cmd;
+        }
+
+        private bool IsCommandForCurrentGame(RconCommandDef cmd)
+        {
+            if (cmd.Games == null) return true;
+            string gameType = _selectedServer?.GameType;
+            if (string.IsNullOrEmpty(gameType)) return true; // show all if unknown
+            return cmd.Games.Contains(gameType);
         }
 
         // Panel instances
@@ -1202,7 +1211,7 @@ namespace PRoCon.UI.Views
                     var matches = new List<RconCommandDef>();
                     foreach (var cmd in RconCommands)
                     {
-                        if (cmd.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                        if (cmd.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && IsCommandForCurrentGame(cmd))
                             matches.Add(cmd);
                     }
                     if (matches.Count == 1)
@@ -1308,7 +1317,7 @@ namespace PRoCon.UI.Views
                 var matches = new List<string>();
                 foreach (var cmd in RconCommands)
                 {
-                    if (cmd.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    if (cmd.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && IsCommandForCurrentGame(cmd))
                         matches.Add(cmd.Signature);
                 }
 
