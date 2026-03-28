@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.PunkBusterPanel">
+
+  <DockPanel>
+    <!-- Header -->
+    <TextBlock DockPanel.Dock="Top" Text="PunkBuster" FontSize="16" FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12" />
+
+    <!-- Command input at bottom -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Send PunkBuster Command" FontSize="13" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBox Grid.Column="0" Name="CommandInput"
+                   Watermark="pb_sv_command (e.g. pb_sv_plist)"
+                   Background="{DynamicResource InputBackgroundBrush}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   Margin="0,0,8,0" />
+          <Button Grid.Column="1" Name="BtnSend" Content="Send"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="14,6" CornerRadius="4"
+                  Click="OnSendCommand" />
+        </Grid>
+      </DockPanel>
+    </Border>
+
+    <!-- Log output -->
+    <Border Background="{DynamicResource BackgroundBrush}"
+            CornerRadius="6" Padding="4"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+      <ListBox Name="LogListBox"
+               Background="Transparent"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+               FontSize="12" />
+    </Border>
+  </DockPanel>
+
+</UserControl>

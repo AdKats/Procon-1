@@ -3,6 +3,13 @@
              x:Class="PRoCon.UI.Views.PluginsPanel"
              x:CompileBindings="False">
 
+  <DockPanel>
+    <!-- Security warning -->
+    <Border DockPanel.Dock="Top" Background="#3d2200" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+      <TextBlock Text="Plugins run with full trust on .NET 8. Only install plugins from trusted sources."
+                 Foreground="#ffab40" FontSize="12" TextWrapping="Wrap" />
+    </Border>
+
   <Grid ColumnDefinitions="280,*">
 
     <!-- Left: Plugin List -->
@@ -100,5 +107,7 @@
 
     </DockPanel>
   </Grid>
+
+  </DockPanel>
 
 </UserControl>
