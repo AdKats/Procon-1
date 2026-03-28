@@ -41,14 +41,14 @@ namespace PRoCon.UI.Views
         public string ServerName
         {
             get => _serverName;
-            set { _serverName = value; Notify(nameof(ServerName)); Notify(nameof(DisplayLabel)); Notify(nameof(DisplayName)); }
+            set { _serverName = value; Notify(nameof(ServerName)); Notify(nameof(DisplayLabel)); Notify(nameof(DisplayName)); Notify(nameof(IsNameOverflow)); }
         }
 
         private string _gameType;
         public string GameType
         {
             get => _gameType;
-            set { _gameType = value; Notify(nameof(GameType)); Notify(nameof(DisplayLabel)); Notify(nameof(GameTypeLabel)); }
+            set { _gameType = value; Notify(nameof(GameType)); Notify(nameof(DisplayLabel)); Notify(nameof(GameTypeLabel)); Notify(nameof(GameHeaderText)); }
         }
 
         public string GameTypeLabel => !string.IsNullOrEmpty(GameType) ? $"[{GameType}]" : "";
@@ -96,6 +96,7 @@ namespace PRoCon.UI.Views
         public List<string> PlayerItems { get; set; } = new List<string>();
         public HashSet<string> SupportedCommands { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         internal bool _pendingAdminHelp;
+        internal int _adminHelpLineCount;
         public Dictionary<int, List<PlayerDisplayInfo>> TeamPlayers { get; set; } = new Dictionary<int, List<PlayerDisplayInfo>>
         {
             { 1, new List<PlayerDisplayInfo>() },
@@ -111,10 +112,23 @@ namespace PRoCon.UI.Views
             get
             {
                 if (!string.IsNullOrEmpty(ServerName))
-                    return $"{ServerName} ({HostPort})";
+                    return ServerName;
                 return HostPort;
             }
         }
+
+        // Group header support
+        private bool _showGameHeader;
+        public bool ShowGameHeader
+        {
+            get => _showGameHeader;
+            set { _showGameHeader = value; Notify(nameof(ShowGameHeader)); }
+        }
+
+        public string GameHeaderText => !string.IsNullOrEmpty(GameType) ? GameType : "Unknown";
+
+        // Marquee for long names (> ~18 chars at 12px font in 160px width)
+        public bool IsNameOverflow => (DisplayName?.Length ?? 0) > 20;
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void Notify(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -439,7 +453,7 @@ namespace PRoCon.UI.Views
             }
         }
 
-        private void EnsureServer(string host, ushort port, string password)
+        private void EnsureServer(string host, ushort port, string password, bool autoConnect = true)
         {
             string hostPort = $"{host}:{port}";
             if (!_application.Connections.Contains(hostPort))
@@ -447,7 +461,14 @@ namespace PRoCon.UI.Views
             var entry = EnsureServerEntry(hostPort);
             var client = GetClient(hostPort);
             if (client != null)
+            {
                 WireClientEvents(client, entry);
+                if (autoConnect)
+                {
+                    entry.State = ServerConnectionState.Connecting;
+                    client.AutomaticallyConnect = true;
+                }
+            }
         }
 
         private ServerEntry EnsureServerEntry(string hostPort)
@@ -690,16 +711,21 @@ namespace PRoCon.UI.Views
                 if (entry._pendingAdminHelp)
                 {
                     string clean = ColorCodeRegex.Replace(strLoggedText, "").Trim();
-                    // admin.help response lines are single command names (contain a dot, no spaces)
-                    if (clean.Contains('.') && !clean.Contains(' ') && clean.Length < 60)
+                    // admin.help response contains command names like "admin.kickPlayer"
+                    // They contain a dot, no spaces, and are short
+                    if (clean.Contains('.') && !clean.Contains(' ') && clean.Length > 3 && clean.Length < 60)
                     {
                         entry.SupportedCommands.Add(clean);
                     }
-                    else if (entry.SupportedCommands.Count > 0 && !clean.Contains('.'))
+                    // Stop parsing after we've seen some commands and hit a non-command line
+                    if (entry.SupportedCommands.Count > 5 && (!clean.Contains('.') || clean.Contains(' ')))
                     {
-                        // End of admin.help response
                         entry._pendingAdminHelp = false;
                     }
+                    // Safety: stop after 200 lines regardless
+                    entry._adminHelpLineCount++;
+                    if (entry._adminHelpLineCount > 200)
+                        entry._pendingAdminHelp = false;
                 }
 
                 // Log to file
@@ -737,6 +763,7 @@ namespace PRoCon.UI.Views
                 entry.GameType = sender.GameType ?? "";
                 entry.State = ServerConnectionState.Connected;
                 entry.LastServerInfo = info;
+                SortAndGroupServers();
                 entry.ServerInfoText = $"Server Name: {name}\n" +
                                        $"Map: {map}\n" +
                                        $"Game Mode: {mode}\n" +
@@ -1491,6 +1518,31 @@ namespace PRoCon.UI.Views
                 if (s.IsConnected) connected++;
 
             text.Text = $"{connected}/{_servers.Count} connected";
+        }
+
+        private void SortAndGroupServers()
+        {
+            // Sort: by GameType then ServerName/HostPort
+            var sorted = _servers.OrderBy(s => s.GameType ?? "ZZZ")
+                                 .ThenBy(s => s.DisplayName ?? s.HostPort)
+                                 .ToList();
+
+            // Reorder the collection to match
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                int currentIndex = _servers.IndexOf(sorted[i]);
+                if (currentIndex != i)
+                    _servers.Move(currentIndex, i);
+            }
+
+            // Update group headers: show header on first item of each game type
+            string lastGame = null;
+            foreach (var s in _servers)
+            {
+                string game = s.GameType ?? "Unknown";
+                s.ShowGameHeader = game != lastGame;
+                lastGame = game;
+            }
         }
 
         private void UpdateTeamPanels(ServerEntry entry)
