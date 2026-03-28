@@ -18,6 +18,7 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Microsoft.Extensions.Logging;
 using PRoCon.Core.Battlemap;
 using PRoCon.Core.Players.Items;
 using PRoCon.Core.Plugin.Commands;
@@ -32,6 +33,26 @@ namespace PRoCon.Core.Plugin
 {
     public class CPRoConMarshalByRefObject : MarshalByRefObject
     {
+        /// <summary>
+        /// Static LoggerFactory that PluginManager sets during initialization.
+        /// Plugins can use GetLogger() to obtain an ILogger instance.
+        /// </summary>
+        public static ILoggerFactory LoggerFactory { get; set; }
+
+        /// <summary>
+        /// Gets an ILogger instance for this plugin type.
+        /// </summary>
+        /// <returns>An ILogger instance, or a NullLogger if no LoggerFactory has been configured.</returns>
+        public ILogger GetLogger()
+        {
+            if (LoggerFactory != null)
+            {
+                return LoggerFactory.CreateLogger(this.GetType());
+            }
+
+            return Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        }
+
         public delegate void ExecuteCommandHandler(List<string> command);
 
         public delegate CPrivileges GetAccountPrivilegesHandler(string accountName);

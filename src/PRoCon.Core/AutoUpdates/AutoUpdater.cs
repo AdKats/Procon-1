@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using Ionic.Zip;
+using ICSharpCode.SharpZipLib.Zip;
 using PRoCon.Core.Remote;
 using System;
 using System.Collections.Generic;
@@ -108,10 +108,7 @@ namespace PRoCon.Core.AutoUpdates
                     Directory.CreateDirectory(strLocalizationFolder);
                 }
 
-                using (ZipFile zip = ZipFile.Read(cdfSender.CompleteFileData))
-                {
-                    zip.ExtractAll(strLocalizationFolder, ExtractExistingFileAction.OverwriteSilently);
-                }
+                ExtractZipFromBytes(cdfSender.CompleteFileData, strLocalizationFolder);
 
                 Application.LoadLocalizationFiles();
             }
@@ -143,10 +140,7 @@ namespace PRoCon.Core.AutoUpdates
                     Directory.CreateDirectory(strGameConfigFolder);
                 }
 
-                using (ZipFile zip = ZipFile.Read(cdfSender.CompleteFileData))
-                {
-                    zip.ExtractAll(strGameConfigFolder, ExtractExistingFileAction.OverwriteSilently);
-                }
+                ExtractZipFromBytes(cdfSender.CompleteFileData, strGameConfigFolder);
 
                 // GameConfigs require Procon restart
                 if (GameConfigHint == false)
@@ -348,10 +342,7 @@ namespace PRoCon.Core.AutoUpdates
                         Directory.CreateDirectory(strUpdatesFolder);
                     }
 
-                    using (ZipFile zip = ZipFile.Read(cdfSender.CompleteFileData))
-                    {
-                        zip.ExtractAll(strUpdatesFolder, ExtractExistingFileAction.OverwriteSilently);
-                    }
+                    ExtractZipFromBytes(cdfSender.CompleteFileData, strUpdatesFolder);
 
                     DownloadedUnzippedComplete();
                 }
@@ -387,6 +378,38 @@ namespace PRoCon.Core.AutoUpdates
                 if (DownloadUnzipComplete != null)
                 {
                     this.DownloadUnzipComplete();
+                }
+            }
+        }
+
+        private static void ExtractZipFromBytes(byte[] zipData, string destinationFolder)
+        {
+            using (var stream = new MemoryStream(zipData))
+            using (var zipInputStream = new ZipInputStream(stream))
+            {
+                ZipEntry entry;
+                while ((entry = zipInputStream.GetNextEntry()) != null)
+                {
+                    string entryPath = Path.GetFullPath(Path.Combine(destinationFolder, entry.Name));
+                    if (!entryPath.StartsWith(Path.GetFullPath(destinationFolder) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                        continue; // Skip malicious entries
+
+                    if (entry.IsDirectory)
+                    {
+                        Directory.CreateDirectory(entryPath);
+                        continue;
+                    }
+
+                    string directoryName = Path.GetDirectoryName(entryPath);
+                    if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
+                    {
+                        Directory.CreateDirectory(directoryName);
+                    }
+
+                    using (var fileStream = File.Create(entryPath))
+                    {
+                        zipInputStream.CopyTo(fileStream);
+                    }
                 }
             }
         }
@@ -533,7 +556,7 @@ namespace PRoCon.Core.AutoUpdates
                             praApplication.Shutdown();
                         }
 
-                        System.Windows.Forms.Application.Exit();
+                        Environment.Exit(0);
                     }
                     catch (Exception)
                     {
@@ -556,8 +579,7 @@ namespace PRoCon.Core.AutoUpdates
                         praApplication.Shutdown();
                     }
 
-                    //System.Diagnostics.Process.Start(AppDomain.CurrentDomain.BaseDirectory + "PRoConUpdater.exe");
-                    System.Windows.Forms.Application.Exit();
+                    Environment.Exit(0);
                 }
             }
         }

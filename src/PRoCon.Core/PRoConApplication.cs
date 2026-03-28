@@ -162,7 +162,7 @@ namespace PRoCon.Core
             private set;
         }
 
-        public System.Windows.Forms.FormWindowState SavedWindowState
+        public FormWindowState SavedWindowState
         {
             get;
             set;
@@ -970,7 +970,7 @@ namespace PRoCon.Core
                     Enum.IsDefined(typeof(WeaponSlots), lstWords[3]) == true &&
                     Enum.IsDefined(typeof(DamageTypes), lstWords[4]) == true)
                 {
-                    //this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    //this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     ((PRoConClient)objSender).Weapons.Add(
                             new Weapon(
@@ -1267,9 +1267,9 @@ namespace PRoCon.Core
                 Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
-                if (Enum.IsDefined(typeof(System.Windows.Forms.FormWindowState), lstWords[1]) == true)
+                if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
                 {
-                    this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     if (int.TryParse(lstWords[2], out iPositionVar) == true)
                     {
@@ -1845,7 +1845,7 @@ namespace PRoCon.Core
                     Enum.IsDefined(typeof(WeaponSlots), lstWords[3]) == true &&
                     Enum.IsDefined(typeof(DamageTypes), lstWords[4]) == true)
                 {
-                    //this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    //this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     ((PRoConClient)objSender).Weapons.Add(
                             new Weapon(
@@ -2142,9 +2142,9 @@ namespace PRoCon.Core
                 Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
-                if (Enum.IsDefined(typeof(System.Windows.Forms.FormWindowState), lstWords[1]) == true)
+                if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
                 {
-                    this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     if (int.TryParse(lstWords[2], out iPositionVar) == true)
                     {
@@ -2902,77 +2902,8 @@ namespace PRoCon.Core
 
         private Version HighestNetFrameworkVersion()
         {
-            Version highest_version = new Version();
-
-            try
-            {
-                string str_monoVersion;
-
-                // check for mono
-                Type monoType = Type.GetType("Mono.Runtime");
-                if (monoType != null)
-                {
-                    BindingFlags methodFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.ExactBinding;
-
-                    MethodInfo monoDisplayName = monoType.GetMethod("GetDisplayName", methodFlags, null, Type.EmptyTypes, null);
-                    if (monoDisplayName != null)
-                    {
-                        str_monoVersion = (string)monoDisplayName.Invoke(null, null);
-                        string[] parts = str_monoVersion.Split('.');
-                        int major = Int32.Parse(parts[0]);
-                        int minor = Int32.Parse(parts[1]);
-                        int revision = Int32.Parse(parts[2].Substring(0, parts[2].IndexOf(' ')));
-                        Version MonoVersion = new Version(major, minor, revision);
-
-                        highest_version = MonoVersion;
-                    }
-                }
-                else if (Environment.OSVersion.Platform != PlatformID.Unix)
-                {
-                    // Windows-only .NET Framework check via Registry
-                    try
-                    {
-                        RegistryKey installed_versions = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP");
-
-                        if (installed_versions != null)
-                        {
-                            string[] version_keys = installed_versions.GetSubKeyNames();
-
-                            foreach (string version_key in version_keys)
-                            {
-                                Match version_match = version_regex.Match(version_key);
-
-                                if (version_match.Success == true)
-                                {
-                                    int service_pack = Convert.ToInt32(installed_versions.OpenSubKey(version_key).GetValue("SP", 0));
-
-                                    Version version = new Version(
-                                        version_match.Groups["major"].Value.Length > 0 ? int.Parse(version_match.Groups["major"].Value) : 0,
-                                        version_match.Groups["minor"].Value.Length > 0 ? int.Parse(version_match.Groups["minor"].Value) : 0,
-                                        version_match.Groups["build"].Value.Length > 0 ? int.Parse(version_match.Groups["build"].Value) : 0,
-                                        service_pack
-                                    );
-
-                                    if (version > highest_version)
-                                    {
-                                        highest_version = version;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Registry access may fail on non-Windows or restricted environments
-                    }
-                } // end of mono check
-            }
-            catch (System.ArgumentOutOfRangeException e)
-            {
-                // Console.WriteLine(e.Message);
-            }
-
-            return highest_version;
+            // On .NET 8+, just return the runtime version
+            return Environment.Version;
         }
 
         private string GetFrameworkName()

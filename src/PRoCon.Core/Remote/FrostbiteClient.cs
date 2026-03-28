@@ -231,9 +231,10 @@ namespace PRoCon.Core.Remote
         {
             MD5 md5Hasher = MD5.Create();
 
-            var combined = new byte[salt.Length + strData.Length];
+            byte[] strBytes = Encoding.UTF8.GetBytes(strData);
+            var combined = new byte[salt.Length + strBytes.Length];
             salt.CopyTo(combined, 0);
-            Encoding.Default.GetBytes(strData).CopyTo(combined, salt.Length);
+            strBytes.CopyTo(combined, salt.Length);
 
             byte[] hash = md5Hasher.ComputeHash(combined);
 

@@ -1,27 +1,27 @@
-﻿// Copyright 2010 Geoffrey 'Phogue' Green
-// 
+// Copyright 2010 Geoffrey 'Phogue' Green
+//
 // http://www.phogue.net
-//  
+//
 // This file is part of PRoCon Frostbite.
-// 
+//
 // PRoCon Frostbite is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // PRoCon Frostbite is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace PRoCon.Core
 {
-    using System.Windows.Forms;
-
     // TO DO: I hate this class so much, rewrite it some time.
+    // NOTE: WinForms types (Control, PictureBox) replaced with object for .NET 8 cross-platform compatibility.
+    // The UI layer is responsible for casting these back to the appropriate UI control types.
     public class AsyncStyleSetting
     {
         // Animation
@@ -34,17 +34,16 @@ namespace PRoCon.Core
         public bool m_blIgnoreEvent;
         public bool m_blReEnableControls;
         public bool m_blSuccess; // Set to false or unknown
-        public Control m_ctrlResponseTarget;
+        public object m_ctrlResponseTarget;
         public int m_iTimeout;
         public object m_objOriginalValue;
-        public PictureBox m_picStatus;
-        public Control[] ma_ctrlEnabledInputs;
+        public object m_picStatus;
+        public object[] ma_ctrlEnabledInputs;
 
-        public AsyncStyleSetting(PictureBox picStatus, Control ctrlResponseTarget, Control[] a_ctrlEnabledInputs,
+        public AsyncStyleSetting(object picStatus, object ctrlResponseTarget, object[] a_ctrlEnabledInputs,
                                   bool blReEnableControls)
         {
             this.m_picStatus = picStatus;
-            this.m_picStatus.Tag = this;
             this.m_iTimeout = -1;
             this.m_ctrlResponseTarget = ctrlResponseTarget;
             this.ma_ctrlEnabledInputs = a_ctrlEnabledInputs;

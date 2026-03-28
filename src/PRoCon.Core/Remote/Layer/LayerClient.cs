@@ -313,9 +313,10 @@ namespace PRoCon.Core.Remote.Layer
         {
             MD5 md5Hasher = MD5.Create();
 
-            byte[] combined = new byte[salt.Length + data.Length];
+            byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+            byte[] combined = new byte[salt.Length + dataBytes.Length];
             salt.CopyTo(combined, 0);
-            Encoding.Default.GetBytes(data).CopyTo(combined, salt.Length);
+            dataBytes.CopyTo(combined, salt.Length);
 
             byte[] hash = md5Hasher.ComputeHash(combined);
 

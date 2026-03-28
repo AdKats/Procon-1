@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Security;
+#if NETFRAMEWORK
 using System.Security.Permissions;
+#endif
 using System.Text.RegularExpressions;
 
 // This can be moved into .Core once the contents of PRoCon.Plugin.* have been moved to .Core.
@@ -610,6 +612,7 @@ namespace PRoCon.Core.Options
             }
         }
 
+#if NETFRAMEWORK
         public PermissionSet PluginPermissions
         {
 
@@ -698,6 +701,14 @@ namespace PRoCon.Core.Options
                 return psetPluginPermissions;
             }
         }
+#else
+        // TODO: Phase 2 - Replace CAS PermissionSet with AssemblyLoadContext-based plugin security model.
+        // On .NET 8+, PermissionSet/CAS is not available. Return null as a placeholder.
+        public object PluginPermissions
+        {
+            get { return null; }
+        }
+#endif
 
         public OptionsSettings(PRoConApplication praApplication)
         {

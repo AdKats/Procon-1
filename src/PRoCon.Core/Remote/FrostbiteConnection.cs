@@ -1,14 +1,19 @@
-﻿using PRoCon.Core.Remote.Cache;
+﻿using Microsoft.Extensions.Logging;
+using PRoCon.Core.Logging;
+using PRoCon.Core.Remote.Cache;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PRoCon.Core.Remote
 {
@@ -22,8 +27,15 @@ namespace PRoCon.Core.Remote
 
         /// <summary>
         /// The stream to read and write data to.
+        /// This may be a plain NetworkStream or an SslStream wrapping it.
         /// </summary>
-        protected NetworkStream NetworkStream;
+        protected Stream NetworkStream;
+
+        /// <summary>
+        /// The underlying SslStream when TLS is active, null otherwise.
+        /// Kept separately so it can be properly disposed.
+        /// </summary>
+        protected SslStream SslStream;
 
         // Maximum amount of data to accept before scrapping the whole lot and trying again.
         // Test maximizing this to see if plugin descriptions are causing some problems.
@@ -126,6 +138,30 @@ namespace PRoCon.Core.Remote
         /// </summary>
         protected readonly Object QueueUnqueuePacketLock = new Object();
 
+        /// <summary>
+        /// Whether to use TLS when connecting to the remote server.
+        /// Default is false for backward compatibility.
+        /// </summary>
+        public bool UseTls { get; set; }
+
+        /// <summary>
+        /// When true, the TLS handshake will accept self-signed or otherwise
+        /// invalid server certificates. Default is false (strict validation).
+        /// </summary>
+        public bool AllowSelfSignedCertificates { get; set; }
+
+        /// <summary>
+        /// When true and TLS handshake fails, fall back to a plain TCP connection
+        /// instead of treating the failure as fatal. Default is false.
+        /// </summary>
+        public bool AllowTlsFallback { get; set; }
+
+        /// <summary>
+        /// Cancellation token source for the receive loop and other async operations.
+        /// Cancelled on shutdown.
+        /// </summary>
+        protected CancellationTokenSource ConnectionCts;
+
         #region Events
 
         public delegate void PrePacketDispatchedHandler(FrostbiteConnection sender, Packet packetBeforeDispatch, out bool isProcessed);
@@ -206,17 +242,31 @@ namespace PRoCon.Core.Remote
             this.PacketStream = null;
         }
 
+        private static readonly ILogger _logger = PRoConLog.CreateLogger("PRoCon.FrostbiteConnection");
+
+        /// <summary>
+        /// Logs an error with packet context. The original signature is preserved for
+        /// backward compatibility, but logging now delegates to
+        /// <see cref="Microsoft.Extensions.Logging.ILogger"/> via <see cref="PRoConLog"/>.
+        /// A fallback to DEBUG.txt is kept so that errors are never silently lost when
+        /// the logging subsystem has not been initialised.
+        /// </summary>
         public static void LogError(string strPacket, string strAdditional, Exception e)
         {
             try
             {
+                // Build the structured detail string (kept for file fallback as well).
                 string strOutput = "=======================================" + Environment.NewLine + Environment.NewLine;
 
                 StackTrace stTracer = new StackTrace(e, true);
-                strOutput += "Exception caught at: " + Environment.NewLine;
-                strOutput += String.Format("{0}{1}", stTracer.GetFrame((stTracer.FrameCount - 1)).GetFileName(), Environment.NewLine);
-                strOutput += String.Format("Line {0}{1}", stTracer.GetFrame((stTracer.FrameCount - 1)).GetFileLineNumber(), Environment.NewLine);
-                strOutput += String.Format("Method {0}{1}", stTracer.GetFrame((stTracer.FrameCount - 1)).GetMethod().Name, Environment.NewLine);
+                if (stTracer.FrameCount > 0)
+                {
+                    var frame = stTracer.GetFrame(stTracer.FrameCount - 1);
+                    strOutput += "Exception caught at: " + Environment.NewLine;
+                    strOutput += String.Format("{0}{1}", frame.GetFileName(), Environment.NewLine);
+                    strOutput += String.Format("Line {0}{1}", frame.GetFileLineNumber(), Environment.NewLine);
+                    strOutput += String.Format("Method {0}{1}", frame.GetMethod()?.Name, Environment.NewLine);
+                }
 
                 strOutput += "DateTime: " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString() + Environment.NewLine;
                 strOutput += "Version: " + Assembly.GetExecutingAssembly().GetName().Version + Environment.NewLine;
@@ -233,24 +283,26 @@ namespace PRoCon.Core.Remote
                 strOutput += Environment.NewLine;
                 strOutput += stTracer.ToString();
 
-                if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
+                // ---- Primary path: ILogger ----
+                _logger.LogError(e, "Packet={Packet} Additional={Additional}", strPacket, strAdditional);
+
+                // ---- Fallback path: DEBUG.txt (kept for environments without logging config) ----
+                try
                 {
-                    using (StreamWriter sw = File.CreateText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
+                    string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt");
+                    using (StreamWriter sw = File.AppendText(debugPath))
                     {
                         sw.Write(strOutput);
                     }
                 }
-                else
+                catch (Exception)
                 {
-                    using (StreamWriter sw = File.AppendText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt")))
-                    {
-                        sw.Write(strOutput);
-                    }
+                    // Swallow file-write errors — the ILogger call above already recorded it.
                 }
             }
             catch (Exception)
             {
-                // It'd be to ironic to happen, surely?
+                // It'd be too ironic to happen, surely?
             }
         }
 
@@ -313,37 +365,8 @@ namespace PRoCon.Core.Remote
             return response;
         }
 
-        private void SendAsyncCallback(IAsyncResult ar)
-        {
-
-            Packet packet = (Packet)ar.AsyncState;
-
-            try
-            {
-                if (this.NetworkStream != null)
-                {
-                    this.NetworkStream.EndWrite(ar);
-                    if (this.PacketSent != null)
-                    {
-
-                        this.LastPacketSent = packet;
-
-                        this.PacketSent(this, false, packet);
-                    }
-                }
-            }
-            catch (SocketException se)
-            {
-                this.Shutdown(se);
-            }
-            catch (Exception e)
-            {
-                this.Shutdown(e);
-            }
-        }
-
         // Send straight away ignoring the queue
-        private void SendAsync(Packet cpPacket)
+        private async Task SendAsync(Packet cpPacket, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -367,9 +390,19 @@ namespace PRoCon.Core.Remote
                         }
                     }
 
-                    this.NetworkStream.BeginWrite(bytePacket, 0, bytePacket.Length, this.SendAsyncCallback, cpPacket);
+                    await this.NetworkStream.WriteAsync(bytePacket, 0, bytePacket.Length, cancellationToken).ConfigureAwait(false);
 
+                    if (this.PacketSent != null)
+                    {
+                        this.LastPacketSent = cpPacket;
+
+                        this.PacketSent(this, false, cpPacket);
+                    }
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                // Cancellation requested, do not treat as error
             }
             catch (SocketException se)
             {
@@ -393,7 +426,7 @@ namespace PRoCon.Core.Remote
 
                 if (cpPacket.OriginatedFromServer == true && cpPacket.IsResponse == true)
                 {
-                    this.SendAsync(cpPacket);
+                    _ = this.SendAsync(cpPacket);
                 }
                 else
                 {
@@ -401,7 +434,7 @@ namespace PRoCon.Core.Remote
                     if (this.QueueUnqueuePacket(true, cpPacket, out cpNullPacket) == false)
                     {
                         // No need to queue, queue is empty.  Send away..
-                        this.SendAsync(cpPacket);
+                        _ = this.SendAsync(cpPacket);
                     }
 
                     // Shutdown if we're just waiting for a response to an old packet.
@@ -434,126 +467,130 @@ namespace PRoCon.Core.Remote
             return cpRequestPacket;
         }
 
-        private void ReceiveCallback(IAsyncResult ar)
+        private async Task ReceiveLoopAsync(CancellationToken cancellationToken)
         {
             try
             {
-                if (this.NetworkStream == null)
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    return;
-                }
-                int iBytesRead = this.NetworkStream.EndRead(ar);
-
-                if (iBytesRead == 0)
-                {
-                    this.Shutdown();
-                    return;
-                }
-
-                // Create or resize our packet stream to hold the new data.
-                if (this.PacketStream == null)
-                {
-                    this.PacketStream = new byte[iBytesRead];
-                }
-                else
-                {
-                    Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
-                }
-
-                Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
-
-                UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
-
-                while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
-                {
-                    // Copy the complete packet from the beginning of the stream.
-                    byte[] completePacket = new byte[ui32PacketSize];
-                    Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
-
-                    Packet packet = new Packet(completePacket);
-                    //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
-
-                    // Dispatch the completed packet.
-                    try
+                    if (this.NetworkStream == null)
                     {
-                        bool isProcessed = false;
-
-                        if (this.BeforePacketDispatch != null)
-                        {
-                            this.BeforePacketDispatch(this, packet, out isProcessed);
-                        }
-
-                        if (this.PacketReceived != null)
-                        {
-                            this.LastPacketReceived = packet;
-
-                            this.Cache.Response(packet);
-
-                            this.PacketReceived(this, isProcessed, packet);
-                        }
-
-                        if (packet.OriginatedFromServer == true && packet.IsResponse == false)
-                        {
-                            this.SendAsync(new Packet(true, true, packet.SequenceNumber, "OK"));
-                        }
-
-                        Packet cpNextPacket = null;
-                        if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
-                        {
-                            this.SendAsync(cpNextPacket);
-                        }
-
-                        // Shutdown if we're just waiting for a response to an old packet.
-                        this.RestartConnectionOnQueueFailure();
-                    }
-                    catch (Exception e)
-                    {
-
-                        Packet cpRequest = this.GetRequestPacket(packet);
-
-                        if (cpRequest != null)
-                        {
-                            LogError(packet.ToDebugString(), cpRequest.ToDebugString(), e);
-                        }
-                        else
-                        {
-                            LogError(packet.ToDebugString(), String.Empty, e);
-                        }
-
-                        // Now try to recover..
-                        Packet cpNextPacket = null;
-                        if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
-                        {
-                            this.SendAsync(cpNextPacket);
-                        }
-
-                        // Shutdown if we're just waiting for a response to an old packet.
-                        this.RestartConnectionOnQueueFailure();
+                        return;
                     }
 
-                    // Now remove the completed packet from the beginning of the stream
-                    if (this.PacketStream != null)
-                    {
-                        byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
-                        Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
-                        this.PacketStream = updatedSteam;
+                    int iBytesRead = await this.NetworkStream.ReadAsync(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, cancellationToken).ConfigureAwait(false);
 
-                        ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+                    if (iBytesRead == 0)
+                    {
+                        this.Shutdown();
+                        return;
+                    }
+
+                    // Create or resize our packet stream to hold the new data.
+                    if (this.PacketStream == null)
+                    {
+                        this.PacketStream = new byte[iBytesRead];
+                    }
+                    else
+                    {
+                        Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
+                    }
+
+                    Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
+
+                    UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+
+                    while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
+                    {
+                        // Copy the complete packet from the beginning of the stream.
+                        byte[] completePacket = new byte[ui32PacketSize];
+                        Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
+
+                        Packet packet = new Packet(completePacket);
+                        //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
+
+                        // Dispatch the completed packet.
+                        try
+                        {
+                            bool isProcessed = false;
+
+                            if (this.BeforePacketDispatch != null)
+                            {
+                                this.BeforePacketDispatch(this, packet, out isProcessed);
+                            }
+
+                            if (this.PacketReceived != null)
+                            {
+                                this.LastPacketReceived = packet;
+
+                                this.Cache.Response(packet);
+
+                                this.PacketReceived(this, isProcessed, packet);
+                            }
+
+                            if (packet.OriginatedFromServer == true && packet.IsResponse == false)
+                            {
+                                await this.SendAsync(new Packet(true, true, packet.SequenceNumber, "OK"), cancellationToken).ConfigureAwait(false);
+                            }
+
+                            Packet cpNextPacket = null;
+                            if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                            {
+                                await this.SendAsync(cpNextPacket, cancellationToken).ConfigureAwait(false);
+                            }
+
+                            // Shutdown if we're just waiting for a response to an old packet.
+                            this.RestartConnectionOnQueueFailure();
+                        }
+                        catch (Exception e)
+                        {
+
+                            Packet cpRequest = this.GetRequestPacket(packet);
+
+                            if (cpRequest != null)
+                            {
+                                LogError(packet.ToDebugString(), cpRequest.ToDebugString(), e);
+                            }
+                            else
+                            {
+                                LogError(packet.ToDebugString(), String.Empty, e);
+                            }
+
+                            // Now try to recover..
+                            Packet cpNextPacket = null;
+                            if (this.QueueUnqueuePacket(false, packet, out cpNextPacket) == true)
+                            {
+                                await this.SendAsync(cpNextPacket, cancellationToken).ConfigureAwait(false);
+                            }
+
+                            // Shutdown if we're just waiting for a response to an old packet.
+                            this.RestartConnectionOnQueueFailure();
+                        }
+
+                        // Now remove the completed packet from the beginning of the stream
+                        if (this.PacketStream != null)
+                        {
+                            byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
+                            Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
+                            this.PacketStream = updatedSteam;
+
+                            ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+                        }
+                    }
+
+                    // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
+                    // We went really wrong somewhere =)
+                    if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
+                    {
+                        this.ReceivedBuffer = null; // GC.collect()
+                        this.Shutdown(new Exception("Exceeded maximum garbage packet"));
+                        return;
                     }
                 }
-
-                // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
-                // We went really wrong somewhere =)
-                if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
-                {
-                    this.ReceivedBuffer = null; // GC.collect()
-                    this.Shutdown(new Exception("Exceeded maximum garbage packet"));
-                }
-
-                if (this.NetworkStream != null)
-                {
-                    this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
-                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Cancellation requested, normal shutdown path
             }
             catch (Exception e)
             {
@@ -623,11 +660,67 @@ namespace PRoCon.Core.Remote
             }
         }
 
-        private void ConnectedCallback(IAsyncResult ar)
+        /// <summary>
+        /// Certificate validation callback for TLS connections.
+        /// When AllowSelfSignedCertificates is true, all certificates are accepted.
+        /// </summary>
+        private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            if (this.AllowSelfSignedCertificates)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sets up the stream after TCP connection, optionally wrapping in TLS.
+        /// Returns the stream to use for communication.
+        /// </summary>
+        private async System.Threading.Tasks.Task<Stream> SetupStreamAsync(NetworkStream networkStream, CancellationToken cancellationToken)
+        {
+            if (!this.UseTls)
+            {
+                return networkStream;
+            }
+
+            try
+            {
+                var sslStream = new SslStream(
+                    networkStream,
+                    leaveInnerStreamOpen: false,
+                    userCertificateValidationCallback: this.ValidateServerCertificate
+                );
+
+                await sslStream.AuthenticateAsClientAsync(this.Hostname).ConfigureAwait(false);
+
+                this.SslStream = sslStream;
+                return sslStream;
+            }
+            catch (Exception ex)
+            {
+                if (this.AllowTlsFallback)
+                {
+                    _logger.LogWarning("TLS handshake failed for {Hostname}:{Port} ({Error}). Falling back to plain TCP.", this.Hostname, this.Port, ex.Message);
+                    this.SslStream = null;
+                    return networkStream;
+                }
+
+                throw;
+            }
+        }
+
+        private async Task ConnectAsync(CancellationToken cancellationToken)
         {
             try
             {
-                this.Client.EndConnect(ar);
+                await this.Client.ConnectAsync(this.Hostname, this.Port).ConfigureAwait(false);
                 this.Client.NoDelay = true;
 
                 if (this.ConnectSuccess != null)
@@ -635,13 +728,16 @@ namespace PRoCon.Core.Remote
                     this.ConnectSuccess(this);
                 }
 
-                this.NetworkStream = this.Client.GetStream();
-                this.NetworkStream.BeginRead(this.ReceivedBuffer, 0, this.ReceivedBuffer.Length, this.ReceiveCallback, this);
+                NetworkStream rawStream = this.Client.GetStream();
+                this.NetworkStream = await this.SetupStreamAsync(rawStream, cancellationToken).ConfigureAwait(false);
 
                 if (this.ConnectionReady != null)
                 {
                     this.ConnectionReady(this);
                 }
+
+                // Start the receive loop (fire-and-forget, errors handled internally)
+                _ = this.ReceiveLoopAsync(cancellationToken);
             }
             catch (SocketException se)
             {
@@ -693,14 +789,18 @@ namespace PRoCon.Core.Remote
                 }
                 this.SequenceNumber = 0;
 
+                this.ConnectionCts = new CancellationTokenSource();
+
                 this.Client = new TcpClient();
                 this.Client.NoDelay = true;
-                this.Client.BeginConnect(this.Hostname, this.Port, this.ConnectedCallback, this);
 
                 if (this.ConnectAttempt != null)
                 {
                     this.ConnectAttempt(this);
                 }
+
+                // Fire-and-forget the async connection; errors are handled internally
+                _ = this.ConnectAsync(this.ConnectionCts.Token);
             }
             catch (SocketException se)
             {
@@ -754,7 +854,25 @@ namespace PRoCon.Core.Remote
             {
                 try
                 {
+                    // Cancel any in-flight async operations
+                    if (this.ConnectionCts != null)
+                    {
+                        this.ConnectionCts?.Cancel();
+                        // Don't dispose immediately - let async operations observe the cancellation
+                        var oldCts = this.ConnectionCts;
+                        this.ConnectionCts = null;
+                        // Dispose after a delay to allow pending operations to complete
+                        System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => oldCts?.Dispose());
+                    }
+
                     this.ClearConnection();
+
+                    if (this.SslStream != null)
+                    {
+                        this.SslStream.Close();
+                        this.SslStream.Dispose();
+                        this.SslStream = null;
+                    }
 
                     if (this.NetworkStream != null)
                     {

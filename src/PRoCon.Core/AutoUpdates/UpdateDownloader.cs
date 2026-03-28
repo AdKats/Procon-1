@@ -1,4 +1,4 @@
-﻿using Ionic.Zip;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -35,17 +35,18 @@ namespace PRoCon.Core.AutoUpdates
             VersionChecker.BeginDownload();
         }
 
-        private string MD5Data(byte[] data)
+        private string HashData(byte[] data)
         {
             var stringifyHash = new StringBuilder();
 
-            MD5 md5Hasher = MD5.Create();
-
-            byte[] hash = md5Hasher.ComputeHash(data);
-
-            for (int x = 0; x < hash.Length; x++)
+            using (var hasher = SHA256.Create())
             {
-                stringifyHash.Append(hash[x].ToString("x2"));
+                byte[] hash = hasher.ComputeHash(data);
+
+                for (int x = 0; x < hash.Length; x++)
+                {
+                    stringifyHash.Append(hash[x].ToString("x2"));
+                }
             }
 
             return stringifyHash.ToString();
@@ -72,7 +73,7 @@ namespace PRoCon.Core.AutoUpdates
 
         private void CdfPRoConUpdate_DownloadComplete(CDownloadFile sender)
         {
-            if (String.Compare(MD5Data(sender.CompleteFileData), (string)sender.AdditionalData, StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(HashData(sender.CompleteFileData), (string)sender.AdditionalData, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 string updatesFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, UpdatesDirectoryName);
 
@@ -83,10 +84,7 @@ namespace PRoCon.Core.AutoUpdates
                         Directory.CreateDirectory(updatesFolder);
                     }
 
-                    using (ZipFile zip = ZipFile.Read(sender.CompleteFileData))
-                    {
-                        zip.ExtractAll(updatesFolder, ExtractExistingFileAction.OverwriteSilently);
-                    }
+                    ExtractZipFromBytes(sender.CompleteFileData, updatesFolder);
 
                     if (DownloadUnzipComplete != null)
                     {
@@ -106,6 +104,38 @@ namespace PRoCon.Core.AutoUpdates
                 if (CustomDownloadError != null)
                 {
                     this.CustomDownloadError("Downloaded file failed checksum, please try again or download direct from https://myrcon.net");
+                }
+            }
+        }
+
+        private static void ExtractZipFromBytes(byte[] zipData, string destinationFolder)
+        {
+            using (var stream = new MemoryStream(zipData))
+            using (var zipInputStream = new ZipInputStream(stream))
+            {
+                ZipEntry entry;
+                while ((entry = zipInputStream.GetNextEntry()) != null)
+                {
+                    string entryPath = Path.GetFullPath(Path.Combine(destinationFolder, entry.Name));
+                    if (!entryPath.StartsWith(Path.GetFullPath(destinationFolder) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                        continue; // Skip malicious entries
+
+                    if (entry.IsDirectory)
+                    {
+                        Directory.CreateDirectory(entryPath);
+                        continue;
+                    }
+
+                    string directoryName = Path.GetDirectoryName(entryPath);
+                    if (!string.IsNullOrEmpty(directoryName) && !Directory.Exists(directoryName))
+                    {
+                        Directory.CreateDirectory(directoryName);
+                    }
+
+                    using (var fileStream = File.Create(entryPath))
+                    {
+                        zipInputStream.CopyTo(fileStream);
+                    }
                 }
             }
         }
