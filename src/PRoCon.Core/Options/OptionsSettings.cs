@@ -487,6 +487,17 @@ namespace PRoCon.Core.Options
             }
         }
 
+        private string m_proxyCheckApiKey = "";
+        public string ProxyCheckApiKey
+        {
+            get { return m_proxyCheckApiKey; }
+            set
+            {
+                m_proxyCheckApiKey = value ?? "";
+                m_praApplication.SaveMainConfig();
+            }
+        }
+
         private bool m_isBlockRssFeedNewsEnabled;
         public bool BlockRssFeedNews
         {

@@ -406,13 +406,15 @@
                                Padding="4">
                         <ListBox.ItemTemplate>
                           <DataTemplate>
-                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
-                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
+                              <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="6" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="7" Text="{Binding ThreatText}" Foreground="#ef5350" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
                             </Grid>
                           </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -436,13 +438,15 @@
                                Padding="4">
                         <ListBox.ItemTemplate>
                           <DataTemplate>
-                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
-                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
+                              <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="6" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="7" Text="{Binding ThreatText}" Foreground="#ef5350" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
                             </Grid>
                           </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -466,13 +470,15 @@
                                Padding="4">
                         <ListBox.ItemTemplate>
                           <DataTemplate>
-                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
-                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
+                              <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="6" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="7" Text="{Binding ThreatText}" Foreground="#ef5350" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
                             </Grid>
                           </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -496,13 +502,15 @@
                                Padding="4">
                         <ListBox.ItemTemplate>
                           <DataTemplate>
-                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
-                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
+                              <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="6" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="7" Text="{Binding ThreatText}" Foreground="#ef5350" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
                             </Grid>
                           </DataTemplate>
                         </ListBox.ItemTemplate>

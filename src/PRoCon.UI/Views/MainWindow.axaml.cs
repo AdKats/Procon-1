@@ -9,6 +9,7 @@ using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
 using PRoCon.UI.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -95,6 +96,7 @@ namespace PRoCon.UI.Views
         public ConsoleFileLogger ConsoleLogger { get; set; }
         public List<string> PlayerItems { get; set; } = new List<string>();
         public HashSet<string> SupportedCommands { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public ConcurrentDictionary<string, string> PlayerIPs { get; } = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         internal bool _pendingAdminHelp;
         internal int _adminHelpLineCount;
         public Dictionary<int, List<PlayerDisplayInfo>> TeamPlayers { get; set; } = new Dictionary<int, List<PlayerDisplayInfo>>
@@ -140,7 +142,7 @@ namespace PRoCon.UI.Views
         public override string ToString() => DisplayName;
     }
 
-    public class PlayerDisplayInfo
+    public class PlayerDisplayInfo : System.ComponentModel.INotifyPropertyChanged
     {
         public string Name { get; set; }
         public int Score { get; set; }
@@ -148,12 +150,57 @@ namespace PRoCon.UI.Views
         public int Deaths { get; set; }
         public int Ping { get; set; }
         public int Squad { get; set; }
+        public string IP { get; set; }
+
+        private string _country = "";
+        public string Country
+        {
+            get => _country;
+            set { _country = value; OnPropertyChanged(nameof(Country)); OnPropertyChanged(nameof(CountryText)); OnPropertyChanged(nameof(FlagText)); }
+        }
+
+        private string _countryCode = "";
+        public string CountryCode
+        {
+            get => _countryCode;
+            set { _countryCode = value; OnPropertyChanged(nameof(CountryCode)); OnPropertyChanged(nameof(FlagText)); }
+        }
+
+        private bool _isVPN;
+        public bool IsVPN
+        {
+            get => _isVPN;
+            set { _isVPN = value; OnPropertyChanged(nameof(IsVPN)); OnPropertyChanged(nameof(ThreatText)); }
+        }
+
+        private bool _isProxy;
+        public bool IsProxy
+        {
+            get => _isProxy;
+            set { _isProxy = value; OnPropertyChanged(nameof(IsProxy)); OnPropertyChanged(nameof(ThreatText)); }
+        }
 
         public string ScoreText => Score.ToString();
         public string KillsText => Kills.ToString();
         public string DeathsText => Deaths.ToString();
         public string PingText => Ping.ToString();
         public string SquadText => Squad > 0 ? Squad.ToString() : "-";
+        public string CountryText => !string.IsNullOrEmpty(Country) ? Country : "";
+        public string FlagText => CountryCodeToFlag(CountryCode);
+        public string ThreatText => IsVPN ? "VPN" : IsProxy ? "PROXY" : "";
+
+        private static string CountryCodeToFlag(string code)
+        {
+            if (string.IsNullOrEmpty(code) || code.Length != 2) return "";
+            // Convert country code to regional indicator emoji
+            return string.Concat(
+                char.ConvertFromUtf32(0x1F1E6 + (code.ToUpper()[0] - 'A')),
+                char.ConvertFromUtf32(0x1F1E6 + (code.ToUpper()[1] - 'A'))
+            );
+        }
+
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(name));
     }
 
     public partial class MainWindow : Window
@@ -324,6 +371,7 @@ namespace PRoCon.UI.Views
         private PlayerActionsPanel _playerActionsPanel;
         private LayerPanel _layerPanel;
         private OptionsPanel _optionsPanel;
+        private PRoCon.Core.Network.IPCheckService _ipCheckService;
 
         public MainWindow()
         {
@@ -440,6 +488,11 @@ namespace PRoCon.UI.Views
 
             UpdateConnectionCount();
             UpdateContentVisibility();
+
+            // Initialize IP check service
+            string ipCacheDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache", "IPCheck");
+            string apiKey = _application?.OptionsSettings?.ProxyCheckApiKey ?? "";
+            _ipCheckService = new PRoCon.Core.Network.IPCheckService(ipCacheDir, apiKey);
 
             // Listen for new connections
             _application.Connections.ConnectionAdded += conn =>
@@ -580,8 +633,57 @@ namespace PRoCon.UI.Views
                     WireGameEvents(sender.Game, entry);
             };
 
+            // Wire PunkBuster player info for IP tracking
+            client.PunkbusterPlayerInfo += (sender, pbInfo) =>
+            {
+                if (!string.IsNullOrEmpty(pbInfo.SoldierName) && !string.IsNullOrEmpty(pbInfo.Ip))
+                {
+                    string ip = pbInfo.Ip;
+                    int colonIdx = ip.IndexOf(':');
+                    if (colonIdx > 0) ip = ip.Substring(0, colonIdx);
+                    entry.PlayerIPs[pbInfo.SoldierName] = ip;
+
+                    // Async IP check — fire and forget, updates UI when done
+                    if (_ipCheckService != null)
+                    {
+                        _ = RunIPCheckAsync(entry, pbInfo.SoldierName, ip);
+                    }
+                }
+            };
+
             if (client.Game != null)
                 WireGameEvents(client.Game, entry);
+        }
+
+        private async System.Threading.Tasks.Task RunIPCheckAsync(ServerEntry entry, string soldierName, string ip)
+        {
+            try
+            {
+                var result = await _ipCheckService.LookupAsync(ip);
+                if (result == null) return;
+
+                Dispatcher.UIThread.Post(() =>
+                {
+                    // Find the player in the team lists and update
+                    for (int t = 1; t <= 4; t++)
+                    {
+                        if (!entry.TeamPlayers.ContainsKey(t)) continue;
+                        foreach (var player in entry.TeamPlayers[t])
+                        {
+                            if (string.Equals(player.Name, soldierName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                player.Country = result.CountryName;
+                                player.CountryCode = result.CountryCode;
+                                player.IsVPN = result.IsVPN;
+                                player.IsProxy = result.IsProxy;
+                                player.IP = ip;
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+            catch { }
         }
 
         private void OnClientEvent(ServerEntry entry, Action action)

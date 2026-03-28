@@ -61,6 +61,11 @@ namespace PRoCon.UI.Views
                 SetCheck("MinimizeToTrayCheck", options.MinimizeToTray);
             }
 
+            // ProxyCheck API key
+            var apiKeyInput = this.FindControl<TextBox>("ProxyCheckApiKeyInput");
+            if (apiKeyInput != null && options != null)
+                apiKeyInput.Text = options.ProxyCheckApiKey ?? "";
+
             // Language
             var currentLang = _application.CurrentLanguage;
             var langText = this.FindControl<TextBlock>("CurrentLanguageText");
@@ -213,6 +218,22 @@ namespace PRoCon.UI.Views
         {
             var status = this.FindControl<TextBlock>("OptionsStatusText");
             if (status != null) status.Text = message;
+        }
+
+        private void OnSaveProxyCheckKey(object sender, RoutedEventArgs e)
+        {
+            if (_application?.OptionsSettings == null) return;
+
+            var input = this.FindControl<TextBox>("ProxyCheckApiKeyInput");
+            var status = this.FindControl<TextBlock>("ProxyCheckStatus");
+
+            string key = input?.Text?.Trim() ?? "";
+            _application.OptionsSettings.ProxyCheckApiKey = key;
+
+            if (status != null)
+                status.Text = string.IsNullOrEmpty(key)
+                    ? "Using free tier (1,000 queries/day). Key cleared."
+                    : "API key saved. Using paid tier.";
         }
     }
 }

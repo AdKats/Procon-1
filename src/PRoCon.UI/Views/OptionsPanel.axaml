@@ -57,6 +57,33 @@
         </StackPanel>
       </Border>
 
+      <!-- ProxyCheck.io IP Checking -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="IP Checking (ProxyCheck.io v3)" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Text="Automatically checks player IPs for VPN/proxy usage and geolocation. Free plan allows 1,000 lookups per day with 48-hour caching."
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="API Key:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" Width="80" />
+            <TextBox Name="ProxyCheckApiKeyInput" Width="300"
+                     Watermark="Leave blank for free tier (1K/day)"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <Button Content="Save" Padding="12,6" CornerRadius="4"
+                    Background="{DynamicResource ButtonPrimaryBrush}"
+                    Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                    Click="OnSaveProxyCheckKey" />
+          </StackPanel>
+          <TextBlock Name="ProxyCheckStatus" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+        </StackPanel>
+      </Border>
+
       <!-- HTTP Server -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
