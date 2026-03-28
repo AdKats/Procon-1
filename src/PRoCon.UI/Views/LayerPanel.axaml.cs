@@ -166,15 +166,41 @@ namespace PRoCon.UI.Views
             if (loggedIn != null)
             {
                 foreach (var username in loggedIn)
-                {
                     items.Add(username);
-                }
             }
 
             if (items.Count == 0)
                 items.Add("(No clients connected)");
 
             clientsList.ItemsSource = items;
+
+            // Update client count badge
+            int count = loggedIn?.Count ?? 0;
+            var countText = this.FindControl<TextBlock>("ClientCountText");
+            if (countText != null) countText.Text = count.ToString();
+
+            // Update connection info
+            UpdateConnectionInfo();
+        }
+
+        private void UpdateConnectionInfo()
+        {
+            var infoText = this.FindControl<TextBlock>("LayerConnectionInfo");
+            if (infoText == null || _client?.Layer == null) return;
+
+            var layer = _client.Layer;
+            if (layer.IsOnline)
+            {
+                string bind = string.IsNullOrEmpty(layer.BindingAddress) ? "0.0.0.0" : layer.BindingAddress;
+                infoText.Text = $"Protocol: SignalR WebSocket (ASP.NET Core)\n" +
+                                $"Endpoint: ws://{bind}:{layer.ListeningPort}/layer\n" +
+                                $"Auth: JWT Bearer Token\n" +
+                                $"Status: Listening for connections";
+            }
+            else
+            {
+                infoText.Text = "Layer is not running. Enable the layer to accept remote admin connections.";
+            }
         }
 
         private void UpdateStatusIndicator(bool isOnline)
@@ -186,6 +212,8 @@ namespace PRoCon.UI.Views
                 indicator.Fill = new SolidColorBrush(Color.Parse(isOnline ? "#66bb6a" : "#ef5350"));
             if (statusText != null)
                 statusText.Text = isOnline ? "Online" : "Offline";
+
+            UpdateConnectionInfo();
         }
 
         private void SetStatus(string message)

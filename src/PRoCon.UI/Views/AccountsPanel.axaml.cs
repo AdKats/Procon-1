@@ -95,6 +95,9 @@ namespace PRoCon.UI.Views
             {
                 // Collection may be modified during iteration
             }
+
+            var countText = this.FindControl<TextBlock>("AccountCountText");
+            if (countText != null) countText.Text = $"{_accounts.Count} account{(_accounts.Count != 1 ? "s" : "")}";
         }
 
         private void OnAccountSelected(object sender, SelectionChangedEventArgs e)
@@ -109,9 +112,14 @@ namespace PRoCon.UI.Views
             if (headerText != null)
                 headerText.Text = $"Privileges for: {entry.Name}";
 
-            var saveBtn = this.FindControl<Button>("SavePrivilegesButton");
-            if (saveBtn != null)
-                saveBtn.IsVisible = true;
+            // Show privilege groups and save button
+            string[] panels = { "PresetsPanel", "PrivGroupAccess", "PrivGroupPlayers",
+                "PrivGroupLists", "PrivGroupProcon", "SavePrivilegesButton" };
+            foreach (string name in panels)
+            {
+                var ctrl = this.FindControl<Avalonia.Controls.Control>(name);
+                if (ctrl != null) ctrl.IsVisible = true;
+            }
 
             LoadPrivileges(entry.Name);
         }
@@ -278,6 +286,28 @@ namespace PRoCon.UI.Views
             if (passwordInput != null) passwordInput.Text = "";
         }
 
+        private void OnPresetFullAdmin(object sender, RoutedEventArgs e) => SetAllCheckboxes(true);
+
+        private void OnPresetModerator(object sender, RoutedEventArgs e)
+        {
+            SetAllCheckboxes(false);
+            SetCheckbox("ChkCanLogin", true);
+            SetCheckbox("ChkCanKillPlayers", true);
+            SetCheckbox("ChkCanKickPlayers", true);
+            SetCheckbox("ChkCanMovePlayers", true);
+            SetCheckbox("ChkCanTemporaryBanPlayers", true);
+            SetCheckbox("ChkCanEditBanList", true);
+            SetCheckbox("ChkCanIssueLimitedPunkbusterCommands", true);
+        }
+
+        private void OnPresetSpectator(object sender, RoutedEventArgs e)
+        {
+            SetAllCheckboxes(false);
+            SetCheckbox("ChkCanLogin", true);
+        }
+
+        private void OnPresetClear(object sender, RoutedEventArgs e) => SetAllCheckboxes(false);
+
         private void OnSavePrivileges(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrEmpty(_selectedAccountName) || _application?.AccountsList == null)
@@ -317,10 +347,13 @@ namespace PRoCon.UI.Views
                 {
                     Account account = _application.AccountsList[_selectedAccountName];
                     _client.ProconProtectedLayerSetPrivileges(account, newPrivs);
+                    var status = this.FindControl<TextBlock>("SaveStatusText");
+                    if (status != null) status.Text = $"Privileges saved for {_selectedAccountName}";
                 }
                 catch
                 {
-                    // Client may not support setting privileges
+                    var status = this.FindControl<TextBlock>("SaveStatusText");
+                    if (status != null) status.Text = "Failed to save privileges";
                 }
             }
         }
