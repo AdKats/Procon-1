@@ -273,7 +273,7 @@ Plugins/
 
 ## SDK Template
 
-See `src/Resources/DefaultPlugins/BF4/SdkTemplatePlugin.cs` for a complete working example with:
+See the `pluginsdk/` directory for a complete working example with:
 - Plugin metadata methods
 - Variable system with categories and enums
 - Player join/leave/kill event handling

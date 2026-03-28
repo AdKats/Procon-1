@@ -5,32 +5,70 @@
  * It demonstrates the plugin API, available callbacks, variable system,
  * and best practices for cross-platform compatibility.
  *
- * To create your own plugin:
- *   1. Copy this file and rename the class to your plugin name
- *   2. The filename MUST match the class name (e.g., MyPlugin.cs → class MyPlugin)
- *   3. Place it in the Plugins/<GameType>/ directory
- *   4. PRoCon will compile and load it automatically on connect
+ * ========================================================================
+ * FILE STRUCTURE
+ * ========================================================================
  *
- * Available namespaces:
- *   - PRoCon.Core           (CServerInfo, CPrivileges, etc.)
- *   - PRoCon.Core.Plugin    (PRoConPluginAPI, CPluginVariable, etc.)
- *   - PRoCon.Core.Plugin.Commands  (MatchCommand, CapturedCommand)
- *   - PRoCon.Core.Players   (CPlayerInfo, Kill, Inventory, etc.)
- *   - PRoCon.Core.Players.Items    (Weapon, Specialization, Kits, etc.)
- *   - PRoCon.Core.Maps      (CMap, MaplistEntry, etc.)
- *   - PRoCon.Core.Battlemap  (MapZone, ZoneAction, Point3D)
- *   - PRoCon.Core.Accounts   (CPrivileges, AccountPrivilege)
- *   - PRoCon.Core.TextChatModeration (TextChatModerationEntry, etc.)
- *   - MySqlConnector         (MySqlConnection, MySqlCommand, etc.)
- *   - Newtonsoft.Json         (JsonConvert, JObject, etc.)
- *   - System.Net.Http         (HttpClient for web requests)
+ * PRoCon supports splitting plugins across multiple files using two methods:
+ *
+ * 1. PARTIAL CLASSES — Split a class across multiple .cs files:
+ *      SdkTemplatePlugin.cs              ← Main file (class name = file name)
+ *      SdkTemplatePlugin.Commands.cs     ← Partial: chat command handling
+ *      SdkTemplatePlugin.Database.cs     ← Partial: database operations
+ *
+ *    Any file matching <ClassName>.*.cs is compiled as part of the plugin.
+ *    Each file must use `partial class` and the same namespace.
+ *
+ * 2. #include DIRECTIVES — Inline file contents at compile time:
+ *      #include "MySharedCode.inc"          ← From Plugins/<GameType>/
+ *      #include "../SharedAcrossGames.inc"  ← From Plugins/ (parent dir)
+ *      #include "%GameType%/Specific.inc"   ← %GameType% replaced at compile
+ *
+ *    Includes are processed before compilation (like C preprocessor).
+ *    Use .inc extension by convention to distinguish from compilable .cs files.
+ *    Nesting up to 5 levels deep is supported.
+ *
+ * FOR LARGE PLUGINS (like AdKats):
+ *   Use partial classes to split into logical modules:
+ *     AdKats.cs              ← Main: metadata, lifecycle, variables
+ *     AdKats.Commands.cs     ← Chat/admin command processing
+ *     AdKats.Players.cs      ← Player tracking, team management
+ *     AdKats.Bans.cs         ← Ban enforcement logic
+ *     AdKats.Database.cs     ← All MySQL operations
+ *     AdKats.WebApi.cs       ← HTTP client calls
+ *
+ * ========================================================================
+ * TO CREATE YOUR OWN PLUGIN
+ * ========================================================================
+ *
+ *   1. Copy these files and rename the class to your plugin name
+ *   2. The main filename MUST match the class name (MyPlugin.cs → class MyPlugin)
+ *   3. Place all files in the Plugins/<GameType>/ directory
+ *   4. PRoCon will compile and load them automatically on connect
+ *
+ * ========================================================================
+ * AVAILABLE NAMESPACES
+ * ========================================================================
+ *
+ *   PRoCon.Core           — CServerInfo, CPrivileges, etc.
+ *   PRoCon.Core.Plugin    — PRoConPluginAPI, CPluginVariable, etc.
+ *   PRoCon.Core.Plugin.Commands — MatchCommand, CapturedCommand
+ *   PRoCon.Core.Players   — CPlayerInfo, Kill, Inventory, etc.
+ *   PRoCon.Core.Players.Items   — Weapon, Specialization, Kits, etc.
+ *   PRoCon.Core.Maps      — CMap, MaplistEntry, etc.
+ *   PRoCon.Core.Battlemap  — MapZone, ZoneAction, Point3D
+ *   PRoCon.Core.Accounts   — CPrivileges, AccountPrivilege
+ *   PRoCon.Core.TextChatModeration — TextChatModerationEntry, etc.
+ *   MySqlConnector         — MySqlConnection, MySqlCommand, etc.
+ *   Newtonsoft.Json         — JsonConvert, JObject, etc.
+ *   System.Net.Http         — HttpClient for web requests
  *
  * NOT available on .NET 8 (removed):
- *   - System.Windows.Forms    (use Console.WriteLine for output)
- *   - PRoCon.Core.HttpServer  (removed — use SignalR layer)
- *   - System.Runtime.Remoting (AppDomain sandboxing gone)
- *   - System.Security.Permissions (CAS not available)
- *   - MySql.Data.MySqlClient  (replaced by MySqlConnector)
+ *   System.Windows.Forms    — use plugin console for output
+ *   PRoCon.Core.HttpServer  — removed, use SignalR layer
+ *   System.Runtime.Remoting — AppDomain sandboxing gone
+ *   System.Security.Permissions — CAS not available
+ *   MySql.Data.MySqlClient  — replaced by MySqlConnector
  */
 
 using System;
@@ -46,10 +84,12 @@ using PRoCon.Core.Players;
 
 namespace PRoConEvents
 {
-    public class SdkTemplatePlugin : PRoConPluginAPI, IPRoConPluginInterface
+    // The 'partial' keyword allows this class to span multiple files.
+    // See SdkTemplatePlugin.Commands.cs and SdkTemplatePlugin.Database.cs
+    public partial class SdkTemplatePlugin : PRoConPluginAPI, IPRoConPluginInterface
     {
         // =====================================================================
-        // Plugin metadata — shown in the Plugins panel
+        // Plugin state
         // =====================================================================
 
         private string _hostName;
@@ -62,9 +102,9 @@ namespace PRoConEvents
         // =====================================================================
 
         private string _welcomeMessage = "Welcome to the server, %player%!";
-        private int _announcementInterval = 300; // seconds
+        private int _announcementInterval = 300;
         private bool _enableWelcomeMessages = true;
-        private string _logLevel = "Info"; // "Off", "Info", "Debug"
+        private string _logLevel = "Info";
 
         // =====================================================================
         // IPRoConPluginInterface — Required metadata methods
@@ -80,12 +120,13 @@ namespace PRoConEvents
             return @"
 <h2>SDK Template Plugin</h2>
 <p>A starting point for PRoCon v2.0 plugin development on .NET 8.</p>
+<p>Demonstrates multi-file plugin structure using partial classes.</p>
 
-<h3>Features</h3>
+<h3>File Structure</h3>
 <ul>
-  <li>Welcome messages for joining players</li>
-  <li>Configurable announcement interval</li>
-  <li>Example of player events, chat commands, and admin actions</li>
+  <li><b>SdkTemplatePlugin.cs</b> — Main: metadata, lifecycle, variables, player events</li>
+  <li><b>SdkTemplatePlugin.Commands.cs</b> — Chat command handling</li>
+  <li><b>SdkTemplatePlugin.Database.cs</b> — Database operations example</li>
 </ul>
 
 <h3>Settings</h3>
@@ -94,11 +135,6 @@ namespace PRoConEvents
   <li><b>Announcement Interval</b> — Seconds between server announcements (0 = disabled).</li>
   <li><b>Log Level</b> — Off, Info, or Debug.</li>
 </ul>
-
-<h3>Developing Your Own Plugin</h3>
-<p>Copy this file, rename the class, and start coding. See the
-<a href='https://github.com/your-repo/docs/PLUGIN-REFACTORING-GUIDE.md'>Plugin Refactoring Guide</a>
-for migration tips from v1.x plugins.</p>
 ";
         }
 
@@ -108,24 +144,24 @@ for migration tips from v1.x plugins.</p>
 
         public List<CPluginVariable> GetDisplayPluginVariables()
         {
-            // Variables shown in the UI when the plugin is selected
             return new List<CPluginVariable>
             {
                 new CPluginVariable("Messages|Welcome Message", typeof(string), _welcomeMessage),
                 new CPluginVariable("Messages|Enable Welcome Messages", typeof(bool), _enableWelcomeMessages),
                 new CPluginVariable("Timing|Announcement Interval (seconds)", typeof(int), _announcementInterval),
+                new CPluginVariable("Database|DB Connection String", typeof(string), _dbConnectionString),
                 new CPluginVariable("Debug|Log Level", "enum.LogLevel(Off|Info|Debug)", _logLevel),
             };
         }
 
         public List<CPluginVariable> GetPluginVariables()
         {
-            // All variables (used for config save/restore)
             return new List<CPluginVariable>
             {
                 new CPluginVariable("Welcome Message", typeof(string), _welcomeMessage),
                 new CPluginVariable("Enable Welcome Messages", typeof(bool), _enableWelcomeMessages),
                 new CPluginVariable("Announcement Interval (seconds)", typeof(int), _announcementInterval),
+                new CPluginVariable("DB Connection String", typeof(string), _dbConnectionString),
                 new CPluginVariable("Log Level", typeof(string), _logLevel),
             };
         }
@@ -142,6 +178,9 @@ for migration tips from v1.x plugins.</p>
                     break;
                 case "Announcement Interval (seconds)":
                     int.TryParse(value, out _announcementInterval);
+                    break;
+                case "DB Connection String":
+                    _dbConnectionString = value;
                     break;
                 case "Log Level":
                     _logLevel = value;
@@ -227,44 +266,6 @@ for migration tips from v1.x plugins.</p>
         }
 
         // =====================================================================
-        // Chat events — handle player commands
-        // =====================================================================
-
-        public override void OnGlobalChat(string speaker, string message)
-        {
-            if (!_isEnabled || string.IsNullOrEmpty(message)) return;
-            HandleChatCommand(speaker, message);
-        }
-
-        public override void OnTeamChat(string speaker, string message, int teamId)
-        {
-            if (!_isEnabled || string.IsNullOrEmpty(message)) return;
-            HandleChatCommand(speaker, message);
-        }
-
-        public override void OnSquadChat(string speaker, string message, int teamId, int squadId)
-        {
-            if (!_isEnabled || string.IsNullOrEmpty(message)) return;
-            HandleChatCommand(speaker, message);
-        }
-
-        private void HandleChatCommand(string speaker, string message)
-        {
-            // Example: respond to "!help" in chat
-            if (message.Trim().Equals("!help", StringComparison.OrdinalIgnoreCase))
-            {
-                ExecuteCommand("procon.protected.send", "admin.say",
-                    "Available commands: !help, !info", "player", speaker);
-            }
-            else if (message.Trim().Equals("!info", StringComparison.OrdinalIgnoreCase))
-            {
-                ExecuteCommand("procon.protected.send", "admin.say",
-                    string.Format("Server: {0}:{1} | PRoCon {2}", _hostName, _port, _proconVersion),
-                    "player", speaker);
-            }
-        }
-
-        // =====================================================================
         // Round & server events
         // =====================================================================
 
@@ -290,7 +291,7 @@ for migration tips from v1.x plugins.</p>
         }
 
         // =====================================================================
-        // Helper methods
+        // Logging helper (shared across all partial files)
         // =====================================================================
 
         private void Log(string level, string format, params object[] args)
