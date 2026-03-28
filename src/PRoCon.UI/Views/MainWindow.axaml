@@ -209,11 +209,9 @@
                 BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,0,0,1" Padding="8,0">
           <WrapPanel Name="TabBar" Orientation="Horizontal">
-            <Button Name="ConnectTabButton" Content="Connect" Tag="0" Padding="10,7" Background="Transparent" FontSize="12"
+            <Button Content="Info" Tag="6" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource PrimaryBrush}" FontWeight="SemiBold"
                     Click="OnTabClick" />
-            <Button Content="Info" Tag="6" Padding="10,7" Background="Transparent" FontSize="12"
-                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Chat" Tag="1" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Players" Tag="2" Padding="10,7" Background="Transparent" FontSize="12"
@@ -243,71 +241,7 @@
 
         <!-- Tab Content Pages -->
         <Border Padding="16">
-          <!-- Tab 0: Connection Form -->
           <Panel>
-            <Border Name="Tab0" IsVisible="True"
-                    Background="{DynamicResource SurfaceBrush}"
-                    CornerRadius="8" Padding="20"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-              <StackPanel Spacing="16">
-                <TextBlock Name="ConnectionTabTitle" Text="Connection" FontSize="16" FontWeight="SemiBold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Name="ConnectionTabSubtitle" Text="Select a server from the sidebar or add a new one"
-                           Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
-                           Margin="0,0,0,4" />
-                <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto,Auto">
-                  <TextBlock Grid.Row="0" Grid.Column="0" Text="Host:" Margin="0,8"
-                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                  <TextBox Grid.Row="0" Grid.Column="1" Name="HostInput" Margin="0,4"
-                           Watermark="e.g. 65.75.210.194"
-                           Background="{DynamicResource InputBackgroundBrush}"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           BorderBrush="{DynamicResource BorderBrush}" />
-
-                  <TextBlock Grid.Row="1" Grid.Column="0" Text="Port:" Margin="0,8"
-                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                  <TextBox Grid.Row="1" Grid.Column="1" Name="PortInput" Margin="0,4"
-                           Watermark="e.g. 47300"
-                           Background="{DynamicResource InputBackgroundBrush}"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           BorderBrush="{DynamicResource BorderBrush}" />
-
-                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Password:" Margin="0,8"
-                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                  <TextBox Grid.Row="2" Grid.Column="1" Name="PasswordInput" Margin="0,4"
-                           PasswordChar="*"
-                           Background="{DynamicResource InputBackgroundBrush}"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           BorderBrush="{DynamicResource BorderBrush}" />
-
-                  <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,8">
-                    <Button Name="ConnectButton" Content="Connect"
-                            Background="{DynamicResource ButtonPrimaryBrush}"
-                            Foreground="{DynamicResource ButtonPrimaryTextBrush}"
-                            Padding="20,8" CornerRadius="4"
-                            Click="OnConnect" />
-                    <Button Name="SaveConnectionButton" Content="Save Changes"
-                            Background="{DynamicResource SecondaryBrush}"
-                            Foreground="#0f1923"
-                            Padding="20,8" CornerRadius="4"
-                            IsVisible="False"
-                            Click="OnSaveConnection" />
-                  </StackPanel>
-                </Grid>
-
-                <Border Name="ServerInfoPanel" IsVisible="False"
-                        Background="{DynamicResource BackgroundBrush}"
-                        CornerRadius="6" Padding="16" Margin="0,8,0,0">
-                  <StackPanel Spacing="8">
-                    <TextBlock Name="ServerNameText" FontSize="14" FontWeight="SemiBold"
-                               Foreground="{DynamicResource PrimaryBrush}" />
-                    <TextBlock Name="ServerDetailsText"
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-                  </StackPanel>
-                </Border>
-              </StackPanel>
-            </Border>
-
             <!-- Tab 1: Chat -->
             <Border Name="Tab1" IsVisible="False"
                     Background="{DynamicResource SurfaceBrush}"

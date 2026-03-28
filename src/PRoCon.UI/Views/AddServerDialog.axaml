@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PRoCon.UI.Views.AddServerDialog"
+        x:CompileBindings="False"
+        Title="Add Server"
+        Width="420" Height="300"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}">
+
+  <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="16">
+    <StackPanel Spacing="16">
+      <TextBlock Text="Add Game Server" FontSize="18" FontWeight="Bold"
+                 Foreground="{DynamicResource PrimaryBrush}" />
+      <TextBlock Text="Enter the RCON connection details for your game server."
+                 Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+
+      <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto" Margin="0,8,0,0">
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Host:"
+                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,4" />
+        <TextBox Grid.Row="0" Grid.Column="1" Name="HostInput"
+                 Watermark="e.g. 65.75.210.194"
+                 Background="{DynamicResource InputBackgroundBrush}"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 BorderBrush="{DynamicResource BorderBrush}" Margin="0,4" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Port:"
+                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,4" />
+        <TextBox Grid.Row="1" Grid.Column="1" Name="PortInput"
+                 Watermark="e.g. 47300"
+                 Background="{DynamicResource InputBackgroundBrush}"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 BorderBrush="{DynamicResource BorderBrush}" Margin="0,4" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Password:"
+                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,4" />
+        <TextBox Grid.Row="2" Grid.Column="1" Name="PasswordInput"
+                 PasswordChar="*"
+                 Background="{DynamicResource InputBackgroundBrush}"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 BorderBrush="{DynamicResource BorderBrush}" Margin="0,4" />
+      </Grid>
+
+      <TextBlock Name="ErrorText" Text="" Foreground="{DynamicResource ErrorBrush}"
+                 FontSize="11" IsVisible="False" />
+
+      <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,8,0,0">
+        <Button Content="Cancel"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="16,8" CornerRadius="4"
+                Click="OnCancel" />
+        <Button Content="Add &amp; Connect"
+                Background="{DynamicResource ButtonPrimaryBrush}"
+                Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                Padding="16,8" CornerRadius="4"
+                Click="OnAdd" />
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</Window>

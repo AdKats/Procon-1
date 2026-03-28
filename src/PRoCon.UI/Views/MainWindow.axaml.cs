@@ -160,7 +160,7 @@ namespace PRoCon.UI.Views
     {
         private PRoConApplication _application;
         private ServerEntry _selectedServer;
-        private int _activeTab = 0;
+        private int _activeTab = 6; // Default to Info tab
         private readonly ObservableCollection<ServerEntry> _servers = new ObservableCollection<ServerEntry>();
         private readonly Dictionary<string, ServerEntry> _serverLookup = new Dictionary<string, ServerEntry>(StringComparer.OrdinalIgnoreCase);
 
@@ -909,12 +909,59 @@ namespace PRoCon.UI.Views
 
         // --- Server Selection & Connection ---
 
-        private void OnShowConnectForm(object sender, RoutedEventArgs e)
+        private async void OnShowConnectForm(object sender, RoutedEventArgs e)
         {
-            // Show the connect tab button and switch to it
-            var connectBtn = this.FindControl<Button>("ConnectTabButton");
-            if (connectBtn != null) connectBtn.IsVisible = true;
-            SwitchTab(0);
+            var dialog = new AddServerDialog();
+            await dialog.ShowDialog(this);
+
+            if (dialog.Confirmed)
+            {
+                string host = dialog.Host;
+                ushort port = dialog.Port;
+                string password = dialog.Password;
+                string hostPort = $"{host}:{port}";
+
+                UpdateStatus("#ffab40", $"Connecting to {hostPort}...");
+
+                try
+                {
+                    PRoConClient client;
+                    if (_application.Connections.Contains(hostPort))
+                    {
+                        client = _application.Connections[hostPort];
+                    }
+                    else
+                    {
+                        client = _application.AddConnection(host, port, "default", password);
+                    }
+
+                    if (client == null)
+                    {
+                        UpdateStatus("#ef5350", "Failed to create connection");
+                        return;
+                    }
+
+                    var entry = EnsureServerEntry(hostPort);
+                    WireClientEvents(client, entry);
+                    _selectedServer = entry;
+                    entry.State = ServerConnectionState.Connecting;
+                    client.AutomaticallyConnect = true;
+
+                    var serverList = this.FindControl<ListBox>("ServerList");
+                    if (serverList != null) serverList.SelectedItem = entry;
+
+                    LoadServerView(entry);
+                    UpdateSidebarButtons();
+                    UpdateConnectionCount();
+                    SwitchTab(6);
+
+                    _application.SaveMainConfig();
+                }
+                catch (System.Exception ex)
+                {
+                    UpdateStatus("#ef5350", $"Error: {ex.Message}");
+                }
+            }
         }
 
         private void OnServerSelected(object sender, SelectionChangedEventArgs e)
@@ -924,10 +971,6 @@ namespace PRoCon.UI.Views
 
             _selectedServer = entry;
             ShowRemoveButton(true);
-
-            // Hide connect tab, show Info tab when a server is selected
-            var connectBtn = this.FindControl<Button>("ConnectTabButton");
-            if (connectBtn != null) connectBtn.IsVisible = false;
 
             // Load this server's state into the view
             LoadServerView(entry);
@@ -958,53 +1001,6 @@ namespace PRoCon.UI.Views
             UpdateStatus("#ffab40", $"Connecting to {_selectedServer.HostPort}...");
             client.AutomaticallyConnect = true;
             UpdateSidebarButtons();
-        }
-
-        private void OnConnect(object sender, RoutedEventArgs e)
-        {
-            var host = this.FindControl<TextBox>("HostInput")?.Text ?? "";
-            var portText = this.FindControl<TextBox>("PortInput")?.Text ?? "";
-            var password = this.FindControl<TextBox>("PasswordInput")?.Text ?? "";
-
-            if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(portText)) return;
-            if (!ushort.TryParse(portText, out ushort port)) return;
-
-            string hostPort = $"{host}:{port}";
-            UpdateStatus("#ffab40", $"Connecting to {hostPort}...");
-
-            try
-            {
-                PRoConClient client;
-                if (_application.Connections.Contains(hostPort))
-                {
-                    client = _application.Connections[hostPort];
-                }
-                else
-                {
-                    client = _application.AddConnection(host, port, "default", password);
-                }
-
-                if (client == null)
-                {
-                    UpdateStatus("#ef5350", "Failed to create connection");
-                    return;
-                }
-
-                var entry = EnsureServerEntry(hostPort);
-                WireClientEvents(client, entry);
-                _selectedServer = entry;
-
-                var serverList = this.FindControl<ListBox>("ServerList");
-                if (serverList != null) serverList.SelectedItem = entry;
-
-                client.AutomaticallyConnect = true;
-                UpdateSidebarButtons();
-                UpdateConnectionCount();
-            }
-            catch (Exception ex)
-            {
-                UpdateStatus("#ef5350", $"Error: {ex.Message}");
-            }
         }
 
         private void OnDisconnect(object sender, RoutedEventArgs e)
@@ -1078,56 +1074,15 @@ namespace PRoCon.UI.Views
             UpdateConnectionCount();
             _application.SaveMainConfig();
 
-            // Show connect tab button again when no servers left
-            var connectBtn = this.FindControl<Button>("ConnectTabButton");
-            if (connectBtn != null) connectBtn.IsVisible = true;
-            if (_servers.Count == 0) SwitchTab(0);
+            if (_servers.Count == 0) SwitchTab(6);
         }
 
         // --- Load Server View (switch main panel to selected server's data) ---
-
-        private void OnSaveConnection(object sender, RoutedEventArgs e)
-        {
-            // Save updated connection details for the selected server
-            if (_selectedServer == null) return;
-
-            var host = this.FindControl<TextBox>("HostInput")?.Text ?? "";
-            var portText = this.FindControl<TextBox>("PortInput")?.Text ?? "";
-            var password = this.FindControl<TextBox>("PasswordInput")?.Text ?? "";
-
-            // For now just update the display — full reconnect with new details would need
-            // removing old connection and creating new one
-            UpdateStatus("#ffab40", $"Connection settings updated for {_selectedServer.HostPort}");
-        }
 
         private void LoadServerView(ServerEntry entry)
         {
             var client = GetClient(entry.HostPort);
             bool connected = entry.IsConnected && client?.Game != null;
-
-            // Populate connection tab with this server's details
-            var parts = entry.HostPort.Split(':');
-            var hostInput = this.FindControl<TextBox>("HostInput");
-            var portInput = this.FindControl<TextBox>("PortInput");
-            var titleText = this.FindControl<TextBlock>("ConnectionTabTitle");
-            var subtitleText = this.FindControl<TextBlock>("ConnectionTabSubtitle");
-            var saveBtn = this.FindControl<Button>("SaveConnectionButton");
-
-            if (hostInput != null && parts.Length >= 1) hostInput.Text = parts[0];
-            if (portInput != null && parts.Length >= 2) portInput.Text = parts[1];
-            if (titleText != null) titleText.Text = entry.DisplayLabel;
-            if (subtitleText != null)
-            {
-                if (connected)
-                    subtitleText.Text = $"Connected — {entry.GameType ?? "Unknown"} — {entry.HostPort}";
-                else
-                    subtitleText.Text = $"Disconnected — {entry.HostPort}";
-            }
-            if (saveBtn != null) saveBtn.IsVisible = true;
-
-            // Switch to Chat tab automatically when connected (skip connection tab)
-            if (connected && _activeTab == 0)
-                SwitchTab(1);
 
             // Update all panels with the selected server's client
             _mapListPanel?.SetClient(client);
@@ -1499,12 +1454,7 @@ namespace PRoCon.UI.Views
 
         private void UpdateServerInfoPanel(string title, string details)
         {
-            var panel = this.FindControl<Border>("ServerInfoPanel");
-            var nameText = this.FindControl<TextBlock>("ServerNameText");
-            var detailsText = this.FindControl<TextBlock>("ServerDetailsText");
-            if (panel != null) panel.IsVisible = !string.IsNullOrEmpty(title);
-            if (nameText != null) nameText.Text = title;
-            if (detailsText != null) detailsText.Text = details;
+            // Status is shown in bottom bar and dashboard — this is now a no-op
         }
 
         private void UpdateDashboard(ServerEntry entry, FrostbiteClient game)
