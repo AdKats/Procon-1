@@ -10,24 +10,19 @@
         WindowStartupLocation="CenterScreen">
 
   <Window.Styles>
-    <!-- Ripple ring animation for active connections -->
+    <!-- Ripple ring animation for active connections - uses opacity only -->
     <Style Selector="Ellipse.ripple">
-      <Setter Property="RenderTransform">
-        <ScaleTransform ScaleX="1" ScaleY="1" />
-      </Setter>
       <Style.Animations>
         <Animation Duration="0:0:2" IterationCount="INFINITE" Easing="CubicEaseOut">
           <KeyFrame Cue="0%">
-            <Setter Property="Opacity" Value="0.7" />
-            <Setter Property="RenderTransform" >
-              <ScaleTransform ScaleX="1" ScaleY="1" />
-            </Setter>
+            <Setter Property="Opacity" Value="0.8" />
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Height" Value="8" />
           </KeyFrame>
           <KeyFrame Cue="100%">
             <Setter Property="Opacity" Value="0" />
-            <Setter Property="RenderTransform">
-              <ScaleTransform ScaleX="2.5" ScaleY="2.5" />
-            </Setter>
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
           </KeyFrame>
         </Animation>
       </Style.Animations>
@@ -132,15 +127,18 @@
           <ListBox.ItemTemplate>
             <DataTemplate>
               <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,6">
-                <Panel Width="8" Height="8" VerticalAlignment="Center">
+                <Panel Width="20" Height="20" VerticalAlignment="Center"
+                       HorizontalAlignment="Center">
                   <!-- Ripple ring (expanding outward) -->
                   <Ellipse Width="8" Height="8"
                            Stroke="{Binding StatusColor}" StrokeThickness="1.5"
-                           Fill="Transparent" RenderTransformOrigin="50%,50%"
+                           Fill="Transparent"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
                            Classes.ripple="{Binding IsPulsing}" />
                   <!-- Main dot -->
                   <Ellipse Width="8" Height="8"
                            Fill="{Binding StatusColor}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
                            Classes.pulse="{Binding IsPulsing}" />
                 </Panel>
                 <StackPanel Spacing="1">
