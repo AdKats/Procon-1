@@ -2,7 +2,7 @@
 
 ## Overview
 
-PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET Framework 4.7/WinForms to .NET 8/Avalonia UI. This is the largest update in PRoCon's history — every layer of the application has been rewritten or significantly reworked while maintaining full backward compatibility with existing game servers, plugins, and workflows.
+PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET Framework 4.7/WinForms to .NET 8/Avalonia UI. This is the largest update in PRoCon's history — every layer of the application has been rewritten or significantly reworked while maintaining backward compatibility with existing game servers and workflows.
 
 ---
 
@@ -26,7 +26,7 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 - **Add Server dialog** — supports Direct RCON and PRoCon Layer connection modes
 - **Settings dialog** — moved out of tab list into a dedicated modal window
 - **Disconnected placeholder** — context-aware messaging when a server isn't connected
-- **Ripple animation** — connection status indicators use outward ring animation (not scale transform, which crashed on Linux)
+- **Ripple animation** — connection status indicators use outward ring animation
 
 ## RCON Console
 
@@ -58,19 +58,31 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 
 - **Built-in HTTP web server fully removed** — was 1,073 lines of code across 6 files
 - **Replaced by SignalR** — all remote management now goes through the layer system
-- **Plugin API compatibility preserved** — `OnHttpRequest` marked `[Obsolete]`, stub types (`HttpWebServerRequestData`, `HttpWebServerResponseData`) retained so existing plugins compile without changes
+- **`OnHttpRequest` removed from plugin API** — plugins using this method must remove it
 - **Config file backward compatibility** — old `procon.private.httpWebServer.enable` config lines are silently ignored
 
 ## Plugin System
 
 - **Roslyn 4.8 compiler** — plugins compiled with `Microsoft.CodeAnalysis.CSharp` instead of legacy CodeDom
 - **AssemblyLoadContext** — collectible load contexts replace AppDomain sandboxing (not available in .NET 8)
-- **Expanded compilation references** — 30+ .NET 8 assembly references for plugin compilation (System.IO, System.Threading, System.Net.*, System.Web.HttpUtility, etc.)
+- **Type identity fix** — shared assemblies (PRoCon.Core, Newtonsoft.Json, MySqlConnector) always load from the host context, preventing `InvalidCastException` on `IPRoConPluginInterface`
+- **Expanded compilation references** — 40+ .NET 8 assembly references including System.IO, System.Threading, System.Net.*, System.Xml, System.Web.HttpUtility, etc.
+- **Automatic namespace migration** — `using MySql.Data.MySqlClient;` auto-rewritten to `using MySqlConnector;`, `using PRoCon.Core.HttpServer;` auto-stripped
+- **Failed compilation cleanup** — corrupt DLLs from failed compiles are deleted instead of leaving bad files that cause `BadImageFormatException`
 - **Embedded default plugins** — extracted from assembly resources at runtime, no separate download needed
 - **`#include` directive support** — shared `.inc` files correctly resolved across game-type directories
 - **Plugin trust warning** — prominent banner: "Plugins run with full trust on .NET 8"
 - **Retry with backoff** — plugin panel retries wiring to PluginsManager with exponential backoff (1s, 2s, 4s, 8s, 15s)
 - **Error logging** — `PreparePluginsDirectory` and compilation errors are now logged instead of silently swallowed
+
+### Plugin Compatibility Results (BF4)
+
+| Status | Plugins |
+|--------|---------|
+| **Works** | CBasicInGameInfo, CInGameAdmin, CSpambot, CBattlelogCache, CAdaptiveTicketCount, TrueBalancer, CLatencyManager, LanguageEnforcer |
+| **Needs Refactoring** | CAdminIn_and_SpawnMsg, xVotemap, MULTIbalancer (System.Windows.Forms), CUltimateMapManager (Win32 Registry/FILETIME), AdKats, InsaneLimits, CChatGUIDStatsLogger, ProconRulz, etc. |
+
+See `docs/PLUGIN-REFACTORING-GUIDE.md` for migration instructions.
 
 ## Account Management
 
@@ -117,29 +129,29 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 
 1. **Requires .NET 8 Runtime** — .NET Framework 4.7 is no longer sufficient. Install the [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) or use the self-contained build.
 
-2. **HTTP Web Server Removed** — If you used the built-in HTTP server for remote management, it no longer exists. Use the SignalR-based layer system instead. Old config lines (`procon.private.httpWebServer.enable`) are silently ignored.
+2. **HTTP Web Server Removed** — If you used the built-in HTTP server for remote management, it no longer exists. Use the SignalR-based layer system instead. Old config lines are silently ignored.
 
 3. **Layer Protocol Changed** — The layer now uses SignalR WebSocket instead of the custom TCP binary protocol. **v1.x PRoCon instances cannot connect as layer clients to a v2.0 layer, and vice versa.** All instances in a layer setup must be upgraded together.
 
 4. **Plugin Sandbox Removed** — .NET 8 does not support AppDomain sandboxing. Plugins now run with full trust. Only install plugins you trust.
 
-5. **Windows Forms Removed** — The UI is now Avalonia-based. Custom UI plugins that referenced System.Windows.Forms will not work.
+5. **Windows Forms Removed** — The UI is now Avalonia-based. Plugins that referenced System.Windows.Forms must be refactored.
 
 ## For Plugin Developers
 
-1. **Target .NET 8** — Plugins are compiled against .NET 8 runtime assemblies. APIs removed from .NET 8 (e.g., `System.Security.Permissions`, `System.Runtime.Remoting`) are not available.
+1. **Target .NET 8** — Plugins are compiled against .NET 8 runtime assemblies. APIs removed from .NET 8 (e.g., `System.Security.Permissions`, `System.Runtime.Remoting`, `System.Windows.Forms`) are not available.
 
-2. **`OnHttpRequest` is Obsolete** — The method still exists and compiles, but is never called. Remove HTTP request handling from your plugins.
+2. **`OnHttpRequest` Removed** — The method and its types (`HttpWebServerRequestData`, `HttpWebServerResponseData`) no longer exist. Remove all HTTP request handling from your plugins.
 
-3. **`HttpWebServerRequestData` / `HttpWebServerResponseData`** — These types exist as stubs for compilation only. They have no functional implementation.
+3. **`MySql.Data` replaced by `MySqlConnector`** — The `using MySql.Data.MySqlClient;` is auto-rewritten to `using MySqlConnector;`. The API is largely compatible but some edge cases may differ.
 
-4. **`MySql.Data` replaced by `MySqlConnector`** — If your plugin uses MySQL, the underlying driver changed. `MySqlConnector` is largely API-compatible but some edge cases may differ (connection string options, async behavior).
+4. **AssemblyLoadContext replaces AppDomain** — `AppDomain.CreateDomain()`, `MarshalByRefObject` remoting, and cross-domain calls are not available. Plugins load into a collectible `AssemblyLoadContext`.
 
-5. **AssemblyLoadContext replaces AppDomain** — `AppDomain.CreateDomain()`, `MarshalByRefObject` remoting, and cross-domain calls are not available. Plugins load into a collectible `AssemblyLoadContext`.
+5. **`System.Web` namespace** — Only `System.Web.HttpUtility` is available. The full `System.Web` assembly from .NET Framework is not present.
 
-6. **`System.Web` namespace** — Only `System.Web.HttpUtility` is available (for `HttpUtility.ParseQueryString` etc.). The full `System.Web` assembly from .NET Framework is not present.
+6. **Roslyn Compilation** — Plugins are compiled with Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`) instead of CodeDom. All C# language features up to the latest version are supported.
 
-7. **Roslyn Compilation** — Plugins are compiled with Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`) instead of CodeDom. C# language features up to the latest version are supported.
+7. **See the SDK Plugin Template** — `src/Resources/DefaultPlugins/SdkTemplatePlugin.cs` provides a starting point for new .NET 8 compatible plugins.
 
 ## For Layer Client Developers
 
@@ -152,12 +164,12 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 # Discord Announcement
 
 ```
-## PRoCon v2.0 Released
+## PRoCon v2.0 — Coming Soon
 
-The biggest update in PRoCon history is here. Every part of the application has been modernized.
+The biggest update in PRoCon history is in development. Every part of the application is being modernized.
 
-**What's New:**
-- Runs on .NET 8 — Windows, Linux, and macOS natively (no Mono!)
+**What's Coming:**
+- .NET 8 runtime — Windows, Linux, and macOS natively (no Mono!)
 - Brand new Avalonia UI with dark/light themes
 - Live server dashboard with player graphs and kill feed
 - SignalR layer system replacing the old TCP protocol
@@ -165,23 +177,26 @@ The biggest update in PRoCon history is here. Every part of the application has 
 - Async IP reputation checking via ProxyCheck.io
 - Docker support for headless deployments
 
-**Breaking Changes:**
-- .NET 8 Runtime required (or use self-contained build)
-- Built-in HTTP web server removed (use SignalR layer instead)
-- Layer protocol changed — v1.x and v2.0 instances cannot cross-connect
-- Plugin sandbox removed — plugins run with full trust
-- MySQL driver changed from MySql.Data to MySqlConnector
+**Breaking Changes to Prepare For:**
+- .NET 8 Runtime will be required (or use self-contained build)
+- Built-in HTTP web server is being removed (replaced by SignalR layer)
+- Layer protocol is changing — v1.x and v2.0 instances will not cross-connect
+- Plugin sandbox is being removed — plugins will run with full trust
+- MySQL driver changing from MySql.Data to MySqlConnector
+- System.Windows.Forms no longer available — plugins using MessageBox, Application, etc. will need updates
 
 **For Plugin Developers:**
-- Plugins still compile from .cs source files with Roslyn
-- Most existing plugins will work with minor or no changes
-- `OnHttpRequest` is obsolete but compiles for backward compat
+- Plugins still compile from .cs source files, now using Roslyn
+- A new SDK template plugin is included as a starting point
+- Most plugins that don't use WinForms or Windows-only APIs will work as-is
 - Full .NET 8 API surface available (C# latest features supported)
+- See the plugin refactoring guide for migration steps
 
-**Known Limitations:**
-- TextChatModeration panel and player context menus coming soon
-- Battlemap viewer deferred to a future release
-- Self-contained Linux builds may need `dotnet run` workaround
+**What's Still in Progress:**
+- TextChatModeration panel
+- Player context menus
+- Refactoring remaining default plugins for cross-platform compatibility
+- Battlemap viewer (deferred to a future release)
 
-Upgrade guide: back up your `Configs/` directory before upgrading. Config files are backward compatible.
+Stay tuned for the release. Back up your `Configs/` directory before upgrading — config files will be backward compatible.
 ```

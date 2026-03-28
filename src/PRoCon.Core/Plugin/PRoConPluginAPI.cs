@@ -585,21 +585,6 @@ namespace PRoCon.Core.Plugin
 
         #endregion
 
-        #region HTTP Server
-
-        /// <summary>
-        /// Formerly handled HTTP requests from the built-in web server.
-        /// The HTTP server has been replaced by SignalR; this method is retained
-        /// for plugin API compatibility but is never called.
-        /// </summary>
-        [Obsolete("The built-in HTTP server has been removed. Use SignalR instead.")]
-        public virtual HttpServer.HttpWebServerResponseData OnHttpRequest(HttpServer.HttpWebServerRequestData data)
-        {
-            return null;
-        }
-
-        #endregion
-
         #endregion
 
         #region Layer Procon Events

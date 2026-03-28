@@ -892,8 +892,8 @@ namespace PRoCon.Core.Plugin
 
             fullPluginSource = fullPluginSource.Replace("using PRoCon.Plugin;", "using PRoCon.Core.Plugin;");
 
-            // MySql.Data.MySqlClient → MySqlConnector (namespace changed in v2.0)
-            fullPluginSource = fullPluginSource.Replace("using MySql.Data.MySqlClient;", "using MySqlConnector;");
+            // Removed in v2.0 — strip dead using directives so compile errors point to the actual issue
+            fullPluginSource = fullPluginSource.Replace("using PRoCon.Core.HttpServer;", "// using PRoCon.Core.HttpServer; // Removed in v2.0");
 
             if (fullPluginSource.Contains("using PRoCon.Core;") == false)
             {
