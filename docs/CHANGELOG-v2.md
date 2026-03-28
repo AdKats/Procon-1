@@ -151,7 +151,7 @@ See `docs/PLUGIN-REFACTORING-GUIDE.md` for migration instructions.
 
 6. **Roslyn Compilation** — Plugins are compiled with Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`) instead of CodeDom. All C# language features up to the latest version are supported.
 
-7. **See the SDK Plugin Template** — `src/Resources/DefaultPlugins/SdkTemplatePlugin.cs` provides a starting point for new .NET 8 compatible plugins.
+7. **See the SDK Plugin Template** — `pluginsdk/` provides a multi-file starting point for new .NET 8 compatible plugins.
 
 ## For Layer Client Developers
 
@@ -166,9 +166,11 @@ See `docs/PLUGIN-REFACTORING-GUIDE.md` for migration instructions.
 ```
 ## PRoCon v2.0 — Coming Soon
 
-The biggest update in PRoCon history is in development. Every part of the application is being modernized.
+A major infrastructure update to PRoCon is in development. EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codebase was blocking that — so Prophet took the time to modernize the entire stack.
 
-**What's Coming:**
+**Important note:** This is an infrastructure update to remove a blocker, not a full project revival. For the future of game server management, check out **metabans.com** — an all-in-one platform supporting Battlefield, Squad, CoD4, Minecraft, and more.
+
+**What's in v2.0:**
 - .NET 8 runtime — Windows, Linux, and macOS natively (no Mono!)
 - Brand new Avalonia UI with dark/light themes
 - Live server dashboard with player graphs and kill feed
@@ -176,27 +178,27 @@ The biggest update in PRoCon history is in development. Every part of the applic
 - RCON console with autocomplete, command history, and validation
 - Async IP reputation checking via ProxyCheck.io
 - Docker support for headless deployments
+- Plugin SDK with Dapper (ORM) and Flurl (HTTP client) built in
 
 **Breaking Changes to Prepare For:**
-- .NET 8 Runtime will be required (or use self-contained build)
-- Built-in HTTP web server is being removed (replaced by SignalR layer)
-- Layer protocol is changing — v1.x and v2.0 instances will not cross-connect
-- Plugin sandbox is being removed — plugins will run with full trust
-- MySQL driver changing from MySql.Data to MySqlConnector
-- System.Windows.Forms no longer available — plugins using MessageBox, Application, etc. will need updates
+- .NET 8 Runtime required (or use self-contained build)
+- Built-in HTTP web server removed (replaced by SignalR layer)
+- Layer protocol changed — v1.x and v2.0 instances will not cross-connect
+- Plugin sandbox removed — plugins run with full trust
+- MySQL driver changed from MySql.Data to MySqlConnector
+- System.Windows.Forms no longer available — plugins using MessageBox, Application, etc. need updates
 
 **For Plugin Developers:**
 - Plugins still compile from .cs source files, now using Roslyn
-- A new SDK template plugin is included as a starting point
-- Most plugins that don't use WinForms or Windows-only APIs will work as-is
+- Multi-file plugins supported via partial classes (split monoliths like AdKats)
+- New SDK template with database (raw SQL + Dapper) and HTTP (HttpClient + Flurl) examples
 - Full .NET 8 API surface available (C# latest features supported)
-- See the plugin refactoring guide for migration steps
+- Plugin refactoring guide included for migration from v1.x
 
 **What's Still in Progress:**
 - TextChatModeration panel
 - Player context menus
 - Refactoring remaining default plugins for cross-platform compatibility
-- Battlemap viewer (deferred to a future release)
 
-Stay tuned for the release. Back up your `Configs/` directory before upgrading — config files will be backward compatible.
+Back up your `Configs/` directory before upgrading — config files are backward compatible.
 ```
