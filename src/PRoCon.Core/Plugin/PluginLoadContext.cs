@@ -17,6 +17,7 @@ namespace PRoCon.Core.Plugin
             "PRoCon.Core",
             "Newtonsoft.Json",
             "MySqlConnector",
+            "Dapper",
             "Microsoft.CodeAnalysis",
             "Microsoft.CodeAnalysis.CSharp",
         };

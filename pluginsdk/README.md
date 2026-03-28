@@ -316,46 +316,105 @@ ExecuteCommand("procon.protected.pluginconsole.write", "My log message here");
 
 ---
 
-## Database Access (MySqlConnector)
+## Database Access
+
+Two options are available — use whichever fits your needs:
+
+### Option 1: Raw SQL (MySqlConnector)
+
+Full control, explicit parameter binding, manual result reading.
 
 ```csharp
 using MySqlConnector;
 
-private void QueryDatabase()
+using (var conn = new MySqlConnection(connStr))
 {
-    string connStr = "Server=localhost;Database=procon;User=root;Password=pass;";
+    conn.Open();
 
-    using (var conn = new MySqlConnection(connStr))
+    // INSERT
+    using (var cmd = new MySqlCommand(
+        "INSERT INTO kills (killer, victim, weapon) VALUES (@k, @v, @w)", conn))
     {
-        conn.Open();
+        cmd.Parameters.AddWithValue("@k", "PlayerA");
+        cmd.Parameters.AddWithValue("@v", "PlayerB");
+        cmd.Parameters.AddWithValue("@w", "M16A4");
+        cmd.ExecuteNonQuery();
+    }
 
-        // INSERT
-        using (var cmd = new MySqlCommand(
-            "INSERT INTO kills (killer, victim, weapon) VALUES (@k, @v, @w)", conn))
+    // SELECT
+    using (var cmd = new MySqlCommand(
+        "SELECT kills, deaths FROM stats WHERE name = @name", conn))
+    {
+        cmd.Parameters.AddWithValue("@name", "PlayerA");
+        using (var reader = cmd.ExecuteReader())
         {
-            cmd.Parameters.AddWithValue("@k", "PlayerA");
-            cmd.Parameters.AddWithValue("@v", "PlayerB");
-            cmd.Parameters.AddWithValue("@w", "M16A4");
-            cmd.ExecuteNonQuery();
-        }
-
-        // SELECT
-        using (var cmd = new MySqlCommand(
-            "SELECT kills, deaths FROM stats WHERE name = @name", conn))
-        {
-            cmd.Parameters.AddWithValue("@name", "PlayerA");
-            using (var reader = cmd.ExecuteReader())
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                    int kills = reader.GetInt32("kills");
-                    int deaths = reader.GetInt32("deaths");
-                }
+                int kills = reader.GetInt32("kills");
+                int deaths = reader.GetInt32("deaths");
             }
         }
     }
 }
 ```
+
+### Option 2: Dapper (Micro-ORM)
+
+Less boilerplate — maps query results to C# objects automatically.
+
+```csharp
+using MySqlConnector;
+using Dapper;
+
+// Define a class matching your table columns
+public class PlayerStats
+{
+    public string Name { get; set; }
+    public int Kills { get; set; }
+    public int Deaths { get; set; }
+}
+
+using (var conn = new MySqlConnection(connStr))
+{
+    conn.Open();
+
+    // SELECT single row → object (or null)
+    var stats = conn.QueryFirstOrDefault<PlayerStats>(
+        "SELECT name, kills, deaths FROM player_stats WHERE name = @Name",
+        new { Name = "PlayerA" });
+
+    // SELECT multiple rows → List<T>
+    var topPlayers = conn.Query<PlayerStats>(
+        "SELECT name, kills, deaths FROM player_stats ORDER BY kills DESC LIMIT 10"
+    ).ToList();
+
+    // INSERT / UPDATE / DELETE
+    conn.Execute(
+        "INSERT INTO player_stats (name, kills, deaths) VALUES (@Name, @Kills, @Deaths)",
+        new { Name = "PlayerA", Kills = 10, Deaths = 5 });
+
+    conn.Execute(
+        "UPDATE player_stats SET kills = kills + 1 WHERE name = @Name",
+        new { Name = "PlayerA" });
+
+    // Scalar value
+    int count = conn.ExecuteScalar<int>(
+        "SELECT COUNT(*) FROM player_stats WHERE kills > @Min",
+        new { Min = 100 });
+
+    // Bulk insert (executes once per item)
+    var newPlayers = new List<PlayerStats>
+    {
+        new PlayerStats { Name = "Player1", Kills = 0, Deaths = 0 },
+        new PlayerStats { Name = "Player2", Kills = 0, Deaths = 0 },
+    };
+    conn.Execute(
+        "INSERT INTO player_stats (name, kills, deaths) VALUES (@Name, @Kills, @Deaths)",
+        newPlayers);
+}
+```
+
+Dapper uses the same `MySqlConnection` — just add `using Dapper;` and call extension methods directly on the connection.
 
 ---
 

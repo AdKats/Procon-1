@@ -554,7 +554,7 @@ namespace PRoCon.Core.Plugin
                 }
 
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string[] dllsToCopy = { "PRoCon.Core.dll", "MySqlConnector.dll", "Newtonsoft.Json.dll" };
+                string[] dllsToCopy = { "PRoCon.Core.dll", "MySqlConnector.dll", "Newtonsoft.Json.dll", "Dapper.dll" };
                 foreach (string dll in dllsToCopy)
                 {
                     string src = Path.Combine(baseDir, dll);
@@ -817,6 +817,13 @@ namespace PRoCon.Core.Plugin
             if (File.Exists(newtonsoftPath))
             {
                 references.Add(MetadataReference.CreateFromFile(newtonsoftPath));
+            }
+
+            // Add Dapper reference (micro-ORM for plugins)
+            string dapperPath = Path.Combine(proconDir, "Dapper.dll");
+            if (File.Exists(dapperPath))
+            {
+                references.Add(MetadataReference.CreateFromFile(dapperPath));
             }
 
             return references;
