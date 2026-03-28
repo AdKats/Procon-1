@@ -1,0 +1,535 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PRoCon.UI.Views.MainWindow"
+        x:CompileBindings="False"
+        Title="PRoCon Frostbite"
+        Width="1200" Height="800"
+        MinWidth="900" MinHeight="600"
+        Background="{DynamicResource BackgroundBrush}"
+        WindowStartupLocation="CenterScreen">
+
+  <DockPanel>
+    <!-- Top Bar -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="12,8">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left"
+                   Text="PRoCon"
+                   FontSize="18" FontWeight="Bold"
+                   Foreground="{DynamicResource PrimaryBrush}"
+                   VerticalAlignment="Center" />
+
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+          <Button Name="ThemeToggleButton"
+                  Content="Toggle Theme"
+                  Background="{DynamicResource ButtonSecondaryBrush}"
+                  Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                  Padding="12,6" CornerRadius="4"
+                  Click="OnThemeToggle" />
+          <TextBlock Text="v2.0.0"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     VerticalAlignment="Center" FontSize="11" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Ellipse Name="StatusIndicator" Width="8" Height="8"
+                   Fill="{DynamicResource DisconnectedBrush}" />
+          <TextBlock Name="StatusText" Text="Not Connected"
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+        </StackPanel>
+      </DockPanel>
+    </Border>
+
+    <!-- Left Sidebar -->
+    <Border DockPanel.Dock="Left" Width="220"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,1,0">
+      <DockPanel>
+        <Button DockPanel.Dock="Top"
+                Content="+ Add Connection"
+                Background="{DynamicResource ButtonPrimaryBrush}"
+                Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Margin="8" Padding="8,6" CornerRadius="4"
+                Click="OnShowConnectForm" />
+
+        <StackPanel DockPanel.Dock="Bottom" Margin="8" Spacing="4">
+          <Button Name="ConnectSelectedButton"
+                  Content="Connect"
+                  Background="{DynamicResource SuccessBrush}"
+                  Foreground="#ffffff"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Padding="8,6" CornerRadius="4"
+                  IsVisible="False"
+                  Click="OnConnectSelected" />
+          <Button Name="DisconnectButton"
+                  Content="Disconnect"
+                  Background="{DynamicResource ErrorBrush}"
+                  Foreground="#ffffff"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Padding="8,6" CornerRadius="4"
+                  IsVisible="False"
+                  Click="OnDisconnect" />
+          <Button Name="RemoveServerButton"
+                  Content="Remove Server"
+                  Background="{DynamicResource SurfaceElevatedBrush}"
+                  Foreground="{DynamicResource ErrorBrush}"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Padding="8,6" CornerRadius="4"
+                  IsVisible="False"
+                  Click="OnRemoveServer" />
+        </StackPanel>
+
+        <ListBox Name="ServerList"
+                 Background="Transparent" Padding="4"
+                 SelectionChanged="OnServerSelected"
+                 DoubleTapped="OnServerDoubleClick">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,6">
+                <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                         Fill="{Binding StatusColor}" />
+                <StackPanel Spacing="1">
+                  <TextBlock Text="{Binding DisplayLabel}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             FontSize="12" FontWeight="SemiBold" />
+                  <TextBlock Text="{Binding HostPort}"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             FontSize="10" />
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- Bottom Status Bar -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,1,0,0" Padding="12,4">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left"
+                   Text="PRoCon Frostbite 2.0.0 — .NET 8"
+                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+        <TextBlock DockPanel.Dock="Right" Name="ConnectionCountText"
+                   Text="0 connections"
+                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                   HorizontalAlignment="Right" />
+      </DockPanel>
+    </Border>
+
+    <!-- Main Content Area -->
+    <Border Background="{DynamicResource BackgroundBrush}">
+      <DockPanel>
+        <!-- Tab Navigation -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
+                BorderThickness="0,0,0,1" Padding="8,0">
+          <WrapPanel Name="TabBar" Orientation="Horizontal">
+            <Button Content="Connect" Tag="0" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource PrimaryBrush}" FontWeight="SemiBold"
+                    Click="OnTabClick" />
+            <Button Content="Chat" Tag="1" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Players" Tag="2" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Maps" Tag="3" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Bans" Tag="4" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Reserved" Tag="5" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Info" Tag="6" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Settings" Tag="7" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Plugins" Tag="8" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Accounts" Tag="9" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Events" Tag="10" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Console" Tag="11" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Layer" Tag="12" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Options" Tag="13" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+          </WrapPanel>
+        </Border>
+
+        <!-- Tab Content Pages -->
+        <Border Padding="16">
+          <!-- Tab 0: Connection Form -->
+          <Panel>
+            <Border Name="Tab0" IsVisible="True"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <StackPanel Spacing="16">
+                <TextBlock Name="ConnectionTabTitle" Text="Connection" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Name="ConnectionTabSubtitle" Text="Select a server from the sidebar or add a new one"
+                           Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                           Margin="0,0,0,4" />
+                <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                  <TextBlock Grid.Row="0" Grid.Column="0" Text="Host:" Margin="0,8"
+                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                  <TextBox Grid.Row="0" Grid.Column="1" Name="HostInput" Margin="0,4"
+                           Watermark="e.g. 65.75.210.194"
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}" />
+
+                  <TextBlock Grid.Row="1" Grid.Column="0" Text="Port:" Margin="0,8"
+                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                  <TextBox Grid.Row="1" Grid.Column="1" Name="PortInput" Margin="0,4"
+                           Watermark="e.g. 47300"
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}" />
+
+                  <TextBlock Grid.Row="2" Grid.Column="0" Text="Password:" Margin="0,8"
+                             Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                  <TextBox Grid.Row="2" Grid.Column="1" Name="PasswordInput" Margin="0,4"
+                           PasswordChar="*"
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}" />
+
+                  <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" Spacing="8" Margin="0,8">
+                    <Button Name="ConnectButton" Content="Connect"
+                            Background="{DynamicResource ButtonPrimaryBrush}"
+                            Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                            Padding="20,8" CornerRadius="4"
+                            Click="OnConnect" />
+                    <Button Name="SaveConnectionButton" Content="Save Changes"
+                            Background="{DynamicResource SecondaryBrush}"
+                            Foreground="#0f1923"
+                            Padding="20,8" CornerRadius="4"
+                            IsVisible="False"
+                            Click="OnSaveConnection" />
+                  </StackPanel>
+                </Grid>
+
+                <Border Name="ServerInfoPanel" IsVisible="False"
+                        Background="{DynamicResource BackgroundBrush}"
+                        CornerRadius="6" Padding="16" Margin="0,8,0,0">
+                  <StackPanel Spacing="8">
+                    <TextBlock Name="ServerNameText" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource PrimaryBrush}" />
+                    <TextBlock Name="ServerDetailsText"
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Border>
+
+            <!-- Tab 1: Chat -->
+            <Border Name="Tab1" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <DockPanel>
+                <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                  <Button DockPanel.Dock="Right" Content="Send" Margin="8,0,0,0"
+                          Background="{DynamicResource ButtonPrimaryBrush}"
+                          Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                          Padding="16,8" CornerRadius="4"
+                          Click="OnSendChat" />
+                  <TextBox Name="ChatInput" Watermark="Type a message..."
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}"
+                           KeyDown="OnChatInputKeyDown" />
+                </DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Chat" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+                <ScrollViewer Name="ChatScroller">
+                  <TextBlock Name="ChatLog" TextWrapping="Wrap"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             FontFamily="Consolas,Courier New,monospace" FontSize="12" />
+                </ScrollViewer>
+              </DockPanel>
+            </Border>
+
+            <!-- Tab 2: Players -->
+            <Border Name="Tab2" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Players" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+                <Grid ColumnDefinitions="*,*,*,*" Name="TeamGrid">
+                  <!-- Team 1 -->
+                  <Border Grid.Column="0" Margin="4" CornerRadius="6"
+                          Background="{DynamicResource BackgroundBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel1">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceElevatedBrush}"
+                              CornerRadius="6,6,0,0" Padding="8,6">
+                        <TextBlock Name="TeamHeader1" Text="Team 1 (0)"
+                                   FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList1" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11"
+                               Padding="4">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate>
+                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            </Grid>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 2 -->
+                  <Border Grid.Column="1" Margin="4" CornerRadius="6"
+                          Background="{DynamicResource BackgroundBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel2">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceElevatedBrush}"
+                              CornerRadius="6,6,0,0" Padding="8,6">
+                        <TextBlock Name="TeamHeader2" Text="Team 2 (0)"
+                                   FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList2" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11"
+                               Padding="4">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate>
+                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            </Grid>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 3 -->
+                  <Border Grid.Column="2" Margin="4" CornerRadius="6"
+                          Background="{DynamicResource BackgroundBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel3" IsVisible="False">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceElevatedBrush}"
+                              CornerRadius="6,6,0,0" Padding="8,6">
+                        <TextBlock Name="TeamHeader3" Text="Team 3 (0)"
+                                   FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList3" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11"
+                               Padding="4">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate>
+                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            </Grid>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 4 -->
+                  <Border Grid.Column="3" Margin="4" CornerRadius="6"
+                          Background="{DynamicResource BackgroundBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel4" IsVisible="False">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource SurfaceElevatedBrush}"
+                              CornerRadius="6,6,0,0" Padding="8,6">
+                        <TextBlock Name="TeamHeader4" Text="Team 4 (0)"
+                                   FontWeight="SemiBold" FontSize="13"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList4" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11"
+                               Padding="4">
+                        <ListBox.ItemTemplate>
+                          <DataTemplate>
+                            <Grid ColumnDefinitions="*,50,40,45,35,40" Margin="2,1">
+                              <TextBlock Grid.Column="0" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                              <TextBlock Grid.Column="1" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="2" Text="{Binding KillsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="3" Text="{Binding DeathsText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="4" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                              <TextBlock Grid.Column="5" Text="{Binding SquadText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                            </Grid>
+                          </DataTemplate>
+                        </ListBox.ItemTemplate>
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                </Grid>
+              </DockPanel>
+            </Border>
+
+            <!-- Tab 3: Maps (populated by MapListPanel UserControl) -->
+            <Border Name="Tab3" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="MapListContent" />
+            </Border>
+
+            <!-- Tab 4: Bans -->
+            <Border Name="Tab4" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="BanListContent" />
+            </Border>
+
+            <!-- Tab 5: Reserved Slots -->
+            <Border Name="Tab5" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="ReservedSlotsContent" />
+            </Border>
+
+            <!-- Tab 6: Server Info -->
+            <Border Name="Tab6" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="Server Information" FontSize="16" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+                <TextBlock Name="ServerInfoDetails" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}" FontSize="13" />
+              </DockPanel>
+            </Border>
+
+            <!-- Tab 7: Server Settings -->
+            <Border Name="Tab7" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="ServerSettingsContent" />
+            </Border>
+
+            <!-- Tab 8: Plugins -->
+            <Border Name="Tab8" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="PluginsContent" />
+            </Border>
+
+            <!-- Tab 9: Accounts -->
+            <Border Name="Tab9" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="AccountsContent" />
+            </Border>
+
+            <!-- Tab 10: Events -->
+            <Border Name="Tab10" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="EventsContent" />
+            </Border>
+
+            <!-- Tab 11: Console -->
+            <Border Name="Tab11" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="20"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <DockPanel>
+                <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                  <Button DockPanel.Dock="Right" Content="Send" Margin="8,0,0,0"
+                          Background="{DynamicResource ButtonPrimaryBrush}"
+                          Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                          Padding="16,8" CornerRadius="4"
+                          Click="OnSendConsoleCommand" />
+                  <TextBox Name="ConsoleInput" Watermark="RCON command..."
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}"
+                           KeyDown="OnConsoleInputKeyDown" />
+                </DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                  <TextBlock Text="RCON Console" FontSize="16" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                    <Button Content="Copy Selected" Click="OnCopyConsoleSelected"
+                            Padding="8,4" CornerRadius="4" FontSize="11"
+                            Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <Button Content="Copy All" Click="OnCopyConsoleAll"
+                            Padding="8,4" CornerRadius="4" FontSize="11"
+                            Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <Button Content="Clear" Click="OnClearConsole"
+                            Padding="8,4" CornerRadius="4" FontSize="11"
+                            Background="Transparent" Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </StackPanel>
+                </DockPanel>
+                <ListBox Name="ConsoleLogList" Background="Transparent"
+                         SelectionMode="Multiple"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         FontFamily="Consolas,Courier New,monospace" FontSize="12">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding Text}" Foreground="{Binding ColorBrush}"
+                                 FontWeight="{Binding Weight}" FontFamily="Consolas,Courier New,monospace"
+                                 TextWrapping="Wrap" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </DockPanel>
+            </Border>
+
+            <!-- Tab 12: Layer -->
+            <Border Name="Tab12" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="LayerContent" />
+            </Border>
+
+            <!-- Tab 13: Options -->
+            <Border Name="Tab13" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="OptionsContent" />
+            </Border>
+          </Panel>
+        </Border>
+      </DockPanel>
+    </Border>
+  </DockPanel>
+
+</Window>

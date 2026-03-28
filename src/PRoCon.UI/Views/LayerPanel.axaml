@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.LayerPanel"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" Margin="16">
+
+      <!-- Layer Status -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <DockPanel>
+            <TextBlock Text="Layer Control" FontSize="15" FontWeight="SemiBold"
+                       Foreground="{DynamicResource PrimaryBrush}" DockPanel.Dock="Left" />
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Ellipse Name="LayerStatusIndicator" Width="10" Height="10"
+                       Fill="{DynamicResource DisconnectedBrush}" VerticalAlignment="Center" />
+              <TextBlock Name="LayerStatusText" Text="Offline"
+                         Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+          </DockPanel>
+
+          <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,8,0,0">
+            <CheckBox Name="LayerEnabledCheck" Content="Enable Layer"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      Click="OnLayerEnabledToggle" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Layer Configuration -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Configuration" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto" Margin="0,4,0,0">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Layer Port"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="LayerPortInput" Width="120"
+                     HorizontalAlignment="Left" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Binding Address" Margin="0,6,0,0"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="LayerBindingAddressInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+          </Grid>
+
+          <Button Name="ApplyLayerConfigButton" Content="Apply Configuration"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyLayerConfig" />
+        </StackPanel>
+      </Border>
+
+      <!-- Connected Clients -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <DockPanel>
+          <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <TextBlock Text="Connected Layer Clients" FontSize="15" FontWeight="SemiBold"
+                       Foreground="{DynamicResource PrimaryBrush}" DockPanel.Dock="Left" />
+            <Button Content="Refresh" HorizontalAlignment="Right"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Padding="12,4" CornerRadius="4"
+                    Click="OnRefreshClients" />
+          </DockPanel>
+          <ListBox Name="LayerClientsList" MinHeight="100"
+                   Background="Transparent"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+        </DockPanel>
+      </Border>
+
+      <!-- Status -->
+      <TextBlock Name="LayerStatusMessage" Text=""
+                 Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                 Margin="0,4,0,8" />
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

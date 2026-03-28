@@ -1,0 +1,575 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.ServerSettingsPanel"
+             x:CompileBindings="False"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" Margin="16">
+
+      <!-- Server Type Banner -->
+      <Border Name="ServerTypeBanner" Background="#2D2D30"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="12,8">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="Server Type:" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Name="ServerTypeLabel" Text="Unknown"
+                     FontWeight="Bold" FontSize="14"
+                     Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="  |  Preset:" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Name="PresetLabel" Text="Unknown"
+                     FontWeight="Bold" FontSize="14"
+                     Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Name="ServerTypeHint" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                     VerticalAlignment="Center" Margin="12,0,0,0" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== GENERAL ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="General" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="180,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+            <!-- vars.serverName -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Server Name"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="ServerNameInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Name="ServerNameHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.serverDescription -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Description"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="ServerDescriptionInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Name="ServerDescriptionHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.serverMessage -->
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Server Message"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="ServerMessageInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Name="ServerMessageHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.gamePassword -->
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Game Password"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="GamePasswordInput" Margin="0,6,0,2"
+                     PasswordChar="*"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Name="GamePasswordHint" Text="(empty to clear)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.maxPlayers -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Max Players"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="4" Grid.Column="1" Name="MaxPlayersInput" Margin="0,6,0,2" Width="100"
+                     HorizontalAlignment="Left"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" Name="MaxPlayersHint" Text="(Unranked/Private only)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.maxSpectators -->
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Max Spectators"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="5" Grid.Column="1" Name="MaxSpectatorsInput" Margin="0,6,0,2" Width="100"
+                     HorizontalAlignment="Left"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="5" Grid.Column="2" Name="MaxSpectatorsHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyGeneralButton" Content="Apply General Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyGeneral" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== GAMEPLAY ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Gameplay" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <StackPanel Spacing="6" Margin="0,4,0,0">
+            <!-- Row 1 -->
+            <WrapPanel Orientation="Horizontal">
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="FriendlyFireCheck" Content="Friendly Fire"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(takes effect after round restart)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="AutoBalanceCheck" Content="Auto Balance"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="KillCamCheck" Content="Kill Cam"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="MiniMapCheck" Content="Minimap"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="HudCheck" Content="HUD"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after round restart)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+            </WrapPanel>
+            <!-- Row 2 -->
+            <WrapPanel Orientation="Horizontal">
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="ThreeDSpottingCheck" Content="3D Spotting"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="MiniMapSpottingCheck" Content="Minimap Spotting"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="ThirdPersonCamCheck" Content="3rd Person Cam"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="NameTagCheck" Content="Name Tag"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="HitIndicatorsCheck" Content="Hit Indicators"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+            </WrapPanel>
+            <!-- Row 3 -->
+            <WrapPanel Orientation="Horizontal">
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="RegenerateHealthCheck" Content="Regenerate Health"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(instantaneous)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="OnlySquadLeaderSpawnCheck" Content="Only Squad Leader Spawn"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(instantaneous)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="VehicleSpawnAllowedCheck" Content="Vehicle Spawn Allowed"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="CommanderCheck" Content="Commander"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="ForceReloadWholeMagsCheck" Content="Force Reload Whole Mags"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="(after map switch)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+            </WrapPanel>
+            <!-- Row 4 -->
+            <WrapPanel Orientation="Horizontal">
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="AlwaysAllowSpectatorsCheck" Content="Always Allow Spectators"
+                          Foreground="{DynamicResource TextPrimaryBrush}" IsEnabled="False" />
+                <TextBlock Text="(startup only, read-only)" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+              <StackPanel Margin="0,0,24,6">
+                <CheckBox Name="IsNoobOnlyJoinCheck" Content="Noob Only Join"
+                          Foreground="{DynamicResource TextPrimaryBrush}" Click="OnGameplayToggle" />
+                <TextBlock Text="" FontSize="10"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="24,0,0,0" />
+              </StackPanel>
+            </WrapPanel>
+          </StackPanel>
+          <TextBlock Name="GameplayReadOnlyHint" Text="" FontSize="11"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== DAMAGE and HEALTH ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Damage and Health" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="200,120,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+            <!-- vars.bulletDamage -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Bullet Damage (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="BulletDamageInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="(instantaneous)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.soldierHealth -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Soldier Health (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="SoldierHealthInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Name="SoldierHealthHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.playerRespawnTime -->
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Player Respawn Time (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="PlayerRespawnTimeInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="(instantaneous)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.vehicleSpawnDelay -->
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Vehicle Spawn Delay (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="VehicleSpawnDelayInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Name="VehicleSpawnDelayHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyDamageHealthButton" Content="Apply Damage / Health Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyDamageHealth" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== TICKETS and ROUNDS ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Tickets and Rounds" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="260,120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+            <!-- vars.gameModeCounter -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Game Mode Counter (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="GameModeCounterInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Text="(instantaneous)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.ticketBleedRate -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Ticket Bleed Rate (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="TicketBleedRateInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Name="TicketBleedRateHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundTimeLimit -->
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Round Time Limit (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="RoundTimeLimitInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Name="RoundTimeLimitHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundStartPlayerCount -->
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Round Start Player Count"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="RoundStartPlayerCountInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Name="RoundStartPlayerCountHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundRestartPlayerCount -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Round Restart Player Count"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="4" Grid.Column="1" Name="RoundRestartPlayerCountInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" Name="RoundRestartPlayerCountHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundLockdownCountdown -->
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Round Lockdown Countdown (sec)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="5" Grid.Column="1" Name="RoundLockdownCountdownInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="5" Grid.Column="2" Name="RoundLockdownCountdownHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundWarmupTimeout -->
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Round Warmup Timeout (sec)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="6" Grid.Column="1" Name="RoundWarmupTimeoutInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="6" Grid.Column="2" Name="RoundWarmupTimeoutHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundPlayersReadyBypassTimer -->
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Ready Bypass Timer (sec)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="7" Grid.Column="1" Name="RoundPlayersReadyBypassTimerInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="7" Grid.Column="2" Name="RoundPlayersReadyBypassTimerHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundPlayersReadyMinCount -->
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Ready Players Min Count"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="8" Grid.Column="1" Name="RoundPlayersReadyMinCountInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="8" Grid.Column="2" Name="RoundPlayersReadyMinCountHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.roundPlayersReadyPercent -->
+            <TextBlock Grid.Row="9" Grid.Column="0" Text="Ready Players Percent (%)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="9" Grid.Column="1" Name="RoundPlayersReadyPercentInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="9" Grid.Column="2" Name="RoundPlayersReadyPercentHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyTicketsRoundsButton" Content="Apply Tickets / Rounds Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyTicketsRounds" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== TEAM KILL ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Team Kill" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="260,120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+            <!-- vars.teamKillCountForKick -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="TK Count for Kick"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="TKCountForKickInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Name="TKCountForKickHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.teamKillKickForBan -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="TK Kick for Ban"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="TKKickForBanInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Name="TKKickForBanHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.teamKillValueIncrease -->
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="TK Value Increase"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="2" Grid.Column="1" Name="TKValueIncreaseInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="2" Grid.Column="2" Name="TKValueIncreaseHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.teamKillValueDecreasePerSecond -->
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="TK Value Decrease / sec"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="3" Grid.Column="1" Name="TKValueDecreaseInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Name="TKValueDecreaseHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.teamKillValueForKick -->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="TK Value for Kick"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="4" Grid.Column="1" Name="TKValueForKickInput" Margin="0,6,0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" Name="TKValueForKickHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyTKButton" Content="Apply Team Kill Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyTeamKill" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== IDLE ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Idle" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="200,120,Auto,40,200,120,Auto" RowDefinitions="Auto" Margin="0,4,0,0">
+            <!-- vars.idleTimeout -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Idle Timeout (sec)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="IdleTimeoutInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Name="IdleTimeoutHint" Text="(0 = disabled)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.idleBanRounds -->
+            <TextBlock Grid.Row="0" Grid.Column="4" Text="Idle Ban Rounds"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="5" Name="IdleBanRoundsInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="6" Name="IdleBanRoundsHint" Text="(0 = disabled)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyIdleButton" Content="Apply Idle Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyIdle" />
+        </StackPanel>
+      </Border>
+
+      <!-- ==================== MISC ==================== -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Misc" FontSize="15" FontWeight="Bold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <Grid ColumnDefinitions="260,200,*" RowDefinitions="Auto,Auto" Margin="0,4,0,0">
+            <!-- vars.unlockMode -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Unlock Mode"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBox Grid.Row="0" Grid.Column="1" Name="UnlockModeInput" Margin="0,2"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="0" Grid.Column="2" Name="UnlockModeHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+
+            <!-- vars.gunMasterWeaponsPreset -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Gun Master Weapons Preset (0-4)"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" Margin="0,6,0,0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Name="GunMasterWeaponsPresetInput" Margin="0,6,0,2" Width="100"
+                     HorizontalAlignment="Left"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Name="GunMasterWeaponsPresetHint" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+          </Grid>
+
+          <Button Name="ApplyMiscButton" Content="Apply Misc Settings"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="16,6" CornerRadius="4" Margin="0,4,0,0"
+                  HorizontalAlignment="Left"
+                  Click="OnApplyMisc" />
+        </StackPanel>
+      </Border>
+
+      <!-- Status -->
+      <TextBlock Name="SettingsStatusText" Text=""
+                 Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                 Margin="0,4,0,8" />
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

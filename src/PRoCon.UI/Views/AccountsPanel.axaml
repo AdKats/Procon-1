@@ -1,0 +1,128 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.AccountsPanel"
+             x:CompileBindings="False">
+
+  <Grid ColumnDefinitions="280,*">
+
+    <!-- Left: Account List + Actions -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="0,0,1,0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Accounts" FontSize="16" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="12,12,12,8" />
+
+        <!-- Add Account Form -->
+        <Border DockPanel.Dock="Bottom" Margin="8" Padding="8"
+                Background="{DynamicResource BackgroundBrush}" CornerRadius="6">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Add / Update Account" FontSize="12" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBox Name="AccountUsernameInput" Watermark="Username"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" FontSize="12" Padding="6,4" />
+            <TextBox Name="AccountPasswordInput" Watermark="Password" PasswordChar="*"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" FontSize="12" Padding="6,4" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Button Content="Add" Padding="12,4" CornerRadius="4"
+                      Background="{DynamicResource ButtonPrimaryBrush}"
+                      Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                      Click="OnAddAccount" />
+              <Button Content="Remove" Padding="12,4" CornerRadius="4"
+                      Background="{DynamicResource ErrorBrush}"
+                      Foreground="#ffffff"
+                      Click="OnRemoveAccount" />
+              <Button Content="Change Pwd" Padding="12,4" CornerRadius="4"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Click="OnChangePassword" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <ListBox Name="AccountListBox" Background="Transparent" Margin="4,0"
+                 SelectionChanged="OnAccountSelected">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="8,6" CornerRadius="4" Margin="2">
+                <TextBlock Text="{Binding Name}" FontSize="13"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+              </Border>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- Right: Privilege Editor -->
+    <DockPanel Grid.Column="1" Margin="16">
+      <Border Background="{DynamicResource SurfaceBrush}"
+              CornerRadius="8" Padding="16"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Name="PrivilegesHeaderText"
+                     Text="Select an account to edit privileges"
+                     FontSize="16" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12" />
+
+          <Button DockPanel.Dock="Bottom" Name="SavePrivilegesButton"
+                  Content="Save Privileges" Margin="0,12,0,0"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  HorizontalAlignment="Left" Padding="16,8" CornerRadius="4"
+                  IsVisible="False"
+                  Click="OnSavePrivileges" />
+
+          <ScrollViewer>
+            <StackPanel Name="PrivilegesPanel" Spacing="6">
+              <CheckBox Name="ChkCanLogin" Content="Can Login"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanAlterServerSettings" Content="Can Alter Server Settings"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanUseMapFunctions" Content="Can Use Map Functions"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanKillPlayers" Content="Can Kill Players"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanKickPlayers" Content="Can Kick Players"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanTemporaryBanPlayers" Content="Can Temporarily Ban Players"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanPermanentlyBanPlayers" Content="Can Permanently Ban Players"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanMovePlayers" Content="Can Move Players"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanIssueLimitedPunkbusterCommands" Content="Can Issue Limited Punkbuster Commands"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanIssueAllPunkbusterCommands" Content="Can Issue All Punkbuster Commands"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanEditMapList" Content="Can Edit Map List"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanEditBanList" Content="Can Edit Ban List"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanEditReservedSlotsList" Content="Can Edit Reserved Slots List"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanIssueLimitedProconCommands" Content="Can Issue Limited Procon Commands"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanIssueAllProconCommands" Content="Can Issue All Procon Commands"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanIssueLimitedProconPluginCommands" Content="Can Issue Limited Procon Plugin Commands"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanEditMapZones" Content="Can Edit Map Zones"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanEditTextChatModerationList" Content="Can Edit Text Chat Moderation List"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+              <CheckBox Name="ChkCanShutdownServer" Content="Can Shutdown Server"
+                        Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </ScrollViewer>
+        </DockPanel>
+      </Border>
+    </DockPanel>
+  </Grid>
+
+</UserControl>
