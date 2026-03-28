@@ -515,7 +515,7 @@ namespace PRoCon.Core.Remote
             Tasks = new List<ScheduledTask>();
             VersionNumber = String.Empty;
 
-            Layer = new LayerInstance();
+            Layer = new PRoCon.Core.Layer.LayerHostService();
 
             m_dicUsernamesToUids = new Dictionary<string, string>() {
                 {"SYSOP", ""}

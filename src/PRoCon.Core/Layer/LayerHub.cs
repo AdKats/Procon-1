@@ -31,6 +31,12 @@ namespace PRoCon.Core.Layer
         /// </summary>
         public static Func<string, string[], Task<LayerResponse>> CommandExecutor { get; set; }
 
+        /// <summary>Callback for when a client connects and authenticates.</summary>
+        public static Action<string, string> OnClientConnected { get; set; }
+
+        /// <summary>Callback for when a client disconnects.</summary>
+        public static Action<string> OnClientDisconnected { get; set; }
+
         public LayerHub(LayerHubClientRegistry registry, LayerAuthService auth, ILogger<LayerHub> logger)
         {
             _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -45,6 +51,7 @@ namespace PRoCon.Core.Layer
         public override Task OnConnectedAsync()
         {
             _registry.GetOrAdd(Context.ConnectionId);
+            OnClientConnected?.Invoke(Context.ConnectionId, null);
             _logger.LogInformation("Layer client connected: {ConnectionId}", Context.ConnectionId);
             return base.OnConnectedAsync();
         }
@@ -67,6 +74,7 @@ namespace PRoCon.Core.Layer
                 }
             }
 
+            OnClientDisconnected?.Invoke(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
