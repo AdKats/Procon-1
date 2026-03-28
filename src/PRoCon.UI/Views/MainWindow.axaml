@@ -470,18 +470,29 @@
                     CornerRadius="8" Padding="20"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
               <DockPanel>
-                <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
-                  <Button DockPanel.Dock="Right" Content="Send" Margin="8,0,0,0"
-                          Background="{DynamicResource ButtonPrimaryBrush}"
-                          Foreground="{DynamicResource ButtonPrimaryTextBrush}"
-                          Padding="16,8" CornerRadius="4"
-                          Click="OnSendConsoleCommand" />
-                  <TextBox Name="ConsoleInput" Watermark="RCON command..."
-                           Background="{DynamicResource InputBackgroundBrush}"
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                  <!-- Suggestions popup -->
+                  <ListBox Name="ConsoleSuggestions" IsVisible="False" MaxHeight="160"
+                           Background="{DynamicResource SurfaceElevatedBrush}"
                            Foreground="{DynamicResource TextPrimaryBrush}"
-                           BorderBrush="{DynamicResource BorderBrush}"
-                           KeyDown="OnConsoleInputKeyDown" />
-                </DockPanel>
+                           BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                           CornerRadius="4" Margin="0,0,0,2" Padding="2"
+                           FontFamily="Consolas, Courier New, monospace" FontSize="12"
+                           DoubleTapped="OnSuggestionSelected" />
+                  <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Send" Margin="8,0,0,0"
+                            Background="{DynamicResource ButtonPrimaryBrush}"
+                            Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                            Padding="16,8" CornerRadius="4"
+                            Click="OnSendConsoleCommand" />
+                    <TextBox Name="ConsoleInput" Watermark="RCON command... (Tab to complete, Up/Down for history)"
+                             Background="{DynamicResource InputBackgroundBrush}"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             KeyDown="OnConsoleInputKeyDown"
+                             TextChanged="OnConsoleInputTextChanged" />
+                  </DockPanel>
+                </StackPanel>
                 <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
                   <TextBlock Text="RCON Console" FontSize="16" FontWeight="SemiBold"
                              Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />

@@ -142,6 +142,47 @@ namespace PRoCon.UI.Views
         private readonly ObservableCollection<ServerEntry> _servers = new ObservableCollection<ServerEntry>();
         private readonly Dictionary<string, ServerEntry> _serverLookup = new Dictionary<string, ServerEntry>(StringComparer.OrdinalIgnoreCase);
 
+        // Console command history & autocomplete
+        private readonly List<string> _commandHistory = new List<string>();
+        private int _historyIndex = -1;
+        private static readonly string[] RconCommands = {
+            "admin.effectiveMaxPlayers", "admin.eventsEnabled", "admin.help", "admin.kickPlayer",
+            "admin.killPlayer", "admin.listPlayers", "admin.movePlayer", "admin.password",
+            "admin.say", "admin.shutDown", "admin.yell",
+            "banList.add", "banList.clear", "banList.list", "banList.load", "banList.remove", "banList.save",
+            "currentLevel",
+            "fairFight.activate", "fairFight.deactivate", "fairFight.isActive",
+            "listPlayers",
+            "login.hashed", "login.plainText", "logout",
+            "mapList.add", "mapList.availableMaps", "mapList.clear", "mapList.endRound",
+            "mapList.getMapIndices", "mapList.getRounds", "mapList.list",
+            "mapList.load", "mapList.remove", "mapList.restartRound",
+            "mapList.runNextRound", "mapList.save", "mapList.setNextMapIndex",
+            "player.idleDuration", "player.isAlive", "player.ping",
+            "punkBuster.activate", "punkBuster.isActive", "punkBuster.pb_sv_command",
+            "reservedSlotsList.add", "reservedSlotsList.aggressiveJoin",
+            "reservedSlotsList.clear", "reservedSlotsList.list",
+            "reservedSlotsList.load", "reservedSlotsList.remove", "reservedSlotsList.save",
+            "serverInfo", "server.type", "version",
+            "vars.3dSpotting", "vars.3pCam", "vars.alwaysAllowSpectators",
+            "vars.autoBalance", "vars.bulletDamage", "vars.commander",
+            "vars.crossHair", "vars.forceReloadWholeMags", "vars.friendlyFire",
+            "vars.gameModeCounter", "vars.gamePassword", "vars.hitIndicatorsEnabled",
+            "vars.hud", "vars.idleBanRounds", "vars.idleTimeout",
+            "vars.killCam", "vars.maxPlayers", "vars.maxSpectators",
+            "vars.miniMap", "vars.miniMapSpotting", "vars.mpExperience",
+            "vars.nameTag", "vars.onlySquadLeaderSpawn", "vars.playerRespawnTime",
+            "vars.preset", "vars.regenerateHealth", "vars.roundLockdownCountdown",
+            "vars.roundRestartPlayerCount", "vars.roundStartPlayerCount",
+            "vars.roundTimeLimit", "vars.roundWarmupTimeout",
+            "vars.serverDescription", "vars.serverMessage", "vars.serverName",
+            "vars.serverType", "vars.soldierHealth", "vars.teamFactionOverride",
+            "vars.teamKillCountForKick", "vars.teamKillKickForBan",
+            "vars.teamKillValueDecreasePerSecond", "vars.teamKillValueForKick",
+            "vars.teamKillValueIncrease", "vars.ticketBleedRate",
+            "vars.unlockMode", "vars.vehicleSpawnAllowed", "vars.vehicleSpawnDelay"
+        };
+
         // Panel instances
         private MapListPanel _mapListPanel;
         private BanListPanel _banListPanel;
@@ -634,6 +675,21 @@ namespace PRoCon.UI.Views
                     }
                 }
             }
+
+            // Auto-scroll console to bottom when switching to Console tab
+            if (index == 11)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    try
+                    {
+                        var list = this.FindControl<ListBox>("ConsoleLogList");
+                        if (list != null && list.ItemCount > 0)
+                            list.ScrollIntoView(list.ItemCount - 1);
+                    }
+                    catch { }
+                }, Avalonia.Threading.DispatcherPriority.Background);
+            }
         }
 
         // --- Server Selection & Connection ---
@@ -895,7 +951,20 @@ namespace PRoCon.UI.Views
 
             // Console
             var consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
-            if (consoleLogList != null) consoleLogList.ItemsSource = entry.ConsoleLines;
+            if (consoleLogList != null)
+            {
+                consoleLogList.ItemsSource = entry.ConsoleLines;
+                // Scroll to bottom after loading
+                Dispatcher.UIThread.Post(() =>
+                {
+                    try
+                    {
+                        if (consoleLogList.ItemCount > 0)
+                            consoleLogList.ScrollIntoView(consoleLogList.ItemCount - 1);
+                    }
+                    catch { }
+                }, Avalonia.Threading.DispatcherPriority.Background);
+            }
         }
 
         // --- Chat ---
@@ -940,9 +1009,82 @@ namespace PRoCon.UI.Views
 
         private void OnConsoleInputKeyDown(object sender, Avalonia.Input.KeyEventArgs e)
         {
+            var consoleInput = sender as TextBox;
+            if (consoleInput == null) return;
+
             if (e.Key == Avalonia.Input.Key.Enter)
             {
+                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
+                if (suggestionsBox != null) suggestionsBox.IsVisible = false;
                 OnSendConsoleCommand(sender, e);
+                e.Handled = true;
+            }
+            else if (e.Key == Avalonia.Input.Key.Up)
+            {
+                // Navigate command history (older)
+                if (_commandHistory.Count > 0)
+                {
+                    if (_historyIndex < _commandHistory.Count - 1)
+                        _historyIndex++;
+                    consoleInput.Text = _commandHistory[_commandHistory.Count - 1 - _historyIndex];
+                    consoleInput.CaretIndex = consoleInput.Text?.Length ?? 0;
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Avalonia.Input.Key.Down)
+            {
+                // Navigate command history (newer)
+                if (_historyIndex > 0)
+                {
+                    _historyIndex--;
+                    consoleInput.Text = _commandHistory[_commandHistory.Count - 1 - _historyIndex];
+                    consoleInput.CaretIndex = consoleInput.Text?.Length ?? 0;
+                }
+                else
+                {
+                    _historyIndex = -1;
+                    consoleInput.Text = "";
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Avalonia.Input.Key.Tab)
+            {
+                // Auto-complete: pick suggestion or complete common prefix
+                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
+                if (suggestionsBox != null && suggestionsBox.IsVisible && suggestionsBox.ItemCount > 0)
+                {
+                    // Pick selected or first suggestion
+                    string selected = (suggestionsBox.SelectedItem ?? suggestionsBox.Items.Cast<object>().First())?.ToString();
+                    if (selected != null)
+                    {
+                        consoleInput.Text = selected + " ";
+                        consoleInput.CaretIndex = consoleInput.Text.Length;
+                        suggestionsBox.IsVisible = false;
+                    }
+                }
+                else
+                {
+                    // Try direct completion
+                    string text = consoleInput.Text ?? "";
+                    string prefix = text.Split(' ')[0];
+                    var matches = new List<string>();
+                    foreach (string cmd in RconCommands)
+                    {
+                        if (cmd.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                            matches.Add(cmd);
+                    }
+                    if (matches.Count == 1)
+                    {
+                        consoleInput.Text = matches[0] + " ";
+                        consoleInput.CaretIndex = consoleInput.Text.Length;
+                    }
+                }
+                e.Handled = true;
+            }
+            else if (e.Key == Avalonia.Input.Key.Escape)
+            {
+                var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
+                if (suggestionsBox != null) suggestionsBox.IsVisible = false;
                 e.Handled = true;
             }
         }
@@ -955,6 +1097,12 @@ namespace PRoCon.UI.Views
                 return;
 
             string cmd = consoleInput.Text;
+
+            // Add to command history
+            if (_commandHistory.Count == 0 || _commandHistory[_commandHistory.Count - 1] != cmd)
+                _commandHistory.Add(cmd);
+            _historyIndex = -1;
+
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
             var line = new ConsoleLine
             {
@@ -973,6 +1121,53 @@ namespace PRoCon.UI.Views
 
             var words = new List<string>(cmd.Split(' '));
             client.SendRequest(words);
+        }
+
+        private void OnConsoleInputTextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
+        {
+            var consoleInput = sender as TextBox;
+            var suggestionsBox = this.FindControl<ListBox>("ConsoleSuggestions");
+            if (consoleInput == null || suggestionsBox == null) return;
+
+            string text = consoleInput.Text ?? "";
+            string prefix = text.Split(' ')[0];
+
+            if (prefix.Length >= 2 && !text.Contains(' '))
+            {
+                var matches = new List<string>();
+                foreach (string cmd in RconCommands)
+                {
+                    if (cmd.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                        matches.Add(cmd);
+                }
+
+                if (matches.Count > 0 && matches.Count <= 20)
+                {
+                    suggestionsBox.ItemsSource = matches;
+                    suggestionsBox.IsVisible = true;
+                }
+                else
+                {
+                    suggestionsBox.IsVisible = false;
+                }
+            }
+            else
+            {
+                suggestionsBox.IsVisible = false;
+            }
+        }
+
+        private void OnSuggestionSelected(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            var suggestionsBox = sender as ListBox;
+            var consoleInput = this.FindControl<TextBox>("ConsoleInput");
+            if (suggestionsBox?.SelectedItem == null || consoleInput == null) return;
+
+            string selected = suggestionsBox.SelectedItem.ToString();
+            consoleInput.Text = selected + " ";
+            consoleInput.CaretIndex = consoleInput.Text.Length;
+            suggestionsBox.IsVisible = false;
+            consoleInput.Focus();
         }
 
         private void OnCopyConsoleSelected(object sender, RoutedEventArgs e)
@@ -1028,8 +1223,9 @@ namespace PRoCon.UI.Views
         {
             bool hasSelection = _selectedServer != null;
             bool connected = _selectedServer?.IsConnected == true;
-            ShowConnectButton(hasSelection && !connected);
-            ShowDisconnectButton(hasSelection && connected);
+            bool connecting = _selectedServer?.State == ServerConnectionState.Connecting;
+            ShowConnectButton(hasSelection && !connected && !connecting);
+            ShowDisconnectButton(hasSelection && (connected || connecting));
             ShowRemoveButton(hasSelection);
         }
 
