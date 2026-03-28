@@ -1084,8 +1084,56 @@ namespace PRoCon.UI.Views
 
         // --- Load Server View (switch main panel to selected server's data) ---
 
+        private void ClearServerContext()
+        {
+            // Clear all panels so stale data from previous server doesn't show
+            _mapListPanel?.SetClient(null);
+            _banListPanel?.SetClient(null);
+            _reservedSlotsPanel?.SetClient(null);
+            _pluginsPanel?.SetClient(null);
+            _accountsPanel?.SetClient(null);
+            _eventsPanel?.SetClient(null);
+            _serverSettingsPanel?.SetClient(null);
+            _playerActionsPanel?.SetClient(null);
+            _layerPanel?.SetClient(null);
+
+            var chatLog = this.FindControl<TextBlock>("ChatLog");
+            if (chatLog != null) chatLog.Text = "";
+
+            var consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
+            if (consoleLogList != null) consoleLogList.ItemsSource = null;
+
+            var killList = this.FindControl<ListBox>("KillFeedList");
+            if (killList != null) killList.ItemsSource = null;
+
+            // Clear team panels
+            for (int t = 1; t <= 4; t++)
+            {
+                var teamList = this.FindControl<ListBox>($"TeamList{t}");
+                if (teamList != null) teamList.ItemsSource = null;
+                var teamHeader = this.FindControl<TextBlock>($"TeamHeader{t}");
+                if (teamHeader != null) teamHeader.Text = $"Team {t} (0)";
+            }
+
+            // Clear dashboard
+            var canvas = this.FindControl<Canvas>("PlayerGraphCanvas");
+            if (canvas != null) canvas.Children.Clear();
+
+            string[] dashFields = { "DashServerName", "DashGameType", "DashServerVersion",
+                "DashMapMode", "DashPlayerCount", "DashRound", "DashUptime",
+                "DashRoundTime", "DashRegion", "DashTeam1Score", "DashTeam2Score",
+                "DashConnectionInfo", "DashGraphRange" };
+            foreach (string name in dashFields)
+            {
+                var tb = this.FindControl<TextBlock>(name);
+                if (tb != null) tb.Text = "--";
+            }
+        }
+
         private void LoadServerView(ServerEntry entry)
         {
+            ClearServerContext();
+
             var client = GetClient(entry.HostPort);
             bool connected = entry.IsConnected && client?.Game != null;
 
@@ -1464,15 +1512,18 @@ namespace PRoCon.UI.Views
 
         private void UpdateContentVisibility()
         {
-            bool connected = _selectedServer != null &&
+            bool hasServer = _selectedServer != null;
+            bool connected = hasServer &&
                 (_selectedServer.State == ServerConnectionState.Connected ||
                  _selectedServer.State == ServerConnectionState.Connecting);
 
             var overlay = this.FindControl<Border>("DisconnectedOverlay");
             var tabBar = this.FindControl<WrapPanel>("TabBar");
+            var tabBarBorder = tabBar?.Parent as Border;
 
             if (overlay != null) overlay.IsVisible = !connected;
             if (tabBar != null) tabBar.IsVisible = connected;
+            if (tabBarBorder != null) tabBarBorder.IsVisible = connected;
 
             // Hide all tab content when disconnected
             if (!connected)
@@ -1484,15 +1535,38 @@ namespace PRoCon.UI.Views
                 }
             }
 
-            // Update subtext
+            // Update overlay content based on state
+            var title = this.FindControl<TextBlock>("OverlayTitle");
+            var icon = this.FindControl<TextBlock>("OverlayIcon");
             var subtext = this.FindControl<TextBlock>("DisconnectedSubtext");
-            if (subtext != null)
+
+            if (!hasServer || _selectedServer.State == ServerConnectionState.Disconnected)
             {
-                if (_selectedServer == null)
-                    subtext.Text = "Select a server from the sidebar or add a new one to get started.";
-                else
-                    subtext.Text = $"Disconnected from {_selectedServer.DisplayName}. Click Connect in the sidebar to reconnect.";
+                bool isLanding = !hasServer || _servers.Count == 0;
+                if (title != null) title.Text = isLanding ? "Welcome" : "Disconnected";
+                if (icon != null) icon.Text = isLanding ? "+" : "/";
+                if (subtext != null)
+                    subtext.Text = isLanding
+                        ? "Add a game server to get started."
+                        : $"Disconnected from {_selectedServer?.DisplayName ?? "server"}.\nClick Connect in the sidebar to reconnect.";
             }
+
+            // Update landing page stats
+            int totalServers = _servers.Count;
+            int connectedCount = 0;
+            int totalPlayers = 0;
+            foreach (var s in _servers)
+            {
+                if (s.IsConnected) connectedCount++;
+                if (s.LastServerInfo != null) totalPlayers += s.LastServerInfo.PlayerCount;
+            }
+
+            var sc = this.FindControl<TextBlock>("LandingServerCount");
+            var cc = this.FindControl<TextBlock>("LandingConnectedCount");
+            var tp = this.FindControl<TextBlock>("LandingTotalPlayers");
+            if (sc != null) sc.Text = totalServers.ToString();
+            if (cc != null) cc.Text = connectedCount.ToString();
+            if (tp != null) tp.Text = totalPlayers.ToString();
         }
 
         private void UpdateDashboard(ServerEntry entry, FrostbiteClient game)

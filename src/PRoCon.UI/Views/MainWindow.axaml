@@ -242,37 +242,112 @@
         <!-- Tab Content Pages -->
         <Border Padding="16">
           <Panel>
-            <!-- Disconnected placeholder -->
+            <!-- Landing / Disconnected overlay -->
             <Border Name="DisconnectedOverlay" IsVisible="True"
                     Background="{DynamicResource SurfaceBrush}"
-                    CornerRadius="12" Padding="40"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                    HorizontalAlignment="Center" VerticalAlignment="Center">
-              <StackPanel Spacing="16" HorizontalAlignment="Center" MaxWidth="400">
-                <!-- Big icon-style circle -->
-                <Border Width="80" Height="80" CornerRadius="40"
-                        Background="{DynamicResource BackgroundBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
-                        HorizontalAlignment="Center">
-                  <TextBlock Text="/" FontSize="40" FontWeight="Light"
+                    CornerRadius="12"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ScrollViewer>
+                <StackPanel Spacing="0" Margin="40,32">
+                  <!-- Branding header -->
+                  <StackPanel Spacing="4" HorizontalAlignment="Center" Margin="0,0,0,24">
+                    <TextBlock Text="PRoCon Frostbite" FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource PrimaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="v2.0 — Remote Console for Frostbite Servers" FontSize="13"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                  </StackPanel>
+
+                  <!-- Status icon -->
+                  <Border Width="72" Height="72" CornerRadius="36"
+                          Background="{DynamicResource BackgroundBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+                          HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <Panel>
+                      <Ellipse Width="72" Height="72" StrokeThickness="2"
+                               Stroke="{DynamicResource BorderBrush}" Fill="Transparent"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Classes.ripple="True" Opacity="0.3" />
+                      <TextBlock Name="OverlayIcon" Text="+" FontSize="32" FontWeight="Light"
+                                 Foreground="{DynamicResource TextSecondaryBrush}"
+                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Panel>
+                  </Border>
+
+                  <TextBlock Name="OverlayTitle" Text="Welcome" FontSize="20" FontWeight="SemiBold"
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             HorizontalAlignment="Center" Margin="0,0,0,8" />
+                  <TextBlock Name="DisconnectedSubtext"
+                             Text="Add a game server to get started."
+                             FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" TextAlignment="Center"
+                             TextWrapping="Wrap" MaxWidth="360" Margin="0,0,0,20" />
+
+                  <Button Content="Add Server"
+                          Background="{DynamicResource ButtonPrimaryBrush}"
+                          Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                          Padding="28,10" CornerRadius="6" FontSize="14"
+                          HorizontalAlignment="Center" Margin="0,0,0,32"
+                          Click="OnShowConnectForm" />
+
+                  <!-- Quick stats cards -->
+                  <Grid ColumnDefinitions="*,*,*" HorizontalAlignment="Center" Margin="0,0,0,24">
+                    <Border Grid.Column="0" Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="8" Padding="20,14" Margin="0,0,6,0" MinWidth="140">
+                      <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Name="LandingServerCount" Text="0" FontSize="28" FontWeight="Bold"
+                                   Foreground="{DynamicResource PrimaryBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Servers" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                      </StackPanel>
+                    </Border>
+                    <Border Grid.Column="1" Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="8" Padding="20,14" Margin="3,0,3,0" MinWidth="140">
+                      <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Name="LandingConnectedCount" Text="0" FontSize="28" FontWeight="Bold"
+                                   Foreground="#66bb6a"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Connected" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                      </StackPanel>
+                    </Border>
+                    <Border Grid.Column="2" Background="{DynamicResource BackgroundBrush}"
+                            CornerRadius="8" Padding="20,14" Margin="6,0,0,0" MinWidth="140">
+                      <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Name="LandingTotalPlayers" Text="0" FontSize="28" FontWeight="Bold"
+                                   Foreground="{DynamicResource SecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Total Players" FontSize="11"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" />
+                      </StackPanel>
+                    </Border>
+                  </Grid>
+
+                  <!-- Supported games -->
+                  <TextBlock Text="Supported Games" FontSize="11" FontWeight="Bold"
                              Foreground="{DynamicResource TextSecondaryBrush}"
-                             HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Border>
-                <TextBlock Text="Not Connected" FontSize="22" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Name="DisconnectedSubtext"
-                           Text="Select a server from the sidebar or add a new one to get started."
-                           FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
-                           HorizontalAlignment="Center" TextAlignment="Center"
-                           TextWrapping="Wrap" />
-                <Button Content="Add Server"
-                        Background="{DynamicResource ButtonPrimaryBrush}"
-                        Foreground="{DynamicResource ButtonPrimaryTextBrush}"
-                        Padding="24,10" CornerRadius="6" FontSize="14"
-                        HorizontalAlignment="Center" Margin="0,8,0,0"
-                        Click="OnShowConnectForm" />
-              </StackPanel>
+                             HorizontalAlignment="Center" Margin="0,0,0,8" />
+                  <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Padding="12,6">
+                      <TextBlock Text="Battlefield 4" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Border>
+                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Padding="12,6">
+                      <TextBlock Text="Battlefield 3" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Border>
+                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Padding="12,6">
+                      <TextBlock Text="Battlefield Hardline" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Border>
+                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Padding="12,6">
+                      <TextBlock Text="Medal of Honor" FontSize="12" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Border>
+                  </StackPanel>
+                </StackPanel>
+              </ScrollViewer>
             </Border>
 
             <!-- Tab 1: Chat -->
