@@ -24,7 +24,7 @@ using System.Collections.Generic;
 namespace PRoCon.Core.Plugin
 {
     using Core.Battlemap;
-    using Core.HttpServer;
+    // using Core.HttpServer; -- removed, HTTP server replaced by SignalR
     using Core.Maps;
     using Core.Players;
     using Core.Plugin.Commands;
@@ -588,12 +588,12 @@ namespace PRoCon.Core.Plugin
         #region HTTP Server
 
         /// <summary>
-        /// If the http server interface is on all requests to the plugin will
-        /// be directed to this method.  The response will be sent back.
+        /// Formerly handled HTTP requests from the built-in web server.
+        /// The HTTP server has been replaced by SignalR; this method is retained
+        /// for plugin API compatibility but is never called.
         /// </summary>
-        /// <param name="data"></param>
-        /// <returns>By default the response will be a blank "200 OK" document</returns>
-        public virtual HttpWebServerResponseData OnHttpRequest(HttpWebServerRequestData data)
+        [Obsolete("The built-in HTTP server has been removed. Use SignalR instead.")]
+        public virtual object OnHttpRequest(object data)
         {
             return null;
         }

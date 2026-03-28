@@ -84,52 +84,6 @@
         </StackPanel>
       </Border>
 
-      <!-- HTTP Server -->
-      <Border Background="{DynamicResource SurfaceBrush}"
-              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
-        <StackPanel Spacing="10">
-          <DockPanel>
-            <TextBlock Text="HTTP Server" FontSize="15" FontWeight="SemiBold"
-                       Foreground="{DynamicResource PrimaryBrush}" DockPanel.Dock="Left" />
-            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-              <Ellipse Name="HttpStatusIndicator" Width="10" Height="10"
-                       Fill="{DynamicResource DisconnectedBrush}" VerticalAlignment="Center" />
-              <TextBlock Name="HttpStatusText" Text="Offline"
-                         Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-            </StackPanel>
-          </DockPanel>
-
-          <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto" Margin="0,4,0,0">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="HTTP Port"
-                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-            <TextBox Grid.Row="0" Grid.Column="1" Name="HttpPortInput" Width="120"
-                     HorizontalAlignment="Left" Margin="0,2"
-                     Background="{DynamicResource InputBackgroundBrush}"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     BorderBrush="{DynamicResource BorderBrush}" />
-
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Binding Address" Margin="0,6,0,0"
-                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-            <TextBox Grid.Row="1" Grid.Column="1" Name="HttpBindingAddressInput" Margin="0,6,0,2"
-                     Background="{DynamicResource InputBackgroundBrush}"
-                     Foreground="{DynamicResource TextPrimaryBrush}"
-                     BorderBrush="{DynamicResource BorderBrush}" />
-          </Grid>
-
-          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-            <Button Name="HttpStartButton" Content="Start HTTP Server"
-                    Background="{DynamicResource SuccessBrush}" Foreground="#ffffff"
-                    Padding="16,6" CornerRadius="4"
-                    Click="OnStartHttpServer" />
-            <Button Name="HttpStopButton" Content="Stop HTTP Server"
-                    Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
-                    Padding="16,6" CornerRadius="4"
-                    Click="OnStopHttpServer" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
-
       <!-- About -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"

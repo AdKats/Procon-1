@@ -36,15 +36,6 @@ namespace PRoCon.UI.Views
 
             IsEnabled = true;
             LoadCurrentState();
-            WireEvents();
-        }
-
-        private void WireEvents()
-        {
-            if (_application == null) return;
-
-            _application.HttpServerOnline += OnHttpServerOnline;
-            _application.HttpServerOffline += OnHttpServerOffline;
         }
 
         private void LoadCurrentState()
@@ -72,19 +63,6 @@ namespace PRoCon.UI.Views
             if (langText != null && currentLang != null)
                 langText.Text = $"Current: {currentLang.FileName}";
 
-            // HTTP Server
-            var httpServer = _application.HttpWebServer;
-            if (httpServer != null)
-            {
-                var portInput = this.FindControl<TextBox>("HttpPortInput");
-                if (portInput != null) portInput.Text = httpServer.ListeningPort.ToString();
-
-                var bindingInput = this.FindControl<TextBox>("HttpBindingAddressInput");
-                if (bindingInput != null) bindingInput.Text = httpServer.BindingAddress ?? "";
-
-                UpdateHttpStatus(httpServer.IsOnline);
-            }
-
             // Runtime info
             var runtimeInfo = this.FindControl<TextBlock>("RuntimeInfoText");
             if (runtimeInfo != null)
@@ -94,105 +72,45 @@ namespace PRoCon.UI.Views
             }
         }
 
-        // --- Event handlers ---
-
-        private void OnHttpServerOnline(PRoCon.Core.HttpServer.HttpWebServer sender)
-        {
-            Dispatcher.UIThread.Post(() =>
-            {
-                UpdateHttpStatus(true);
-                SetStatus("HTTP server is now online.");
-            });
-        }
-
-        private void OnHttpServerOffline(PRoCon.Core.HttpServer.HttpWebServer sender)
-        {
-            Dispatcher.UIThread.Post(() =>
-            {
-                UpdateHttpStatus(false);
-                SetStatus("HTTP server is now offline.");
-            });
-        }
-
         // --- UI Actions ---
 
         private void OnAutoCheckUpdatesToggle(object sender, RoutedEventArgs e)
         {
             if (_application?.OptionsSettings == null) return;
-            var cb = this.FindControl<CheckBox>("AutoCheckUpdatesCheck");
-            if (cb != null) _application.OptionsSettings.AutoCheckDownloadUpdates = cb.IsChecked == true;
-            SetStatus("Update check setting saved.");
+            _application.OptionsSettings.AutoCheckDownloadUpdates = (sender as CheckBox)?.IsChecked == true;
         }
 
         private void OnAutoApplyUpdatesToggle(object sender, RoutedEventArgs e)
         {
             if (_application?.OptionsSettings == null) return;
-            var cb = this.FindControl<CheckBox>("AutoApplyUpdatesCheck");
-            if (cb != null) _application.OptionsSettings.AutoApplyUpdates = cb.IsChecked == true;
-            SetStatus("Auto-apply updates setting saved.");
+            _application.OptionsSettings.AutoApplyUpdates = (sender as CheckBox)?.IsChecked == true;
         }
 
         private void OnShowTrayIconToggle(object sender, RoutedEventArgs e)
         {
             if (_application?.OptionsSettings == null) return;
-            var cb = this.FindControl<CheckBox>("ShowTrayIconCheck");
-            if (cb != null) _application.OptionsSettings.ShowTrayIcon = cb.IsChecked == true;
+            _application.OptionsSettings.ShowTrayIcon = (sender as CheckBox)?.IsChecked == true;
         }
 
         private void OnCloseToTrayToggle(object sender, RoutedEventArgs e)
         {
             if (_application?.OptionsSettings == null) return;
-            var cb = this.FindControl<CheckBox>("CloseToTrayCheck");
-            if (cb != null) _application.OptionsSettings.CloseToTray = cb.IsChecked == true;
+            _application.OptionsSettings.CloseToTray = (sender as CheckBox)?.IsChecked == true;
         }
 
         private void OnMinimizeToTrayToggle(object sender, RoutedEventArgs e)
         {
             if (_application?.OptionsSettings == null) return;
-            var cb = this.FindControl<CheckBox>("MinimizeToTrayCheck");
-            if (cb != null) _application.OptionsSettings.MinimizeToTray = cb.IsChecked == true;
+            _application.OptionsSettings.MinimizeToTray = (sender as CheckBox)?.IsChecked == true;
         }
 
         private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Language selection would load localization files.
-            // For now, note the selection.
             var combo = this.FindControl<ComboBox>("LanguageComboBox");
             if (combo?.SelectedItem is string langName)
             {
                 SetStatus($"Language selection changed to: {langName}");
             }
-        }
-
-        private void OnStartHttpServer(object sender, RoutedEventArgs e)
-        {
-            if (_application?.HttpWebServer == null) return;
-
-            var portInput = this.FindControl<TextBox>("HttpPortInput");
-            if (portInput != null && ushort.TryParse(portInput.Text, out ushort port))
-                _application.HttpWebServer.ListeningPort = port;
-
-            var bindingInput = this.FindControl<TextBox>("HttpBindingAddressInput");
-            if (bindingInput != null)
-                _application.HttpWebServer.BindingAddress = bindingInput.Text ?? "";
-
-            try
-            {
-                _application.HttpWebServer.Start();
-                SetStatus("Starting HTTP server...");
-            }
-            catch (Exception ex)
-            {
-                SetStatus($"Failed to start HTTP server: {ex.Message}");
-            }
-        }
-
-        private void OnStopHttpServer(object sender, RoutedEventArgs e)
-        {
-            if (_application?.HttpWebServer == null) return;
-
-            _application.HttpWebServer.Shutdown();
-            SetStatus("Stopping HTTP server...");
         }
 
         // --- Helpers ---
@@ -201,17 +119,6 @@ namespace PRoCon.UI.Views
         {
             var cb = this.FindControl<CheckBox>(controlName);
             if (cb != null) cb.IsChecked = value;
-        }
-
-        private void UpdateHttpStatus(bool isOnline)
-        {
-            var indicator = this.FindControl<Ellipse>("HttpStatusIndicator");
-            var statusText = this.FindControl<TextBlock>("HttpStatusText");
-
-            if (indicator != null)
-                indicator.Fill = new SolidColorBrush(Color.Parse(isOnline ? "#66bb6a" : "#ef5350"));
-            if (statusText != null)
-                statusText.Text = isOnline ? "Online" : "Offline";
         }
 
         private void SetStatus(string message)

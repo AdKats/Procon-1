@@ -35,7 +35,7 @@ namespace PRoCon.Core
     using Core.AutoUpdates;
     using Core.Battlemap;
     using Core.Events;
-    using Core.HttpServer;
+    // using Core.HttpServer; -- removed, HTTP server replaced by SignalR
     using Core.Localization;
     using Core.Options;
     using Core.Players.Items;
@@ -53,9 +53,6 @@ namespace PRoCon.Core
 
         public delegate void ShowNotificationHandler(int timeout, string title, string text, bool isError);
         public event ShowNotificationHandler ShowNotification;
-
-        public event HttpWebServer.StateChangeHandler HttpServerOnline;
-        public event HttpWebServer.StateChangeHandler HttpServerOffline;
 
         public delegate void EmptyParameterHandler(PRoConApplication instance);
         public event EmptyParameterHandler BeginRssUpdate;
@@ -79,12 +76,6 @@ namespace PRoCon.Core
         }
 
         public LocalizationDictionary Languages
-        {
-            get;
-            private set;
-        }
-
-        public HttpWebServer HttpWebServer
         {
             get;
             private set;
@@ -532,9 +523,6 @@ namespace PRoCon.Core
 
             //this.CleanPlugins();
 
-            // Create the initial web server object
-            this.ExecutePRoConCommand(this, new List<string>() { "procon.private.httpWebServer.enable", "false", "27360", "0.0.0.0" }, 0);
-
             //this.Execute();
         }
 
@@ -556,101 +544,6 @@ namespace PRoCon.Core
             this.LoadingMainConfig = false;
 
             this.Checker = new Timer(o => this.ReconnectVersionChecker(), null, 20000, 20000);
-        }
-
-        private void HttpWebServer_ProcessRequest(HttpWebServerRequest sender)
-        {
-
-            string[] directories = sender.Data.RequestPath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            HttpWebServerResponseData response = new HttpWebServerResponseData(String.Empty);
-
-            if (directories.Length == 0)
-            {
-
-                switch (sender.Data.RequestFile.ToLower())
-                {
-                    case "connections":
-                        response.Document = this.Connections.ToJsonString();
-                        response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                        break;
-                    default:
-                        response.StatusCode = "404 Not Found";
-                        break;
-                }
-            }
-            else if (directories.Length == 1)
-            {
-
-                if (this.Connections.Contains(directories[0]) == true)
-                {
-
-                    switch (sender.Data.RequestFile.ToLower())
-                    {
-                        case "players":
-
-                            response.Document = this.Connections[directories[0]].PlayerList.ToJsonString();
-                            response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                            break;
-                        case "chat":
-
-                            int historyLength = 0;
-                            DateTime newerThan = DateTime.Now;
-
-                            if (int.TryParse(sender.Data.Query.Get("history"), out historyLength) == true)
-                            {
-                                response.Document = this.Connections[directories[0]].ChatConsole.ToJsonString(historyLength);
-                                response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                            }
-                            else if (DateTime.TryParse(sender.Data.Query.Get("newer_than"), out newerThan) == true)
-                            {
-                                response.Document = this.Connections[directories[0]].ChatConsole.ToJsonString(newerThan.ToLocalTime());
-                            }
-                            else
-                            {
-                                response.StatusCode = "400 Bad Request";
-                            }
-
-                            break;
-                        default:
-
-                            response.StatusCode = "404 Not Found";
-                            break;
-                    }
-                }
-
-            }
-            else if (directories.Length >= 3)
-            {
-
-                // /HostNameIp/plugins/PluginClassName/
-                if (this.Connections.Contains(directories[0]) == true && String.Compare("plugins", directories[1]) == 0)
-                {
-
-                    if (this.Connections[directories[0]].PluginsManager.Plugins.EnabledClassNames.Contains(directories[2]) == true)
-                    {
-                        HttpWebServerResponseData pluginRespose = (HttpWebServerResponseData)this.Connections[directories[0]].PluginsManager.InvokeOnEnabled(directories[2], "OnHttpRequest", sender.Data);
-
-                        if (pluginRespose != null)
-                        {
-                            response = pluginRespose;
-                        }
-                    }
-                    else
-                    {
-                        response.StatusCode = "404 Not Found";
-                    }
-                }
-                else
-                {
-                    response.StatusCode = "404 Not Found";
-                }
-            }
-            else
-            {
-                response.StatusCode = "404 Not Found";
-            }
-
-            sender.Respond(response);
         }
 
         private void Connections_ConnectionAdded(PRoConClient item)
@@ -832,7 +725,7 @@ namespace PRoCon.Core
         public void SaveMainConfig()
         {
 
-            if (this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null && this.HttpWebServer != null)
+            if (this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null)
             {
                 FileStream stmProconConfigFile = null;
 
@@ -888,11 +781,6 @@ namespace PRoCon.Core
                         stwConfig.WriteLine("procon.private.options.ShowCfmMsgRoundRestartNext {0}", this.OptionsSettings.ShowCfmMsgRoundRestartNext);
 
                         stwConfig.WriteLine("procon.private.options.ShowDICESpecialOptions {0}", this.OptionsSettings.ShowDICESpecialOptions);
-
-                        if (this.HttpWebServer != null)
-                        {
-                            stwConfig.WriteLine("procon.private.httpWebServer.enable {0} {1} \"{2}\"", this.HttpWebServer.IsOnline, this.HttpWebServer.ListeningPort, this.HttpWebServer.BindingAddress);
-                        }
 
                         stwConfig.Write("procon.private.options.trustedHostDomainsPorts");
                         foreach (TrustedHostWebsitePort trusted in this.OptionsSettings.TrustedHostsWebsitesPorts)
@@ -1335,42 +1223,9 @@ namespace PRoCon.Core
 
 
 
-            // procon.private.httpWebServer.enable true 27360 "0.0.0.0"
+            // httpWebServer config ignored in v2
             else if (lstWords.Count >= 4 && String.Compare(lstWords[0], "procon.private.httpWebServer.enable", true) == 0 && objSender == this)
             {
-
-                bool blEnabled = false;
-                string bindingAddress = "0.0.0.0";
-                UInt16 ui16Port = 27360;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-
-                    if (this.HttpWebServer != null)
-                    {
-                        this.HttpWebServer.Shutdown();
-
-                        this.HttpWebServer.ProcessRequest -= new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                        this.HttpWebServer.HttpServerOnline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                        this.HttpWebServer.HttpServerOffline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-                    }
-
-                    bindingAddress = lstWords[3];
-                    if (UInt16.TryParse(lstWords[2], out ui16Port) == false)
-                    {
-                        ui16Port = 27360;
-                    }
-
-                    this.HttpWebServer = new HttpWebServer(bindingAddress, ui16Port);
-                    this.HttpWebServer.ProcessRequest += new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                    this.HttpWebServer.HttpServerOnline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                    this.HttpWebServer.HttpServerOffline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-
-                    if (blEnabled == true)
-                    {
-                        this.HttpWebServer.Start();
-                    }
-                }
             }
 
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.setLanguage", true) == 0 && objSender == this)
@@ -2210,42 +2065,9 @@ namespace PRoCon.Core
 
 
 
-            // procon.private.httpWebServer.enable true 27360 "0.0.0.0"
+            // httpWebServer config ignored in v2
             else if (lstWords.Count >= 4 && String.Compare(lstWords[0], "procon.private.httpWebServer.enable", true) == 0 && objSender == this)
             {
-
-                bool blEnabled = false;
-                string bindingAddress = "0.0.0.0";
-                UInt16 ui16Port = 27360;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-
-                    if (this.HttpWebServer != null)
-                    {
-                        this.HttpWebServer.Shutdown();
-
-                        this.HttpWebServer.ProcessRequest -= new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                        this.HttpWebServer.HttpServerOnline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                        this.HttpWebServer.HttpServerOffline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-                    }
-
-                    bindingAddress = lstWords[3];
-                    if (UInt16.TryParse(lstWords[2], out ui16Port) == false)
-                    {
-                        ui16Port = 27360;
-                    }
-
-                    this.HttpWebServer = new HttpWebServer(bindingAddress, ui16Port);
-                    this.HttpWebServer.ProcessRequest += new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                    this.HttpWebServer.HttpServerOnline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                    this.HttpWebServer.HttpServerOffline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-
-                    if (blEnabled == true)
-                    {
-                        this.HttpWebServer.Start();
-                    }
-                }
             }
 
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.setLanguage", true) == 0 && objSender == this)
@@ -2676,22 +2498,6 @@ namespace PRoCon.Core
             }
         }
 
-        private void HttpWebServer_HttpServerOffline(HttpWebServer sender)
-        {
-            if (this.HttpServerOffline != null)
-            {
-                this.HttpServerOffline(sender);
-            }
-        }
-
-        private void HttpWebServer_HttpServerOnline(HttpWebServer sender)
-        {
-            if (this.HttpServerOnline != null)
-            {
-                this.HttpServerOnline(sender);
-            }
-        }
-
         #endregion
 
         #region RSS Feed
@@ -3042,11 +2848,6 @@ namespace PRoCon.Core
                 pcClient.Destroy();
             }
 
-            if (this.HttpWebServer != null)
-            {
-                this.HttpWebServer.Shutdown();
-                this.HttpWebServer = null;
-            }
         }
     }
 }
