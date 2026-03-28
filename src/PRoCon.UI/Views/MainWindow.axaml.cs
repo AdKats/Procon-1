@@ -107,6 +107,11 @@ namespace PRoCon.UI.Views
         public string ServerInfoText { get; set; } = "";
         public CServerInfo LastServerInfo { get; set; }
 
+        // Dashboard data
+        public List<(DateTime Time, int Count)> PlayerHistory { get; } = new List<(DateTime, int)>();
+        public ObservableCollection<string> KillFeed { get; } = new ObservableCollection<string>();
+        public string GameVersion { get; set; } = "";
+
         public string DisplayName
         {
             get
@@ -759,19 +764,20 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Connected;
                 entry.LastServerInfo = info;
                 SortAndGroupServers();
-                entry.ServerInfoText = $"Server Name: {name}\n" +
-                                       $"Map: {map}\n" +
-                                       $"Game Mode: {mode}\n" +
-                                       $"Players: {info.PlayerCount}/{info.MaxPlayerCount}\n" +
-                                       $"Round: {info.CurrentRound + 1}/{info.TotalRounds}\n" +
-                                       $"Game Type: {sender.GameType}";
+                entry.GameVersion = sender.FriendlyVersionNumber ?? sender.VersionNumber ?? "";
+
+                // Track player count history
+                entry.PlayerHistory.Add((DateTime.Now, info.PlayerCount));
+                // Keep last 60 minutes of data
+                var cutoff = DateTime.Now.AddMinutes(-60);
+                while (entry.PlayerHistory.Count > 0 && entry.PlayerHistory[0].Time < cutoff)
+                    entry.PlayerHistory.RemoveAt(0);
 
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("#66bb6a", name);
                     UpdateServerInfoPanel(name, $"{map} — {mode} — {info.PlayerCount}/{info.MaxPlayerCount} players");
-                    var details = this.FindControl<TextBlock>("ServerInfoDetails");
-                    if (details != null) details.Text = entry.ServerInfoText;
+                    UpdateDashboard(entry, sender);
                 }
 
                 UpdateConnectionCount();
@@ -789,6 +795,21 @@ namespace PRoCon.UI.Views
                 AppendChat(entry, $"[Leave] {playerName} left the server");
                 if (_selectedServer == entry)
                     RefreshPlayerList();
+            });
+
+            game.PlayerKilled += (sender, killer, victim, weapon, headshot, killerPos, victimPos) => Dispatcher.UIThread.Post(() =>
+            {
+                string hs = headshot ? " [HS]" : "";
+                string feedLine = $"{killer} [{weapon}] {victim}{hs}";
+                entry.KillFeed.Insert(0, feedLine);
+                while (entry.KillFeed.Count > 50)
+                    entry.KillFeed.RemoveAt(entry.KillFeed.Count - 1);
+
+                if (_selectedServer == entry)
+                {
+                    var killList = this.FindControl<ListBox>("KillFeedList");
+                    if (killList != null) killList.ItemsSource = entry.KillFeed;
+                }
             });
 
             game.Chat += (sender, rawChat) => Dispatcher.UIThread.Post(() =>
@@ -888,7 +909,13 @@ namespace PRoCon.UI.Views
 
         // --- Server Selection & Connection ---
 
-        private void OnShowConnectForm(object sender, RoutedEventArgs e) => SwitchTab(0);
+        private void OnShowConnectForm(object sender, RoutedEventArgs e)
+        {
+            // Show the connect tab button and switch to it
+            var connectBtn = this.FindControl<Button>("ConnectTabButton");
+            if (connectBtn != null) connectBtn.IsVisible = true;
+            SwitchTab(0);
+        }
 
         private void OnServerSelected(object sender, SelectionChangedEventArgs e)
         {
@@ -1152,9 +1179,14 @@ namespace PRoCon.UI.Views
             // Players
             UpdateTeamPanels(entry);
 
-            // Server Info tab
-            var details = this.FindControl<TextBlock>("ServerInfoDetails");
-            if (details != null) details.Text = entry.ServerInfoText;
+            // Server Info dashboard
+            var dashClient = GetClient(entry.HostPort);
+            if (dashClient?.Game != null)
+                UpdateDashboard(entry, dashClient.Game);
+
+            // Kill feed
+            var killList = this.FindControl<ListBox>("KillFeedList");
+            if (killList != null) killList.ItemsSource = entry.KillFeed;
 
             // Console
             var consoleLogList = this.FindControl<ListBox>("ConsoleLogList");
@@ -1473,6 +1505,210 @@ namespace PRoCon.UI.Views
             if (panel != null) panel.IsVisible = !string.IsNullOrEmpty(title);
             if (nameText != null) nameText.Text = title;
             if (detailsText != null) detailsText.Text = details;
+        }
+
+        private void UpdateDashboard(ServerEntry entry, FrostbiteClient game)
+        {
+            var info = entry.LastServerInfo;
+            if (info == null) return;
+
+            var mapPanel = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator"); // just to check we have UI
+
+            // Hero
+            var dashName = this.FindControl<TextBlock>("DashServerName");
+            if (dashName != null) dashName.Text = info.ServerName ?? "Unknown";
+
+            var dashGame = this.FindControl<TextBlock>("DashGameType");
+            if (dashGame != null) dashGame.Text = game?.GameType ?? entry.GameType ?? "??";
+
+            var dashVer = this.FindControl<TextBlock>("DashServerVersion");
+            if (dashVer != null) dashVer.Text = entry.GameVersion ?? "??";
+
+            var dashMap = this.FindControl<TextBlock>("DashMapMode");
+            string mapName = GameData.GetMapName(info.Map ?? "") ?? info.Map ?? "Unknown";
+            string modeName = GameData.GetModeName(info.GameMode ?? "") ?? info.GameMode ?? "Unknown";
+            if (dashMap != null) dashMap.Text = $"{mapName} — {modeName}";
+
+            var dashPlayers = this.FindControl<TextBlock>("DashPlayerCount");
+            if (dashPlayers != null) dashPlayers.Text = $"{info.PlayerCount}/{info.MaxPlayerCount}";
+
+            // Badges
+            var rankedBadge = this.FindControl<Border>("DashRankedBadge");
+            var rankedText = this.FindControl<TextBlock>("DashRankedText");
+            if (rankedBadge != null)
+            {
+                rankedBadge.Background = new SolidColorBrush(Color.Parse(info.Ranked ? "#66bb6a" : "#ef5350"));
+                if (rankedText != null) rankedText.Text = info.Ranked ? "RANKED" : "UNRANKED";
+            }
+            var pbBadge = this.FindControl<Border>("DashPbBadge");
+            if (pbBadge != null) pbBadge.IsVisible = info.PunkBuster;
+
+            // Stats cards
+            var dashRound = this.FindControl<TextBlock>("DashRound");
+            if (dashRound != null) dashRound.Text = $"{info.CurrentRound + 1} / {info.TotalRounds}";
+
+            var dashUptime = this.FindControl<TextBlock>("DashUptime");
+            if (dashUptime != null && info.ServerUptime > 0)
+            {
+                var ts = TimeSpan.FromSeconds(info.ServerUptime);
+                dashUptime.Text = ts.TotalHours >= 24
+                    ? $"{(int)ts.TotalDays}d {ts.Hours}h"
+                    : ts.TotalHours >= 1
+                        ? $"{(int)ts.TotalHours}h {ts.Minutes}m"
+                        : $"{ts.Minutes}m";
+            }
+
+            var dashRoundTime = this.FindControl<TextBlock>("DashRoundTime");
+            if (dashRoundTime != null && info.RoundTime > 0)
+            {
+                var rt = TimeSpan.FromSeconds(info.RoundTime);
+                dashRoundTime.Text = rt.TotalHours >= 1 ? $"{(int)rt.TotalHours}h {rt.Minutes}m" : $"{rt.Minutes}m {rt.Seconds}s";
+            }
+
+            var dashRegion = this.FindControl<TextBlock>("DashRegion");
+            if (dashRegion != null) dashRegion.Text = info.ServerCountry ?? info.ServerRegion ?? info.PingSite ?? "--";
+
+            // Team scores
+            if (info.TeamScores != null)
+            {
+                for (int i = 0; i < info.TeamScores.Count && i < 2; i++)
+                {
+                    var scoreText = this.FindControl<TextBlock>($"DashTeam{i + 1}Score");
+                    if (scoreText != null)
+                        scoreText.Text = info.TeamScores[i].Score.ToString("F0");
+                }
+            }
+
+            // Connection details
+            var connInfo = this.FindControl<TextBlock>("DashConnectionInfo");
+            if (connInfo != null)
+            {
+                connInfo.Text = $"IP: {entry.HostPort}\n" +
+                                $"Game: {game?.GameType ?? "?"} {entry.GameVersion}\n" +
+                                $"Build: {game?.VersionNumber ?? "?"}\n" +
+                                $"PunkBuster: {(info.PunkBuster ? $"Active ({info.PunkBusterVersion})" : "Inactive")}\n" +
+                                $"Password: {(info.Passworded ? "Yes" : "No")}\n" +
+                                $"Join Queue: {(info.JoinQueueEnabled ? "Enabled" : "Disabled")}\n" +
+                                $"External: {info.ExternalGameIpandPort ?? "N/A"}";
+            }
+
+            // Kill feed
+            var killList = this.FindControl<ListBox>("KillFeedList");
+            if (killList != null) killList.ItemsSource = entry.KillFeed;
+
+            // Player graph
+            DrawPlayerGraph(entry);
+        }
+
+        private void DrawPlayerGraph(ServerEntry entry)
+        {
+            var canvas = this.FindControl<Canvas>("PlayerGraphCanvas");
+            if (canvas == null || entry.PlayerHistory.Count < 2) return;
+
+            canvas.Children.Clear();
+
+            double w = canvas.Bounds.Width > 0 ? canvas.Bounds.Width : 300;
+            double h = canvas.Bounds.Height > 0 ? canvas.Bounds.Height : 120;
+            int maxPlayers = entry.LastServerInfo?.MaxPlayerCount ?? 64;
+            if (maxPlayers <= 0) maxPlayers = 64;
+
+            var points = entry.PlayerHistory;
+            double xStep = w / Math.Max(points.Count - 1, 1);
+
+            // Draw grid lines
+            for (int i = 0; i <= 4; i++)
+            {
+                double y = h - (h * i / 4.0);
+                var gridLine = new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Avalonia.Point(0, y),
+                    EndPoint = new Avalonia.Point(w, y),
+                    Stroke = new SolidColorBrush(Color.Parse("#1a2a3a")),
+                    StrokeThickness = 1
+                };
+                canvas.Children.Add(gridLine);
+
+                // Label
+                int val = maxPlayers * i / 4;
+                var label = new TextBlock
+                {
+                    Text = val.ToString(),
+                    FontSize = 9,
+                    Foreground = new SolidColorBrush(Color.Parse("#556677"))
+                };
+                Canvas.SetLeft(label, 2);
+                Canvas.SetTop(label, y - 12);
+                canvas.Children.Add(label);
+            }
+
+            // Draw filled area + line
+            var geometry = new Avalonia.Media.StreamGeometry();
+            using (var ctx = geometry.Open())
+            {
+                ctx.BeginFigure(new Avalonia.Point(0, h), true);
+                for (int i = 0; i < points.Count; i++)
+                {
+                    double x = i * xStep;
+                    double y = h - (h * Math.Min(points[i].Count, maxPlayers) / (double)maxPlayers);
+                    ctx.LineTo(new Avalonia.Point(x, y));
+                }
+                ctx.LineTo(new Avalonia.Point((points.Count - 1) * xStep, h));
+                ctx.EndFigure(true);
+            }
+
+            // Fill
+            var fill = new Avalonia.Controls.Shapes.Path
+            {
+                Data = geometry,
+                Fill = new SolidColorBrush(Color.Parse("#1a4fc3f7")),
+            };
+            canvas.Children.Add(fill);
+
+            // Line on top
+            var lineGeometry = new Avalonia.Media.StreamGeometry();
+            using (var ctx = lineGeometry.Open())
+            {
+                double x0 = 0, y0 = h - (h * Math.Min(points[0].Count, maxPlayers) / (double)maxPlayers);
+                ctx.BeginFigure(new Avalonia.Point(x0, y0), false);
+                for (int i = 1; i < points.Count; i++)
+                {
+                    double x = i * xStep;
+                    double y = h - (h * Math.Min(points[i].Count, maxPlayers) / (double)maxPlayers);
+                    ctx.LineTo(new Avalonia.Point(x, y));
+                }
+                ctx.EndFigure(false);
+            }
+
+            var line = new Avalonia.Controls.Shapes.Path
+            {
+                Data = lineGeometry,
+                Stroke = new SolidColorBrush(Color.Parse("#4fc3f7")),
+                StrokeThickness = 2
+            };
+            canvas.Children.Add(line);
+
+            // Current value dot
+            if (points.Count > 0)
+            {
+                double lastX = (points.Count - 1) * xStep;
+                double lastY = h - (h * Math.Min(points[points.Count - 1].Count, maxPlayers) / (double)maxPlayers);
+                var dot = new Avalonia.Controls.Shapes.Ellipse
+                {
+                    Width = 6, Height = 6,
+                    Fill = new SolidColorBrush(Color.Parse("#4fc3f7"))
+                };
+                Canvas.SetLeft(dot, lastX - 3);
+                Canvas.SetTop(dot, lastY - 3);
+                canvas.Children.Add(dot);
+            }
+
+            // Time range label
+            var rangeLabel = this.FindControl<TextBlock>("DashGraphRange");
+            if (rangeLabel != null && points.Count > 1)
+            {
+                var span = points[points.Count - 1].Time - points[0].Time;
+                rangeLabel.Text = span.TotalMinutes < 2 ? "Just started" : $"Last {(int)span.TotalMinutes} minutes";
+            }
         }
 
         private void UpdateSidebarButtons()
