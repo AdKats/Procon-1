@@ -233,6 +233,8 @@
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="PunkBuster" Tag="15" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
+            <Button Content="Chat Moderation" Tag="16" Padding="10,7" Background="Transparent" FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Settings" Tag="7" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}" Click="OnTabClick" />
             <Button Content="Plugins" Tag="8" Padding="10,7" Background="Transparent" FontSize="12"
@@ -414,6 +416,21 @@
                         <ListBox.ItemTemplate>
                           <DataTemplate>
                             <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <Grid.ContextMenu>
+                                <ContextMenu>
+                                  <MenuItem Header="Kill" Click="OnPlayerKill" />
+                                  <MenuItem Header="Kick..." Click="OnPlayerKick" />
+                                  <Separator />
+                                  <MenuItem Header="Move to Team 1" Click="OnPlayerMoveTeam1" />
+                                  <MenuItem Header="Move to Team 2" Click="OnPlayerMoveTeam2" />
+                                  <MenuItem Header="Move to Team 3" Click="OnPlayerMoveTeam3" />
+                                  <MenuItem Header="Move to Team 4" Click="OnPlayerMoveTeam4" />
+                                  <Separator />
+                                  <MenuItem Header="Ban (Name)..." Click="OnPlayerBan" />
+                                  <Separator />
+                                  <MenuItem Header="Copy Name" Click="OnPlayerCopyName" />
+                                </ContextMenu>
+                              </Grid.ContextMenu>
                               <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
                               <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                               <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
@@ -446,6 +463,21 @@
                         <ListBox.ItemTemplate>
                           <DataTemplate>
                             <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <Grid.ContextMenu>
+                                <ContextMenu>
+                                  <MenuItem Header="Kill" Click="OnPlayerKill" />
+                                  <MenuItem Header="Kick..." Click="OnPlayerKick" />
+                                  <Separator />
+                                  <MenuItem Header="Move to Team 1" Click="OnPlayerMoveTeam1" />
+                                  <MenuItem Header="Move to Team 2" Click="OnPlayerMoveTeam2" />
+                                  <MenuItem Header="Move to Team 3" Click="OnPlayerMoveTeam3" />
+                                  <MenuItem Header="Move to Team 4" Click="OnPlayerMoveTeam4" />
+                                  <Separator />
+                                  <MenuItem Header="Ban (Name)..." Click="OnPlayerBan" />
+                                  <Separator />
+                                  <MenuItem Header="Copy Name" Click="OnPlayerCopyName" />
+                                </ContextMenu>
+                              </Grid.ContextMenu>
                               <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
                               <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                               <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
@@ -478,6 +510,21 @@
                         <ListBox.ItemTemplate>
                           <DataTemplate>
                             <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <Grid.ContextMenu>
+                                <ContextMenu>
+                                  <MenuItem Header="Kill" Click="OnPlayerKill" />
+                                  <MenuItem Header="Kick..." Click="OnPlayerKick" />
+                                  <Separator />
+                                  <MenuItem Header="Move to Team 1" Click="OnPlayerMoveTeam1" />
+                                  <MenuItem Header="Move to Team 2" Click="OnPlayerMoveTeam2" />
+                                  <MenuItem Header="Move to Team 3" Click="OnPlayerMoveTeam3" />
+                                  <MenuItem Header="Move to Team 4" Click="OnPlayerMoveTeam4" />
+                                  <Separator />
+                                  <MenuItem Header="Ban (Name)..." Click="OnPlayerBan" />
+                                  <Separator />
+                                  <MenuItem Header="Copy Name" Click="OnPlayerCopyName" />
+                                </ContextMenu>
+                              </Grid.ContextMenu>
                               <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
                               <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                               <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
@@ -510,6 +557,21 @@
                         <ListBox.ItemTemplate>
                           <DataTemplate>
                             <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+                              <Grid.ContextMenu>
+                                <ContextMenu>
+                                  <MenuItem Header="Kill" Click="OnPlayerKill" />
+                                  <MenuItem Header="Kick..." Click="OnPlayerKick" />
+                                  <Separator />
+                                  <MenuItem Header="Move to Team 1" Click="OnPlayerMoveTeam1" />
+                                  <MenuItem Header="Move to Team 2" Click="OnPlayerMoveTeam2" />
+                                  <MenuItem Header="Move to Team 3" Click="OnPlayerMoveTeam3" />
+                                  <MenuItem Header="Move to Team 4" Click="OnPlayerMoveTeam4" />
+                                  <Separator />
+                                  <MenuItem Header="Ban (Name)..." Click="OnPlayerBan" />
+                                  <Separator />
+                                  <MenuItem Header="Copy Name" Click="OnPlayerCopyName" />
+                                </ContextMenu>
+                              </Grid.ContextMenu>
                               <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
                               <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                               <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
@@ -838,6 +900,14 @@
                     CornerRadius="8" Padding="0"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
               <ContentControl Name="PunkBusterContent" />
+            </Border>
+
+            <!-- Tab 16: Text Chat Moderation -->
+            <Border Name="Tab16" IsVisible="False"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="8" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              <ContentControl Name="TextChatModerationContent" />
             </Border>
 
           </Panel>

@@ -57,6 +57,7 @@ namespace PRoCon.UI.Views
         private LayerPanel _layerPanel;
         private SpectatorListPanel _spectatorListPanel;
         private PunkBusterPanel _punkBusterPanel;
+        private TextChatModerationPanel _textChatModerationPanel;
         private OptionsPanel _optionsPanel;
         private PRoCon.Core.Network.IPCheckService _ipCheckService;
 
@@ -221,6 +222,7 @@ namespace PRoCon.UI.Views
                 _layerPanel = new LayerPanel();
                 _spectatorListPanel = new SpectatorListPanel();
                 _punkBusterPanel = new PunkBusterPanel();
+                _textChatModerationPanel = new TextChatModerationPanel();
                 _optionsPanel = new OptionsPanel();
             }
             catch (Exception ex)
@@ -300,6 +302,8 @@ namespace PRoCon.UI.Views
             if (spectatorContent != null) spectatorContent.Content = _spectatorListPanel;
             var pbContent = this.FindControl<ContentControl>("PunkBusterContent");
             if (pbContent != null) pbContent.Content = _punkBusterPanel;
+            var textChatModContent = this.FindControl<ContentControl>("TextChatModerationContent");
+            if (textChatModContent != null) textChatModContent.Content = _textChatModerationPanel;
             // Options panel is shown in a dialog, not embedded in tabs
 
             // Load existing connections
@@ -1094,6 +1098,7 @@ namespace PRoCon.UI.Views
             _layerPanel?.SetClient(null);
             _spectatorListPanel?.SetClient(null);
             _punkBusterPanel?.SetClient(null);
+            _textChatModerationPanel?.SetClient(null);
 
             if (_chatLog != null) _chatLog.Text = "";
 
@@ -1141,6 +1146,7 @@ namespace PRoCon.UI.Views
             _layerPanel?.SetClient(client);
             _spectatorListPanel?.SetClient(client);
             _punkBusterPanel?.SetClient(client);
+            _textChatModerationPanel?.SetClient(client);
             _optionsPanel?.SetApplication(_application);
 
             // Load data for connected servers
@@ -1149,6 +1155,7 @@ namespace PRoCon.UI.Views
                 _mapListPanel?.LoadData();
                 _banListPanel?.LoadData();
                 _reservedSlotsPanel?.LoadData();
+                _textChatModerationPanel?.LoadData();
             }
 
             // Status
@@ -1846,6 +1853,79 @@ namespace PRoCon.UI.Views
             var client = SelectedClient;
             if (client?.Game != null)
                 client.Game.SendAdminListPlayersPacket(new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
+        }
+
+        // --- Player Context Menu Handlers ---
+
+        private PlayerDisplayInfo GetPlayerFromMenuContext(object sender)
+        {
+            if (sender is MenuItem menuItem && menuItem.DataContext is PlayerDisplayInfo player)
+                return player;
+            return null;
+        }
+
+        private void OnPlayerKill(object sender, RoutedEventArgs e)
+        {
+            var player = GetPlayerFromMenuContext(sender);
+            var client = SelectedClient;
+            if (player == null || client == null) return;
+
+            client.SendRequest(new List<string> { "admin.killPlayer", player.Name });
+        }
+
+        private async void OnPlayerKick(object sender, RoutedEventArgs e)
+        {
+            var player = GetPlayerFromMenuContext(sender);
+            var client = SelectedClient;
+            if (player == null || client == null) return;
+
+            var dialog = new TextInputDialog("Kick Player", $"Reason for kicking {player.Name}:", "Kicked by admin");
+            await dialog.ShowDialog(this);
+
+            if (dialog.Confirmed)
+            {
+                string reason = string.IsNullOrWhiteSpace(dialog.ResultText) ? "Kicked by admin" : dialog.ResultText;
+                client.SendRequest(new List<string> { "admin.kickPlayer", player.Name, reason });
+            }
+        }
+
+        private void MovePlayerToTeam(object sender, int teamId)
+        {
+            var player = GetPlayerFromMenuContext(sender);
+            var client = SelectedClient;
+            if (player == null || client == null) return;
+
+            client.SendRequest(new List<string> { "admin.movePlayer", player.Name, teamId.ToString(), "0", "true" });
+        }
+
+        private void OnPlayerMoveTeam1(object sender, RoutedEventArgs e) => MovePlayerToTeam(sender, 1);
+        private void OnPlayerMoveTeam2(object sender, RoutedEventArgs e) => MovePlayerToTeam(sender, 2);
+        private void OnPlayerMoveTeam3(object sender, RoutedEventArgs e) => MovePlayerToTeam(sender, 3);
+        private void OnPlayerMoveTeam4(object sender, RoutedEventArgs e) => MovePlayerToTeam(sender, 4);
+
+        private async void OnPlayerBan(object sender, RoutedEventArgs e)
+        {
+            var player = GetPlayerFromMenuContext(sender);
+            var client = SelectedClient;
+            if (player == null || client == null) return;
+
+            var dialog = new TextInputDialog("Ban Player", $"Reason for banning {player.Name}:", "Banned by admin");
+            await dialog.ShowDialog(this);
+
+            if (dialog.Confirmed)
+            {
+                string reason = string.IsNullOrWhiteSpace(dialog.ResultText) ? "Banned by admin" : dialog.ResultText;
+                client.SendRequest(new List<string> { "banList.add", "name", player.Name, "perm", reason });
+                client.SendRequest(new List<string> { "banList.save" });
+            }
+        }
+
+        private void OnPlayerCopyName(object sender, RoutedEventArgs e)
+        {
+            var player = GetPlayerFromMenuContext(sender);
+            if (player == null) return;
+
+            TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(player.Name);
         }
     }
 }
