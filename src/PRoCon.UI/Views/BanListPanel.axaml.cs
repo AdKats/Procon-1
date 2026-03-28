@@ -269,23 +269,6 @@ namespace PRoCon.UI.Views
             _client.Game.SendBanListSavePacket();
         }
 
-        private void OnBulkAddBans(object sender, RoutedEventArgs e)
-        {
-            if (_client?.Game == null) return;
-
-            var rng = new Random();
-            int count = 300;
-
-            for (int i = 0; i < count; i++)
-            {
-                string name = "TestBan_" + rng.Next(100000, 999999);
-                string reason = "Bulk test ban #" + (i + 1);
-                _client.SendRequest(new List<string> { "banList.add", "name", name, "perm", reason });
-            }
-
-            _client.Game.SendBanListSavePacket();
-        }
-
         private void OnRefresh(object sender, RoutedEventArgs e)
         {
             LoadData();

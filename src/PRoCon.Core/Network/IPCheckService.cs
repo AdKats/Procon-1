@@ -32,6 +32,7 @@ namespace PRoCon.Core.Network
 
         private readonly ConcurrentDictionary<string, IPCheckResult> _memoryCache = new();
         private readonly SemaphoreSlim _rateLimiter = new(5, 5); // max 5 concurrent requests
+        private readonly object _dailyCountLock = new();
         private readonly string _cacheDir;
         private string _apiKey;
         private int _dailyQueries;
@@ -86,12 +87,13 @@ namespace PRoCon.Core.Network
                 return diskResult;
             }
 
-            // Check daily query limit
-            ResetDailyCountIfNeeded();
-            if (_dailyQueries >= DailyQueryLimit)
+            // Check daily query limit (thread-safe)
+            lock (_dailyCountLock)
             {
-                // Return stale cache if available, otherwise null
-                return diskResult ?? cached;
+                ResetDailyCountIfNeeded();
+                if (_dailyQueries >= DailyQueryLimit)
+                    return diskResult ?? cached;
+                _dailyQueries++;
             }
 
             // Rate limit
@@ -106,7 +108,6 @@ namespace PRoCon.Core.Network
                     result.CachedAt = DateTime.UtcNow;
                     _memoryCache[ip] = result;
                     SaveToDisk(result);
-                    Interlocked.Increment(ref _dailyQueries);
                     SaveQueryCount();
                 }
                 return result;

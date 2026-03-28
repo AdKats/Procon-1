@@ -79,21 +79,20 @@ namespace PRoCon.UI.Views
         }
 
         // Status color brush for the indicator dot
-        public Avalonia.Media.ISolidColorBrush StatusColor
+        private static readonly Avalonia.Media.ISolidColorBrush ConnectedBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#66bb6a"));
+        private static readonly Avalonia.Media.ISolidColorBrush ConnectingBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffab40"));
+        private static readonly Avalonia.Media.ISolidColorBrush DisconnectedBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef5350"));
+
+        public Avalonia.Media.ISolidColorBrush StatusColor => _state switch
         {
-            get
-            {
-                return _state switch
-                {
-                    ServerConnectionState.Connected => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#66bb6a")),
-                    ServerConnectionState.Connecting => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffab40")),
-                    _ => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef5350")),
-                };
-            }
-        }
+            ServerConnectionState.Connected => ConnectedBrush,
+            ServerConnectionState.Connecting => ConnectingBrush,
+            _ => DisconnectedBrush,
+        };
 
         // Per-server state
-        public StringBuilder ChatBuffer { get; } = new StringBuilder();
+        public const int MaxChatLines = 500;
+        public Queue<string> ChatLines { get; } = new Queue<string>();
         public ObservableCollection<ConsoleLine> ConsoleLines { get; } = new ObservableCollection<ConsoleLine>();
         public ConsoleFileLogger ConsoleLogger { get; set; }
         public List<string> PlayerItems { get; set; } = new List<string>();
@@ -423,6 +422,18 @@ namespace PRoCon.UI.Views
             catch { }
 
             this.Opened += MainWindow_Opened;
+        }
+
+        protected override void OnClosing(Avalonia.Controls.WindowClosingEventArgs e)
+        {
+            _ipCheckService?.Dispose();
+            foreach (var entry in _servers)
+            {
+                entry.ConsoleLogger?.Dispose();
+                entry.ConsoleLogger = null;
+            }
+            try { _application?.Shutdown(); } catch { }
+            base.OnClosing(e);
         }
 
         private PRoConClient GetClient(string hostPort)
@@ -1348,7 +1359,7 @@ namespace PRoCon.UI.Views
 
             // Chat
             var chatLog = this.FindControl<TextBlock>("ChatLog");
-            if (chatLog != null) chatLog.Text = entry.ChatBuffer.ToString();
+            if (chatLog != null) chatLog.Text = string.Join("\n", entry.ChatLines);
 
             // Players
             UpdateTeamPanels(entry);
@@ -1385,12 +1396,14 @@ namespace PRoCon.UI.Views
         private void AppendChat(ServerEntry entry, string line)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
-            entry.ChatBuffer.AppendLine($"[{timestamp}] {line}");
+            entry.ChatLines.Enqueue($"[{timestamp}] {line}");
+            while (entry.ChatLines.Count > ServerEntry.MaxChatLines)
+                entry.ChatLines.Dequeue();
 
             if (_selectedServer == entry)
             {
                 var chatLog = this.FindControl<TextBlock>("ChatLog");
-                if (chatLog != null) chatLog.Text = entry.ChatBuffer.ToString();
+                if (chatLog != null) chatLog.Text = string.Join("\n", entry.ChatLines);
                 var scroller = this.FindControl<ScrollViewer>("ChatScroller");
                 scroller?.ScrollToEnd();
             }

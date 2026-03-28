@@ -154,7 +154,7 @@ namespace PRoCon.Core.Remote
         /// When true and TLS handshake fails, fall back to a plain TCP connection
         /// instead of treating the failure as fatal. Default is false.
         /// </summary>
-        public bool AllowTlsFallback { get; set; }
+        // AllowTlsFallback removed — TLS downgrade is a security risk
 
         /// <summary>
         /// Cancellation token source for the receive loop and other async operations.
@@ -705,13 +705,7 @@ namespace PRoCon.Core.Remote
             }
             catch (Exception ex)
             {
-                if (this.AllowTlsFallback)
-                {
-                    _logger.LogWarning("TLS handshake failed for {Hostname}:{Port} ({Error}). Falling back to plain TCP.", this.Hostname, this.Port, ex.Message);
-                    this.SslStream = null;
-                    return networkStream;
-                }
-
+                _logger.LogError(ex, "TLS handshake failed for {Hostname}:{Port}. Connection aborted.", this.Hostname, this.Port);
                 throw;
             }
         }
@@ -869,12 +863,13 @@ namespace PRoCon.Core.Remote
 
                     if (this.SslStream != null)
                     {
+                        // SslStream disposes the inner NetworkStream automatically
                         this.SslStream.Close();
                         this.SslStream.Dispose();
                         this.SslStream = null;
+                        this.NetworkStream = null;
                     }
-
-                    if (this.NetworkStream != null)
+                    else if (this.NetworkStream != null)
                     {
                         this.NetworkStream.Close();
                         this.NetworkStream.Dispose();

@@ -23,9 +23,6 @@
         <Button Content="Clear All Bans"
                 Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
                 Padding="10,6" CornerRadius="4" Click="OnClearAllBans" />
-        <Button Content="Add 300 Test Bans"
-                Background="{DynamicResource SecondaryBrush}" Foreground="#0f1923"
-                Padding="10,6" CornerRadius="4" Click="OnBulkAddBans" />
       </StackPanel>
     </Border>
 
