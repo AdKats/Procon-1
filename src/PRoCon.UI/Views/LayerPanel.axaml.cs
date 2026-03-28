@@ -99,10 +99,27 @@ namespace PRoCon.UI.Views
 
         private void OnClientConnected(PRoCon.Core.Remote.Layer.ILayerClient layerClient)
         {
+            // Wire sub-events for this client to auto-refresh on login/disconnect
+            layerClient.Login += (client) => Dispatcher.UIThread.Post(() =>
+            {
+                RefreshClientList();
+                SetStatus($"Client '{client.Username}' logged in.");
+            });
+            layerClient.Logout += (client) => Dispatcher.UIThread.Post(() =>
+            {
+                RefreshClientList();
+                SetStatus($"Client '{client.Username}' logged out.");
+            });
+            layerClient.Quit += (client) => Dispatcher.UIThread.Post(() =>
+            {
+                RefreshClientList();
+                SetStatus("A client disconnected.");
+            });
+
             Dispatcher.UIThread.Post(() =>
             {
                 RefreshClientList();
-                SetStatus("A new layer client connected.");
+                SetStatus($"New client connected from {layerClient.IPPort}");
             });
         }
 
@@ -162,11 +179,34 @@ namespace PRoCon.UI.Views
 
             var items = new List<string>();
 
-            var loggedIn = _client.Layer.GetLoggedInAccountUsernames();
-            if (loggedIn != null)
+            // Show all connected clients with their details
+            try
             {
-                foreach (var username in loggedIn)
-                    items.Add(username);
+                var clients = _client.Layer.Clients;
+                if (clients != null)
+                {
+                    foreach (var kvp in new Dictionary<string, PRoCon.Core.Remote.Layer.ILayerClient>(clients))
+                    {
+                        string name = !string.IsNullOrEmpty(kvp.Value.Username) ? kvp.Value.Username : "(authenticating)";
+                        string ip = kvp.Value.IPPort ?? "?";
+                        items.Add($"{name}  —  {ip}");
+                    }
+                }
+            }
+            catch { }
+
+            // Fallback to logged-in usernames if Clients dict isn't accessible
+            if (items.Count == 0)
+            {
+                var loggedIn = _client.Layer.GetLoggedInAccountUsernames();
+                if (loggedIn != null)
+                {
+                    foreach (var username in loggedIn)
+                    {
+                        if (!string.IsNullOrEmpty(username))
+                            items.Add(username);
+                    }
+                }
             }
 
             if (items.Count == 0)
@@ -175,7 +215,7 @@ namespace PRoCon.UI.Views
             clientsList.ItemsSource = items;
 
             // Update client count badge
-            int count = loggedIn?.Count ?? 0;
+            int count = items.Count > 0 && items[0].StartsWith("(") ? 0 : items.Count;
             var countText = this.FindControl<TextBlock>("ClientCountText");
             if (countText != null) countText.Text = count.ToString();
 
