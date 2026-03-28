@@ -169,7 +169,7 @@ namespace PRoCon.UI.Views
             _consoleSuggestions = this.FindControl<ListBox>("ConsoleSuggestions");
 
             // Array-cached controls
-            _tabs = new Border[14];
+            _tabs = new Border[16];
             for (int i = 0; i <= 15; i++)
                 _tabs[i] = this.FindControl<Border>($"Tab{i}");
 
@@ -315,7 +315,10 @@ namespace PRoCon.UI.Views
                     entry.State = ServerConnectionState.Connected;
             }
 
-            // Servers are loaded from config — use Add Server dialog to add new ones
+            // Add test servers if not already in config
+            EnsureServer("65.75.210.194", 47300, "REDACTED");   // BF4
+            EnsureServer("104.238.220.182", 47210, "REDACTED"); // BF3
+            EnsureServer("65.75.210.194", 47250, "REDACTED");  // BFH
 
             UpdateConnectionCount();
             UpdateContentVisibility();
@@ -1513,7 +1516,7 @@ namespace PRoCon.UI.Views
             {
                 for (int i = 1; i <= 15; i++)
                 {
-                    if (_tabs[i] != null) _tabs[i].IsVisible = false;
+                    if (_tabs != null && i < _tabs.Length && _tabs[i] != null) _tabs[i].IsVisible = false;
                 }
             }
 
