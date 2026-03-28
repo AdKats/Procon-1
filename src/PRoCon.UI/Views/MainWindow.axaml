@@ -242,6 +242,39 @@
         <!-- Tab Content Pages -->
         <Border Padding="16">
           <Panel>
+            <!-- Disconnected placeholder -->
+            <Border Name="DisconnectedOverlay" IsVisible="True"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="12" Padding="40"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+              <StackPanel Spacing="16" HorizontalAlignment="Center" MaxWidth="400">
+                <!-- Big icon-style circle -->
+                <Border Width="80" Height="80" CornerRadius="40"
+                        Background="{DynamicResource BackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+                        HorizontalAlignment="Center">
+                  <TextBlock Text="/" FontSize="40" FontWeight="Light"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Text="Not Connected" FontSize="22" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           HorizontalAlignment="Center" />
+                <TextBlock Name="DisconnectedSubtext"
+                           Text="Select a server from the sidebar or add a new one to get started."
+                           FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}"
+                           HorizontalAlignment="Center" TextAlignment="Center"
+                           TextWrapping="Wrap" />
+                <Button Content="Add Server"
+                        Background="{DynamicResource ButtonPrimaryBrush}"
+                        Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                        Padding="24,10" CornerRadius="6" FontSize="14"
+                        HorizontalAlignment="Center" Margin="0,8,0,0"
+                        Click="OnShowConnectForm" />
+              </StackPanel>
+            </Border>
+
             <!-- Tab 1: Chat -->
             <Border Name="Tab1" IsVisible="False"
                     Background="{DynamicResource SurfaceBrush}"

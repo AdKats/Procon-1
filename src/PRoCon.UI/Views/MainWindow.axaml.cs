@@ -500,8 +500,8 @@ namespace PRoCon.UI.Views
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("#ffab40", $"Connecting to {entry.HostPort}...");
-                    UpdateServerInfoPanel("Connecting...", "TCP connection attempt...");
                     UpdateSidebarButtons();
+                    UpdateContentVisibility();
                 }
             });
 
@@ -511,7 +511,7 @@ namespace PRoCon.UI.Views
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("#ffab40", "Connected, logging in...");
-                    UpdateServerInfoPanel("Connected", "Authenticating...");
+                    UpdateContentVisibility();
                 }
             });
 
@@ -521,8 +521,8 @@ namespace PRoCon.UI.Views
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("#ef5350", "Disconnected");
-                    UpdateServerInfoPanel("Disconnected", "Connection was closed.");
                     UpdateSidebarButtons();
+                    UpdateContentVisibility();
                 }
             });
 
@@ -539,8 +539,9 @@ namespace PRoCon.UI.Views
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("#66bb6a", $"Logged in to {entry.HostPort}");
-                    UpdateServerInfoPanel($"Logged in: {entry.HostPort}", "Waiting for server info...");
                     UpdateSidebarButtons();
+                    UpdateContentVisibility();
+                    SwitchTab(6); // Show dashboard on connect
                 }
 
                 // Request supported commands from server
@@ -555,7 +556,10 @@ namespace PRoCon.UI.Views
             {
                 entry.State = ServerConnectionState.Disconnected;
                 if (_selectedServer == entry)
+                {
                     UpdateStatus("#ffab40", "Logged out");
+                    UpdateContentVisibility();
+                }
             });
 
             // Wire console RCON traffic
@@ -975,9 +979,10 @@ namespace PRoCon.UI.Views
             // Load this server's state into the view
             LoadServerView(entry);
             UpdateSidebarButtons();
+            UpdateContentVisibility();
 
-            // Switch to Info tab if currently on Connect tab
-            if (_activeTab == 0)
+            // Switch to Info if connected
+            if (entry.IsConnected || entry.State == ServerConnectionState.Connecting)
                 SwitchTab(6);
         }
 
@@ -1017,8 +1022,8 @@ namespace PRoCon.UI.Views
             _wiredConsoles.Remove(_selectedServer.HostPort);
 
             UpdateStatus("#ef5350", "Disconnected");
-            UpdateServerInfoPanel("Disconnected", "Connection closed.");
             UpdateSidebarButtons();
+            UpdateContentVisibility();
         }
 
         private async void OnRemoveServer(object sender, RoutedEventArgs e)
@@ -1455,6 +1460,39 @@ namespace PRoCon.UI.Views
         private void UpdateServerInfoPanel(string title, string details)
         {
             // Status is shown in bottom bar and dashboard — this is now a no-op
+        }
+
+        private void UpdateContentVisibility()
+        {
+            bool connected = _selectedServer != null &&
+                (_selectedServer.State == ServerConnectionState.Connected ||
+                 _selectedServer.State == ServerConnectionState.Connecting);
+
+            var overlay = this.FindControl<Border>("DisconnectedOverlay");
+            var tabBar = this.FindControl<WrapPanel>("TabBar");
+
+            if (overlay != null) overlay.IsVisible = !connected;
+            if (tabBar != null) tabBar.IsVisible = connected;
+
+            // Hide all tab content when disconnected
+            if (!connected)
+            {
+                for (int i = 1; i <= 13; i++)
+                {
+                    var tab = this.FindControl<Border>($"Tab{i}");
+                    if (tab != null) tab.IsVisible = false;
+                }
+            }
+
+            // Update subtext
+            var subtext = this.FindControl<TextBlock>("DisconnectedSubtext");
+            if (subtext != null)
+            {
+                if (_selectedServer == null)
+                    subtext.Text = "Select a server from the sidebar or add a new one to get started.";
+                else
+                    subtext.Text = $"Disconnected from {_selectedServer.DisplayName}. Click Connect in the sidebar to reconnect.";
+            }
         }
 
         private void UpdateDashboard(ServerEntry entry, FrostbiteClient game)
