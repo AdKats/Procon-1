@@ -846,9 +846,14 @@ namespace PRoCon.UI.Views
                 // Log to file
                 entry.ConsoleLogger?.WriteLine(line.Text);
 
-                // Cap at ~2000 lines
-                while (entry.ConsoleLines.Count > 2000)
-                    entry.ConsoleLines.RemoveAt(0);
+                // Cap at ~2000 lines (batch trim to avoid N individual re-layouts)
+                if (entry.ConsoleLines.Count > 2200)
+                {
+                    var keep = entry.ConsoleLines.Skip(entry.ConsoleLines.Count - 1500).ToList();
+                    entry.ConsoleLines.Clear();
+                    foreach (var item in keep)
+                        entry.ConsoleLines.Add(item);
+                }
 
                 if (_selectedServer == entry)
                 {
@@ -921,11 +926,7 @@ namespace PRoCon.UI.Views
                 while (entry.KillFeed.Count > 50)
                     entry.KillFeed.RemoveAt(entry.KillFeed.Count - 1);
 
-                if (_selectedServer == entry)
-                {
-                    var killList = this.FindControl<ListBox>("KillFeedList");
-                    if (killList != null) killList.ItemsSource = entry.KillFeed;
-                }
+                // ObservableCollection auto-updates the UI — no need to reassign ItemsSource
             });
 
             game.Chat += (sender, rawChat) => Dispatcher.UIThread.Post(() =>
