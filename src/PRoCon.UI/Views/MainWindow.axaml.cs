@@ -94,6 +94,8 @@ namespace PRoCon.UI.Views
         public ObservableCollection<ConsoleLine> ConsoleLines { get; } = new ObservableCollection<ConsoleLine>();
         public ConsoleFileLogger ConsoleLogger { get; set; }
         public List<string> PlayerItems { get; set; } = new List<string>();
+        public HashSet<string> SupportedCommands { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        internal bool _pendingAdminHelp;
         public Dictionary<int, List<PlayerDisplayInfo>> TeamPlayers { get; set; } = new Dictionary<int, List<PlayerDisplayInfo>>
         {
             { 1, new List<PlayerDisplayInfo>() },
@@ -281,9 +283,14 @@ namespace PRoCon.UI.Views
 
         private bool IsCommandForCurrentGame(RconCommandDef cmd)
         {
+            // If server reported supported commands via admin.help, use that
+            if (_selectedServer?.SupportedCommands.Count > 0)
+                return _selectedServer.SupportedCommands.Contains(cmd.Name);
+
+            // Fall back to static game-type filtering
             if (cmd.Games == null) return true;
             string gameType = _selectedServer?.GameType;
-            if (string.IsNullOrEmpty(gameType)) return true; // show all if unknown
+            if (string.IsNullOrEmpty(gameType)) return true;
             return cmd.Games.Contains(gameType);
         }
 
@@ -509,6 +516,13 @@ namespace PRoCon.UI.Views
                     UpdateServerInfoPanel($"Logged in: {entry.HostPort}", "Waiting for server info...");
                     UpdateSidebarButtons();
                 }
+
+                // Request supported commands from server
+                if (client.Game != null)
+                {
+                    entry._pendingAdminHelp = true;
+                    client.SendRequest(new List<string> { "admin.help" });
+                }
             });
 
             client.Logout += sender => OnClientEvent(entry, () =>
@@ -671,6 +685,22 @@ namespace PRoCon.UI.Views
                 var line = ParseConsoleLine(strLoggedText, $"[{timestamp}] ");
 
                 entry.ConsoleLines.Add(line);
+
+                // Parse admin.help response to learn supported commands
+                if (entry._pendingAdminHelp)
+                {
+                    string clean = ColorCodeRegex.Replace(strLoggedText, "").Trim();
+                    // admin.help response lines are single command names (contain a dot, no spaces)
+                    if (clean.Contains('.') && !clean.Contains(' ') && clean.Length < 60)
+                    {
+                        entry.SupportedCommands.Add(clean);
+                    }
+                    else if (entry.SupportedCommands.Count > 0 && !clean.Contains('.'))
+                    {
+                        // End of admin.help response
+                        entry._pendingAdminHelp = false;
+                    }
+                }
 
                 // Log to file
                 entry.ConsoleLogger?.WriteLine(line.Text);
@@ -846,9 +876,17 @@ namespace PRoCon.UI.Views
             _selectedServer = entry;
             ShowRemoveButton(true);
 
+            // Hide connect tab, show Info tab when a server is selected
+            var connectBtn = this.FindControl<Button>("ConnectTabButton");
+            if (connectBtn != null) connectBtn.IsVisible = false;
+
             // Load this server's state into the view
             LoadServerView(entry);
             UpdateSidebarButtons();
+
+            // Switch to Info tab if currently on Connect tab
+            if (_activeTab == 0)
+                SwitchTab(6);
         }
 
         private void OnServerDoubleClick(object sender, Avalonia.Input.TappedEventArgs e)
@@ -990,6 +1028,11 @@ namespace PRoCon.UI.Views
             ShowRemoveButton(false);
             UpdateConnectionCount();
             _application.SaveMainConfig();
+
+            // Show connect tab button again when no servers left
+            var connectBtn = this.FindControl<Button>("ConnectTabButton");
+            if (connectBtn != null) connectBtn.IsVisible = true;
+            if (_servers.Count == 0) SwitchTab(0);
         }
 
         // --- Load Server View (switch main panel to selected server's data) ---
@@ -1452,6 +1495,26 @@ namespace PRoCon.UI.Views
 
         private void UpdateTeamPanels(ServerEntry entry)
         {
+            bool hasTeam3 = entry.TeamPlayers.ContainsKey(3) && entry.TeamPlayers[3].Count > 0;
+            bool hasTeam4 = entry.TeamPlayers.ContainsKey(4) && entry.TeamPlayers[4].Count > 0;
+            bool hasFourTeams = hasTeam3 || hasTeam4;
+
+            // Update grid layout: 2 cols always, add second row only for 4-team modes
+            var teamGrid = this.FindControl<Grid>("TeamGrid");
+            if (teamGrid != null)
+            {
+                teamGrid.RowDefinitions.Clear();
+                if (hasFourTeams)
+                {
+                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                }
+                else
+                {
+                    teamGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+                }
+            }
+
             for (int t = 1; t <= 4; t++)
             {
                 var teamList = this.FindControl<ListBox>($"TeamList{t}");
