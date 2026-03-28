@@ -772,7 +772,18 @@ namespace PRoCon.Core.Plugin
                 "System.Reflection",
                 "System.Reflection.Primitives",
                 "System.Diagnostics.Debug",
+                "System.Diagnostics.Process",
                 "System.Web.HttpUtility",
+                "System.Net.WebHeaderCollection",
+                "System.Private.Uri",
+                "System.Security.Cryptography",
+                "System.Runtime.Serialization.Primitives",
+                "System.Runtime.Serialization.Xml",
+                "System.Private.Xml",
+                "System.Private.Xml.Linq",
+                "System.Xml.XDocument",
+                "System.Xml.XmlSerializer",
+                "System.ComponentModel.TypeConverter",
                 "Microsoft.CSharp",
                 "netstandard",
                 "System.Private.CoreLib"
@@ -881,6 +892,9 @@ namespace PRoCon.Core.Plugin
 
             fullPluginSource = fullPluginSource.Replace("using PRoCon.Plugin;", "using PRoCon.Core.Plugin;");
 
+            // MySql.Data.MySqlClient → MySqlConnector (namespace changed in v2.0)
+            fullPluginSource = fullPluginSource.Replace("using MySql.Data.MySqlClient;", "using MySqlConnector;");
+
             if (fullPluginSource.Contains("using PRoCon.Core;") == false)
             {
                 fullPluginSource = fullPluginSource.Insert(fullPluginSource.IndexOf("using PRoCon.Core.Plugin;", StringComparison.Ordinal), "\r\nusing PRoCon.Core;\r\n");
@@ -947,7 +961,15 @@ namespace PRoCon.Core.Plugin
                     CSharpCompilation compilation = CSharpCompilation.Create(pluginClassName, syntaxTrees, compilationReferences, compilationOptions);
 
                     // 4.1. Now compile the plugin
-                    this.PrintPluginResults(pluginFile, compilation.Emit(outputAssembly, pdbPath, xmlDocPath));
+                    EmitResult emitResult = compilation.Emit(outputAssembly, pdbPath, xmlDocPath);
+                    this.PrintPluginResults(pluginFile, emitResult);
+
+                    if (!emitResult.Success)
+                    {
+                        // Delete the bad output DLL so LoadPlugin doesn't try to load it
+                        try { if (File.Exists(outputAssembly)) File.Delete(outputAssembly); } catch { }
+                        return;
+                    }
 
                     // 5. Add/Update the storage cache for this plugin.
                     this.PluginCache.Cache(new PluginCacheEntry()
