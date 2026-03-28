@@ -439,6 +439,7 @@ namespace PRoCon.UI.Views
             EnsureServer("65.75.210.194", 47250, "REDACTED");  // BFH
 
             UpdateConnectionCount();
+            UpdateContentVisibility();
 
             // Listen for new connections
             _application.Connections.ConnectionAdded += conn =>
@@ -912,6 +913,19 @@ namespace PRoCon.UI.Views
         }
 
         // --- Server Selection & Connection ---
+
+        private void OnGoHome(object sender, RoutedEventArgs e)
+        {
+            // Deselect server, show landing page
+            _selectedServer = null;
+            var serverList = this.FindControl<ListBox>("ServerList");
+            if (serverList != null) serverList.SelectedItem = null;
+
+            ClearServerContext();
+            UpdateStatus("#8899aa", "PRoCon Frostbite 2.0");
+            UpdateSidebarButtons();
+            UpdateContentVisibility();
+        }
 
         private async void OnShowConnectForm(object sender, RoutedEventArgs e)
         {
@@ -1518,11 +1532,9 @@ namespace PRoCon.UI.Views
                  _selectedServer.State == ServerConnectionState.Connecting);
 
             var overlay = this.FindControl<Border>("DisconnectedOverlay");
-            var tabBar = this.FindControl<WrapPanel>("TabBar");
-            var tabBarBorder = tabBar?.Parent as Border;
+            var tabBarBorder = this.FindControl<Border>("TabBarBorder");
 
             if (overlay != null) overlay.IsVisible = !connected;
-            if (tabBar != null) tabBar.IsVisible = connected;
             if (tabBarBorder != null) tabBarBorder.IsVisible = connected;
 
             // Hide all tab content when disconnected

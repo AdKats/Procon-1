@@ -107,12 +107,13 @@
             BorderThickness="0,0,1,0">
       <DockPanel>
         <Button DockPanel.Dock="Top"
-                Content="+ Add Connection"
-                Background="{DynamicResource ButtonPrimaryBrush}"
-                Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                Content="Home"
+                Background="{DynamicResource SurfaceElevatedBrush}"
+                Foreground="{DynamicResource PrimaryBrush}"
+                FontWeight="SemiBold"
                 HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                 Margin="8" Padding="8,6" CornerRadius="4"
-                Click="OnShowConnectForm" />
+                Click="OnGoHome" />
 
         <StackPanel DockPanel.Dock="Bottom" Margin="8" Spacing="4">
           <Button Name="ConnectSelectedButton"
@@ -207,7 +208,8 @@
         <Border DockPanel.Dock="Top"
                 Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="0,0,0,1" Padding="8,0">
+                BorderThickness="0,0,0,1" Padding="8,0"
+                Name="TabBarBorder" IsVisible="False">
           <WrapPanel Name="TabBar" Orientation="Horizontal">
             <Button Content="Info" Tag="6" Padding="10,7" Background="Transparent" FontSize="12"
                     Foreground="{DynamicResource PrimaryBrush}" FontWeight="SemiBold"
