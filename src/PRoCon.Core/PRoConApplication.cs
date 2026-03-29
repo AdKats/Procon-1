@@ -513,6 +513,14 @@ namespace PRoCon.Core
 
             bool migratedFromCfg = false;
 
+            // Check for v1 import folder before loading config
+            if (Config.V1ConfigImporter.HasImportData() && !File.Exists(jsonPath))
+            {
+                var importResult = Config.V1ConfigImporter.Import();
+                if (importResult.Success)
+                    FrostbiteConnection.LogError("Import", importResult.ToString(), null);
+            }
+
             if (File.Exists(jsonPath))
             {
                 // v2 JSON config — single file for accounts + options + servers
@@ -522,7 +530,7 @@ namespace PRoCon.Core
             }
             else
             {
-                // Legacy .cfg fallback — load accounts then main config
+                // Legacy .cfg fallback (either from Import or pre-existing)
                 this.ExecuteMainConfig("accounts.cfg");
                 this.LoadingAccountsFile = false;
 

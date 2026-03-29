@@ -49,6 +49,7 @@ namespace PRoCon.Core
         public static string LocalizationDirectory => Path.Combine(DataDirectory, "Localization");
         public static string MediaDirectory => Path.Combine(DataDirectory, "Media");
         public static string CacheDirectory => Path.Combine(DataDirectory, "Cache");
+        public static string ImportDirectory => Path.Combine(DataDirectory, "Import");
 
         /// <summary>
         /// Ensures core directories exist. Called once at startup.
