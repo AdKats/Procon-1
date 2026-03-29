@@ -2376,22 +2376,18 @@ namespace PRoCon.Core.Remote
         {
             get
             {
-                String versionNumber = String.Empty;
-
-                if (VersionNumber != null && VersionNumberToFriendlyName != null && VersionNumberToFriendlyName.ContainsKey(VersionNumber) == true)
+                if (VersionNumber != null && VersionNumberToFriendlyName != null && VersionNumberToFriendlyName.ContainsKey(VersionNumber))
                 {
-                    versionNumber = VersionNumberToFriendlyName[VersionNumber];
-                }
-                else if (VersionNumber == null)
-                {
-                    versionNumber = String.Empty;
-                }
-                else
-                {
-                    versionNumber = VersionNumber;
+                    return VersionNumberToFriendlyName[VersionNumber];
                 }
 
-                return versionNumber;
+                if (string.IsNullOrEmpty(VersionNumber))
+                {
+                    return string.Empty;
+                }
+
+                // Unknown version (likely a modded server like Venice Unleashed or Warsaw Revamped)
+                return $"{VersionNumber} (Custom)";
             }
         }
 
