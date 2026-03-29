@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
+using PRoCon.Core;
 using System;
 using System.Threading;
 
@@ -12,8 +13,18 @@ namespace PRoCon.UI
         [STAThread]
         public static void Main(string[] args)
         {
-            // Use base directory in mutex name so separate installs can run simultaneously
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            // Handle --datadir before anything else
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (string.Equals(args[i], "--datadir", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProConPaths.SetDataDirectory(args[i + 1]);
+                    break;
+                }
+            }
+
+            // Use data directory in mutex name so separate installs can run simultaneously
+            string baseDir = ProConPaths.DataDirectory;
             // Simple FNV-1a hash for stable cross-run results
             uint hash = 2166136261;
             foreach (char c in baseDir)
@@ -51,7 +62,7 @@ namespace PRoCon.UI
             }
             finally
             {
-                _singleInstanceMutex.ReleaseMutex();
+                try { _singleInstanceMutex.ReleaseMutex(); } catch { }
                 _singleInstanceMutex.Dispose();
             }
         }

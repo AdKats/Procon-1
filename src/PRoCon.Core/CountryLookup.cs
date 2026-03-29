@@ -1,5 +1,6 @@
 using MaxMind.GeoIP2;
 using MaxMind.GeoIP2.Exceptions;
+using PRoCon.Core;
 using PRoCon.Core.Options;
 using System;
 using System.Collections.Concurrent;
@@ -40,7 +41,7 @@ namespace MaxMind
             try
             {
                 // Prefer the new .mmdb file next to the application binary.
-                string mmdbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeoLite2-Country.mmdb");
+                string mmdbPath = Path.Combine(ProConPaths.DataDirectory, "GeoLite2-Country.mmdb");
                 if (File.Exists(mmdbPath))
                 {
                     _reader = new DatabaseReader(mmdbPath);
@@ -48,7 +49,7 @@ namespace MaxMind
                 else
                 {
                     // Also check the legacy location name without "Lite2" prefix.
-                    mmdbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeoIP2-Country.mmdb");
+                    mmdbPath = Path.Combine(ProConPaths.DataDirectory, "GeoIP2-Country.mmdb");
                     if (File.Exists(mmdbPath))
                     {
                         _reader = new DatabaseReader(mmdbPath);

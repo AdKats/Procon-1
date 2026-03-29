@@ -15,12 +15,6 @@
                      Foreground="{DynamicResource PrimaryBrush}" />
 
           <StackPanel Spacing="8" Margin="0,4,0,0">
-            <CheckBox Name="AutoCheckUpdatesCheck" Content="Check for updates automatically"
-                      Foreground="{DynamicResource TextPrimaryBrush}"
-                      Click="OnAutoCheckUpdatesToggle" />
-            <CheckBox Name="AutoApplyUpdatesCheck" Content="Auto-apply updates"
-                      Foreground="{DynamicResource TextPrimaryBrush}"
-                      Click="OnAutoApplyUpdatesToggle" />
             <CheckBox Name="ShowTrayIconCheck" Content="Show system tray icon"
                       Foreground="{DynamicResource TextPrimaryBrush}"
                       Click="OnShowTrayIconToggle" />

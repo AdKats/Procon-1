@@ -20,6 +20,10 @@ namespace PRoCon.Core.Plugin
             "Dapper",
             "Flurl",
             "Flurl.Http",
+            "Microsoft.Data.Sqlite",
+            "SQLitePCLRaw.core",
+            "SQLitePCLRaw.provider.e_sqlite3",
+            "SQLitePCLRaw.batteries_v2",
             "Microsoft.CodeAnalysis",
             "Microsoft.CodeAnalysis.CSharp",
         };

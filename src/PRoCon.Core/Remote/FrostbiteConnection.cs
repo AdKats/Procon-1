@@ -289,7 +289,7 @@ namespace PRoCon.Core.Remote
                 // ---- Fallback path: DEBUG.txt (kept for environments without logging config) ----
                 try
                 {
-                    string debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DEBUG.txt");
+                    string debugPath = Path.Combine(ProConPaths.LogsDirectory, "DEBUG.txt");
                     using (StreamWriter sw = File.AppendText(debugPath))
                     {
                         sw.Write(strOutput);

@@ -45,8 +45,6 @@ namespace PRoCon.UI.Views
             var options = _application.OptionsSettings;
             if (options != null)
             {
-                SetCheck("AutoCheckUpdatesCheck", options.AutoCheckDownloadUpdates);
-                SetCheck("AutoApplyUpdatesCheck", options.AutoApplyUpdates);
                 SetCheck("ShowTrayIconCheck", options.ShowTrayIcon);
                 SetCheck("CloseToTrayCheck", options.CloseToTray);
                 SetCheck("MinimizeToTrayCheck", options.MinimizeToTray);
@@ -73,18 +71,6 @@ namespace PRoCon.UI.Views
         }
 
         // --- UI Actions ---
-
-        private void OnAutoCheckUpdatesToggle(object sender, RoutedEventArgs e)
-        {
-            if (_application?.OptionsSettings == null) return;
-            _application.OptionsSettings.AutoCheckDownloadUpdates = (sender as CheckBox)?.IsChecked == true;
-        }
-
-        private void OnAutoApplyUpdatesToggle(object sender, RoutedEventArgs e)
-        {
-            if (_application?.OptionsSettings == null) return;
-            _application.OptionsSettings.AutoApplyUpdates = (sender as CheckBox)?.IsChecked == true;
-        }
 
         private void OnShowTrayIconToggle(object sender, RoutedEventArgs e)
         {

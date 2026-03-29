@@ -122,7 +122,7 @@ namespace PRoCon.Core.Plugin
 
         public string PluginBaseDirectory
         {
-            get { return Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName), ProconClient.GameType); }
+            get { return Path.Combine(Path.Combine(ProConPaths.PluginsDirectory), ProconClient.GameType); }
         }
 
         public string PluginDebugTempDirectory
@@ -187,7 +187,7 @@ namespace PRoCon.Core.Plugin
                         // Log the error so we might alert a plugin developer that
                         // a call to their plugin has caused the plugin manager to go
                         // into a panic.
-                        File.AppendAllText("PLUGIN_DEBUG.txt", faultText);
+                        File.AppendAllText(Path.Combine(ProConPaths.LogsDirectory, "PLUGIN_DEBUG.txt"), faultText);
 
                         WritePluginConsole("^1^bPlugin invocation timeout: ");
                         WritePluginConsole("^1" + faultText);
@@ -564,7 +564,7 @@ namespace PRoCon.Core.Plugin
                     Directory.CreateDirectory(PluginBaseDirectory);
                 }
 
-                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string baseDir = ProConPaths.ApplicationDirectory;
 
                 // Map DLL names to their loaded assemblies for single-file fallback
                 var dllAssemblyMap = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase)
@@ -575,6 +575,10 @@ namespace PRoCon.Core.Plugin
                     { "Dapper.dll", TryGetAssembly("Dapper") },
                     { "Flurl.dll", TryGetAssembly("Flurl") },
                     { "Flurl.Http.dll", TryGetAssembly("Flurl.Http") },
+                    { "Microsoft.Data.Sqlite.dll", TryGetAssembly("Microsoft.Data.Sqlite") },
+                    { "SQLitePCLRaw.core.dll", TryGetAssembly("SQLitePCLRaw.core") },
+                    { "SQLitePCLRaw.provider.e_sqlite3.dll", TryGetAssembly("SQLitePCLRaw.provider.e_sqlite3") },
+                    { "SQLitePCLRaw.batteries_v2.dll", TryGetAssembly("SQLitePCLRaw.batteries_v2") },
                 };
 
                 foreach (var kvp in dllAssemblyMap)
@@ -670,7 +674,7 @@ namespace PRoCon.Core.Plugin
                         if (remainder.EndsWith(".inc"))
                         {
                             // Shared includes go to parent Plugins/ dir so #include "../file.inc" resolves
-                            string sharedDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName);
+                            string sharedDir = ProConPaths.PluginsDirectory;
                             string sharedDest = Path.Combine(sharedDir, remainder);
                             if (!File.Exists(sharedDest))
                             {
@@ -719,8 +723,8 @@ namespace PRoCon.Core.Plugin
         {
             try
             {
-                string legacyPluginDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName);
-                string legacyPluginDestinationDirectory = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName), "BFBC2");
+                string legacyPluginDirectory = ProConPaths.PluginsDirectory;
+                string legacyPluginDestinationDirectory = Path.Combine(ProConPaths.PluginsDirectory, "BFBC2");
 
                 var legacyPluginsDirectoryInfo = new DirectoryInfo(legacyPluginDirectory);
                 FileInfo[] legacyPluginsInfo = legacyPluginsDirectoryInfo.GetFiles("*.cs");
@@ -864,6 +868,13 @@ namespace PRoCon.Core.Plugin
                 {
                     references.Add(MetadataReference.CreateFromFile(flurlPath));
                 }
+            }
+
+            // Add Microsoft.Data.Sqlite reference (SQLite for plugins and core)
+            string sqlitePath = Path.Combine(proconDir, "Microsoft.Data.Sqlite.dll");
+            if (File.Exists(sqlitePath))
+            {
+                references.Add(MetadataReference.CreateFromFile(sqlitePath));
             }
 
             return references;

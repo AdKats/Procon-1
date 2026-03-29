@@ -69,16 +69,16 @@ namespace PRoCon.Core.Logging
                         try
                         {
 
-                            if (Directory.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"), this.FileHostNamePort)) == false)
+                            if (Directory.Exists(Path.Combine(ProConPaths.LogsDirectory, this.FileHostNamePort)) == false)
                             {
-                                Directory.CreateDirectory(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"), this.FileHostNamePort));
+                                Directory.CreateDirectory(Path.Combine(ProConPaths.LogsDirectory, this.FileHostNamePort));
                             }
 
                             if (this.m_stmFile == null)
                             {
                                 this.m_blLogging = true;
 
-                                if ((this.m_stmFile = new FileStream(Path.Combine(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"), this.FileHostNamePort), DateTime.Now.ToString("yyyyMMdd") + "_" + this.FileNameSuffix + ".log"), FileMode.Append)) != null)
+                                if ((this.m_stmFile = new FileStream(Path.Combine(Path.Combine(ProConPaths.LogsDirectory, this.FileHostNamePort), DateTime.Now.ToString("yyyyMMdd") + "_" + this.FileNameSuffix + ".log"), FileMode.Append)) != null)
                                 {
                                     if ((this.m_stwFileWriter = new StreamWriter(this.m_stmFile, Encoding.UTF8)) != null)
                                     {

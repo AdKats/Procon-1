@@ -698,8 +698,8 @@ namespace PRoCon.Core.Remote
                     }
                 }
 
-                string configDirectoryPath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), FileHostNamePort);
-                string oldConfigFilePath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), string.Format("{0}.cfg", FileHostNamePort));
+                string configDirectoryPath = Path.Combine(ProConPaths.ConfigsDirectory, FileHostNamePort);
+                string oldConfigFilePath = Path.Combine(ProConPaths.ConfigsDirectory, string.Format("{0}.cfg", FileHostNamePort));
 
                 if (File.Exists(oldConfigFilePath) == false && Directory.Exists(configDirectoryPath))
                 {
@@ -2376,7 +2376,7 @@ namespace PRoCon.Core.Remote
 
             try
             {
-                using (var brFormatCheck = new BinaryReader(File.Open(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), spsSound.m_strSoundFile), FileMode.Open)))
+                using (var brFormatCheck = new BinaryReader(File.Open(Path.Combine(ProConPaths.MediaDirectory, spsSound.m_strSoundFile), FileMode.Open)))
                 {
                     brFormatCheck.BaseStream.Position = 20;
                     Int16 i16Format = brFormatCheck.ReadInt16();
@@ -2387,7 +2387,7 @@ namespace PRoCon.Core.Remote
 
 #if NETFRAMEWORK
                         // Load it in this thread in case the file is big.
-                        m_spPlayer.SoundLocation = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), spsSound.m_strSoundFile);
+                        m_spPlayer.SoundLocation = Path.Combine(ProConPaths.MediaDirectory, spsSound.m_strSoundFile);
 
                         for (int i = 0; i < spsSound.m_iRepeat && m_blPlaySound; i++)
                         {
@@ -3600,11 +3600,11 @@ namespace PRoCon.Core.Remote
 
                 try
                 {
-                    configDirectoryPath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), FileHostNamePort);
+                    configDirectoryPath = Path.Combine(ProConPaths.ConfigsDirectory, FileHostNamePort);
 
-                    if (Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs")) == false)
+                    if (Directory.Exists(ProConPaths.ConfigsDirectory) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"));
+                        Directory.CreateDirectory(ProConPaths.ConfigsDirectory);
                     }
 
                     if (Directory.Exists(configDirectoryPath) == false)
@@ -3736,14 +3736,14 @@ namespace PRoCon.Core.Remote
             //FileStream stmConfigFile = null;
             try
             {
-                if (!File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile)))
+                if (!File.Exists(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile)))
                 {
                     return;
                 }
 
                 //stmConfigFile = new FileStream(String.Format(@"{0}Configs\{1}", AppDomain.CurrentDomain.BaseDirectory, strConfigFile), FileMode.Open);
 
-                string[] a_strConfigData = File.ReadAllLines(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile));
+                string[] a_strConfigData = File.ReadAllLines(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile));
 
                 if (a_strConfigData == null)
                 {
@@ -3858,12 +3858,12 @@ namespace PRoCon.Core.Remote
             //FileStream stmConfigFile = null;
             try
             {
-                if (!File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile)))
+                if (!File.Exists(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile)))
                 {
                     return;
                 }
 
-                string[] a_strConfigData = File.ReadAllLines(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile));
+                string[] a_strConfigData = File.ReadAllLines(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile));
 
                 if (a_strConfigData == null)
                 {

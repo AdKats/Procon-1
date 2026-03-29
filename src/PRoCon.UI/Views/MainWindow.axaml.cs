@@ -319,16 +319,11 @@ namespace PRoCon.UI.Views
                     entry.State = ServerConnectionState.Connected;
             }
 
-            // Add test servers if not already in config
-            EnsureServer("65.75.210.194", 47300, "REDACTED");   // BF4
-            EnsureServer("104.238.220.182", 47210, "REDACTED"); // BF3
-            EnsureServer("65.75.210.194", 47250, "REDACTED");  // BFH
-
             UpdateConnectionCount();
             UpdateContentVisibility();
 
             // Initialize IP check service
-            string ipCacheDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache", "IPCheck");
+            string ipCacheDir = Path.Combine(PRoCon.Core.ProConPaths.CacheDirectory, "IPCheck");
             string apiKey = _application?.OptionsSettings?.ProxyCheckApiKey ?? "";
             _ipCheckService = new PRoCon.Core.Network.IPCheckService(ipCacheDir, apiKey);
 
@@ -633,9 +628,8 @@ namespace PRoCon.UI.Views
             if (entry.ConsoleLogger != null) return;
             try
             {
-                string appDir = AppDomain.CurrentDomain.BaseDirectory;
                 string safeHostPort = client.HostNamePort.Replace(":", "_");
-                string logDir = Path.Combine(appDir, "Logs", safeHostPort);
+                string logDir = Path.Combine(PRoCon.Core.ProConPaths.LogsDirectory, safeHostPort);
                 entry.ConsoleLogger = new ConsoleFileLogger(logDir);
             }
             catch

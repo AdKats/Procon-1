@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Data.Sqlite;
 using Newtonsoft.Json.Linq;
 
 namespace PRoCon.Core.Network
@@ -23,6 +26,40 @@ namespace PRoCon.Core.Network
         public bool FromCache { get; set; }
     }
 
+    internal class IPCacheRow
+    {
+        public string ip { get; set; }
+        public string country_name { get; set; }
+        public string country_code { get; set; }
+        public string city { get; set; }
+        public string provider { get; set; }
+        public int is_proxy { get; set; }
+        public int is_vpn { get; set; }
+        public int is_tor { get; set; }
+        public int risk { get; set; }
+        public string cached_at { get; set; }
+
+        public IPCheckResult ToResult() => new IPCheckResult
+        {
+            IP = ip,
+            CountryName = country_name ?? "",
+            CountryCode = country_code ?? "",
+            City = city ?? "",
+            Provider = provider ?? "",
+            IsProxy = is_proxy == 1,
+            IsVPN = is_vpn == 1,
+            IsTor = is_tor == 1,
+            Risk = risk,
+            CachedAt = DateTime.Parse(cached_at, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
+        };
+    }
+
+    internal class QueryCountRow
+    {
+        public string date { get; set; }
+        public int count { get; set; }
+    }
+
     public class IPCheckService : IDisposable
     {
         private static readonly HttpClient _httpClient = new HttpClient
@@ -31,24 +68,32 @@ namespace PRoCon.Core.Network
         };
 
         private readonly ConcurrentDictionary<string, IPCheckResult> _memoryCache = new();
-        private readonly SemaphoreSlim _rateLimiter = new(5, 5); // max 5 concurrent requests
+        private readonly SemaphoreSlim _rateLimiter = new(5, 5);
         private readonly object _dailyCountLock = new();
-        private readonly string _cacheDir;
+        private readonly object _dbLock = new();
+        private readonly SqliteConnection _conn;
         private string _apiKey;
         private int _dailyQueries;
         private DateTime _queryCountResetDate;
-        private const int FreeQueryLimit = 950; // stay under 1K
+        private const int FreeQueryLimit = 950;
         private static readonly TimeSpan CacheTTL = TimeSpan.FromHours(48);
 
         public IPCheckService(string cacheDirectory, string apiKey = null)
         {
-            _cacheDir = cacheDirectory;
             _apiKey = apiKey;
             _queryCountResetDate = DateTime.UtcNow.Date;
 
-            if (!Directory.Exists(_cacheDir))
-                Directory.CreateDirectory(_cacheDir);
+            if (!Directory.Exists(cacheDirectory))
+                Directory.CreateDirectory(cacheDirectory);
 
+            string dbPath = Path.Combine(cacheDirectory, "ipcache.db");
+            _conn = new SqliteConnection($"Data Source={dbPath}");
+            _conn.Open();
+
+            // WAL mode allows concurrent reads and avoids "database is locked"
+            _conn.Execute("PRAGMA journal_mode=WAL;");
+
+            InitializeDatabase();
             LoadQueryCount();
         }
 
@@ -61,6 +106,35 @@ namespace PRoCon.Core.Network
         public int DailyQueriesUsed => _dailyQueries;
         public int DailyQueryLimit => string.IsNullOrEmpty(_apiKey) ? FreeQueryLimit : 100000;
 
+        private void InitializeDatabase()
+        {
+            lock (_dbLock)
+            {
+                _conn.Execute(@"
+                    CREATE TABLE IF NOT EXISTS ip_cache (
+                        ip TEXT PRIMARY KEY,
+                        country_name TEXT,
+                        country_code TEXT,
+                        city TEXT,
+                        provider TEXT,
+                        is_proxy INTEGER,
+                        is_vpn INTEGER,
+                        is_tor INTEGER,
+                        risk INTEGER,
+                        cached_at TEXT
+                    );
+
+                    CREATE TABLE IF NOT EXISTS query_count (
+                        id INTEGER PRIMARY KEY CHECK (id = 1),
+                        date TEXT,
+                        count INTEGER
+                    );
+
+                    CREATE INDEX IF NOT EXISTS idx_ip_cache_cached_at ON ip_cache(cached_at);
+                ");
+            }
+        }
+
         public async Task<IPCheckResult> LookupAsync(string ip)
         {
             if (string.IsNullOrWhiteSpace(ip) || ip == "none" || ip.StartsWith("127.") || ip == "0.0.0.0")
@@ -68,7 +142,7 @@ namespace PRoCon.Core.Network
 
             // Strip port if present
             int colonIdx = ip.LastIndexOf(':');
-            if (colonIdx > 0 && !ip.Contains("::")) // not IPv6
+            if (colonIdx > 0 && !ip.Contains("::"))
                 ip = ip.Substring(0, colonIdx);
 
             // Check memory cache
@@ -78,13 +152,13 @@ namespace PRoCon.Core.Network
                 return cached;
             }
 
-            // Check disk cache
-            var diskResult = LoadFromDisk(ip);
-            if (diskResult != null && DateTime.UtcNow - diskResult.CachedAt < CacheTTL)
+            // Check SQLite cache
+            var dbResult = LoadFromDb(ip);
+            if (dbResult != null && DateTime.UtcNow - dbResult.CachedAt < CacheTTL)
             {
-                diskResult.FromCache = true;
-                _memoryCache[ip] = diskResult;
-                return diskResult;
+                dbResult.FromCache = true;
+                _memoryCache[ip] = dbResult;
+                return dbResult;
             }
 
             // Check daily query limit (thread-safe)
@@ -92,13 +166,13 @@ namespace PRoCon.Core.Network
             {
                 ResetDailyCountIfNeeded();
                 if (_dailyQueries >= DailyQueryLimit)
-                    return diskResult ?? cached;
+                    return dbResult ?? cached;
                 _dailyQueries++;
             }
 
             // Rate limit
             if (!await _rateLimiter.WaitAsync(TimeSpan.FromSeconds(5)))
-                return diskResult ?? cached;
+                return dbResult ?? cached;
 
             try
             {
@@ -107,14 +181,14 @@ namespace PRoCon.Core.Network
                 {
                     result.CachedAt = DateTime.UtcNow;
                     _memoryCache[ip] = result;
-                    SaveToDisk(result);
+                    SaveToDb(result);
                     SaveQueryCount();
                 }
                 return result;
             }
             catch
             {
-                return diskResult ?? cached;
+                return dbResult ?? cached;
             }
             finally
             {
@@ -160,33 +234,47 @@ namespace PRoCon.Core.Network
             };
         }
 
-        private IPCheckResult LoadFromDisk(string ip)
+        private IPCheckResult LoadFromDb(string ip)
         {
             try
             {
-                string path = GetCachePath(ip);
-                if (!File.Exists(path)) return null;
-                string json = File.ReadAllText(path);
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<IPCheckResult>(json);
+                lock (_dbLock)
+                {
+                    var row = _conn.QueryFirstOrDefault<IPCacheRow>(
+                        "SELECT * FROM ip_cache WHERE ip = @ip", new { ip });
+                    return row?.ToResult();
+                }
             }
             catch { return null; }
         }
 
-        private void SaveToDisk(IPCheckResult result)
+        private void SaveToDb(IPCheckResult result)
         {
             try
             {
-                string path = GetCachePath(result.IP);
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
-                File.WriteAllText(path, json);
+                lock (_dbLock)
+                {
+                    _conn.Execute(@"
+                        INSERT OR REPLACE INTO ip_cache
+                            (ip, country_name, country_code, city, provider, is_proxy, is_vpn, is_tor, risk, cached_at)
+                        VALUES
+                            (@ip, @country_name, @country_code, @city, @provider, @is_proxy, @is_vpn, @is_tor, @risk, @cached_at)",
+                        new
+                        {
+                            ip = result.IP,
+                            country_name = result.CountryName ?? "",
+                            country_code = result.CountryCode ?? "",
+                            city = result.City ?? "",
+                            provider = result.Provider ?? "",
+                            is_proxy = result.IsProxy ? 1 : 0,
+                            is_vpn = result.IsVPN ? 1 : 0,
+                            is_tor = result.IsTor ? 1 : 0,
+                            risk = result.Risk,
+                            cached_at = result.CachedAt.ToString("O"),
+                        });
+                }
             }
             catch { }
-        }
-
-        private string GetCachePath(string ip)
-        {
-            string safe = ip.Replace('.', '_').Replace(':', '_');
-            return Path.Combine(_cacheDir, $"{safe}.json");
         }
 
         private void ResetDailyCountIfNeeded()
@@ -203,13 +291,14 @@ namespace PRoCon.Core.Network
         {
             try
             {
-                string path = Path.Combine(_cacheDir, "_query_count.json");
-                if (File.Exists(path))
+                lock (_dbLock)
                 {
-                    var obj = JObject.Parse(File.ReadAllText(path));
-                    var date = obj["date"]?.Value<DateTime>() ?? DateTime.MinValue;
-                    if (date.Date == DateTime.UtcNow.Date)
-                        _dailyQueries = obj["count"]?.Value<int>() ?? 0;
+                    var row = _conn.QueryFirstOrDefault<QueryCountRow>(
+                        "SELECT date, count FROM query_count WHERE id = 1");
+
+                    if (row != null && DateTime.Parse(row.date, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).Date == DateTime.UtcNow.Date)
+                        _dailyQueries = row.count;
+
                     _queryCountResetDate = DateTime.UtcNow.Date;
                 }
             }
@@ -220,20 +309,42 @@ namespace PRoCon.Core.Network
         {
             try
             {
-                string path = Path.Combine(_cacheDir, "_query_count.json");
-                var obj = new JObject
+                lock (_dbLock)
                 {
-                    ["date"] = DateTime.UtcNow.Date,
-                    ["count"] = _dailyQueries
-                };
-                File.WriteAllText(path, obj.ToString());
+                    _conn.Execute(@"
+                        INSERT OR REPLACE INTO query_count (id, date, count)
+                        VALUES (1, @date, @count)",
+                        new { date = DateTime.UtcNow.Date.ToString("O"), count = _dailyQueries });
+                }
             }
             catch { }
+        }
+
+        /// <summary>
+        /// Removes expired entries from the database.
+        /// </summary>
+        public int PurgeExpiredEntries()
+        {
+            try
+            {
+                lock (_dbLock)
+                {
+                    return _conn.Execute(
+                        "DELETE FROM ip_cache WHERE cached_at < @cutoff",
+                        new { cutoff = (DateTime.UtcNow - CacheTTL).ToString("O") });
+                }
+            }
+            catch { return 0; }
         }
 
         public void Dispose()
         {
             _rateLimiter?.Dispose();
+            lock (_dbLock)
+            {
+                _conn?.Close();
+                _conn?.Dispose();
+            }
         }
     }
 }

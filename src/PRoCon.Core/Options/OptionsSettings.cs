@@ -19,9 +19,6 @@ namespace PRoCon.Core.Options
         public event OptionsEnabledHandler EventsLoggingChanged;
         public event OptionsEnabledHandler PluginsLoggingChanged;
         public event OptionsEnabledHandler ChatLoggingChanged;
-        public event OptionsEnabledHandler AutoCheckDownloadUpdatesChanged;
-        public event OptionsEnabledHandler AutoApplyUpdatesChanged;
-        public event OptionsEnabledHandler AutoCheckGameConfigsForUpdatesChanged;
         public event OptionsEnabledHandler ShowTrayIconChanged;
         public event OptionsEnabledHandler CloseToTrayChanged;
         public event OptionsEnabledHandler MinimizeToTrayChanged;
@@ -120,79 +117,6 @@ namespace PRoCon.Core.Options
                 if (this.ChatLoggingChanged != null)
                 {
                     this.ChatLoggingChanged(value);
-                }
-            }
-        }
-
-        private bool m_isAutoCheckDownloadUpdatesEnabled;
-        public bool AutoCheckDownloadUpdates
-        {
-            get
-            {
-                return this.m_isAutoCheckDownloadUpdatesEnabled;
-            }
-            set
-            {
-                if (this.m_praApplication.BlockUpdateChecks == true)
-                {
-                    this.m_isAutoCheckDownloadUpdatesEnabled = false;
-                }
-                else
-                {
-                    this.m_isAutoCheckDownloadUpdatesEnabled = value;
-                }
-
-                this.m_praApplication.SaveMainConfig();
-
-                if (this.AutoCheckDownloadUpdatesChanged != null)
-                {
-                    this.AutoCheckDownloadUpdatesChanged(value);
-                }
-            }
-        }
-
-        private bool m_isAutoApplyUpdatesEnabled;
-        public bool AutoApplyUpdates
-        {
-            get
-            {
-                return this.m_isAutoApplyUpdatesEnabled;
-            }
-            set
-            {
-                this.m_isAutoApplyUpdatesEnabled = value;
-                this.m_praApplication.SaveMainConfig();
-
-                if (this.AutoApplyUpdatesChanged != null)
-                {
-                    this.AutoApplyUpdatesChanged(value);
-                }
-            }
-        }
-
-        private bool m_isAutoCheckGameConfigsForUpdatesEnabled;
-        public bool AutoCheckGameConfigsForUpdates
-        {
-            get
-            {
-                return this.m_isAutoCheckGameConfigsForUpdatesEnabled;
-            }
-            set
-            {
-                if (this.m_praApplication.BlockUpdateChecks == true)
-                {
-                    this.m_isAutoCheckGameConfigsForUpdatesEnabled = false;
-                }
-                else
-                {
-                    this.m_isAutoCheckGameConfigsForUpdatesEnabled = value;
-                }
-
-                this.m_praApplication.SaveMainConfig();
-
-                if (this.AutoCheckDownloadUpdatesChanged != null)
-                {
-                    this.AutoCheckGameConfigsForUpdatesChanged(value);
                 }
             }
         }
@@ -641,12 +565,12 @@ namespace PRoCon.Core.Options
                     {
 
                         psetPluginPermissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, AppDomain.CurrentDomain.BaseDirectory));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins")));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs")));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read | FileIOPermissionAccess.PathDiscovery, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization")));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read | FileIOPermissionAccess.PathDiscovery, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs")));
-                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media")));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, ProConPaths.DataDirectory));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, ProConPaths.PluginsDirectory));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, ProConPaths.LogsDirectory));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read | FileIOPermissionAccess.PathDiscovery, ProConPaths.LocalizationDirectory));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read | FileIOPermissionAccess.PathDiscovery, ProConPaths.ConfigsDirectory));
+                        psetPluginPermissions.AddPermission(new FileIOPermission(FileIOPermissionAccess.AllAccess, ProConPaths.MediaDirectory));
                         psetPluginPermissions.AddPermission(new UIPermission(PermissionState.Unrestricted));
                         psetPluginPermissions.AddPermission(new System.Net.DnsPermission(PermissionState.Unrestricted));
 
@@ -724,9 +648,6 @@ namespace PRoCon.Core.Options
         public OptionsSettings(PRoConApplication praApplication)
         {
             this.m_praApplication = praApplication;
-            this.AutoCheckDownloadUpdates = true;
-            this.AutoCheckGameConfigsForUpdates = true;
-
             this.EnableAdminReason = false;
 
             this.LayerHideLocalAccounts = true;

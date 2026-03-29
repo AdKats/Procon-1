@@ -5,6 +5,7 @@
     <RootNamespace>PRoCon.Themes</RootNamespace>
     <AssemblyName>PRoCon.Themes</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
