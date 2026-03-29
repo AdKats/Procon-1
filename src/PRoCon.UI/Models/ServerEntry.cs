@@ -82,7 +82,8 @@ namespace PRoCon.UI.Models
 
         // Per-server state
         public const int MaxChatLines = 500;
-        public Queue<string> ChatLines { get; } = new Queue<string>();
+        public ConcurrentQueue<string> ChatLines { get; } = new ConcurrentQueue<string>();
+        internal readonly System.Text.StringBuilder ChatText = new System.Text.StringBuilder();
         public ObservableCollection<ConsoleLine> ConsoleLines { get; } = new ObservableCollection<ConsoleLine>();
         public ConsoleFileLogger ConsoleLogger { get; set; }
         public List<string> PlayerItems { get; set; } = new List<string>();

@@ -1175,7 +1175,9 @@ namespace PRoCon.UI.Views
             }
 
             // Chat
-            if (_chatLog != null) _chatLog.Text = string.Join("\n", entry.ChatLines);
+            entry.ChatText.Clear();
+            entry.ChatText.AppendJoin('\n', entry.ChatLines);
+            if (_chatLog != null) _chatLog.Text = entry.ChatText.ToString();
 
             // Players
             UpdateTeamPanels(entry);
@@ -1210,13 +1212,31 @@ namespace PRoCon.UI.Views
         private void AppendChat(ServerEntry entry, string line)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
-            entry.ChatLines.Enqueue($"[{timestamp}] {line}");
+            string fullLine = $"[{timestamp}] {line}";
+            entry.ChatLines.Enqueue(fullLine);
+
             while (entry.ChatLines.Count > ServerEntry.MaxChatLines)
-                entry.ChatLines.Dequeue();
+            {
+                entry.ChatLines.TryDequeue(out _);
+            }
 
             if (_selectedServer == entry)
             {
-                if (_chatLog != null) _chatLog.Text = string.Join("\n", entry.ChatLines);
+                if (_chatLog != null)
+                {
+                    if (entry.ChatText.Length > 0)
+                        entry.ChatText.AppendLine();
+                    entry.ChatText.Append(fullLine);
+
+                    // Rebuild from queue when at capacity to stay in sync
+                    if (entry.ChatLines.Count >= ServerEntry.MaxChatLines)
+                    {
+                        entry.ChatText.Clear();
+                        entry.ChatText.AppendJoin('\n', entry.ChatLines);
+                    }
+
+                    _chatLog.Text = entry.ChatText.ToString();
+                }
                 _chatScroller?.ScrollToEnd();
             }
         }
