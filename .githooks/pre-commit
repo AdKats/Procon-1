@@ -30,6 +30,6 @@ $DOTNET format src/PRoCon.sln --no-restore --verbosity quiet $INCLUDE_ARGS 2>/de
 # Re-stage any files that were reformatted
 for file in $STAGED_CS; do
     if [ -f "$file" ]; then
-        git add "$file"
+        git add -f -- "$file"
     fi
 done
