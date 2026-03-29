@@ -932,13 +932,13 @@ namespace PRoCon.Core
                 foreach (var acc in config.Accounts)
                 {
                     if (!string.IsNullOrEmpty(acc.Name))
-                        this.AccountsList.CreateAccount(acc.Name, acc.Password);
+                        this.AccountsList.CreateAccount(acc.Name, ConfigCrypto.Decrypt(acc.Password));
                 }
 
                 // Servers
                 foreach (var srv in config.Servers)
                 {
-                    var connection = this.AddConnection(srv.Host, srv.Port, srv.Username, srv.Password);
+                    var connection = this.AddConnection(srv.Host, srv.Port, srv.Username, ConfigCrypto.Decrypt(srv.Password));
                     if (connection != null)
                     {
                         if (!string.IsNullOrEmpty(srv.Name))
@@ -956,7 +956,7 @@ namespace PRoCon.Core
 
         public void SaveJsonConfig()
         {
-            if (this.LoadingMainConfig || this.CurrentLanguage == null || this.OptionsSettings == null || this.Connections == null)
+            if (this.LoadingMainConfig || this.OptionsSettings == null || this.Connections == null)
                 return;
 
             try
@@ -977,7 +977,7 @@ namespace PRoCon.Core
                     },
                     Options = new OptionsConfig
                     {
-                        Language = this.CurrentLanguage.FileName,
+                        Language = this.CurrentLanguage?.FileName ?? "au.loc",
                         ChatLogging = this.OptionsSettings.ChatLogging,
                         ConsoleLogging = this.OptionsSettings.ConsoleLogging,
                         EventsLogging = this.OptionsSettings.EventsLogging,
@@ -1014,7 +1014,7 @@ namespace PRoCon.Core
                     config.Options.StatsLinks.Add(new StatsLinkConfig { Name = link.LinkName, Url = link.LinkUrl });
 
                 foreach (Account acc in this.AccountsList)
-                    config.Accounts.Add(new AccountConfig { Name = acc.Name, Password = acc.Password });
+                    config.Accounts.Add(new AccountConfig { Name = acc.Name, Password = ConfigCrypto.Encrypt(acc.Password) });
 
                 foreach (PRoConClient prcClient in this.Connections)
                 {
@@ -1022,7 +1022,7 @@ namespace PRoCon.Core
                     {
                         Host = prcClient.HostName,
                         Port = prcClient.Port,
-                        Password = prcClient.Password,
+                        Password = ConfigCrypto.Encrypt(prcClient.Password),
                         Username = prcClient.Username,
                         AutoConnect = prcClient.AutomaticallyConnect,
                     };

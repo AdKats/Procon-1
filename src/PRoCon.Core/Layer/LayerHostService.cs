@@ -167,7 +167,13 @@ namespace PRoCon.Core.Layer
                         _clientAdapters.TryRemove(connectionId, out _);
                     };
 
-                    _app.StartAsync().Wait();
+                    if (!_app.StartAsync().Wait(TimeSpan.FromSeconds(10)))
+                    {
+                        System.Console.Error.WriteLine("[LayerHostService] Timed out starting Kestrel on {0}:{1}", BindingAddress, ListeningPort);
+                        _app = null;
+                        return;
+                    }
+                    System.Console.WriteLine("[LayerHostService] Listening on http://{0}:{1}/layer", BindingAddress, ListeningPort);
                     LayerStarted?.Invoke();
                 }
                 catch (SocketException se)
