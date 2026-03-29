@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.OptionsPanel"
+             Background="{DynamicResource BackgroundBrush}">
+
+  <ScrollViewer>
+    <StackPanel Spacing="16" Margin="16">
+
+      <!-- General Options -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="General" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <StackPanel Spacing="8" Margin="0,4,0,0">
+            <CheckBox Name="ShowTrayIconCheck" Content="Show system tray icon"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      Click="OnShowTrayIconToggle" />
+            <CheckBox Name="CloseToTrayCheck" Content="Close to system tray"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      Click="OnCloseToTrayToggle" />
+            <CheckBox Name="MinimizeToTrayCheck" Content="Minimize to system tray"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      Click="OnMinimizeToTrayToggle" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Language -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Language" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+
+          <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+            <TextBlock Text="Language:"
+                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <ComboBox Name="LanguageComboBox" Width="200"
+                      Background="{DynamicResource InputBackgroundBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      BorderBrush="{DynamicResource BorderBrush}"
+                      SelectionChanged="OnLanguageChanged" />
+          </StackPanel>
+
+          <TextBlock Name="CurrentLanguageText" Text="Current: --"
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+        </StackPanel>
+      </Border>
+
+      <!-- ProxyCheck.io IP Checking -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="10">
+          <TextBlock Text="IP Checking (ProxyCheck.io v3)" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Text="Automatically checks player IPs for VPN/proxy usage and geolocation. Free plan allows 1,000 lookups per day with 48-hour caching."
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" TextWrapping="Wrap" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="API Key:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" Width="80" />
+            <TextBox Name="ProxyCheckApiKeyInput" Width="300"
+                     Watermark="Leave blank for free tier (1K/day)"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+            <Button Content="Save" Padding="12,6" CornerRadius="4"
+                    Background="{DynamicResource ButtonPrimaryBrush}"
+                    Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                    Click="OnSaveProxyCheckKey" />
+          </StackPanel>
+          <TextBlock Name="ProxyCheckStatus" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+        </StackPanel>
+      </Border>
+
+      <!-- About -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="8" Padding="16">
+        <StackPanel Spacing="8">
+          <TextBlock Text="About PRoCon" FontSize="15" FontWeight="SemiBold"
+                     Foreground="{DynamicResource PrimaryBrush}" />
+          <TextBlock Name="VersionText" Text="PRoCon Frostbite v1.6.0"
+                     Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" />
+          <TextBlock Text="Avalonia UI modernization of the classic Procon Frostbite RCON tool."
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" />
+          <TextBlock Text="Running on .NET 8.0"
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
+          <TextBlock Name="RuntimeInfoText" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+        </StackPanel>
+      </Border>
+
+      <!-- Status -->
+      <TextBlock Name="OptionsStatusText" Text=""
+                 Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
+                 Margin="0,4,0,8" />
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

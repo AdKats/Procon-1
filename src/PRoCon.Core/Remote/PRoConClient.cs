@@ -34,7 +34,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if NETFRAMEWORK
 using System.Media;
+#endif
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -332,7 +334,7 @@ namespace PRoCon.Core.Remote
             private set;
         }
         */
-        private List<Task> Tasks { get; set; }
+        private List<ScheduledTask> Tasks { get; set; }
 
         // Variables received by the server.
         //private Dictionary<string, string> m_dicSvLayerVariables;
@@ -510,10 +512,10 @@ namespace PRoCon.Core.Remote
 
             m_dicForwardedPackets = new Dictionary<UInt32, SOriginalForwardedPacket>();
 
-            Tasks = new List<Task>();
+            Tasks = new List<ScheduledTask>();
             VersionNumber = String.Empty;
 
-            Layer = new LayerInstance();
+            Layer = new PRoCon.Core.Layer.LayerHostService();
 
             m_dicUsernamesToUids = new Dictionary<string, string>() {
                 {"SYSOP", ""}
@@ -696,8 +698,8 @@ namespace PRoCon.Core.Remote
                     }
                 }
 
-                string configDirectoryPath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), FileHostNamePort);
-                string oldConfigFilePath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), string.Format("{0}.cfg", FileHostNamePort));
+                string configDirectoryPath = Path.Combine(ProConPaths.ConfigsDirectory, FileHostNamePort);
+                string oldConfigFilePath = Path.Combine(ProConPaths.ConfigsDirectory, string.Format("{0}.cfg", FileHostNamePort));
 
                 if (File.Exists(oldConfigFilePath) == false && Directory.Exists(configDirectoryPath))
                 {
@@ -2296,7 +2298,9 @@ namespace PRoCon.Core.Remote
 
         #region Playing Sounds
 
+#if NETFRAMEWORK
         private readonly SoundPlayer m_spPlayer = new SoundPlayer();
+#endif
         private bool m_blPlaySound;
 
         private Thread m_thSound;
@@ -2304,6 +2308,12 @@ namespace PRoCon.Core.Remote
 
         public void PlaySound(string strSoundFile, int iRepeat)
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                // Sound playback is only supported on Windows (System.Media.SoundPlayer).
+                return;
+            }
+
             var spsSound = new SPlaySound();
             spsSound.m_iRepeat = iRepeat;
             spsSound.m_strSoundFile = strSoundFile;
@@ -2366,7 +2376,7 @@ namespace PRoCon.Core.Remote
 
             try
             {
-                using (var brFormatCheck = new BinaryReader(File.Open(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), spsSound.m_strSoundFile), FileMode.Open)))
+                using (var brFormatCheck = new BinaryReader(File.Open(Path.Combine(ProConPaths.MediaDirectory, spsSound.m_strSoundFile), FileMode.Open)))
                 {
                     brFormatCheck.BaseStream.Position = 20;
                     Int16 i16Format = brFormatCheck.ReadInt16();
@@ -2375,13 +2385,18 @@ namespace PRoCon.Core.Remote
                     {
                         brFormatCheck.Close();
 
+#if NETFRAMEWORK
                         // Load it in this thread in case the file is big.
-                        m_spPlayer.SoundLocation = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), spsSound.m_strSoundFile);
+                        m_spPlayer.SoundLocation = Path.Combine(ProConPaths.MediaDirectory, spsSound.m_strSoundFile);
 
                         for (int i = 0; i < spsSound.m_iRepeat && m_blPlaySound; i++)
                         {
                             m_spPlayer.PlaySync();
                         }
+#else
+                        // TODO: Implement cross-platform sound playback if needed.
+                        // SoundPlayer is not available on .NET 8+ non-Windows platforms.
+#endif
                     }
                     else
                     {
@@ -2572,7 +2587,7 @@ namespace PRoCon.Core.Remote
             Console.Write("Running Tasks: [Name] [Delay] [Interval] [Repeat] [Command]");
 
             //lock (this.m_taskLocker) {
-            foreach (Task ctTask in new List<Task>(Tasks))
+            foreach (ScheduledTask ctTask in new List<ScheduledTask>(Tasks))
             {
                 Console.Write(ctTask.ToString());
             }
@@ -2586,7 +2601,7 @@ namespace PRoCon.Core.Remote
             if (iDelay >= 0 && iInterval > 0 && iRepeat != 0)
             {
                 //lock (this.m_taskLocker) {
-                Tasks.Add(new Task(strTaskname, lstCommandWords, iDelay, iInterval, iRepeat));
+                Tasks.Add(new ScheduledTask(strTaskname, lstCommandWords, iDelay, iInterval, iRepeat));
                 //}
             }
         }
@@ -2616,7 +2631,7 @@ namespace PRoCon.Core.Remote
         {
             try
             {
-                foreach (Task ctExecute in new List<Task>(Tasks).Where(ctExecute => Game != null && Game.IsLoggedIn && ctExecute.ExecuteCommand))
+                foreach (ScheduledTask ctExecute in new List<ScheduledTask>(Tasks).Where(ctExecute => Game != null && Game.IsLoggedIn && ctExecute.ExecuteCommand))
                 {
                     Parent.ExecutePRoConCommand(this, ctExecute.Command, 0);
                 }
@@ -2630,7 +2645,7 @@ namespace PRoCon.Core.Remote
             }
         }
 
-        private static bool RepeatTaskDisabled(Task ctRemoveAll)
+        private static bool RepeatTaskDisabled(ScheduledTask ctRemoveAll)
         {
             return ctRemoveAll.RemoveTask;
         }
@@ -3585,11 +3600,11 @@ namespace PRoCon.Core.Remote
 
                 try
                 {
-                    configDirectoryPath = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), FileHostNamePort);
+                    configDirectoryPath = Path.Combine(ProConPaths.ConfigsDirectory, FileHostNamePort);
 
-                    if (Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs")) == false)
+                    if (Directory.Exists(ProConPaths.ConfigsDirectory) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"));
+                        Directory.CreateDirectory(ProConPaths.ConfigsDirectory);
                     }
 
                     if (Directory.Exists(configDirectoryPath) == false)
@@ -3721,14 +3736,14 @@ namespace PRoCon.Core.Remote
             //FileStream stmConfigFile = null;
             try
             {
-                if (!File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile)))
+                if (!File.Exists(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile)))
                 {
                     return;
                 }
 
                 //stmConfigFile = new FileStream(String.Format(@"{0}Configs\{1}", AppDomain.CurrentDomain.BaseDirectory, strConfigFile), FileMode.Open);
 
-                string[] a_strConfigData = File.ReadAllLines(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile));
+                string[] a_strConfigData = File.ReadAllLines(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile));
 
                 if (a_strConfigData == null)
                 {
@@ -3843,12 +3858,12 @@ namespace PRoCon.Core.Remote
             //FileStream stmConfigFile = null;
             try
             {
-                if (!File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile)))
+                if (!File.Exists(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile)))
                 {
                     return;
                 }
 
-                string[] a_strConfigData = File.ReadAllLines(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile));
+                string[] a_strConfigData = File.ReadAllLines(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile));
 
                 if (a_strConfigData == null)
                 {
@@ -3874,7 +3889,12 @@ namespace PRoCon.Core.Remote
 
         #region Plugin setup & events
 
+#if NETFRAMEWORK
         public void CompilePlugins(PermissionSet prmPluginSandbox)
+#else
+        // TODO: Phase 2 - Replace PermissionSet with AssemblyLoadContext-based security model.
+        public void CompilePlugins(object prmPluginSandbox = null)
+#endif
         {
             var dicClassSavedVariables = new Dictionary<string, List<CPluginVariable>>();
             List<string> lstEnabledPlugins = null;

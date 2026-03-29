@@ -1,0 +1,71 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Blue + Orange Gaming-Oriented Light Theme -->
+
+  <!-- Base Colors -->
+  <Color x:Key="BackgroundColor">#f5f7fa</Color>
+  <Color x:Key="SurfaceColor">#ffffff</Color>
+  <Color x:Key="SurfaceElevatedColor">#e8ecf0</Color>
+
+  <!-- Accent Colors (same as dark for brand consistency) -->
+  <Color x:Key="PrimaryColor">#1e88e5</Color>
+  <Color x:Key="SecondaryColor">#f57c00</Color>
+  <Color x:Key="SuccessColor">#43a047</Color>
+  <Color x:Key="ErrorColor">#e53935</Color>
+  <Color x:Key="WarningColor">#f57c00</Color>
+
+  <!-- Text Colors -->
+  <Color x:Key="TextPrimaryColor">#1a2332</Color>
+  <Color x:Key="TextSecondaryColor">#6b7c8d</Color>
+  <Color x:Key="TextDisabledColor">#a0aab4</Color>
+
+  <!-- Brushes -->
+  <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+  <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="{StaticResource SurfaceElevatedColor}" />
+  <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}" />
+  <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
+  <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource TextDisabledColor}" />
+
+  <!-- Border -->
+  <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource SurfaceElevatedColor}" />
+  <Thickness x:Key="BorderThickness">1</Thickness>
+  <CornerRadius x:Key="CornerRadius">4</CornerRadius>
+
+  <!-- Tab / Navigation -->
+  <SolidColorBrush x:Key="TabActiveBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="TabInactiveBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TabHoverBrush" Color="#e0e8f0" />
+
+  <!-- Status -->
+  <SolidColorBrush x:Key="ConnectedBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="DisconnectedBrush" Color="{StaticResource ErrorColor}" />
+
+  <!-- Chat -->
+  <SolidColorBrush x:Key="ChatTeamBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="ChatSquadBrush" Color="#1565c0" />
+  <SolidColorBrush x:Key="ChatAllBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="ChatAdminBrush" Color="{StaticResource SecondaryColor}" />
+
+  <!-- Input -->
+  <SolidColorBrush x:Key="InputBackgroundBrush" Color="#ffffff" />
+  <SolidColorBrush x:Key="InputFocusBorderBrush" Color="{StaticResource PrimaryColor}" />
+
+  <!-- Button -->
+  <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="ButtonPrimaryHoverBrush" Color="#2196f3" />
+  <SolidColorBrush x:Key="ButtonPrimaryTextBrush" Color="#ffffff" />
+  <SolidColorBrush x:Key="ButtonSecondaryBrush" Color="{StaticResource SurfaceElevatedColor}" />
+  <SolidColorBrush x:Key="ButtonSecondaryTextBrush" Color="{StaticResource TextPrimaryColor}" />
+
+  <!-- ScrollBar -->
+  <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#c0c8d0" />
+  <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="Transparent" />
+
+</ResourceDictionary>

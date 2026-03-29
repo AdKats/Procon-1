@@ -1,7 +1,7 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
- 
+
     This file is part of PRoCon Frostbite.
 
     PRoCon Frostbite is free software: you can redistribute it and/or modify
@@ -21,37 +21,59 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Loader;
 
 namespace PRoCon.Core.Plugin
 {
-    using System.Reflection;
-
     // Factory class to create objects exposing IPRoConPluginInterface
-    public class CPRoConPluginLoaderFactory : MarshalByRefObject
+    public class CPRoConPluginLoaderFactory
     {
         protected List<IPRoConPluginInterface> LoadedPlugins;
 
-        public override object InitializeLifetimeService()
-        {
-            return null;
-        }
+        private PluginLoadContext _loadContext;
 
         public CPRoConPluginLoaderFactory()
         {
             this.LoadedPlugins = new List<IPRoConPluginInterface>();
         }
 
+        /// <summary>
+        /// Sets the AssemblyLoadContext used to load plugin assemblies.
+        /// </summary>
+        public void SetLoadContext(PluginLoadContext loadContext)
+        {
+            _loadContext = loadContext;
+        }
+
+        /// <summary>
+        /// Gets the current AssemblyLoadContext, if any.
+        /// </summary>
+        public PluginLoadContext GetLoadContext()
+        {
+            return _loadContext;
+        }
+
         public IPRoConPluginInterface Create(string assemblyFile, string typeName, object[] constructArguments)
         {
-            IPRoConPluginInterface loadedPlugin = (IPRoConPluginInterface)Activator.CreateInstanceFrom(
-                assemblyFile,
-                typeName,
-                false,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance,
-                null,
-                constructArguments,
-                null,
-                null).Unwrap();
+            Assembly assembly;
+
+            if (_loadContext != null)
+            {
+                assembly = _loadContext.LoadFromAssemblyPath(System.IO.Path.GetFullPath(assemblyFile));
+            }
+            else
+            {
+                assembly = Assembly.LoadFrom(assemblyFile);
+            }
+
+            Type pluginType = assembly.GetType(typeName);
+            if (pluginType == null)
+            {
+                throw new TypeLoadException($"Could not find type '{typeName}' in assembly '{assemblyFile}'.");
+            }
+
+            IPRoConPluginInterface loadedPlugin = (IPRoConPluginInterface)Activator.CreateInstance(pluginType, constructArguments);
 
             this.LoadedPlugins.Add(loadedPlugin);
 

@@ -4,32 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Procon 1 (PRoCon Frostbite) is a free, open-source remote control (RCON) tool for managing game servers. It supports Battlefield (BFBC2, BF3, BF4, Hardline) and Medal of Honor: Warfighter through the Frostbite engine.
-
-**Two branches:**
-- `master` — v1.x stable, .NET Framework 4.7, WinForms
-- `feature/modernization` — v2.0 in progress, .NET 8, Avalonia UI (worktree at `~/.config/superpowers/worktrees/Procon-1/modernize/`)
+PRoCon 2 (PRoCon Frostbite) is a free, open-source remote control (RCON) tool for managing game servers. It supports Battlefield (BFBC2, BF3, BF4, Hardline) and Medal of Honor: Warfighter through the Frostbite engine. Written in C# targeting .NET 8, cross-platform (Windows, Linux, Mac). Modernized from the original Procon 1 with Avalonia UI, async networking, SignalR layer, and full plugin backward compatibility.
 
 ## Build Commands
 
-### v1.x (master branch)
-
 ```bash
-nuget restore src/PRoCon-VS2008E.sln
-msbuild src/PRoCon-VS2008E.sln /p:Configuration=Release /p:Platform="Any CPU" /m
-```
+# Restore and build
+dotnet restore src/PRoCon.sln
+dotnet build src/PRoCon.sln --configuration Release
 
-### v2.0 (feature/modernization branch)
+# Build specific project
+dotnet build src/PRoCon.Core/PRoCon.Core.csproj
 
-```bash
-# Build (from worktree root)
-~/.dotnet/dotnet build src/PRoCon.UI/PRoCon.UI.csproj
-
-# Run on Linux
-DISPLAY=:0 ~/.dotnet/dotnet run --project src/PRoCon.UI/PRoCon.UI.csproj
-
-# Publish self-contained
-~/.dotnet/dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r linux-x64 --self-contained -o publish/linux-ui/
+# Publish cross-platform
+dotnet publish src/PRoCon.Console/PRoCon.Console.csproj -c Release -r linux-x64 --self-contained
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r win-x64 --self-contained
 ```
 
 Build output goes to `builds/Release/` or `builds/Debug/`.
@@ -37,97 +26,97 @@ Build output goes to `builds/Release/` or `builds/Debug/`.
 ## Running
 
 ```bash
-# v1.x GUI
-./builds/Release/PRoCon.exe
+# GUI application (Avalonia, cross-platform)
+./builds/Release/PRoCon.UI
 
-# v1.x Headless/console mode (for servers/Docker)
-./builds/Release/PRoCon.Console.exe -console 1
+# Headless/console mode (for servers/Docker)
+./builds/Release/PRoCon.Console -console 1
 
-# v2.0 on Linux (run .exe directly, not via cmd.exe)
-~/.dotnet/dotnet run --project src/PRoCon.UI/PRoCon.UI.csproj
+# Docker
+docker compose up -d
 ```
-
-Linux .NET SDK path: `~/.dotnet/dotnet`
 
 ## Testing
 
-There is no automated test suite. Testing is manual against live game servers.
+There is no automated test suite. Testing is manual against game servers.
 
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/build-and-release.yml`):
-- **PR to master**: Builds solution to verify compilation
-- **Tag push (`v*`)**: Builds, creates ZIP archive with checksums, publishes GitHub Release
-- Version is extracted from git tag and stamped into `src/VersionInfo.cs` during CI
+- **PR to master**: Builds on Linux, Windows, macOS
+- **Tag push (`v*`)**: Multi-platform publish (linux-x64, linux-arm64, win-x64, osx-x64, osx-arm64), creates release archives with SHA-256 checksums
+- Version is extracted from git tag and stamped into `src/Directory.Build.props`
 
 ## Architecture
 
-### v2.0 Solution Structure
+### Solution Structure
 
-| Project | Purpose | Framework |
-|---------|---------|-----------|
-| `PRoCon.UI` | Avalonia GUI application | net8.0 |
-| `PRoCon.Core` | Core business logic library | net8.0 |
-| `PRoCon.Themes` | Dark/Light theme resources | net8.0 |
-| `PRoCon.Console` | Headless console application | net8.0 |
-| `PRoCon.Service` | Windows Service wrapper | net8.0 |
+The solution (`src/PRoCon.sln`) contains these projects:
+
+| Project | Purpose | Platform |
+|---------|---------|----------|
+| `PRoCon.Core` | Core business logic library | net8.0 (cross-platform) |
+| `PRoCon.UI` | Avalonia GUI application | net8.0 (cross-platform) |
+| `PRoCon.Console` | Headless console application | net8.0 (cross-platform) |
+| `PRoCon.Service` | Windows Service + Linux systemd | net8.0 |
+| `PRoCon.Themes` | Dark/Light theme definitions | net8.0 |
+| `PRoConUpdater` | Auto-updater utility | net8.0 |
+
+All executables depend on `PRoCon.Core` for business logic. `PRoCon.UI` depends on `PRoCon.Themes`.
 
 ### Key Architectural Layers
 
-**Network/Protocol**: `PRoCon.Core/Remote/FrostbiteConnection.cs` handles raw TCP communication using the Frostbite binary RCON protocol with packet sequence correlation. Game-specific clients (`BF3Client.cs`, `BF4Client.cs`, etc.) extend the base protocol with game-specific commands. Packet cache with `Invalidate(Regex)` for stale data.
+**Network/Protocol**: `PRoCon.Core/Remote/FrostbiteConnection.cs` handles async TCP communication using the Frostbite binary RCON protocol. Supports optional TLS wrapping. Game-specific clients (`BF3Client.cs`, `BF4Client.cs`, etc.) extend the base protocol.
 
-**Client Orchestration**: `PRoCon.Core/Remote/PRoConClient.cs` is the main client class that manages authentication, player lists, server state, and fires 100+ event types consumed by plugins and the UI.
+**Client Orchestration**: `PRoCon.Core/Remote/PRoConClient.cs` manages authentication, player lists, server state, and fires 100+ event types consumed by plugins and the UI.
 
-**Plugin System**: Plugins are C# source files compiled at runtime using Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`). The API is defined through `IPRoConPluginInterface`. `PluginManager` handles lifecycle with 59-second execution timeout. Plugins load into a collectible `AssemblyLoadContext`. Shared assemblies (PRoCon.Core, Newtonsoft.Json, MySqlConnector) must load from the host context to avoid type identity issues.
+**Plugin System**: Plugins are C# source files compiled at runtime using Roslyn (`Microsoft.CodeAnalysis`). Loaded via `AssemblyLoadContext` for isolation. Plugin references: `PRoCon.Core.dll`, `MySqlConnector.dll`, `Newtonsoft.Json.dll`. The API is defined through `IPRoConPluginInterface`. Optional async API via `IPRoConPluginInterfaceAsync`.
 
-**Layer System**: v2.0 uses SignalR WebSocket (`LayerHostService` + `LayerHub`) replacing the old TCP binary layer protocol. Kestrel hosts at `/layer` endpoint. `LayerHostService` implements `ILayerInstance` as an adapter.
+**Layer System**: SignalR-based (WebSocket) admin connection hub at `PRoCon.Core/Layer/`. Replaces the legacy TCP-based layer in `PRoCon.Core/Remote/Layer/` (kept for reference). Uses JWT authentication.
 
-**UI**: Avalonia 11.2.3 with 16 tabbed panels. Models extracted to `PRoCon.UI/Models/` (ServerEntry, PlayerDisplayInfo, RconCommandDefs). Controls cached via `CacheControls()` to avoid repeated `FindControl` lookups.
+**Theme Engine**: `PRoCon.Themes` contains dark/light Avalonia ResourceDictionaries with Blue + Orange gaming-oriented palette. `ThemeManager` handles runtime theme switching.
 
 ### Naming Conventions
 
 - **C-prefix**: Core data structures (`CBanInfo`, `CMap`, `CPlayerInfo`, `CServerInfo`)
 - **I-prefix**: Interfaces (`IPRoConPluginInterface`)
+- **ScheduledTask**: The task scheduler class (renamed from `Task` to avoid `System.Threading.Tasks.Task` conflict)
 
 ### Key Directories in `src/PRoCon.Core/`
 
-- `Remote/` - Game server connection, protocol handling, packet caching
-- `Layer/` - SignalR layer system (LayerHostService, LayerHub, LayerHubClient)
-- `Plugin/` - Plugin API, manager, PluginLoadContext, command system
-- `Accounts/` - Account management and privilege system (`CPrivileges`)
-- `Consoles/` - Chat, connection, plugin, and PunkBuster console handlers
-- `Players/` - Player data structures and management
-- `Network/` - IPCheckService (ProxyCheck.io v3 integration)
-- `Battlemap/` - Map geometry and zone system
-- `Localization/` - i18n support (extracted from embedded resources)
-
-### Key Directories in `src/PRoCon.UI/`
-
-- `Views/` - All Avalonia panels (MainWindow, PluginsPanel, BanListPanel, etc.)
-- `Models/` - ServerEntry, PlayerDisplayInfo, RconCommandDefs
-- `Services/` - ConsoleFileLogger
+- `Remote/` - Game server connection (async), protocol handling, packet caching
+- `Layer/` - SignalR-based admin layer hub (new)
+- `Remote/Layer/` - Legacy TCP layer (kept for reference)
+- `Plugin/` - Plugin API, AssemblyLoadContext loader, command system
+- `Config/` - Dual-format config manager (.cfg + JSON)
+- `Logging/` - Centralized logging via Microsoft.Extensions.Logging
+- `Accounts/` - Account management and privilege system
+- `HttpServer/` - Embedded web server with HTTPS support
+- `Battlemap/` - Map geometry and zone system (cross-platform point-in-polygon)
 
 ### Game Definitions
 
-Game protocol commands are defined in `.def` files under `src/Resources/Configs/` (e.g., `BF4.def`, `BF3.def`). Default plugins are embedded resources under `src/Resources/DefaultPlugins/`.
+Game protocol commands are defined in `.def` files under `src/Resources/Configs/` (e.g., `BF4.def`, `BF3.def`).
 
-## Key Dependencies (v2.0)
+## Key Dependencies
 
-- **Avalonia 11.2.3** - Cross-platform UI framework
-- **Newtonsoft.Json 13.0.3** - JSON serialization
+- **Newtonsoft.Json 13.0.3** - JSON serialization (also exposed to plugins)
 - **Microsoft.CodeAnalysis.CSharp 4.8.0** - Roslyn compiler for runtime plugin compilation
-- **MySqlConnector 2.4.0** - MySQL/MariaDB connectivity (replaced MySql.Data)
-- **Microsoft.AspNetCore.SignalR** - Layer system WebSocket transport
-- **MaxMind.GeoIP2 5.2.0** - IP geolocation
-- **SharpZipLib 1.4.2** - ZIP handling (replaced Ionic.Zip)
+- **MySqlConnector 2.4.0** - MySQL/MariaDB 5+ connectivity (replaces MySql.Data, exposed to plugins)
+- **MaxMind.GeoIP2 5.2.0** - Country lookup by IP
+- **Microsoft.Extensions.Logging** - Structured logging
+- **Microsoft.Extensions.Configuration** - Dual-format config system
+- **Microsoft.AspNetCore.SignalR** - WebSocket-based layer hub
+- **Avalonia 11.2.3** - Cross-platform UI framework
+- **SharpZipLib 1.4.2** - ZIP handling (replaces Ionic.Zip)
 
-## Plugin Development (v2.0)
+## Docker
 
-- SDK template: `src/Resources/DefaultPlugins/BF4/SdkTemplatePlugin.cs`
-- Refactoring guide: `docs/PLUGIN-REFACTORING-GUIDE.md`
-- Plugins use `namespace PRoConEvents` and extend `PRoConPluginAPI`
-- Place `.cs` files in `Plugins/<GameType>/` — compiled automatically on connect
-- `#include` directives supported for shared code (`.inc` files)
-- HttpServer removed — no `OnHttpRequest`, no `HttpWebServerRequestData`/`ResponseData`
-- `MySql.Data.MySqlClient` replaced by `MySqlConnector` namespace
-- `System.Windows.Forms` not available — plugins must be cross-platform
+```bash
+# Build and run
+docker compose up -d
+
+# Volumes: ./data/Configs, ./data/Plugins, ./data/Logs
+# Ports: 27260 (SignalR layer), 27360 (HTTP)
+# Auto-updater is disabled in container mode
+```

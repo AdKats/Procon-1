@@ -24,7 +24,7 @@ using System.Collections.Generic;
 namespace PRoCon.Core.Plugin
 {
     using Core.Battlemap;
-    using Core.HttpServer;
+    // using Core.HttpServer; -- removed, HTTP server replaced by SignalR
     using Core.Maps;
     using Core.Players;
     using Core.Plugin.Commands;
@@ -582,21 +582,6 @@ namespace PRoCon.Core.Plugin
         /// this player has tresspased on the zone at point [pntTresspassLocation].</param>
         /// <param name="trespassState">Additional information about the event.  If the ZoneAction is Kill/Death then this object is type "Kill".</param>
         public virtual void OnZoneTrespass(CPlayerInfo playerInfo, ZoneAction action, MapZone sender, Point3D tresspassLocation, float tresspassPercentage, object trespassState) { }
-
-        #endregion
-
-        #region HTTP Server
-
-        /// <summary>
-        /// If the http server interface is on all requests to the plugin will
-        /// be directed to this method.  The response will be sent back.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns>By default the response will be a blank "200 OK" document</returns>
-        public virtual HttpWebServerResponseData OnHttpRequest(HttpWebServerRequestData data)
-        {
-            return null;
-        }
 
         #endregion
 

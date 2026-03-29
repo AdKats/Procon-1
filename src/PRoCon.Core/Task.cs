@@ -22,7 +22,7 @@ namespace PRoCon.Core
     using System;
     using System.Collections.Generic;
 
-    public class Task
+    public class ScheduledTask
     {
         private int m_iDelay;
         private int m_iInterval;
@@ -32,7 +32,7 @@ namespace PRoCon.Core
         private List<string> m_lstCommandWords;
         private string m_strTaskName;
 
-        public Task(string strTaskName, List<string> lstCommandWords, int iDelay, int iInterval, int iRepeat)
+        public ScheduledTask(string strTaskName, List<string> lstCommandWords, int iDelay, int iInterval, int iRepeat)
         {
             if (iDelay < 0 || iInterval <= 0) return;
 

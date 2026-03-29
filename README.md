@@ -1,76 +1,151 @@
-# Procon 1 #
-Procon 1 is developed by [Myrcon](https://myrcon.net "Un-Official homepage of Myrcon").
+# PRoCon v2.0
 
-## About Procon ##
-Procon is a free remote control (RCON) tool for gameservers, currently supporting Battlefield: Bad Company 2, Battlefield 3, Medal of Honor: Warfighter, Battlefield 4 and Battlefield Hardline. It is developed by [Myrcon](https://myrcon.net "Un-Official homepage of Myrcon") and also available as open source software on [GitHub](https://github.com/AdKats/Procon-1 "Procon 1 on GitHub").
+PRoCon is a free, open-source remote control (RCON) tool for Frostbite game servers. It supports Battlefield Bad Company 2, Battlefield 3, Battlefield 4, Battlefield Hardline, and Medal of Honor: Warfighter.
 
-In addition to providing basic features to control your gameserver, users can extend Procon's functionality using plugins, which can control Procon's behavior and add additional possibilities for gameserver admins. Furthermore, Procon provides a layer system, which allows running plugins and managing admin accounts in a central location instead of distributing it to every admin connected to the gameserver.
+## What's v2.0?
 
+EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codebase (.NET Framework 4.7) was blocking that. Prophet took the time to modernize the entire stack to .NET 8.
 
-## Support ##
-Are you experiencing troubles while using Procon, would like to suggest a new feature or discuss settings and plugins with fellow admins? Feel free to pay our [Myrcon Community](https://myrcon.net "Myrcon Community") a visit!
+**This is an infrastructure update, not a project revival.** For the future of game server management across multiple titles, check out [metabans.com](https://metabans.com).
 
-If you are looking for a list of available plugins, head over to the [plugins section](https://myrcon.net/index.php?/forum/9-plugins/ "Procon 1 plugins") of our forums.
+### What Changed
 
-### 1.5.3.4 to 1.5.3.5 ###
-#### Core ####
-- Added ability to disable the new API check for player country info
-- Updated GEOIP database file
-- Removed usage sending stats
-- Added EZRCON ad banner
+- **.NET 8** — cross-platform runtime (Windows, Linux, macOS natively)
+- **Avalonia UI** — replaces WinForms with a modern cross-platform UI (dark/light themes)
+- **SignalR Layer** — replaces the custom TCP binary protocol with WebSocket
+- **MySqlConnector** — replaces MySql.Data for modern MySQL/MariaDB support
+- **Roslyn Compiler** — plugins compile with C# latest features
+- **Single-file publish** — one executable per platform, no loose DLLs
+- **Plugin SDK** — Dapper (ORM), Flurl (HTTP client), multi-file plugin support
 
-If you are upgrading then you may need to add these two lines to your existing installation in the file `procon.cfg`. To enable these options just change `False` to `True`.
+## Download
+
+Download the latest release from the [Releases](https://github.com/AdKats/Procon-1/releases) page.
+
+| Platform | File |
+|----------|------|
+| Windows | `PRoCon.UI.exe` (self-contained, no .NET install needed) |
+| Linux | `PRoCon.UI` (self-contained) |
+
+## Building from Source
+
+Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+
+```bash
+# Clone
+git clone https://github.com/AdKats/Procon-1.git
+cd Procon-1
+git checkout feature/modernization
+
+# Build
+dotnet build src/PRoCon.UI/PRoCon.UI.csproj
+
+# Run
+dotnet run --project src/PRoCon.UI/PRoCon.UI.csproj
+
+# Publish single-file executables
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r win-x64 -o publish/win
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r linux-x64 -o publish/linux
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r osx-x64 -o publish/osx
+```
+
+## Plugin Development
+
+PRoCon plugins are `.cs` source files compiled at runtime. Place them in `Plugins/<GameType>/` and they load automatically when connecting to a server.
+
+### Quick Start
+
+```csharp
+using System;
+using System.Collections.Generic;
+using PRoCon.Core;
+using PRoCon.Core.Plugin;
+using PRoCon.Core.Players;
+
+namespace PRoConEvents
+{
+    public class MyPlugin : PRoConPluginAPI, IPRoConPluginInterface
+    {
+        public string GetPluginName() => "My Plugin";
+        public string GetPluginVersion() => "1.0.0";
+        public string GetPluginAuthor() => "YourName";
+        public string GetPluginWebsite() => "";
+        public string GetPluginDescription() => "Does something cool.";
+
+        public List<CPluginVariable> GetDisplayPluginVariables() => new List<CPluginVariable>();
+        public List<CPluginVariable> GetPluginVariables() => new List<CPluginVariable>();
+        public void SetPluginVariable(string variable, string value) { }
+
+        public void OnPluginLoaded(string host, string port, string version)
+        {
+            RegisterEvents(GetType().Name, "OnPlayerJoin");
+        }
+
+        public void OnPluginEnable() { }
+        public void OnPluginDisable() { }
+
+        public override void OnPlayerJoin(string soldierName)
+        {
+            ExecuteCommand("procon.protected.send", "admin.say",
+                "Welcome " + soldierName + "!", "player", soldierName);
+        }
+    }
+}
+```
+
+### Available Libraries
+
+Plugins have access to these libraries at compile time:
+
+| Library | Import | Use |
+|---------|--------|-----|
+| **MySqlConnector** | `using MySqlConnector;` | Raw SQL database access |
+| **Dapper** | `using Dapper;` | Micro-ORM (automatic object mapping) |
+| **Flurl** | `using Flurl.Http;` | Fluent HTTP client (like axios) |
+| **Newtonsoft.Json** | `using Newtonsoft.Json;` | JSON serialization |
+
+### Multi-File Plugins
+
+Large plugins can be split using partial classes:
 
 ```
-procon.private.options.UseGeoIpFileOnly False
-procon.private.options.BlockRssFeedNews False
+Plugins/BF4/
+  AdKats.cs                  <- Main file (metadata, lifecycle)
+  AdKats.Commands.cs         <- Partial: command processing
+  AdKats.Database.cs         <- Partial: database operations
+  AdKats.Players.cs          <- Partial: player tracking
 ```
 
-### 1.5.3.3 to 1.5.3.4 ###
-#### Core ####
-- Fixed GUI error with displaying country name
+See the full SDK template and developer guide in the [`pluginsdk/`](pluginsdk/) directory.
 
-### 1.5.3.2 to 1.5.3.3 ###
-#### Core ####
-- Updated geodata code
-- Updated the change log link in the procon menu.
+## Breaking Changes from v1.x
 
-### 1.5.2.1 to 1.5.3.2 ###
-#### Core ####
-- Insane Limits Fix
+- **.NET 8 required** — .NET Framework 4.7 no longer supported
+- **HTTP web server removed** — use the SignalR layer instead
+- **Layer protocol changed** — v1.x and v2.0 cannot cross-connect
+- **Plugin sandbox removed** — plugins run with full trust
+- **MySql.Data replaced** — use `using MySqlConnector;` instead of `using MySql.Data.MySqlClient;`
+- **System.Windows.Forms removed** — plugins must be cross-platform
 
-### 1.5.2.0 to 1.5.2.1 ###
-#### Core ####
-- Updated Automatic Updater to work with https://api.myrcon.net/procon/version
-- Updated usage posting to https://api.myrcon.net/procon/usage
-- Updated numerous references to myrcon.com and updated them to myrcon.net
+See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`docs/PLUGIN-REFACTORING-GUIDE.md`](docs/PLUGIN-REFACTORING-GUIDE.md) for plugin migration steps.
 
-### 1.5.1.1 to 1.5.2.0 ###
-#### Core ####
-- Added [UTF-8 support](https://github.com/I-MrFixIt-I/Procon-1/commit/0caaeadb06e04afedff9e02a42b2f893eb07beeb)
-- Updated GeoIP database (20171006) used for displaying a user's country
+## Architecture
 
+| Project | Purpose |
+|---------|---------|
+| `PRoCon.UI` | Avalonia GUI application |
+| `PRoCon.Core` | Core business logic, plugin system, RCON protocol |
+| `PRoCon.Themes` | Dark/light theme resources |
+| `PRoCon.Console` | Headless console application |
 
-### 1.4.2.4 to 1.5.1.1 ###
-#### Battlefield 4 ####
-- Updates and changes to BF4.def
+Key technologies: Avalonia 11, SignalR (layer system), Roslyn (plugin compilation), Kestrel (layer hosting).
 
-#### Battlefield Hardline ####
-- first compatible release
-- Updates and changes to BFHL.def / au.loc / de.loc
+## License
 
-#### Core ####
-- Added BFHL compatibility
+PRoCon is licensed under the [GPLv3](LICENSE).
 
-#### UI ####
-- Added BFHL compatibility
+## Credits
 
-#### Default plugins ####
-- BFHL compatibility
+Originally developed by Phogue and the Myrcon community. v2.0 modernization by Prophet / EZSCALE.
 
-## Credits & contributions ##
-Procon and the Procon layer are developed by [Myrcon](https://myrcon.net "Un-Official homepage of Myrcon").
-
-The Battlefield franchise is a product of [DICE](http://dice.se "Digital Illusions Creative Entertainment AB").
-
-Plugins for Procon are developed by third parties, credits and responsibilities lie with the respective plugin author.
+The Battlefield franchise is a product of [DICE](https://dice.se).

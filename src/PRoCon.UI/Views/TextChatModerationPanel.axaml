@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.TextChatModerationPanel"
+             x:CompileBindings="False">
+
+  <DockPanel>
+    <!-- Header -->
+    <TextBlock DockPanel.Dock="Top" Text="Text Chat Moderation" FontSize="16" FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12" />
+
+    <!-- Action buttons -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="8" Margin="0,0,0,8">
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <Button Name="BtnRefresh" Content="Refresh"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="10,6" CornerRadius="4" Click="OnRefresh" />
+        <Button Name="BtnRemovePlayer" Content="Remove Selected"
+                Background="{DynamicResource ErrorBrush}"
+                Foreground="#ffffff"
+                Padding="10,6" CornerRadius="4" Click="OnRemovePlayer" />
+        <Button Name="BtnClearAll" Content="Clear All"
+                Background="{DynamicResource ErrorBrush}"
+                Foreground="#ffffff"
+                Padding="10,6" CornerRadius="4" Click="OnClearAll" />
+      </StackPanel>
+    </Border>
+
+    <!-- Add player form at bottom -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Add Player to Moderation List" FontSize="13" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <TextBox Grid.Column="0" Name="PlayerNameInput"
+                   Watermark="Player name"
+                   Background="{DynamicResource InputBackgroundBrush}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   Margin="0,0,8,0" />
+          <ComboBox Grid.Column="1" Name="ModerationLevelCombo"
+                    Background="{DynamicResource InputBackgroundBrush}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    Margin="0,0,8,0" Width="120" SelectedIndex="0">
+            <ComboBoxItem Content="Normal" />
+            <ComboBoxItem Content="Muted" />
+            <ComboBoxItem Content="Voice" />
+            <ComboBoxItem Content="Admin" />
+          </ComboBox>
+          <Button Grid.Column="2" Name="BtnAddPlayer" Content="Add Player"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="14,6" CornerRadius="4"
+                  Click="OnAddPlayer" />
+        </Grid>
+      </DockPanel>
+    </Border>
+
+    <!-- Column headers -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6,6,0,0" Padding="12,6">
+      <Grid ColumnDefinitions="*,150">
+        <TextBlock Grid.Column="0" Text="Player Name" FontSize="12" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextSecondaryBrush}" />
+        <TextBlock Grid.Column="1" Text="Moderation Level" FontSize="12" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextSecondaryBrush}" />
+      </Grid>
+    </Border>
+
+    <!-- Moderation list -->
+    <Border Background="{DynamicResource BackgroundBrush}"
+            CornerRadius="0,0,6,6" Padding="4"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+      <ListBox Name="ModerationList"
+               Background="Transparent"
+               Foreground="{DynamicResource TextPrimaryBrush}">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:CompileBindings="False">
+            <Grid ColumnDefinitions="*,150">
+              <TextBlock Grid.Column="0" Text="{Binding SoldierName}"
+                         Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Grid.Column="1" Text="{Binding ModerationLevel}"
+                         Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+  </DockPanel>
+
+</UserControl>

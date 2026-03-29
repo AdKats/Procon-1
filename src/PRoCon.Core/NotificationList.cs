@@ -20,7 +20,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Forms;
 
 namespace PRoCon.Core
 {
@@ -37,15 +36,7 @@ namespace PRoCon.Core
         {
             for (int i = 0; i < a_delInvokes.Length; i++)
             {
-                if (a_delInvokes[i].Target is Control)
-                {
-                    ((Control)a_delInvokes[i].Target).Invoke(a_delInvokes[i], a_objArguments);
-                }
-                else
-                {
-
-                    a_delInvokes[i].DynamicInvoke(a_objArguments);
-                }
+                a_delInvokes[i].DynamicInvoke(a_objArguments);
             }
         }
 

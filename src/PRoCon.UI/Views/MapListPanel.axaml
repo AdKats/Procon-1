@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.MapListPanel"
+             x:CompileBindings="False">
+
+  <DockPanel>
+    <!-- Header -->
+    <TextBlock DockPanel.Dock="Top" Text="Map List" FontSize="16" FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,12" />
+
+    <!-- Bottom bar: round control buttons -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="8" Margin="0,8,0,0">
+      <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
+        <Button Name="BtnRestartRound" Content="Restart Round" Margin="0,0,6,0"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="10,6" CornerRadius="4" Click="OnRestartRound" />
+        <Button Name="BtnRunNextRound" Content="Run Next Round" Margin="0,0,6,0"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="10,6" CornerRadius="4" Click="OnRunNextRound" />
+        <Button Name="BtnEndRound" Content="End Round" Margin="0,0,6,0"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="10,6" CornerRadius="4" Click="OnEndRound" />
+      </WrapPanel>
+    </Border>
+
+    <!-- Two-column layout -->
+    <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
+
+      <!-- LEFT COLUMN: Available Maps -->
+      <Border Grid.Column="0" Margin="0,0,4,0"
+              Background="{DynamicResource SurfaceElevatedBrush}"
+              CornerRadius="6" Padding="8">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Text="Available Maps" FontSize="13" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6" />
+
+          <!-- Add controls at bottom of left column -->
+          <Border DockPanel.Dock="Bottom" Margin="0,6,0,0"
+                  Background="{DynamicResource BackgroundBrush}"
+                  CornerRadius="4" Padding="8">
+            <StackPanel Spacing="6">
+              <Grid ColumnDefinitions="*,80">
+                <ComboBox Grid.Column="0" Name="ModeCombo"
+                          Foreground="{DynamicResource TextPrimaryBrush}"
+                          Background="{DynamicResource InputBackgroundBrush}"
+                          HorizontalAlignment="Stretch" />
+                <NumericUpDown Grid.Column="1" Name="RoundsInput"
+                               Minimum="1" Maximum="999" Value="1"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               Background="{DynamicResource InputBackgroundBrush}"
+                               Margin="6,0,0,0"
+                               FormatString="0" Watermark="Rounds" />
+              </Grid>
+              <Button Name="BtnAddToRotation" Content="Add to Rotation &#x2192;"
+                      HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                      Background="{DynamicResource ButtonPrimaryBrush}"
+                      Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                      Padding="10,6" CornerRadius="4" Click="OnAddToRotation" />
+            </StackPanel>
+          </Border>
+
+          <!-- Map tree -->
+          <Border Background="{DynamicResource BackgroundBrush}"
+                  CornerRadius="4" Padding="2"
+                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <TreeView Name="AvailableMapsTree"
+                      Background="Transparent"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      SelectionChanged="OnAvailableMapSelected" />
+          </Border>
+        </DockPanel>
+      </Border>
+
+      <!-- RIGHT COLUMN: Current Rotation -->
+      <Border Grid.Column="1" Margin="4,0,0,0"
+              Background="{DynamicResource SurfaceElevatedBrush}"
+              CornerRadius="6" Padding="8">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Text="Current Rotation" FontSize="13" FontWeight="SemiBold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6" />
+
+          <!-- Rotation action buttons at bottom -->
+          <Border DockPanel.Dock="Bottom" Margin="0,6,0,0"
+                  Background="{DynamicResource BackgroundBrush}"
+                  CornerRadius="4" Padding="6">
+            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+              <Button Name="BtnRemove" Content="Remove" Margin="0,0,4,0"
+                      Background="{DynamicResource ErrorBrush}"
+                      Foreground="#ffffff"
+                      Padding="10,6" CornerRadius="4" Click="OnRemoveMap" />
+              <Button Name="BtnMoveUp" Content="Move Up" Margin="0,0,4,0"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Padding="10,6" CornerRadius="4" Click="OnMoveUp" />
+              <Button Name="BtnMoveDown" Content="Move Down" Margin="0,0,4,0"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Padding="10,6" CornerRadius="4" Click="OnMoveDown" />
+              <Button Name="BtnSetNextMap" Content="Set as Next"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Padding="10,6" CornerRadius="4" Click="OnSetNextMap" />
+            </WrapPanel>
+          </Border>
+
+          <!-- Rotation list -->
+          <Border Background="{DynamicResource BackgroundBrush}"
+                  CornerRadius="4" Padding="2"
+                  BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <ListBox Name="MapRotationList"
+                     Background="Transparent"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          </Border>
+        </DockPanel>
+      </Border>
+    </Grid>
+  </DockPanel>
+
+</UserControl>

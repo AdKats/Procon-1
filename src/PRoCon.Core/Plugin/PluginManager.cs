@@ -16,9 +16,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security;
-using System.Security.Permissions;
-using System.Security.Policy;
+using System.Runtime.Loader;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -33,7 +31,7 @@ namespace PRoCon.Core.Plugin
 
         protected readonly object MatchedInGameCommandsLocker = new object();
 
-        protected AppDomain AppDomainSandbox;
+        protected PluginLoadContext PluginLoadContext;
 
         protected CPRoConPluginCallbacks PluginCallbacks;
 
@@ -124,7 +122,7 @@ namespace PRoCon.Core.Plugin
 
         public string PluginBaseDirectory
         {
-            get { return Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName), ProconClient.GameType); }
+            get { return Path.Combine(Path.Combine(ProConPaths.PluginsDirectory), ProconClient.GameType); }
         }
 
         public string PluginDebugTempDirectory
@@ -136,7 +134,7 @@ namespace PRoCon.Core.Plugin
 
         public PluginManager(PRoConClient cpcClient)
         {
-            AppDomainSandbox = null;
+            PluginLoadContext = null;
             Plugins = new PluginDictionary();
             //this.m_dicLoadedPlugins = new Dictionary<string, IPRoConPluginInterface>();
             //this.m_dicEnabledPlugins = new Dictionary<string, IPRoConPluginInterface>();
@@ -189,7 +187,7 @@ namespace PRoCon.Core.Plugin
                         // Log the error so we might alert a plugin developer that
                         // a call to their plugin has caused the plugin manager to go
                         // into a panic.
-                        File.AppendAllText("PLUGIN_DEBUG.txt", faultText);
+                        File.AppendAllText(Path.Combine(ProConPaths.LogsDirectory, "PLUGIN_DEBUG.txt"), faultText);
 
                         WritePluginConsole("^1^bPlugin invocation timeout: ");
                         WritePluginConsole("^1" + faultText);
@@ -285,6 +283,17 @@ namespace PRoCon.Core.Plugin
         public List<MatchCommand> GetRegisteredCommands()
         {
             return new List<MatchCommand>(MatchedInGameCommands.Values);
+        }
+
+        private static Assembly TryGetAssembly(string name)
+        {
+            try
+            {
+                return AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name == name)
+                    ?? Assembly.Load(name);
+            }
+            catch { return null; }
         }
 
         private void WritePluginConsole(string strFormat, params object[] arguments)
@@ -555,9 +564,52 @@ namespace PRoCon.Core.Plugin
                     Directory.CreateDirectory(PluginBaseDirectory);
                 }
 
-                File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PRoCon.Core.dll"), Path.Combine(PluginBaseDirectory, "PRoCon.Core.dll"), true);
-                File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MySql.Data.dll"), Path.Combine(PluginBaseDirectory, "MySql.Data.dll"), true);
-                File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PRoCon.Core.pdb"), Path.Combine(PluginBaseDirectory, "PRoCon.Core.pdb"), true);
+                string baseDir = ProConPaths.ApplicationDirectory;
+
+                // Map DLL names to their loaded assemblies for single-file fallback
+                var dllAssemblyMap = new Dictionary<string, Assembly>(StringComparer.OrdinalIgnoreCase)
+                {
+                    { "PRoCon.Core.dll", typeof(PluginManager).Assembly },
+                    { "MySqlConnector.dll", TryGetAssembly("MySqlConnector") },
+                    { "Newtonsoft.Json.dll", TryGetAssembly("Newtonsoft.Json") },
+                    { "Dapper.dll", TryGetAssembly("Dapper") },
+                    { "Flurl.dll", TryGetAssembly("Flurl") },
+                    { "Flurl.Http.dll", TryGetAssembly("Flurl.Http") },
+                    { "Microsoft.Data.Sqlite.dll", TryGetAssembly("Microsoft.Data.Sqlite") },
+                    { "SQLitePCLRaw.core.dll", TryGetAssembly("SQLitePCLRaw.core") },
+                    { "SQLitePCLRaw.provider.e_sqlite3.dll", TryGetAssembly("SQLitePCLRaw.provider.e_sqlite3") },
+                    { "SQLitePCLRaw.batteries_v2.dll", TryGetAssembly("SQLitePCLRaw.batteries_v2") },
+                };
+
+                foreach (var kvp in dllAssemblyMap)
+                {
+                    string dest = Path.Combine(PluginBaseDirectory, kvp.Key);
+                    string src = Path.Combine(baseDir, kvp.Key);
+
+                    if (File.Exists(src))
+                    {
+                        // Normal build — copy loose DLL
+                        File.Copy(src, dest, true);
+                    }
+                    else if (kvp.Value != null && !string.IsNullOrEmpty(kvp.Value.Location) && File.Exists(kvp.Value.Location))
+                    {
+                        // Single-file fallback — copy from assembly location in NuGet cache or runtime
+                        File.Copy(kvp.Value.Location, dest, true);
+                    }
+                    else
+                    {
+                        WritePluginConsole("^3Warning: {0} not available for plugin compilation", kvp.Key);
+                    }
+                }
+
+                string pdbSrc = Path.Combine(baseDir, "PRoCon.Core.pdb");
+                if (File.Exists(pdbSrc))
+                {
+                    File.Copy(pdbSrc, Path.Combine(PluginBaseDirectory, "PRoCon.Core.pdb"), true);
+                }
+
+                // Extract default plugins from embedded resources
+                ExtractDefaultPlugins();
 
                 // Clean up temp directory
                 if (Directory.Exists(PluginDebugTempDirectory) == true)
@@ -574,8 +626,96 @@ namespace PRoCon.Core.Plugin
                     File.Delete(file);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                WritePluginConsole("^1Error preparing plugins directory: {0}", ex.Message);
+            }
+        }
+
+        private static readonly string[] KnownGameTypes = { "BF3", "BF4", "BFBC2", "BFHL", "MOH", "MOHW" };
+
+        private void ExtractDefaultPlugins()
+        {
+            try
+            {
+                var assembly = typeof(PluginManager).Assembly;
+                string gameType = ProconClient.GameType;
+                string gamePrefix = "PRoCon.Core.Resources.DefaultPlugins." + gameType + ".";
+                string sharedPrefix = "PRoCon.Core.Resources.DefaultPlugins.";
+
+                foreach (string resourceName in assembly.GetManifestResourceNames())
+                {
+                    if (!resourceName.StartsWith(sharedPrefix)) continue;
+
+                    string fileName = null;
+
+                    if (resourceName.StartsWith(gamePrefix))
+                    {
+                        // Game-specific plugin file (e.g. .cs or .inc under BF4/)
+                        fileName = resourceName.Substring(gamePrefix.Length);
+                    }
+                    else
+                    {
+                        string remainder = resourceName.Substring(sharedPrefix.Length);
+
+                        // Skip files belonging to other game types
+                        bool isOtherGame = false;
+                        foreach (string gt in KnownGameTypes)
+                        {
+                            if (remainder.StartsWith(gt + "."))
+                            {
+                                isOtherGame = true;
+                                break;
+                            }
+                        }
+                        if (isOtherGame) continue;
+
+                        // Shared .inc file (directly under DefaultPlugins/)
+                        if (remainder.EndsWith(".inc"))
+                        {
+                            // Shared includes go to parent Plugins/ dir so #include "../file.inc" resolves
+                            string sharedDir = ProConPaths.PluginsDirectory;
+                            string sharedDest = Path.Combine(sharedDir, remainder);
+                            if (!File.Exists(sharedDest))
+                            {
+                                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                                {
+                                    if (stream != null)
+                                    {
+                                        using (var fileStream = File.Create(sharedDest))
+                                        {
+                                            stream.CopyTo(fileStream);
+                                        }
+                                    }
+                                }
+                            }
+                            continue;
+                        }
+                    }
+
+                    if (fileName == null) continue;
+
+                    string destPath = Path.Combine(PluginBaseDirectory, fileName);
+
+                    // Only extract if the file doesn't already exist
+                    if (!File.Exists(destPath))
+                    {
+                        using (var stream = assembly.GetManifestResourceStream(resourceName))
+                        {
+                            if (stream != null)
+                            {
+                                using (var fileStream = File.Create(destPath))
+                                {
+                                    stream.CopyTo(fileStream);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WritePluginConsole("Error extracting default plugins: " + ex.Message);
             }
         }
 
@@ -583,8 +723,8 @@ namespace PRoCon.Core.Plugin
         {
             try
             {
-                string legacyPluginDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName);
-                string legacyPluginDestinationDirectory = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, PluginsDirectoryName), "BFBC2");
+                string legacyPluginDirectory = ProConPaths.PluginsDirectory;
+                string legacyPluginDestinationDirectory = Path.Combine(ProConPaths.PluginsDirectory, "BFBC2");
 
                 var legacyPluginsDirectoryInfo = new DirectoryInfo(legacyPluginDirectory);
                 FileInfo[] legacyPluginsInfo = legacyPluginsDirectoryInfo.GetFiles("*.cs");
@@ -630,21 +770,114 @@ namespace PRoCon.Core.Plugin
 
         private IEnumerable<MetadataReference> GetCSharpCompilationReferences()
         {
-            string dotnetRuntimePath = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "{0}.dll");
-            string proconRuntimePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "{0}.dll");
+            string runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            string proconDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? typeof(PluginManager).Assembly.Location);
 
-            return new[]
+            var references = new List<MetadataReference>();
+
+            // Add .NET runtime references — plugins may use any of these
+            string[] runtimeAssemblies = new[]
             {
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "mscorlib")),
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System")),
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Core")),
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Data")),
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Windows.Forms")),
-                MetadataReference.CreateFromFile(string.Format(dotnetRuntimePath, "System.Xml")),
-
-                MetadataReference.CreateFromFile(string.Format(proconRuntimePath, "MySql.Data")),
-                MetadataReference.CreateFromFile(string.Format(proconRuntimePath, "PRoCon.Core"))
+                "System.Runtime",
+                "System.Collections",
+                "System.Collections.Specialized",
+                "System.Linq",
+                "System.Data.Common",
+                "System.Xml",
+                "System.Xml.ReaderWriter",
+                "System.Net.Http",
+                "System.Net.Primitives",
+                "System.Net.Sockets",
+                "System.Net.WebClient",
+                "System.Net.Requests",
+                "System.ComponentModel",
+                "System.ComponentModel.Primitives",
+                "System.Text.RegularExpressions",
+                "System.Text.Encoding.Extensions",
+                "System.Threading",
+                "System.Threading.Thread",
+                "System.Threading.Timer",
+                "System.IO",
+                "System.IO.FileSystem",
+                "System.Console",
+                "System.Runtime.InteropServices",
+                "System.ObjectModel",
+                "System.Globalization",
+                "System.Reflection",
+                "System.Reflection.Primitives",
+                "System.Diagnostics.Debug",
+                "System.Diagnostics.Process",
+                "System.Web.HttpUtility",
+                "System.Net.WebHeaderCollection",
+                "System.Private.Uri",
+                "System.Security.Cryptography",
+                "System.Runtime.Serialization.Primitives",
+                "System.Runtime.Serialization.Xml",
+                "System.Private.Xml",
+                "System.Private.Xml.Linq",
+                "System.Xml.XDocument",
+                "System.Xml.XmlSerializer",
+                "System.ComponentModel.TypeConverter",
+                "Microsoft.CSharp",
+                "netstandard",
+                "System.Private.CoreLib"
             };
+
+            foreach (string asm in runtimeAssemblies)
+            {
+                string path = Path.Combine(runtimeDir, asm + ".dll");
+                if (File.Exists(path))
+                {
+                    references.Add(MetadataReference.CreateFromFile(path));
+                }
+            }
+
+            // Add PRoCon.Core reference
+            string proconCorePath = Path.Combine(proconDir, "PRoCon.Core.dll");
+            if (File.Exists(proconCorePath))
+            {
+                references.Add(MetadataReference.CreateFromFile(proconCorePath));
+            }
+
+            // Add MySqlConnector reference
+            string mySqlPath = Path.Combine(proconDir, "MySqlConnector.dll");
+            if (File.Exists(mySqlPath))
+            {
+                references.Add(MetadataReference.CreateFromFile(mySqlPath));
+            }
+
+            // Add Newtonsoft.Json reference
+            string newtonsoftPath = Path.Combine(proconDir, "Newtonsoft.Json.dll");
+            if (File.Exists(newtonsoftPath))
+            {
+                references.Add(MetadataReference.CreateFromFile(newtonsoftPath));
+            }
+
+            // Add Dapper reference (micro-ORM for plugins)
+            string dapperPath = Path.Combine(proconDir, "Dapper.dll");
+            if (File.Exists(dapperPath))
+            {
+                references.Add(MetadataReference.CreateFromFile(dapperPath));
+            }
+
+            // Add Flurl references (HTTP client for plugins)
+            foreach (string flurlDll in new[] { "Flurl.dll", "Flurl.Http.dll" })
+            {
+                string flurlPath = Path.Combine(proconDir, flurlDll);
+                if (File.Exists(flurlPath))
+                {
+                    references.Add(MetadataReference.CreateFromFile(flurlPath));
+                }
+            }
+
+            // Add Microsoft.Data.Sqlite reference (SQLite for plugins and core)
+            string sqlitePath = Path.Combine(proconDir, "Microsoft.Data.Sqlite.dll");
+            if (File.Exists(sqlitePath))
+            {
+                references.Add(MetadataReference.CreateFromFile(sqlitePath));
+            }
+
+            return references;
         }
 
         private void PrintPluginResults(FileInfo pluginFile, EmitResult pluginResults)
@@ -717,6 +950,9 @@ namespace PRoCon.Core.Plugin
 
             fullPluginSource = fullPluginSource.Replace("using PRoCon.Plugin;", "using PRoCon.Core.Plugin;");
 
+            // Removed in v2.0 — strip dead using directives so compile errors point to the actual issue
+            fullPluginSource = fullPluginSource.Replace("using PRoCon.Core.HttpServer;", "// using PRoCon.Core.HttpServer; // Removed in v2.0");
+
             if (fullPluginSource.Contains("using PRoCon.Core;") == false)
             {
                 fullPluginSource = fullPluginSource.Insert(fullPluginSource.IndexOf("using PRoCon.Core.Plugin;", StringComparison.Ordinal), "\r\nusing PRoCon.Core;\r\n");
@@ -783,7 +1019,15 @@ namespace PRoCon.Core.Plugin
                     CSharpCompilation compilation = CSharpCompilation.Create(pluginClassName, syntaxTrees, compilationReferences, compilationOptions);
 
                     // 4.1. Now compile the plugin
-                    this.PrintPluginResults(pluginFile, compilation.Emit(outputAssembly, pdbPath, xmlDocPath));
+                    EmitResult emitResult = compilation.Emit(outputAssembly, pdbPath, xmlDocPath);
+                    this.PrintPluginResults(pluginFile, emitResult);
+
+                    if (!emitResult.Success)
+                    {
+                        // Delete the bad output DLL so LoadPlugin doesn't try to load it
+                        try { if (File.Exists(outputAssembly)) File.Delete(outputAssembly); } catch { }
+                        return;
+                    }
 
                     // 5. Add/Update the storage cache for this plugin.
                     this.PluginCache.Cache(new PluginCacheEntry()
@@ -861,19 +1105,8 @@ namespace PRoCon.Core.Plugin
             }
         }
 
-        /// <summary>
-        /// Builds the strong name of a loaded assembly
-        /// </summary>
-        /// <param name="assembly">The assembly to fetch the strong name of</param>
-        /// <returns></returns>
-        protected static StrongName GetStrongName(Assembly assembly)
-        {
-            AssemblyName name = assembly.GetName();
 
-            return new StrongName(new StrongNamePublicKeyBlob(name.GetPublicKey()), name.Name, name.Version);
-        }
-
-        public void CompilePlugins(PermissionSet pluginSandboxPermissions, List<String> ignoredPluginClassNames = null)
+        public void CompilePlugins(object pluginSandboxPermissions = null, List<String> ignoredPluginClassNames = null)
         {
             try
             {
@@ -915,42 +1148,13 @@ namespace PRoCon.Core.Plugin
 
                 WritePluginConsole("Creating and configuring compiler..");
                 CSharpCompilationOptions compilationOptions = this.GetCSharpCompilationOptions(this.ProconClient.Parent.OptionsSettings.EnablePluginDebugging);
-                // AppDomainSetup domainSetup = new AppDomainSetup() { ApplicationBase = this.PluginBaseDirectory };
-                // Start of XpKillers mono workaround
 
-                AppDomainSetup domainSetup = null;
-                Type t = Type.GetType("Mono.Runtime");
-                if (t != null)
-                {
-                    //Console.WriteLine("You are running with the Mono VM");
-                    WritePluginConsole("Running with Mono VM..");
-                    //AppDomain.CurrentDomain.BaseDirectory
-                    domainSetup = new AppDomainSetup()
-                    {
-                        ApplicationBase = AppDomain.CurrentDomain.BaseDirectory
-                    };
-                    domainSetup.PrivateBinPath = PluginBaseDirectory;
-                }
-                else
-                {
-                    // Console.WriteLine("You are running something else (native .Net)");
-                    WritePluginConsole("Running with native .Net..");
-                    domainSetup = new AppDomainSetup()
-                    {
-                        ApplicationBase = PluginBaseDirectory
-                    };
-                }
-                // Workaround end
+                WritePluginConsole("Creating plugin load context..");
+                PluginLoadContext = new PluginLoadContext(PluginBaseDirectory);
 
-                WritePluginConsole("Building sandbox..");
-                var hostEvidence = new Evidence();
-                hostEvidence.AddHost(new Zone(SecurityZone.MyComputer));
+                PluginFactory = new CPRoConPluginLoaderFactory();
+                PluginFactory.SetLoadContext(PluginLoadContext);
 
-                AppDomainSandbox = AppDomain.CreateDomain(ProconClient.HostName + ProconClient.Port + "Engine", hostEvidence, domainSetup, pluginSandboxPermissions, PluginManager.GetStrongName(AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == "MySql.Data")));
-
-                WritePluginConsole("Configuring sandbox..");
-                // create the factory class in the secondary app-domain
-                PluginFactory = (CPRoConPluginLoaderFactory)AppDomainSandbox.CreateInstance("PRoCon.Core", "PRoCon.Core.Plugin.CPRoConPluginLoaderFactory").Unwrap();
                 PluginCallbacks = new CPRoConPluginCallbacks(ProconClient.ExecuteCommand, ProconClient.GetAccountPrivileges, ProconClient.GetVariable, ProconClient.GetSvVariable, ProconClient.GetMapDefines, ProconClient.TryGetLocalized, RegisterCommand, UnregisterCommand, GetRegisteredCommands, ProconClient.GetWeaponDefines, ProconClient.GetSpecializationDefines, ProconClient.Layer.GetLoggedInAccountUsernames, RegisterPluginEvents);
 
                 WritePluginConsole("Compiling and loading plugins..");
@@ -983,7 +1187,7 @@ namespace PRoCon.Core.Plugin
                         {
                             CompilePlugin(pluginFile, className, compilationOptions);
 
-                            LoadPlugin(className, PluginFactory, pluginSandboxPermissions.IsUnrestricted());
+                            LoadPlugin(className, PluginFactory, true);
                         }
                         else
                         {
@@ -1007,7 +1211,7 @@ namespace PRoCon.Core.Plugin
 
         ~PluginManager()
         {
-            AppDomainSandbox = null;
+            PluginLoadContext = null;
             //this.m_dicEnabledPlugins = null;
             //this.m_dicLoadedPlugins = null;
             //this.LoadedClassNames = null;
@@ -1024,26 +1228,18 @@ namespace PRoCon.Core.Plugin
 
             try
             {
-                if (AppDomainSandbox != null)
+                if (PluginLoadContext != null)
                 {
-                    AppDomain.Unload(AppDomainSandbox);
-                    AppDomainSandbox = null;
-                }
-            }
-            catch (CannotUnloadAppDomainException e)
-            {
-                AppDomainSandbox = null;
-                if (ProconClient != null)
-                {
-                    WritePluginConsole("^1Failed to unload plugin domain: {0}", e.Message);
+                    PluginLoadContext.Unload();
+                    PluginLoadContext = null;
                 }
             }
             catch (Exception e)
             {
-                AppDomainSandbox = null;
+                PluginLoadContext = null;
                 if (ProconClient != null)
                 {
-                    WritePluginConsole("^1{0}", e.Message);
+                    WritePluginConsole("^1Failed to unload plugin context: {0}", e.Message);
                 }
             }
 

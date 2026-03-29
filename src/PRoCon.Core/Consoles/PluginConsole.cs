@@ -47,7 +47,16 @@ namespace PRoCon.Core.Consoles
         {
             try
             {
-                DateTime dtLoggedTime = DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime();
+                DateTime dtLoggedTime;
+                if (Client.Game != null)
+                {
+                    dtLoggedTime = DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime();
+                }
+                else
+                {
+                    dtLoggedTime = DateTime.Now;
+                }
+
                 string strText = String.Format(strFormat, arguments);
 
                 WriteLogLine(String.Format("[{0}] {1}", dtLoggedTime.ToString("HH:mm:ss"), strText));

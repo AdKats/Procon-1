@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 /builds
 /src/.vs
 /.vs
+*.csproj.old

@@ -1,0 +1,153 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PRoCon.UI.Views.BanListPanel"
+             x:CompileBindings="False">
+
+  <DockPanel Margin="12">
+    <!-- Header -->
+    <TextBlock DockPanel.Dock="Top" Text="Ban List" FontSize="16" FontWeight="SemiBold"
+               Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
+
+    <!-- Action buttons -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="8" Margin="0,0,0,8">
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <Button Content="Refresh"
+                Background="{DynamicResource ButtonSecondaryBrush}"
+                Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                Padding="10,6" CornerRadius="4" Click="OnRefresh" />
+        <Button Content="Unban Selected"
+                Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                Padding="10,6" CornerRadius="4" Click="OnUnban" />
+        <Button Content="Clear All Bans"
+                Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                Padding="10,6" CornerRadius="4" Click="OnClearAllBans" />
+      </StackPanel>
+    </Border>
+
+    <!-- Add ban form at bottom -->
+    <Border DockPanel.Dock="Bottom"
+            Background="{DynamicResource SurfaceElevatedBrush}"
+            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+      <StackPanel Spacing="8">
+        <TextBlock Text="Add Ban" FontSize="13" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <!-- Validation message -->
+        <TextBlock Name="ValidationMessage" Text="" FontSize="11"
+                   Foreground="{DynamicResource ErrorBrush}" IsVisible="False" />
+
+        <WrapPanel Orientation="Horizontal">
+          <!-- Type -->
+          <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,12,4">
+            <TextBlock Text="Type:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <ComboBox Name="BanIdTypeCombo" SelectedIndex="0" Width="100"
+                      Background="{DynamicResource InputBackgroundBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      SelectionChanged="OnBanTypeChanged">
+              <ComboBoxItem Content="Name" Tag="name" />
+              <ComboBoxItem Content="EA GUID" Tag="guid" />
+              <ComboBoxItem Content="IP Address" Tag="ip" />
+            </ComboBox>
+          </StackPanel>
+
+          <!-- ID (required) -->
+          <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,12,4">
+            <TextBlock Text="ID*:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Name="BanIdInput" Width="200"
+                     Watermark="Player name"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+          </StackPanel>
+
+          <!-- Reason (required) -->
+          <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,12,4">
+            <TextBlock Text="Reason*:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Name="BanReasonInput" Width="200"
+                     Watermark="Ban reason"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+          </StackPanel>
+
+          <!-- Duration type -->
+          <StackPanel Orientation="Horizontal" Spacing="4" Margin="0,0,12,4">
+            <TextBlock Text="Duration:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <ComboBox Name="BanDurationTypeCombo" SelectedIndex="0" Width="140"
+                      Background="{DynamicResource InputBackgroundBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      SelectionChanged="OnDurationTypeChanged">
+              <ComboBoxItem Content="Permanent" Tag="perm" />
+              <ComboBoxItem Content="Temporary" Tag="seconds" />
+              <ComboBoxItem Content="Round" Tag="round" />
+            </ComboBox>
+          </StackPanel>
+
+          <!-- Duration value for temp (predefined) -->
+          <StackPanel Name="TempDurationPanel" Orientation="Horizontal" Spacing="4"
+                      Margin="0,0,12,4" IsVisible="False">
+            <TextBlock Text="Duration:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <ComboBox Name="TempDurationCombo" SelectedIndex="3" Width="150"
+                      Background="{DynamicResource InputBackgroundBrush}"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      SelectionChanged="OnTempDurationChanged">
+              <ComboBoxItem Content="5 minutes" Tag="300" />
+              <ComboBoxItem Content="15 minutes" Tag="900" />
+              <ComboBoxItem Content="30 minutes" Tag="1800" />
+              <ComboBoxItem Content="1 hour" Tag="3600" />
+              <ComboBoxItem Content="2 hours" Tag="7200" />
+              <ComboBoxItem Content="6 hours" Tag="21600" />
+              <ComboBoxItem Content="12 hours" Tag="43200" />
+              <ComboBoxItem Content="1 day" Tag="86400" />
+              <ComboBoxItem Content="3 days" Tag="259200" />
+              <ComboBoxItem Content="1 week" Tag="604800" />
+              <ComboBoxItem Content="1 month" Tag="2592000" />
+              <ComboBoxItem Content="Custom" Tag="custom" />
+            </ComboBox>
+            <TextBox Name="CustomSecondsInput" Width="80" Watermark="Seconds"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" IsVisible="False" />
+          </StackPanel>
+
+          <!-- Duration value for round -->
+          <StackPanel Name="RoundDurationPanel" Orientation="Horizontal" Spacing="4"
+                      Margin="0,0,12,4" IsVisible="False">
+            <TextBlock Text="Rounds:" Foreground="{DynamicResource TextSecondaryBrush}"
+                       VerticalAlignment="Center" />
+            <TextBox Name="RoundValueInput" Width="60" Text="1"
+                     Watermark="1"
+                     Background="{DynamicResource InputBackgroundBrush}"
+                     Foreground="{DynamicResource TextPrimaryBrush}"
+                     BorderBrush="{DynamicResource BorderBrush}" />
+          </StackPanel>
+
+          <!-- Add button -->
+          <Button Content="Add Ban"
+                  Background="{DynamicResource ButtonPrimaryBrush}"
+                  Foreground="{DynamicResource ButtonPrimaryTextBrush}"
+                  Padding="14,6" CornerRadius="4" Margin="0,0,0,4"
+                  Click="OnAddBan" />
+        </WrapPanel>
+      </StackPanel>
+    </Border>
+
+    <!-- Ban list -->
+    <Border Background="{DynamicResource BackgroundBrush}"
+            CornerRadius="6" Padding="4"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+      <ListBox Name="BanListBox"
+               Background="Transparent"
+               Foreground="{DynamicResource TextPrimaryBrush}"
+               SelectionMode="Multiple" />
+    </Border>
+  </DockPanel>
+
+</UserControl>

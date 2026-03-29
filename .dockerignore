@@ -1,0 +1,15 @@
+**/bin
+**/obj
+**/builds
+**/packages
+**/.vs
+**/.idea
+**/node_modules
+.git
+.gitignore
+*.md
+*.sln.DotSettings
+**/*.csproj.old
+docs/
+data/
+.superpowers/

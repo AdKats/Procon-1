@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace PRoCon.Core.Remote.Cache
@@ -109,6 +110,15 @@ namespace PRoCon.Core.Remote.Cache
                         cache.Response = response;
                     }
                 }
+            }
+        }
+
+        public void Invalidate(Regex pattern)
+        {
+            lock (this.CacheLock)
+            {
+                List<String> keys = this.Cache.Keys.Where(key => pattern.IsMatch(key)).ToList();
+                keys.ForEach(key => this.Cache.Remove(key));
             }
         }
     }

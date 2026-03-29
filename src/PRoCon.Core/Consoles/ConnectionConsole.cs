@@ -388,7 +388,9 @@ namespace PRoCon.Core.Consoles
 
         public void Write(string strFormat, params object[] arguments)
         {
-            DateTime dtLoggedTime = DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime();
+            DateTime dtLoggedTime = Client.Game != null
+                ? DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime()
+                : DateTime.Now;
             string text = "";
 
             try

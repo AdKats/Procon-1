@@ -1,7 +1,7 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
- 
+
     This file is part of PRoCon Frostbite.
 
     PRoCon Frostbite is free software: you can redistribute it and/or modify
@@ -19,8 +19,6 @@
  */
 
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 
 namespace PRoCon.Core.Battlemap
 {
@@ -34,64 +32,68 @@ namespace PRoCon.Core.Battlemap
             Tags.TagsEdited += new ZoneTagList.TagsEditedHandler(Tags_TagsEdited);
         }
 
-        public GraphicsPath ZoneGraphicsPath
-        {
-            get
-            {
-                var gpReturn = new GraphicsPath();
-                var pntPolygon = new PointF[ZonePolygon.Length];
-                for (int i = 0; i < ZonePolygon.Length; i++)
-                {
-                    pntPolygon[i] = new PointF(ZonePolygon[i].X, ZonePolygon[i].Y);
-                }
-                gpReturn.AddPolygon(pntPolygon);
-                gpReturn.CloseFigure();
-
-                return gpReturn;
-            }
-        }
-
         public event TagsEditedHandler TagsEdited;
 
-        // Returns a percentage of the ErrorArea circle trespassing on the zone.
-        // If anyone knows calculus better than me I'd welcome you to clean up this function =)
+        /// <summary>
+        /// Tests whether a point is inside the zone polygon using the ray-casting algorithm.
+        /// Cross-platform replacement for System.Drawing.Drawing2D.GraphicsPath.IsVisible.
+        /// </summary>
+        private bool IsPointInPolygon(float testX, float testY)
+        {
+            if (ZonePolygon == null || ZonePolygon.Length < 3)
+                return false;
+
+            bool inside = false;
+            int j = ZonePolygon.Length - 1;
+
+            for (int i = 0; i < ZonePolygon.Length; i++)
+            {
+                float xi = ZonePolygon[i].X, yi = ZonePolygon[i].Y;
+                float xj = ZonePolygon[j].X, yj = ZonePolygon[j].Y;
+
+                if (((yi > testY) != (yj > testY)) &&
+                    (testX < (xj - xi) * (testY - yi) / (yj - yi) + xi))
+                {
+                    inside = !inside;
+                }
+
+                j = i;
+            }
+
+            return inside;
+        }
+
+        /// <summary>
+        /// Returns a percentage of the error-radius circle that overlaps with the zone polygon.
+        /// Uses point-in-polygon sampling instead of System.Drawing Region/GraphicsPath.
+        /// </summary>
         public float TrespassArea(Point3D pntLocation, float flErrorRadius)
         {
             float returnPercentage = 0.0F;
             var errorArea = (float)(flErrorRadius * flErrorRadius * Math.PI);
 
-            var gpLocationError = new GraphicsPath();
-            gpLocationError.AddEllipse(new RectangleF(pntLocation.X - flErrorRadius, pntLocation.Y - flErrorRadius, flErrorRadius * 2, flErrorRadius * 2));
-            gpLocationError.CloseAllFigures();
+            // Determine the bounding box of the error circle
+            float minX = pntLocation.X - flErrorRadius;
+            float minY = pntLocation.Y - flErrorRadius;
+            float maxX = pntLocation.X + flErrorRadius;
+            float maxY = pntLocation.Y + flErrorRadius;
 
-            var regZone = new Region(ZoneGraphicsPath);
-            regZone.Intersect(gpLocationError);
-            RectangleF[] scans = regZone.GetRegionScans(new Matrix());
-            var recIntersection = new Rectangle(int.MaxValue, int.MaxValue, 0, 0);
-
+            float radiusSquared = flErrorRadius * flErrorRadius;
             int iPixelCount = 0;
 
-            if (scans.Length > 0)
+            // Sample integer grid points within the bounding box, counting those
+            // inside both the circle and the polygon (same approach as the original).
+            for (int x = (int)minX; x <= (int)maxX; x++)
             {
-                for (int i = 0; i < scans.Length; i++)
+                for (int y = (int)minY; y <= (int)maxY; y++)
                 {
-                    recIntersection.X = scans[i].X < recIntersection.X ? (int)scans[i].X : recIntersection.X;
-                    recIntersection.Y = scans[i].Y < recIntersection.Y ? (int)scans[i].Y : recIntersection.Y;
+                    float dx = x - pntLocation.X;
+                    float dy = y - pntLocation.Y;
 
-                    recIntersection.Width = scans[i].Right > recIntersection.Right ? (int)scans[i].Right - recIntersection.X : recIntersection.Width;
-                    recIntersection.Height = scans[i].Bottom > recIntersection.Bottom ? (int)scans[i].Bottom - recIntersection.Y : recIntersection.Height;
-                }
-
-                var pntVisible = new Point(recIntersection.X, recIntersection.Y);
-
-                for (pntVisible.X = recIntersection.X; pntVisible.X <= recIntersection.Right; pntVisible.X++)
-                {
-                    for (pntVisible.Y = recIntersection.Y; pntVisible.Y <= recIntersection.Bottom; pntVisible.Y++)
+                    // Point must be inside the error circle AND inside the polygon
+                    if (dx * dx + dy * dy <= radiusSquared && IsPointInPolygon(x, y))
                     {
-                        if (regZone.IsVisible(pntVisible) == true)
-                        {
-                            iPixelCount++;
-                        }
+                        iPixelCount++;
                     }
                 }
             }
@@ -99,7 +101,7 @@ namespace PRoCon.Core.Battlemap
             returnPercentage = iPixelCount / errorArea;
 
             // Accounts for low error when using this method. (98.4% should be 100%)
-            // but using regZone.GetRegionScans is slightly lossy.
+            // but using pixel sampling is slightly lossy.
             if (returnPercentage > 0.0F)
             {
                 returnPercentage = (float)Math.Min(1.0F, returnPercentage + 0.02);

@@ -1,390 +1,43 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{88912CB7-E755-476D-AFC2-CA0C34A29465}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>PRoCon.Core</RootNamespace>
     <AssemblyName>PRoCon.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\builds\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>embedded</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\builds\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>embedded</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>latest</LangVersion>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\ziplib\Ionic.Zip.Reduced.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.3.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.data, Version=6.6.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\mysql\connector\6.4.4\MySql.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Diagnostics.FileVersionInfo, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.StackTrace, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.StackTrace.4.3.0\lib\net46\System.Diagnostics.StackTrace.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Linq.Expressions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Linq.Expressions.4.3.0\lib\net463\System.Linq.Expressions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.4.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.Metadata.1.4.2\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.InteropServices, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.InteropServices.4.3.0\lib\net463\System.Runtime.InteropServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encoding.CodePages.4.3.0\lib\net46\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml.ReaderWriter, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.ReaderWriter.4.3.0\lib\net46\System.Xml.ReaderWriter.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XmlDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.XmlDocument.4.3.0\lib\net46\System.Xml.XmlDocument.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.XPath.4.3.0\lib\net46\System.Xml.XPath.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.XPath.XDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Flurl.Http" Version="4.0.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.11" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\VersionInfo.cs">
-      <Link>Properties\VersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="Accounts\Account.cs" />
-    <Compile Include="Accounts\AccountDictionary.cs" />
-    <Compile Include="Accounts\AccountPrivilege.cs" />
-    <Compile Include="Accounts\AccountPrivilegeDictionary.cs" />
-    <Compile Include="AsyncStyleSetting.cs" />
-    <Compile Include="AutoUpdates\AutoUpdater.cs" />
-    <Compile Include="AutoUpdates\UpdateDownloader.cs" />
-    <Compile Include="Battlemap\MapZoneDictionary.cs" />
-    <Compile Include="Battlemap\MapZoneDrawing.cs" />
-    <Compile Include="Battlemap\ZoneAction.cs" />
-    <Compile Include="Battlemap\ZoneTagList.cs" />
-    <Compile Include="CBanInfo.cs" />
-    <Compile Include="CDownloadFile.cs" />
-    <Compile Include="BF4preset.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="GunMasterWeaponsPreset.cs" />
-    <Compile Include="PlaylistMOHW.cs" />
-    <Compile Include="Options\StatsLinkNameUrl.cs" />
-    <Compile Include="Plugin\PluginCache.cs" />
-    <Compile Include="Plugin\PluginCacheEntry.cs" />
-    <Compile Include="Plugin\PluginInvocation.cs" />
-    <Compile Include="ProxyChecker\ProconProxyChecker.cs" />
-    <Compile Include="Remote\BF4Client.cs" />
-    <Compile Include="Remote\BFHLClient.cs" />
-    <Compile Include="Remote\Cache\CacheManager.cs" />
-    <Compile Include="Remote\Cache\ICacheManager.cs" />
-    <Compile Include="Remote\Cache\IPacketCache.cs" />
-    <Compile Include="Remote\Cache\IPacketCacheConfiguration.cs" />
-    <Compile Include="Remote\Cache\PacketCache.cs" />
-    <Compile Include="Remote\Cache\PacketCacheConfiguration.cs" />
-    <Compile Include="Remote\Layer\ILayerClient.cs" />
-    <Compile Include="Remote\Layer\ILayerInstance.cs" />
-    <Compile Include="Remote\Layer\ILayerPacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\BfhlPacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\Bf4PacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\ILayerConnection.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\MohwPacketDispatcher.cs" />
-    <Compile Include="Remote\MOHWClient.cs" />
-    <Compile Include="UnlockMode.cs" />
-    <Compile Include="ConnectionDictionary.cs" />
-    <Compile Include="Consoles\ChatConsole.cs" />
-    <Compile Include="Consoles\Chat\ChatMessage.cs" />
-    <Compile Include="Consoles\ConnectionConsole.cs" />
-    <Compile Include="Consoles\PluginConsole.cs" />
-    <Compile Include="Consoles\PunkbusterConsole.cs" />
-    <Compile Include="CountryLookup.cs" />
-    <Compile Include="Events\CapturableEvents.cs" />
-    <Compile Include="Events\CapturedEvent.cs" />
-    <Compile Include="Events\EventCaptures.cs" />
-    <Compile Include="Events\EventType.cs" />
-    <Compile Include="Events\Expression.cs" />
-    <Compile Include="GameMods.cs" />
-    <Compile Include="GeoIPCountry.cs" />
-    <Compile Include="HttpServer\Cache\HttpWebServerCacheType.cs" />
-    <Compile Include="HttpServer\Cache\HttpWebServerCacheSettings.cs" />
-    <Compile Include="HttpServer\HttpWebServer.cs" />
-    <Compile Include="HttpServer\HttpWebServerRequest.cs" />
-    <Compile Include="HttpServer\HttpWebServerRequestData.cs" />
-    <Compile Include="HttpServer\HttpWebServerResponseData.cs" />
-    <Compile Include="JSON.cs" />
-    <Compile Include="Plugin\PRoConPluginAPI.cs" />
-    <Compile Include="Plugin\Plugin.cs" />
-    <Compile Include="Plugin\PluginDetails.cs" />
-    <Compile Include="Plugin\PluginDictionary.cs" />
-    <Compile Include="Remote\BF3Client.cs" />
-    <Compile Include="Players\BF3PlayerInfo.cs" />
-    <Compile Include="Remote\BFClient.cs" />
-    <Compile Include="Remote\ConnectionState.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\Bf3PacketDispatcher.cs" />
-    <Compile Include="TextChatModeration\PlayerModerationLevelType.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\Bfbc2PacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\LayerPacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\PacketDispatchers\MohPacketDispatcher.cs" />
-    <Compile Include="Remote\Layer\LayerConnection.cs" />
-    <Compile Include="Logging\LogEntry.cs" />
-    <Compile Include="Battlemap\MapGeometry.cs" />
-    <Compile Include="Maps\MaplistEntry.cs" />
-    <Compile Include="Players\Items\DamageTypes.cs" />
-    <Compile Include="Players\Items\Kits.cs" />
-    <Compile Include="Players\Items\Specialization.cs" />
-    <Compile Include="Players\Items\SpecializationDictionary.cs" />
-    <Compile Include="Players\Items\SpecializationSlots.cs" />
-    <Compile Include="Players\Items\Weapon.cs" />
-    <Compile Include="Players\Items\WeaponDictionary.cs" />
-    <Compile Include="Players\Items\WeaponSlots.cs" />
-    <Compile Include="Plugin\Commands\CapturedCommand.cs" />
-    <Compile Include="Plugin\Commands\ConfirmationDictionary.cs" />
-    <Compile Include="Plugin\Commands\ConfirmationEntry.cs" />
-    <Compile Include="Plugin\Commands\ExecutionScope.cs" />
-    <Compile Include="Plugin\Commands\ExecutionRequirements.cs" />
-    <Compile Include="Plugin\Commands\MatchArgument.cs" />
-    <Compile Include="Plugin\Commands\MatchArgumentFormat.cs" />
-    <Compile Include="Plugin\Commands\MatchArgumentFormatTypes.cs" />
-    <Compile Include="Plugin\Commands\MatchCommand.cs" />
-    <Compile Include="Plugin\Commands\MatchDictionaryKey.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface2.cs" />
-    <Compile Include="Kill.cs" />
-    <Compile Include="Players\Inventory.cs" />
-    <Compile Include="Remote\Layer\LayerClient.cs" />
-    <Compile Include="Remote\Layer\LayerInstance.cs" />
-    <Compile Include="LevelVariable.cs" />
-    <Compile Include="LevelVariableContext.cs" />
-    <Compile Include="LevelVariableContextType.cs" />
-    <Compile Include="Lists\ListsSettings.cs" />
-    <Compile Include="Localization\CLocalization.cs" />
-    <Compile Include="Localization\LocalizationDictionary.cs" />
-    <Compile Include="CMap.cs" />
-    <Compile Include="Logging\Loggable.cs" />
-    <Compile Include="Options\OptionsSettings.cs" />
-    <Compile Include="Options\TrustedHostWebsitePort.cs" />
-    <Compile Include="Players\CPlayerInfo.cs" />
-    <Compile Include="CPlayerSubset.cs" />
-    <Compile Include="Plugin\CPluginVariable.cs" />
-    <Compile Include="CPrivileges.cs" />
-    <Compile Include="CPunkbusterInfo.cs" />
-    <Compile Include="NotificationList.cs" />
-    <Compile Include="Players\PlayerDictionary.cs" />
-    <Compile Include="Players\PlayerListSettings.cs" />
-    <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Plugin\CPRoConMarshalByRefObject.cs" />
-    <Compile Include="Plugin\CPRoConPluginCallbacks.cs" />
-    <Compile Include="Plugin\CPRoConPluginLoaderFactory.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface3.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface4.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface5.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface6.cs" />
-    <Compile Include="Point3D.cs" />
-    <Compile Include="Privileges.cs" />
-    <Compile Include="CServerInfo.cs" />
-    <Compile Include="PRoConApplication.cs" />
-    <Compile Include="Remote\BFBC2Client.cs" />
-    <Compile Include="Remote\FrostbiteConnection.cs" />
-    <Compile Include="Remote\FrostbiteClient.cs" />
-    <Compile Include="Remote\MoHClient.cs" />
-    <Compile Include="Remote\PRoConClient.cs" />
-    <Compile Include="TextChatModeration\ServerModerationModeType.cs" />
-    <Compile Include="Settings\ServerSettings.cs" />
-    <Compile Include="Settings\ServerSettingsSerializer.cs" />
-    <Compile Include="Task.cs" />
-    <Compile Include="CTeamName.cs" />
-    <Compile Include="TeamScore.cs" />
-    <Compile Include="TextChatModeration\TextChatModerationDictionary.cs" />
-    <Compile Include="TextChatModeration\TextChatModerationEntry.cs" />
-    <Compile Include="TimeoutSubset.cs" />
-    <Compile Include="CustomClass.cs" />
-    <Compile Include="CustomProperty.cs" />
-    <Compile Include="CustomPropertyDescriptor.cs" />
-    <Compile Include="EnumBoolOnOff.cs" />
-    <Compile Include="EnumBoolYesNo.cs" />
-    <Compile Include="Plugin\IPRoConPluginInterface.cs" />
-    <Compile Include="Remote\Packet.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Battlemap\MapZone.cs" />
-    <Compile Include="Utils\MD5.cs" />
-    <Compile Include="Variables\Variable.cs" />
-    <Compile Include="Variables\VariableDictionary.cs" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
+
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <EmbeddedResource Include="..\Resources\**\*" LinkBase="Resources" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

@@ -21,7 +21,6 @@ using MaxMind;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -29,14 +28,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+using Newtonsoft.Json;
 
 namespace PRoCon.Core
 {
     using Core.Accounts;
-    using Core.AutoUpdates;
     using Core.Battlemap;
     using Core.Events;
-    using Core.HttpServer;
     using Core.Localization;
     using Core.Options;
     using Core.Players.Items;
@@ -48,15 +46,13 @@ namespace PRoCon.Core
 
     public class PRoConApplication
     {
+        private readonly object _localizationLock = new object();
 
         public delegate void CurrentLanguageHandler(CLocalization language);
         public event CurrentLanguageHandler CurrentLanguageChanged;
 
         public delegate void ShowNotificationHandler(int timeout, string title, string text, bool isError);
         public event ShowNotificationHandler ShowNotification;
-
-        public event HttpWebServer.StateChangeHandler HttpServerOnline;
-        public event HttpWebServer.StateChangeHandler HttpServerOffline;
 
         public delegate void EmptyParameterHandler(PRoConApplication instance);
         public event EmptyParameterHandler BeginRssUpdate;
@@ -80,12 +76,6 @@ namespace PRoCon.Core
         }
 
         public LocalizationDictionary Languages
-        {
-            get;
-            private set;
-        }
-
-        public HttpWebServer HttpWebServer
         {
             get;
             private set;
@@ -138,12 +128,6 @@ namespace PRoCon.Core
             set;
         }
 
-        public AutoUpdater AutoUpdater
-        {
-            get;
-            private set;
-        }
-
         public string CustomTitle
         {
             get;
@@ -156,19 +140,13 @@ namespace PRoCon.Core
             private set;
         }
 
-        public bool BlockUpdateChecks
-        {
-            get;
-            private set;
-        }
-
-        public System.Windows.Forms.FormWindowState SavedWindowState
+        public FormWindowState SavedWindowState
         {
             get;
             set;
         }
 
-        public Rectangle SavedWindowBounds
+        public WindowBounds SavedWindowBounds
         {
             get;
             set;
@@ -269,15 +247,6 @@ namespace PRoCon.Core
                 XmlNodeList OptionsList = this.ProconXml.GetElementsByTagName("options");
                 if (OptionsList.Count > 0)
                 {
-                    XmlNodeList BlockUpdateChecksList = ((XmlElement)OptionsList[0]).GetElementsByTagName("blockupdatechecks");
-                    if (BlockUpdateChecksList.Count > 0)
-                    {
-                        if (bool.TryParse(BlockUpdateChecksList[0].InnerText, out isEnabled) == true)
-                        {
-                            this.BlockUpdateChecks = isEnabled;
-                        }
-                    }
-
                     XmlNodeList NameList = ((XmlElement)OptionsList[0]).GetElementsByTagName("name");
                     if (NameList.Count > 0)
                     {
@@ -443,7 +412,6 @@ namespace PRoCon.Core
             this.LoadingMainConfig = true;
             this.LoadingAccountsFile = true;
 
-            this.BlockUpdateChecks = false;
             this.MaxGspServers = int.MaxValue;
             this.CustomTitle = String.Empty;
             this.LicenseAgreements = new List<string>();
@@ -461,10 +429,6 @@ namespace PRoCon.Core
                     else if (String.Compare("-maxservers", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true)
                     {
                         this.MaxGspServers = iValue;
-                    }
-                    else if (String.Compare("-blockupdatechecks", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true)
-                    {
-                        this.BlockUpdateChecks = (iValue == 1);
                     }
                     else if (String.Compare("-licensekey", args[i], true) == 0)
                     {
@@ -507,16 +471,15 @@ namespace PRoCon.Core
                 this.CurrentLanguage = new CLocalization();
             }
 
-            this.AutoUpdater = new AutoUpdater(this, args);
-
             this.AccountsList = new AccountDictionary();
             this.AccountsList.AccountAdded += new AccountDictionary.AccountAlteredHandler(AccountsList_AccountAdded);
             this.AccountsList.AccountRemoved += new AccountDictionary.AccountAlteredHandler(AccountsList_AccountRemoved);
             // TODO: Password change -> Save
 
-            this.m_clIpToCountry = new CountryLookup(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeoIP.dat"));
+            ProConPaths.EnsureDirectories();
+            this.m_clIpToCountry = new CountryLookup(Path.Combine(ProConPaths.DataDirectory, "GeoIP.dat"));
 
-            this.SavedWindowBounds = new Rectangle();
+            this.SavedWindowBounds = new WindowBounds();
 
             this.RegexMatchPunkbusterPlist = new Regex(@":[ ]+?(?<slotid>[0-9]+)[ ]+?(?<guid>[A-Fa-f0-9]+)\(.*?\)[ ]+?(?<ip>[0-9\.:]+).*?\(.*?\)[ ]+?""(?<name>.*?)\""", RegexOptions.IgnoreCase | RegexOptions.Compiled);
             this.RegexMatchPunkbusterGuidComputed = new Regex(@":[ ]+?Player Guid Computed[ ]+?(?<guid>[A-Fa-f0-9]+)\(.*?\)[ ]+?\(slot #(?<slotid>[0-9]+)\)[ ]+?(?<ip>[0-9\.:]+)[ ]+?(?<name>.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -533,18 +496,36 @@ namespace PRoCon.Core
 
             //this.CleanPlugins();
 
-            // Create the initial web server object
-            this.ExecutePRoConCommand(this, new List<string>() { "procon.private.httpWebServer.enable", "false", "27360", "0.0.0.0" }, 0);
-
             //this.Execute();
         }
 
         public void Execute()
         {
-            // Load all of the accounts.  
+            string jsonPath = Path.Combine(ProConPaths.ConfigsDirectory, "procon.json");
 
-            this.ExecuteMainConfig("accounts.cfg");
-            this.LoadingAccountsFile = false;
+            if (File.Exists(jsonPath))
+            {
+                // v2 JSON config — single file for accounts + options + servers
+                LoadJsonConfig(jsonPath);
+                this.LoadingAccountsFile = false;
+                this.LoadingMainConfig = false;
+            }
+            else
+            {
+                // Legacy .cfg fallback — load accounts then main config
+                this.ExecuteMainConfig("accounts.cfg");
+                this.LoadingAccountsFile = false;
+
+                if (this.praPluginMaxRuntimeLocked == true)
+                {
+                    this.OptionsSettings.PluginMaxRuntimeLocked = this.praPluginMaxRuntimeLocked;
+                    this.OptionsSettings.PluginMaxRuntime_m = this.praPluginMaxRuntime_m;
+                    this.OptionsSettings.PluginMaxRuntime_s = this.m_praPluginMaxRuntime_s;
+                }
+
+                this.ExecuteMainConfig("procon.cfg");
+                this.LoadingMainConfig = false;
+            }
 
             if (this.praPluginMaxRuntimeLocked == true)
             {
@@ -553,105 +534,7 @@ namespace PRoCon.Core
                 this.OptionsSettings.PluginMaxRuntime_s = this.m_praPluginMaxRuntime_s;
             }
 
-            this.ExecuteMainConfig("procon.cfg");
-            this.LoadingMainConfig = false;
-
             this.Checker = new Timer(o => this.ReconnectVersionChecker(), null, 20000, 20000);
-        }
-
-        private void HttpWebServer_ProcessRequest(HttpWebServerRequest sender)
-        {
-
-            string[] directories = sender.Data.RequestPath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-            HttpWebServerResponseData response = new HttpWebServerResponseData(String.Empty);
-
-            if (directories.Length == 0)
-            {
-
-                switch (sender.Data.RequestFile.ToLower())
-                {
-                    case "connections":
-                        response.Document = this.Connections.ToJsonString();
-                        response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                        break;
-                    default:
-                        response.StatusCode = "404 Not Found";
-                        break;
-                }
-            }
-            else if (directories.Length == 1)
-            {
-
-                if (this.Connections.Contains(directories[0]) == true)
-                {
-
-                    switch (sender.Data.RequestFile.ToLower())
-                    {
-                        case "players":
-
-                            response.Document = this.Connections[directories[0]].PlayerList.ToJsonString();
-                            response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                            break;
-                        case "chat":
-
-                            int historyLength = 0;
-                            DateTime newerThan = DateTime.Now;
-
-                            if (int.TryParse(sender.Data.Query.Get("history"), out historyLength) == true)
-                            {
-                                response.Document = this.Connections[directories[0]].ChatConsole.ToJsonString(historyLength);
-                                response.Cache.CacheType = PRoCon.Core.HttpServer.Cache.HttpWebServerCacheType.NoCache;
-                            }
-                            else if (DateTime.TryParse(sender.Data.Query.Get("newer_than"), out newerThan) == true)
-                            {
-                                response.Document = this.Connections[directories[0]].ChatConsole.ToJsonString(newerThan.ToLocalTime());
-                            }
-                            else
-                            {
-                                response.StatusCode = "400 Bad Request";
-                            }
-
-                            break;
-                        default:
-
-                            response.StatusCode = "404 Not Found";
-                            break;
-                    }
-                }
-
-            }
-            else if (directories.Length >= 3)
-            {
-
-                // /HostNameIp/plugins/PluginClassName/
-                if (this.Connections.Contains(directories[0]) == true && String.Compare("plugins", directories[1]) == 0)
-                {
-
-                    if (this.Connections[directories[0]].PluginsManager.Plugins.EnabledClassNames.Contains(directories[2]) == true)
-                    {
-                        HttpWebServerResponseData pluginRespose = (HttpWebServerResponseData)this.Connections[directories[0]].PluginsManager.InvokeOnEnabled(directories[2], "OnHttpRequest", sender.Data);
-
-                        if (pluginRespose != null)
-                        {
-                            response = pluginRespose;
-                        }
-                    }
-                    else
-                    {
-                        response.StatusCode = "404 Not Found";
-                    }
-                }
-                else
-                {
-                    response.StatusCode = "404 Not Found";
-                }
-            }
-            else
-            {
-                response.StatusCode = "404 Not Found";
-            }
-
-            sender.Respond(response);
         }
 
         private void Connections_ConnectionAdded(PRoConClient item)
@@ -739,7 +622,7 @@ namespace PRoCon.Core
         public void LoadLocalizationFiles()
         {
 
-            lock (new object())
+            lock (_localizationLock)
             {
 
                 string strCurrentLanguagePath = String.Empty;
@@ -751,10 +634,38 @@ namespace PRoCon.Core
 
                 this.Languages.Clear();
 
+                // Extract embedded localization files to disk if they don't exist
+                string locDir = ProConPaths.LocalizationDirectory;
+                try
+                {
+                    if (!Directory.Exists(locDir))
+                        Directory.CreateDirectory(locDir);
+
+                    var assembly = typeof(PRoConApplication).Assembly;
+                    string resPrefix = "PRoCon.Core.Resources.Localization.";
+                    foreach (string resourceName in assembly.GetManifestResourceNames())
+                    {
+                        if (resourceName.StartsWith(resPrefix) && resourceName.EndsWith(".loc"))
+                        {
+                            string fileName = resourceName.Substring(resPrefix.Length);
+                            string destPath = Path.Combine(locDir, fileName);
+                            if (!File.Exists(destPath))
+                            {
+                                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                                using (var fs = File.Create(destPath))
+                                {
+                                    stream?.CopyTo(fs);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+
                 try
                 {
 
-                    DirectoryInfo diLocalizationDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization"));
+                    DirectoryInfo diLocalizationDir = new DirectoryInfo(locDir);
                     FileInfo[] a_fiLocalizations = diLocalizationDir.GetFiles("*.loc");
 
                     foreach (FileInfo fiLocalization in a_fiLocalizations)
@@ -784,10 +695,10 @@ namespace PRoCon.Core
         private void ExecuteMainConfig(string strConfigFile)
         {
 
-            if (File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile)) == true)
+            if (File.Exists(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile)) == true)
             {
 
-                string[] a_strLines = File.ReadAllLines(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), strConfigFile), Encoding.UTF8);
+                string[] a_strLines = File.ReadAllLines(Path.Combine(ProConPaths.ConfigsDirectory, strConfigFile), Encoding.UTF8);
 
                 foreach (string strLine in a_strLines)
                 {
@@ -804,20 +715,22 @@ namespace PRoCon.Core
 
         public void SaveMainConfig()
         {
+            // Always save JSON (v2 format) alongside legacy .cfg
+            SaveJsonConfig();
 
-            if (this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null && this.HttpWebServer != null)
+            if (this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null)
             {
                 FileStream stmProconConfigFile = null;
 
                 try
                 {
 
-                    if (Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs")) == false)
+                    if (Directory.Exists(ProConPaths.ConfigsDirectory) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"));
+                        Directory.CreateDirectory(ProConPaths.ConfigsDirectory);
                     }
 
-                    stmProconConfigFile = new FileStream(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), "procon.cfg"), FileMode.Create);
+                    stmProconConfigFile = new FileStream(Path.Combine(ProConPaths.ConfigsDirectory, "procon.cfg"), FileMode.Create);
 
                     if (stmProconConfigFile != null)
                     {
@@ -839,9 +752,6 @@ namespace PRoCon.Core
                         stwConfig.WriteLine("procon.private.options.consoleLogging {0}", this.OptionsSettings.ConsoleLogging);
                         stwConfig.WriteLine("procon.private.options.eventsLogging {0}", this.OptionsSettings.EventsLogging);
                         stwConfig.WriteLine("procon.private.options.pluginLogging {0}", this.OptionsSettings.PluginLogging);
-                        stwConfig.WriteLine("procon.private.options.autoCheckDownloadUpdates {0}", this.OptionsSettings.AutoCheckDownloadUpdates);
-                        stwConfig.WriteLine("procon.private.options.autoApplyUpdates {0}", this.OptionsSettings.AutoApplyUpdates);
-                        stwConfig.WriteLine("procon.private.options.autoCheckGameConfigsForUpdates {0}", this.OptionsSettings.AutoCheckGameConfigsForUpdates);
                         stwConfig.WriteLine("procon.private.options.showtrayicon {0}", this.OptionsSettings.ShowTrayIcon);
                         stwConfig.WriteLine("procon.private.options.minimizetotray {0}", this.OptionsSettings.MinimizeToTray);
                         stwConfig.WriteLine("procon.private.options.closetotray {0}", this.OptionsSettings.CloseToTray);
@@ -861,11 +771,6 @@ namespace PRoCon.Core
                         stwConfig.WriteLine("procon.private.options.ShowCfmMsgRoundRestartNext {0}", this.OptionsSettings.ShowCfmMsgRoundRestartNext);
 
                         stwConfig.WriteLine("procon.private.options.ShowDICESpecialOptions {0}", this.OptionsSettings.ShowDICESpecialOptions);
-
-                        if (this.HttpWebServer != null)
-                        {
-                            stwConfig.WriteLine("procon.private.httpWebServer.enable {0} {1} \"{2}\"", this.HttpWebServer.IsOnline, this.HttpWebServer.ListeningPort, this.HttpWebServer.BindingAddress);
-                        }
 
                         stwConfig.Write("procon.private.options.trustedHostDomainsPorts");
                         foreach (TrustedHostWebsitePort trusted in this.OptionsSettings.TrustedHostsWebsitesPorts)
@@ -959,6 +864,176 @@ namespace PRoCon.Core
             }
         }
 
+        #region JSON Config
+
+        private void LoadJsonConfig(string path)
+        {
+            try
+            {
+                string json = File.ReadAllText(path, Encoding.UTF8);
+                var config = JsonConvert.DeserializeObject<ProConConfig>(json);
+                if (config == null) return;
+
+                // Window
+                this.SavedWindowState = config.Window.State;
+                this.SavedWindowBounds = new WindowBounds(config.Window.X, config.Window.Y, config.Window.Width, config.Window.Height);
+
+                // Language
+                if (!string.IsNullOrEmpty(config.Options.Language) && this.Languages.Contains(config.Options.Language))
+                    this.CurrentLanguage = this.Languages[config.Options.Language];
+
+                // Options
+                this.OptionsSettings.ChatLogging = config.Options.ChatLogging;
+                this.OptionsSettings.ConsoleLogging = config.Options.ConsoleLogging;
+                this.OptionsSettings.EventsLogging = config.Options.EventsLogging;
+                this.OptionsSettings.PluginLogging = config.Options.PluginLogging;
+                this.OptionsSettings.ShowTrayIcon = config.Options.ShowTrayIcon;
+                this.OptionsSettings.MinimizeToTray = config.Options.MinimizeToTray;
+                this.OptionsSettings.CloseToTray = config.Options.CloseToTray;
+                this.OptionsSettings.RunPluginsInTrustedSandbox = config.Options.RunPluginsInSandbox;
+                this.OptionsSettings.AllowAllODBCConnections = config.Options.AllowAllODBCConnections;
+                this.OptionsSettings.AllowAllSmtpConnections = config.Options.AllowAllSmtpConnections;
+                this.OptionsSettings.AdminMoveMessage = config.Options.AdminMoveMessage;
+                this.OptionsSettings.ChatDisplayAdminName = config.Options.ChatDisplayAdminName;
+                this.OptionsSettings.EnableAdminReason = config.Options.EnableAdminReason;
+                this.OptionsSettings.LayerHideLocalPlugins = config.Options.LayerHideLocalPlugins;
+                this.OptionsSettings.LayerHideLocalAccounts = config.Options.LayerHideLocalAccounts;
+                this.OptionsSettings.ShowRoundTimerConstantly = config.Options.ShowRoundTimerConstantly;
+                this.OptionsSettings.ShowCfmMsgRoundRestartNext = config.Options.ShowCfmMsgRoundRestartNext;
+                this.OptionsSettings.ShowDICESpecialOptions = config.Options.ShowDICESpecialOptions;
+                this.OptionsSettings.UseGeoIpFileOnly = config.Options.UseGeoIpFileOnly;
+                this.OptionsSettings.BlockRssFeedNews = config.Options.BlockRssFeedNews;
+                this.OptionsSettings.UsePluginOldStyleLoad = config.Options.UsePluginOldStyleLoad;
+                this.OptionsSettings.EnablePluginDebugging = config.Options.EnablePluginDebugging;
+                this.OptionsSettings.PluginMaxRuntime_m = config.Options.PluginMaxRuntimeMinutes;
+                this.OptionsSettings.PluginMaxRuntime_s = config.Options.PluginMaxRuntimeSeconds;
+                this.OptionsSettings.StatsLinksMaxNum = config.Options.StatsLinksMaxNum;
+                this.OptionsSettings.ProxyCheckApiKey = config.Options.ProxyCheckApiKey ?? "";
+
+                foreach (var trusted in config.Options.TrustedHosts)
+                    this.OptionsSettings.TrustedHostsWebsitesPorts.Add(new TrustedHostWebsitePort(trusted.Host, trusted.Port));
+
+                foreach (var link in config.Options.StatsLinks)
+                    this.OptionsSettings.StatsLinkNameUrl.Add(new StatsLinkNameUrl(link.Name, link.Url));
+
+                // Accounts
+                foreach (var acc in config.Accounts)
+                {
+                    if (!string.IsNullOrEmpty(acc.Name))
+                        this.AccountsList.CreateAccount(acc.Name, acc.Password);
+                }
+
+                // Servers
+                foreach (var srv in config.Servers)
+                {
+                    var connection = this.AddConnection(srv.Host, srv.Port, srv.Username, srv.Password);
+                    if (connection != null)
+                    {
+                        if (!string.IsNullOrEmpty(srv.Name))
+                            connection.ConnectionServerName = srv.Name;
+                        if (srv.AutoConnect)
+                            connection.AutomaticallyConnect = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FrostbiteConnection.LogError("LoadJsonConfig", String.Empty, e);
+            }
+        }
+
+        public void SaveJsonConfig()
+        {
+            if (this.LoadingMainConfig || this.CurrentLanguage == null || this.OptionsSettings == null || this.Connections == null)
+                return;
+
+            try
+            {
+                string configsDir = ProConPaths.ConfigsDirectory;
+                if (!Directory.Exists(configsDir))
+                    Directory.CreateDirectory(configsDir);
+
+                var config = new ProConConfig
+                {
+                    Window = new WindowConfig
+                    {
+                        State = this.SavedWindowState,
+                        X = this.SavedWindowBounds.X,
+                        Y = this.SavedWindowBounds.Y,
+                        Width = this.SavedWindowBounds.Width,
+                        Height = this.SavedWindowBounds.Height,
+                    },
+                    Options = new OptionsConfig
+                    {
+                        Language = this.CurrentLanguage.FileName,
+                        ChatLogging = this.OptionsSettings.ChatLogging,
+                        ConsoleLogging = this.OptionsSettings.ConsoleLogging,
+                        EventsLogging = this.OptionsSettings.EventsLogging,
+                        PluginLogging = this.OptionsSettings.PluginLogging,
+                        ShowTrayIcon = this.OptionsSettings.ShowTrayIcon,
+                        MinimizeToTray = this.OptionsSettings.MinimizeToTray,
+                        CloseToTray = this.OptionsSettings.CloseToTray,
+                        RunPluginsInSandbox = this.OptionsSettings.RunPluginsInTrustedSandbox,
+                        AllowAllODBCConnections = this.OptionsSettings.AllowAllODBCConnections,
+                        AllowAllSmtpConnections = this.OptionsSettings.AllowAllSmtpConnections,
+                        AdminMoveMessage = this.OptionsSettings.AdminMoveMessage,
+                        ChatDisplayAdminName = this.OptionsSettings.ChatDisplayAdminName,
+                        EnableAdminReason = this.OptionsSettings.EnableAdminReason,
+                        LayerHideLocalPlugins = this.OptionsSettings.LayerHideLocalPlugins,
+                        LayerHideLocalAccounts = this.OptionsSettings.LayerHideLocalAccounts,
+                        ShowRoundTimerConstantly = this.OptionsSettings.ShowRoundTimerConstantly,
+                        ShowCfmMsgRoundRestartNext = this.OptionsSettings.ShowCfmMsgRoundRestartNext,
+                        ShowDICESpecialOptions = this.OptionsSettings.ShowDICESpecialOptions,
+                        UseGeoIpFileOnly = this.OptionsSettings.UseGeoIpFileOnly,
+                        BlockRssFeedNews = this.OptionsSettings.BlockRssFeedNews,
+                        UsePluginOldStyleLoad = this.OptionsSettings.UsePluginOldStyleLoad,
+                        EnablePluginDebugging = this.OptionsSettings.EnablePluginDebugging,
+                        PluginMaxRuntimeMinutes = this.OptionsSettings.PluginMaxRuntime_m,
+                        PluginMaxRuntimeSeconds = this.OptionsSettings.PluginMaxRuntime_s,
+                        StatsLinksMaxNum = this.OptionsSettings.StatsLinksMaxNum,
+                        ProxyCheckApiKey = this.OptionsSettings.ProxyCheckApiKey ?? "",
+                    },
+                };
+
+                foreach (TrustedHostWebsitePort trusted in this.OptionsSettings.TrustedHostsWebsitesPorts)
+                    config.Options.TrustedHosts.Add(new TrustedHostConfig { Host = trusted.HostWebsite, Port = trusted.Port });
+
+                foreach (StatsLinkNameUrl link in this.OptionsSettings.StatsLinkNameUrl)
+                    config.Options.StatsLinks.Add(new StatsLinkConfig { Name = link.LinkName, Url = link.LinkUrl });
+
+                foreach (Account acc in this.AccountsList)
+                    config.Accounts.Add(new AccountConfig { Name = acc.Name, Password = acc.Password });
+
+                foreach (PRoConClient prcClient in this.Connections)
+                {
+                    var srv = new ServerConfig
+                    {
+                        Host = prcClient.HostName,
+                        Port = prcClient.Port,
+                        Password = prcClient.Password,
+                        Username = prcClient.Username,
+                        AutoConnect = prcClient.AutomaticallyConnect,
+                    };
+
+                    if (prcClient.CurrentServerInfo != null)
+                        srv.Name = prcClient.CurrentServerInfo.ServerName;
+                    else if (!string.IsNullOrEmpty(prcClient.ConnectionServerName))
+                        srv.Name = prcClient.ConnectionServerName;
+
+                    config.Servers.Add(srv);
+                }
+
+                string json = JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText(Path.Combine(configsDir, "procon.json"), json, Encoding.UTF8);
+            }
+            catch (Exception e)
+            {
+                FrostbiteConnection.LogError("SaveJsonConfig", String.Empty, e);
+            }
+        }
+
+        #endregion
+
         public void ExecutePRoConCommand(object objSender, List<string> lstWords, int iRecursion)
         {
 
@@ -970,7 +1045,7 @@ namespace PRoCon.Core
                     Enum.IsDefined(typeof(WeaponSlots), lstWords[3]) == true &&
                     Enum.IsDefined(typeof(DamageTypes), lstWords[4]) == true)
                 {
-                    //this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    //this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     ((PRoConClient)objSender).Weapons.Add(
                             new Weapon(
@@ -1264,12 +1339,12 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 6 && String.Compare(lstWords[0], "procon.private.window.position", true) == 0 && objSender == this)
             {
 
-                Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
+                WindowBounds recWindowBounds = new WindowBounds(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
-                if (Enum.IsDefined(typeof(System.Windows.Forms.FormWindowState), lstWords[1]) == true)
+                if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
                 {
-                    this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     if (int.TryParse(lstWords[2], out iPositionVar) == true)
                     {
@@ -1308,42 +1383,9 @@ namespace PRoCon.Core
 
 
 
-            // procon.private.httpWebServer.enable true 27360 "0.0.0.0"
+            // httpWebServer config ignored in v2
             else if (lstWords.Count >= 4 && String.Compare(lstWords[0], "procon.private.httpWebServer.enable", true) == 0 && objSender == this)
             {
-
-                bool blEnabled = false;
-                string bindingAddress = "0.0.0.0";
-                UInt16 ui16Port = 27360;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-
-                    if (this.HttpWebServer != null)
-                    {
-                        this.HttpWebServer.Shutdown();
-
-                        this.HttpWebServer.ProcessRequest -= new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                        this.HttpWebServer.HttpServerOnline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                        this.HttpWebServer.HttpServerOffline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-                    }
-
-                    bindingAddress = lstWords[3];
-                    if (UInt16.TryParse(lstWords[2], out ui16Port) == false)
-                    {
-                        ui16Port = 27360;
-                    }
-
-                    this.HttpWebServer = new HttpWebServer(bindingAddress, ui16Port);
-                    this.HttpWebServer.ProcessRequest += new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                    this.HttpWebServer.HttpServerOnline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                    this.HttpWebServer.HttpServerOffline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-
-                    if (blEnabled == true)
-                    {
-                        this.HttpWebServer.Start();
-                    }
-                }
             }
 
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.setLanguage", true) == 0 && objSender == this)
@@ -1353,46 +1395,12 @@ namespace PRoCon.Core
                 // this could not be loaded because it is running in lean mode.
                 if (this.Languages.Contains(lstWords[1]) == false)
                 {
-                    this.Languages.LoadLocalizationFile(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization"), lstWords[1]), lstWords[1]);
+                    this.Languages.LoadLocalizationFile(Path.Combine(ProConPaths.LocalizationDirectory, lstWords[1]), lstWords[1]);
                 }
 
                 if (this.Languages.Contains(lstWords[1]) == true)
                 {
                     this.CurrentLanguage = this.Languages[lstWords[1]];
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoCheckDownloadUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoCheckDownloadUpdates = blEnabled;
-
-                    // Force an update check right now..
-                    if (this.OptionsSettings.AutoCheckDownloadUpdates == true)
-                    {
-                        //this.CheckVersion();
-                        //this.VersionCheck("http://www.phogue.net/procon/version.php");
-                    }
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoApplyUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoApplyUpdates = blEnabled;
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoCheckGameConfigsForUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoCheckGameConfigsForUpdates = blEnabled;
                 }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.UseGeoIpFileOnly", true) == 0 && objSender == this)
@@ -1677,9 +1685,9 @@ namespace PRoCon.Core
 
                 int iRepeat = 0;
 
-                string blah = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), lstWords[1]);
+                string blah = Path.Combine(ProConPaths.MediaDirectory, lstWords[1]);
 
-                if (int.TryParse(lstWords[2], out iRepeat) == true && iRepeat > 0 && File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), lstWords[1])) == true)
+                if (int.TryParse(lstWords[2], out iRepeat) == true && iRepeat > 0 && File.Exists(Path.Combine(ProConPaths.MediaDirectory, lstWords[1])) == true)
                 {
 
                     //this.Invoke(new DispatchProconProtectedPlaySound(this.PlaySound), new object[] { lstWords[1], iRepeat });
@@ -1845,7 +1853,7 @@ namespace PRoCon.Core
                     Enum.IsDefined(typeof(WeaponSlots), lstWords[3]) == true &&
                     Enum.IsDefined(typeof(DamageTypes), lstWords[4]) == true)
                 {
-                    //this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    //this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     ((PRoConClient)objSender).Weapons.Add(
                             new Weapon(
@@ -2139,12 +2147,12 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 6 && String.Compare(lstWords[0], "procon.private.window.position", true) == 0 && objSender == this)
             {
 
-                Rectangle recWindowBounds = new Rectangle(0, 0, 1024, 768);
+                WindowBounds recWindowBounds = new WindowBounds(0, 0, 1024, 768);
                 int iPositionVar = 0;
 
-                if (Enum.IsDefined(typeof(System.Windows.Forms.FormWindowState), lstWords[1]) == true)
+                if (Enum.IsDefined(typeof(FormWindowState), lstWords[1]) == true)
                 {
-                    this.SavedWindowState = (System.Windows.Forms.FormWindowState)Enum.Parse(typeof(System.Windows.Forms.FormWindowState), lstWords[1]);
+                    this.SavedWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), lstWords[1]);
 
                     if (int.TryParse(lstWords[2], out iPositionVar) == true)
                     {
@@ -2183,42 +2191,9 @@ namespace PRoCon.Core
 
 
 
-            // procon.private.httpWebServer.enable true 27360 "0.0.0.0"
+            // httpWebServer config ignored in v2
             else if (lstWords.Count >= 4 && String.Compare(lstWords[0], "procon.private.httpWebServer.enable", true) == 0 && objSender == this)
             {
-
-                bool blEnabled = false;
-                string bindingAddress = "0.0.0.0";
-                UInt16 ui16Port = 27360;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-
-                    if (this.HttpWebServer != null)
-                    {
-                        this.HttpWebServer.Shutdown();
-
-                        this.HttpWebServer.ProcessRequest -= new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                        this.HttpWebServer.HttpServerOnline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                        this.HttpWebServer.HttpServerOffline -= new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-                    }
-
-                    bindingAddress = lstWords[3];
-                    if (UInt16.TryParse(lstWords[2], out ui16Port) == false)
-                    {
-                        ui16Port = 27360;
-                    }
-
-                    this.HttpWebServer = new HttpWebServer(bindingAddress, ui16Port);
-                    this.HttpWebServer.ProcessRequest += new HttpWebServer.ProcessResponseHandler(HttpWebServer_ProcessRequest);
-                    this.HttpWebServer.HttpServerOnline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOnline);
-                    this.HttpWebServer.HttpServerOffline += new HttpWebServer.StateChangeHandler(HttpWebServer_HttpServerOffline);
-
-                    if (blEnabled == true)
-                    {
-                        this.HttpWebServer.Start();
-                    }
-                }
             }
 
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.setLanguage", true) == 0 && objSender == this)
@@ -2228,46 +2203,12 @@ namespace PRoCon.Core
                 // this could not be loaded because it is running in lean mode.
                 if (this.Languages.Contains(lstWords[1]) == false)
                 {
-                    this.Languages.LoadLocalizationFile(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Localization"), lstWords[1]), lstWords[1]);
+                    this.Languages.LoadLocalizationFile(Path.Combine(ProConPaths.LocalizationDirectory, lstWords[1]), lstWords[1]);
                 }
 
                 if (this.Languages.Contains(lstWords[1]) == true)
                 {
                     this.CurrentLanguage = this.Languages[lstWords[1]];
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoCheckDownloadUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoCheckDownloadUpdates = blEnabled;
-
-                    // Force an update check right now..
-                    if (this.OptionsSettings.AutoCheckDownloadUpdates == true)
-                    {
-                        //this.CheckVersion();
-                        //this.VersionCheck("http://www.phogue.net/procon/version.php");
-                    }
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoApplyUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoApplyUpdates = blEnabled;
-                }
-            }
-            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.autoCheckGameConfigsForUpdates", true) == 0 && objSender == this)
-            {
-                bool blEnabled = false;
-
-                if (bool.TryParse(lstWords[1], out blEnabled) == true)
-                {
-                    this.OptionsSettings.AutoCheckGameConfigsForUpdates = blEnabled;
                 }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.private.options.consoleLogging", true) == 0 && objSender == this)
@@ -2492,9 +2433,9 @@ namespace PRoCon.Core
 
                 int iRepeat = 0;
 
-                string blah = Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), lstWords[1]);
+                string blah = Path.Combine(ProConPaths.MediaDirectory, lstWords[1]);
 
-                if (int.TryParse(lstWords[2], out iRepeat) == true && iRepeat > 0 && File.Exists(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Media"), lstWords[1])) == true)
+                if (int.TryParse(lstWords[2], out iRepeat) == true && iRepeat > 0 && File.Exists(Path.Combine(ProConPaths.MediaDirectory, lstWords[1])) == true)
                 {
 
                     //this.Invoke(new DispatchProconProtectedPlaySound(this.PlaySound), new object[] { lstWords[1], iRepeat });
@@ -2646,22 +2587,6 @@ namespace PRoCon.Core
                         this.Connections[String.Format("{0}:{1}", lstWords[1], lstWords[2])].ProconProtectedLayerSetPrivileges(this.AccountsList[lstWords[3]], sprPrivs);
                     }
                 }
-            }
-        }
-
-        private void HttpWebServer_HttpServerOffline(HttpWebServer sender)
-        {
-            if (this.HttpServerOffline != null)
-            {
-                this.HttpServerOffline(sender);
-            }
-        }
-
-        private void HttpWebServer_HttpServerOnline(HttpWebServer sender)
-        {
-            if (this.HttpServerOnline != null)
-            {
-                this.HttpServerOnline(sender);
             }
         }
 
@@ -2825,12 +2750,12 @@ namespace PRoCon.Core
                 try
                 {
 
-                    if (Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs")) == false)
+                    if (Directory.Exists(ProConPaths.ConfigsDirectory) == false)
                     {
-                        Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"));
+                        Directory.CreateDirectory(ProConPaths.ConfigsDirectory);
                     }
 
-                    stmProconConfigFile = new FileStream(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs"), "accounts.cfg"), FileMode.Create);
+                    stmProconConfigFile = new FileStream(Path.Combine(ProConPaths.ConfigsDirectory, "accounts.cfg"), FileMode.Create);
 
                     if (stmProconConfigFile != null)
                     {
@@ -2886,8 +2811,6 @@ namespace PRoCon.Core
 
         #region Reconnection and Version Timer
 
-        private int m_iVersionTicks = 0;
-        private bool m_blInitialVersionCheck = false;
         private DateTime m_dtDayCheck = DateTime.Now;
 
         private XmlNode CreateNode(XmlDocument document, string key, string value)
@@ -2902,77 +2825,8 @@ namespace PRoCon.Core
 
         private Version HighestNetFrameworkVersion()
         {
-            Version highest_version = new Version();
-
-            try
-            {
-                string str_monoVersion;
-
-                // check for mono
-                Type monoType = Type.GetType("Mono.Runtime");
-                if (monoType != null)
-                {
-                    BindingFlags methodFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.ExactBinding;
-
-                    MethodInfo monoDisplayName = monoType.GetMethod("GetDisplayName", methodFlags, null, Type.EmptyTypes, null);
-                    if (monoDisplayName != null)
-                    {
-                        str_monoVersion = (string)monoDisplayName.Invoke(null, null);
-                        string[] parts = str_monoVersion.Split('.');
-                        int major = Int32.Parse(parts[0]);
-                        int minor = Int32.Parse(parts[1]);
-                        int revision = Int32.Parse(parts[2].Substring(0, parts[2].IndexOf(' ')));
-                        Version MonoVersion = new Version(major, minor, revision);
-
-                        highest_version = MonoVersion;
-                    }
-                }
-                else if (Environment.OSVersion.Platform != PlatformID.Unix)
-                {
-                    // Windows-only .NET Framework check via Registry
-                    try
-                    {
-                        RegistryKey installed_versions = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP");
-
-                        if (installed_versions != null)
-                        {
-                            string[] version_keys = installed_versions.GetSubKeyNames();
-
-                            foreach (string version_key in version_keys)
-                            {
-                                Match version_match = version_regex.Match(version_key);
-
-                                if (version_match.Success == true)
-                                {
-                                    int service_pack = Convert.ToInt32(installed_versions.OpenSubKey(version_key).GetValue("SP", 0));
-
-                                    Version version = new Version(
-                                        version_match.Groups["major"].Value.Length > 0 ? int.Parse(version_match.Groups["major"].Value) : 0,
-                                        version_match.Groups["minor"].Value.Length > 0 ? int.Parse(version_match.Groups["minor"].Value) : 0,
-                                        version_match.Groups["build"].Value.Length > 0 ? int.Parse(version_match.Groups["build"].Value) : 0,
-                                        service_pack
-                                    );
-
-                                    if (version > highest_version)
-                                    {
-                                        highest_version = version;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Registry access may fail on non-Windows or restricted environments
-                    }
-                } // end of mono check
-            }
-            catch (System.ArgumentOutOfRangeException e)
-            {
-                // Console.WriteLine(e.Message);
-            }
-
-            return highest_version;
+            // On .NET 8+, just return the runtime version
+            return Environment.Version;
         }
 
         private string GetFrameworkName()
@@ -2996,13 +2850,6 @@ namespace PRoCon.Core
 
         private void ReconnectVersionChecker()
         {
-            if (this.m_blInitialVersionCheck == false && this.OptionsSettings.AutoCheckDownloadUpdates == true)
-            {
-                this.AutoUpdater.CheckVersion();
-
-                this.m_blInitialVersionCheck = true;
-            }
-
             // Loop through each connection
             foreach (PRoConClient prcClient in this.Connections)
             {
@@ -3051,18 +2898,6 @@ namespace PRoCon.Core
             }
 
             this.m_dtDayCheck = DateTime.Now;
-
-            // If it's been 3 hours (this ticks every 20 seconds) and we're checking for updates..
-
-            if (this.m_iVersionTicks >= 540 && this.OptionsSettings.AutoCheckDownloadUpdates == true)
-            {
-
-                this.AutoUpdater.CheckVersion();
-
-                this.m_iVersionTicks = 0;
-            }
-           
-            this.m_iVersionTicks++;
         }
 
         #endregion
@@ -3075,8 +2910,6 @@ namespace PRoCon.Core
             this.SaveAccountsConfig();
             this.SaveMainConfig();
 
-            this.AutoUpdater.Shutdown();
-
             foreach (PRoConClient pcClient in this.Connections)
             {
                 pcClient.StopSound(default(PRoConClient.SPlaySound));
@@ -3084,11 +2917,6 @@ namespace PRoCon.Core
                 pcClient.Destroy();
             }
 
-            if (this.HttpWebServer != null)
-            {
-                this.HttpWebServer.Shutdown();
-                this.HttpWebServer = null;
-            }
         }
     }
 }
