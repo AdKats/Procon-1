@@ -837,32 +837,53 @@ namespace PRoCon.Core.Remote
         {
             if (ServerInfo != null)
             {
-                var newServerInfo = new CServerInfo(new List<string>() {
-                    "ServerName",
-                    "PlayerCount",
-                    "MaxPlayerCount",
-                    "GameMode",
-                    "Map",
-                    "CurrentRound",
-                    "TotalRounds",
-                    "TeamScores",
-                    "ConnectionState",
-                    "Ranked",
-                    "PunkBuster",
-                    "Passworded",
-                    "ServerUptime",
-                    "RoundTime",
-                    "ExternalGameIpandPort",
-                    "PunkBusterVersion",
-                    "JoinQueueEnabled",
-                    "ServerRegion",
-                    "PingSite",
-                    "ServerCountry",
-                    "BlazePlayerCount",
-                    "BlazeGameState"
-                }, cpRecievedPacket.Words.GetRange(1, cpRecievedPacket.Words.Count - 1));
+                try
+                {
+                    var newServerInfo = new CServerInfo(new List<string>() {
+                        "ServerName",
+                        "PlayerCount",
+                        "MaxPlayerCount",
+                        "GameMode",
+                        "Map",
+                        "CurrentRound",
+                        "TotalRounds",
+                        "TeamScores",
+                        "ConnectionState",
+                        "Ranked",
+                        "PunkBuster",
+                        "Passworded",
+                        "ServerUptime",
+                        "RoundTime",
+                        "ExternalGameIpandPort",
+                        "PunkBusterVersion",
+                        "JoinQueueEnabled",
+                        "ServerRegion",
+                        "PingSite",
+                        "ServerCountry",
+                        "BlazePlayerCount",
+                        "BlazeGameState"
+                    }, cpRecievedPacket.Words.GetRange(1, cpRecievedPacket.Words.Count - 1));
 
-                this.ServerInfo(this, newServerInfo);
+                    this.ServerInfo(this, newServerInfo);
+                }
+                catch (Exception)
+                {
+                    // Modded servers (e.g. Warsaw Revamped) may return non-standard
+                    // serverInfo responses. Parse what we can from the basic fields.
+                    try
+                    {
+                        var fallbackInfo = new CServerInfo();
+                        var words = cpRecievedPacket.Words;
+                        if (words.Count > 1) fallbackInfo.ServerName = words[1];
+                        if (words.Count > 2 && int.TryParse(words[2], out int pc)) fallbackInfo.PlayerCount = pc;
+                        if (words.Count > 3 && int.TryParse(words[3], out int mpc)) fallbackInfo.MaxPlayerCount = mpc;
+                        if (words.Count > 4) fallbackInfo.GameMode = words[4];
+                        if (words.Count > 5) fallbackInfo.Map = words[5];
+
+                        this.ServerInfo(this, fallbackInfo);
+                    }
+                    catch (Exception) { }
+                }
             }
         }
 

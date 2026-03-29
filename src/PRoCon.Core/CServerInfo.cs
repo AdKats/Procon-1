@@ -163,9 +163,17 @@ namespace PRoCon.Core
                         {
                             scoresCount++;
 
-                            this.TeamScores = TeamScore.GetTeamScores(variables.GetRange(varCount, scoresCount + 1));
-
-                            varCount += scoresCount;
+                            // Bounds check: ensure we have enough variables for all team scores
+                            if (varCount + scoresCount + 1 <= variables.Count)
+                            {
+                                this.TeamScores = TeamScore.GetTeamScores(variables.GetRange(varCount, scoresCount + 1));
+                                varCount += scoresCount;
+                            }
+                            else
+                            {
+                                // Not enough data — skip remaining serverInfo gracefully
+                                return;
+                            }
                         }
                         else
                         {
