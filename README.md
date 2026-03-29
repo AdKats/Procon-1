@@ -2,6 +2,61 @@
 
 PRoCon is a free, open-source remote control (RCON) tool for Frostbite game servers. It supports Battlefield Bad Company 2, Battlefield 3, Battlefield 4, Battlefield Hardline, and Medal of Honor: Warfighter.
 
+## Migrating from v1.x
+
+PRoCon v2.0 can import your existing v1.x configuration, servers, accounts, and plugins automatically.
+
+### Step 1: Find your data directory
+
+| Platform | v2.0 Data Directory |
+|----------|-------------------|
+| Windows | `%APPDATA%\PRoCon\` |
+| Linux | `~/.config/procon/` |
+| Docker | `/config/` |
+
+Run PRoCon v2.0 once to create the directory structure, then close it.
+
+### Step 2: Copy your v1 files
+
+Create an `Import/` folder inside the data directory and copy your old PRoCon files into it:
+
+```
+~/.config/procon/Import/          (or %APPDATA%\PRoCon\Import\)
+  Configs/
+    procon.cfg                    <- your servers, options, layer settings
+    accounts.cfg                  <- your layer accounts
+    1.2.3.4_47200/                <- per-server plugin configs
+    5.6.7.8_47300/
+  Plugins/
+    BF4/
+      AdKats.cs                   <- your plugin files
+      CInGameAdmin.cs
+      ...
+    BF3/
+      ...
+```
+
+You can also just copy the entire old PRoCon folder contents into `Import/` — it will find the `Configs/` and `Plugins/` subdirectories automatically.
+
+### Step 3: Launch PRoCon v2.0
+
+On startup, PRoCon will:
+1. Detect the `Import/` folder
+2. Import your servers, accounts, options, per-server configs, and plugins
+3. Save everything as encrypted `procon.json` (passwords are AES-256 encrypted)
+4. Rename `Import/` to `Import.done/` so it won't re-import
+
+Your old `procon.cfg` and `accounts.cfg` are archived as `.v1.bak` files.
+
+### Breaking changes to check
+
+- **Plugins using `System.Windows.Forms`** need refactoring (see [`docs/PLUGIN-REFACTORING-GUIDE.md`](docs/PLUGIN-REFACTORING-GUIDE.md))
+- **`using MySql.Data.MySqlClient;`** is auto-rewritten to `using MySqlConnector;`
+- **`OnHttpRequest`** handler must be removed from plugins (HTTP server is gone)
+- **Layer protocol changed** — v1.x and v2.0 instances cannot cross-connect. Upgrade all at once.
+
+---
+
 ## What's v2.0?
 
 EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codebase (.NET Framework 4.7) was blocking that. Prophet took the time to modernize the entire stack to .NET 8.
@@ -17,7 +72,7 @@ EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codeb
 | Layer Protocol | Custom TCP binary | SignalR WebSocket |
 | MySQL Driver | MySql.Data | MySqlConnector |
 | Plugin Compiler | CodeDom | Roslyn (C# latest) |
-| Config Format | `procon.cfg` (command-based) | `procon.json` (with .cfg fallback) |
+| Config Format | `procon.cfg` (plaintext) | `procon.json` (AES-256 encrypted passwords) |
 | IP Checking | None | ProxyCheck.io v3 (SQLite cache) |
 | Distribution | 50+ loose DLLs | Single-file executable (~77MB) |
 
@@ -27,8 +82,10 @@ Download the latest release from the [Releases](https://github.com/AdKats/Procon
 
 | Platform | File |
 |----------|------|
-| Windows | `PRoCon.UI.exe` (self-contained, no .NET install needed) |
-| Linux | `PRoCon.UI` (self-contained) |
+| Windows GUI | `PRoCon.UI.exe` (self-contained, no .NET install needed) |
+| Linux GUI | `PRoCon.UI` (self-contained) |
+| Windows Headless | `PRoCon.Console.exe` (for servers, no GUI) |
+| Linux Headless | `PRoCon.Console` (for servers/Docker) |
 
 ## Building from Source
 
@@ -49,19 +106,25 @@ dotnet run --project src/PRoCon.UI/PRoCon.UI.csproj
 # Publish single-file executables
 dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r win-x64 --self-contained -o publish/win
 dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r linux-x64 --self-contained -o publish/linux
-dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r osx-x64 --self-contained -o publish/osx
 ```
 
 ### Docker
 
 ```bash
 docker compose up -d
-# Data: /config/ (Configs, Plugins, Logs, Cache)
+# Data volume: ./data/ → /config/ (Configs, Plugins, Logs, Cache)
+```
+
+### Headless (CLI)
+
+```bash
+./PRoCon.Console                              # uses default data directory
+./PRoCon.Console --datadir /opt/procon/data   # custom data path
 ```
 
 ## Data Directory
 
-PRoCon stores all user data in a platform-appropriate location:
+PRoCon stores all user data in a platform-appropriate location, separate from the executable:
 
 | Platform | Path |
 |----------|------|
@@ -69,8 +132,21 @@ PRoCon stores all user data in a platform-appropriate location:
 | Linux | `~/.config/procon/` |
 | macOS | `~/Library/Application Support/PRoCon/` |
 | Docker/K8s | `/config/` (auto-detected) |
+| Portable | Exe directory (if `Configs/` exists next to exe) |
 
-Override with `PROCON_DATA_DIR` environment variable or `--datadir` CLI argument. If a `Configs/` folder exists next to the executable, PRoCon uses portable mode (data stored next to the exe).
+Override with `PROCON_DATA_DIR` environment variable or `--datadir` CLI argument.
+
+Directory structure (created on first launch):
+```
+Configs/
+  procon.json          <- servers, accounts, options (encrypted passwords)
+  .procon-key          <- AES-256 encryption key (auto-generated)
+Plugins/
+  BF3/ BF4/ BFBC2/ BFHL/ MOH/ MOHW/
+Logs/
+Cache/
+  IPCheck/ipcache.db   <- ProxyCheck.io cache (SQLite)
+```
 
 ## Plugin Development
 
@@ -162,20 +238,6 @@ public override void OnIPChecked(string ip, string countryName,
 
 See the full SDK template and developer guide in [`pluginsdk/`](pluginsdk/).
 
-## Breaking Changes from v1.x
-
-- **.NET 8 required** — .NET Framework 4.7 no longer supported
-- **HTTP web server removed** — use the SignalR layer instead
-- **Layer protocol changed** — v1.x and v2.0 cannot cross-connect
-- **Plugin sandbox removed** — plugins run with full trust
-- **Auto-updater removed** — download updates from GitHub Releases
-- **Default plugins not bundled** — install plugins manually
-- **MySql.Data replaced** — use `using MySqlConnector;` instead of `using MySql.Data.MySqlClient;`
-- **System.Windows.Forms removed** — plugins must be cross-platform
-- **Config format changed** — new installs use `procon.json`, legacy `procon.cfg` still loaded
-
-See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`docs/PLUGIN-REFACTORING-GUIDE.md`](docs/PLUGIN-REFACTORING-GUIDE.md) for plugin migration steps.
-
 ## Architecture
 
 | Project | Purpose |
@@ -187,6 +249,8 @@ See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`
 | `PRoCon.Service` | Windows Service / Linux systemd wrapper |
 
 Key technologies: .NET 8, Avalonia 11, SignalR (layer system), Roslyn (plugin compilation), Dapper + SQLite (caching), Kestrel (layer hosting).
+
+See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`docs/PLUGIN-REFACTORING-GUIDE.md`](docs/PLUGIN-REFACTORING-GUIDE.md) for plugin migration steps.
 
 ## License
 
