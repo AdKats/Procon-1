@@ -4391,10 +4391,10 @@ namespace PRoCon.Core.Remote
                     }
                 }
 
-                cpRequestPacket.Words.RemoveAt(0);
                 if (Chat != null)
                 {
-                    this.Chat(this, cpRequestPacket.Words);
+                    var chatWords = new List<string>(cpRequestPacket.Words.Skip(1));
+                    this.Chat(this, chatWords);
                 }
             }
         }

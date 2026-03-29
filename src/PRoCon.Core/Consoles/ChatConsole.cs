@@ -374,6 +374,7 @@ namespace PRoCon.Core.Consoles
             int iTeamID = 0;
             string formattedMessage = String.Empty;
             bool commoroseMessage = false;
+            string chatMessage = rawChat[1];
 
             /*
             ID_CHAT_ATTACK/DEFEND
@@ -392,67 +393,67 @@ namespace PRoCon.Core.Consoles
             */
             if (System.String.Compare(rawChat[1], "ID_CHAT_ATTACK/DEFEND", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_ATTACK/DEFEND", "uscChatPanel.ID_CHAT_ATTACK_DEFEND");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_ATTACK/DEFEND", "uscChatPanel.ID_CHAT_ATTACK_DEFEND");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_REQUEST_MEDIC", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_MEDIC", "uscChatPanel.ID_CHAT_REQUEST_MEDIC");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_MEDIC", "uscChatPanel.ID_CHAT_REQUEST_MEDIC");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_REQUEST_ORDER", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_ORDER", "uscChatPanel.ID_CHAT_REQUEST_ORDER");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_ORDER", "uscChatPanel.ID_CHAT_REQUEST_ORDER");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_REQUEST_REPAIRS", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_REPAIRS", "uscChatPanel.ID_CHAT_REQUEST_REPAIRS");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_REPAIRS", "uscChatPanel.ID_CHAT_REQUEST_REPAIRS");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_GOGOGO", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_GOGOGO", "uscChatPanel.ID_CHAT_GOGOGO");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_GOGOGO", "uscChatPanel.ID_CHAT_GOGOGO");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_AFFIRMATIVE", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_AFFIRMATIVE", "uscChatPanel.ID_CHAT_AFFIRMATIVE");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_AFFIRMATIVE", "uscChatPanel.ID_CHAT_AFFIRMATIVE");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_THANKS", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_THANKS", "uscChatPanel.ID_CHAT_THANKS");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_THANKS", "uscChatPanel.ID_CHAT_THANKS");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_REQUEST_AMMO", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_AMMO", "uscChatPanel.ID_CHAT_REQUEST_AMMO");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_AMMO", "uscChatPanel.ID_CHAT_REQUEST_AMMO");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_REQUEST_RIDE", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_RIDE", "uscChatPanel.ID_CHAT_REQUEST_RIDE");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_REQUEST_RIDE", "uscChatPanel.ID_CHAT_REQUEST_RIDE");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_GET_OUT", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_GET_OUT", "uscChatPanel.ID_CHAT_GET_OUT");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_GET_OUT", "uscChatPanel.ID_CHAT_GET_OUT");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_GET_IN", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_GET_IN", "uscChatPanel.ID_CHAT_GET_IN");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_GET_IN", "uscChatPanel.ID_CHAT_GET_IN");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_NEGATIVE", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_NEGATIVE", "uscChatPanel.ID_CHAT_NEGATIVE");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_NEGATIVE", "uscChatPanel.ID_CHAT_NEGATIVE");
                 commoroseMessage = true;
             }
             else if (System.String.Compare(rawChat[1], "ID_CHAT_SORRY", System.StringComparison.OrdinalIgnoreCase) == 0)
             {
-                rawChat[1] = Client.Language.GetDefaultLocalized("ID_CHAT_SORRY", "uscChatPanel.ID_CHAT_SORRY");
+                chatMessage = Client.Language.GetDefaultLocalized("ID_CHAT_SORRY", "uscChatPanel.ID_CHAT_SORRY");
                 commoroseMessage = true;
             }
 
@@ -467,18 +468,18 @@ namespace PRoCon.Core.Consoles
                 if (rawChat.Count == 2)
                 {
                     // < R9 Support.
-                    formattedMessage = String.Format("^b^4{0}^0 > ^4{1}", rawChat[0], rawChat[1]);
+                    formattedMessage = String.Format("^b^4{0}^0 > ^4{1}", rawChat[0], chatMessage);
                 }
                 else if (rawChat.Count == 3 && (System.String.Compare(rawChat[2], "all", System.StringComparison.OrdinalIgnoreCase) == 0 || System.String.Compare(rawChat[2], "unknown", System.StringComparison.OrdinalIgnoreCase) == 0))
                 {
                     // "unknown" because of BF4 beta
-                    formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 > ^6{1}" : "^b^4{0}^0 > ^4{1}", rawChat[0], rawChat[1]);
+                    formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 > ^6{1}" : "^b^4{0}^0 > ^4{1}", rawChat[0], chatMessage);
                 }
                 else if (rawChat.Count >= 4 && System.String.Compare(rawChat[2], "team", System.StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     if (int.TryParse(rawChat[3], out iTeamID) == true)
                     {
-                        formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 > ^6{2}^0" : "^b^4{0}^0 - ^4{1}^0 >^4 {2}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), rawChat[1]);
+                        formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 > ^6{2}^0" : "^b^4{0}^0 - ^4{1}^0 >^4 {2}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), chatMessage);
                     }
                 }
                 else if (rawChat.Count >= 5 && System.String.Compare(rawChat[2], "squad", System.StringComparison.OrdinalIgnoreCase) == 0)
@@ -487,19 +488,19 @@ namespace PRoCon.Core.Consoles
                     {
                         if (System.String.CompareOrdinal(rawChat[4], "0") != 0)
                         {
-                            formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 - ^6{2}^0 > ^6{3}" : "^b^4{0}^0 - ^4{1}^0 - ^4{2}^0 >^4 {3}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), Client.Language.GetLocalized("global.Squad" + rawChat[4], null), rawChat[1]);
+                            formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 - ^6{2}^0 > ^6{3}" : "^b^4{0}^0 - ^4{1}^0 - ^4{2}^0 >^4 {3}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), Client.Language.GetLocalized("global.Squad" + rawChat[4], null), chatMessage);
                         }
                         else
                         {
-                            // TO DO: Localize and change uscPlayerListPanel.lsvPlayers.colSquad 
-                            formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 - ^6{2}^0 > ^6{3}" : "^b^4{0}^0 - ^4{1}^0 - ^4{2}^0 >^4 {3}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), Client.Language.GetLocalized("uscPlayerListPanel.lsvPlayers.colSquad", null), rawChat[1]);
+                            // TO DO: Localize and change uscPlayerListPanel.lsvPlayers.colSquad
+                            formattedMessage = String.Format(commoroseMessage ? "^6{0}^0 - ^6{1}^0 - ^6{2}^0 > ^6{3}" : "^b^4{0}^0 - ^4{1}^0 - ^4{2}^0 >^4 {3}", rawChat[0], Client.GetLocalizedTeamName(iTeamID, Client.CurrentServerInfo.Map, Client.CurrentServerInfo.GameMode), Client.Language.GetLocalized("uscPlayerListPanel.lsvPlayers.colSquad", null), chatMessage);
                         }
                     }
                 }
 
                 if (rawChat.Count >= 3)
                 {
-                    EnqueueMessage(new ChatMessage(DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime(), rawChat[0], rawChat[1], false, false, new CPlayerSubset(rawChat.GetRange(2, rawChat.Count - 2))));
+                    EnqueueMessage(new ChatMessage(DateTime.UtcNow.ToUniversalTime().AddHours(Client.Game.UtcOffset).ToLocalTime(), rawChat[0], chatMessage, false, false, new CPlayerSubset(rawChat.GetRange(2, rawChat.Count - 2))));
                 }
 
                 if (formattedMessage.Length > 0)
