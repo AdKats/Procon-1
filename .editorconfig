@@ -1,0 +1,71 @@
+# EditorConfig — PRoCon v2.0
+# https://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{csproj,props,targets,sln}]
+indent_size = 2
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+# C# formatting rules
+[*.cs]
+# Namespace
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# Braces
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+
+# Indentation
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+
+# Spacing
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+
+# Wrapping
+csharp_preserve_single_line_statements = true
+csharp_preserve_single_line_blocks = true
+
+# Using directives
+csharp_using_directive_placement = outside_namespace:suggestion
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+# var preferences — don't enforce, existing code uses both
+csharp_style_var_for_built_in_types = false:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_style_var_elsewhere = false:silent
+
+# Expression-level preferences
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+
+# Naming — don't enforce strict rules on legacy code
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_naming_style.camel_case.capitalization = camel_case

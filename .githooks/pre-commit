@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# PRoCon pre-commit hook — runs dotnet format on staged .cs files
+# To skip: git commit --no-verify
+
+set -e
+
+# Find dotnet
+DOTNET="dotnet"
+if [ -x "$HOME/.dotnet/dotnet" ]; then
+    DOTNET="$HOME/.dotnet/dotnet"
+fi
+
+# Get staged .cs files
+STAGED_CS=$(git diff --cached --name-only --diff-filter=ACM -- '*.cs')
+
+if [ -z "$STAGED_CS" ]; then
+    exit 0
+fi
+
+echo "Running dotnet format on staged files..."
+
+# Run dotnet format on the solution (only checks staged files via --include)
+INCLUDE_ARGS=""
+for file in $STAGED_CS; do
+    INCLUDE_ARGS="$INCLUDE_ARGS --include $file"
+done
+
+$DOTNET format src/PRoCon.sln --no-restore --verbosity quiet $INCLUDE_ARGS 2>/dev/null || true
+
+# Re-stage any files that were reformatted
+for file in $STAGED_CS; do
+    if [ -f "$file" ]; then
+        git add "$file"
+    fi
+done
