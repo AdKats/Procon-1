@@ -206,14 +206,18 @@ namespace PRoCon.Core.Remote
 
                 string strWord = word;
 
-                // Truncate words over 64 kbs (though the string is Unicode it gets converted below so this does make sense)
-                if (strWord.Length > UInt16.MaxValue - 1)
-                {
-                    strWord = strWord.Substring(0, UInt16.MaxValue - 1);
-                }
-
                 // Convert the word into a null terminated utf-8 string
                 byte[] byteWord = Encoding.UTF8.GetBytes(strWord + Convert.ToChar(0x00));
+
+                // Truncate by UTF-8 byte count (not UTF-16 char count)
+                const int maxWordBytes = UInt16.MaxValue;
+                if (byteWord.Length > maxWordBytes)
+                {
+                    // Re-encode a truncated string that fits within the byte limit
+                    int charCount = Encoding.UTF8.GetCharCount(byteWord, 0, maxWordBytes - 1);
+                    strWord = strWord.Substring(0, charCount);
+                    byteWord = Encoding.UTF8.GetBytes(strWord + Convert.ToChar(0x00));
+                }
 
                 byte[] appendEncodedWords = new byte[encodedWords.Length + byteWord.Length + 4];
 
