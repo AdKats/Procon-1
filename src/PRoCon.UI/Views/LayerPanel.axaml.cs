@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
@@ -5,8 +7,6 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using PRoCon.Core;
 using PRoCon.Core.Remote;
-using System;
-using System.Collections.Generic;
 
 namespace PRoCon.UI.Views
 {

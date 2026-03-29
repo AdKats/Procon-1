@@ -1,8 +1,8 @@
+using System;
+using System.Threading;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using PRoCon.Core;
-using System;
-using System.Threading;
 
 namespace PRoCon.UI
 {

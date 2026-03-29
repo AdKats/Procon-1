@@ -1,4 +1,4 @@
-﻿// Copyright 2010 Geoffrey 'Phogue' Green
+// Copyright 2010 Geoffrey 'Phogue' Green
 // 
 // http://www.phogue.net
 //  
@@ -17,10 +17,10 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using PRoCon.Core.ProxyChecker;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using PRoCon.Core.ProxyChecker;
 
 namespace PRoCon.Core.Players
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace PRoCon.Core.Events
@@ -279,10 +279,11 @@ namespace PRoCon.Core.Events
                 this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSwitchedTeams, strSoldierName, this.m_prcClient.GetLocalizedTeamName(this.m_prcClient.PlayerList[strSoldierName].TeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode), this.m_prcClient.GetLocalizedTeamName(iTeamID, this.m_prcClient.CurrentServerInfo.Map, this.m_prcClient.CurrentServerInfo.GameMode));
             }
         }
-        
+
         private void m_prcClient_PlayerSpawned(FrostbiteClient sender, string strSoldierName, string strKit, List<string> lstWeapons, List<string> lstSpecializations)
         {
-            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true) {
+            if (this.m_prcClient.PlayerList.Contains(strSoldierName) == true)
+            {
                 this.ProcessEvent(EventType.Playerlist, CapturableEvents.PlayerSpawned, strSoldierName);
             }
         }

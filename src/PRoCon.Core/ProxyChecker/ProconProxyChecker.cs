@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
-using PRoCon.Core.Remote;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using PRoCon.Core.Remote;
 
 namespace PRoCon.Core.ProxyChecker
 {
@@ -39,7 +39,7 @@ namespace PRoCon.Core.ProxyChecker
         public static bool CheckProxy(string ipAddress, PRoConClient client, CPunkbusterInfo pbinfo)
         {
             string response = "";
-            
+
             if (ipAddress == "")
             {
                 return false;
@@ -82,7 +82,7 @@ namespace PRoCon.Core.ProxyChecker
                         // The hash table will be used to store the JSON response.
                         IPDB.Add(ipAddress.ToString(), ht);
                     }
-                    
+
                     return true;
                 });
 

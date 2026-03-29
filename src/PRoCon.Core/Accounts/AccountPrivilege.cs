@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Accounts
+namespace PRoCon.Core.Accounts
 {
     public class AccountPrivilege
     {

@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Remote.Layer.PacketDispatchers
+namespace PRoCon.Core.Remote.Layer.PacketDispatchers
 {
     public class Bf4PacketDispatcher : LayerPacketDispatcher
     {

@@ -1,8 +1,8 @@
-﻿using PRoCon.Core.Logging;
-using PRoCon.Core.Plugin;
-using PRoCon.Core.Remote;
 using System;
 using System.Collections.Generic;
+using PRoCon.Core.Logging;
+using PRoCon.Core.Plugin;
+using PRoCon.Core.Remote;
 
 namespace PRoCon.Core.Consoles
 {

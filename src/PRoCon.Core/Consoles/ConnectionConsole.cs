@@ -1,7 +1,7 @@
-﻿using PRoCon.Core.Logging;
-using PRoCon.Core.Remote;
 using System;
 using System.Collections.Generic;
+using PRoCon.Core.Logging;
+using PRoCon.Core.Remote;
 
 // This class will move to .Core once ProConClient is in .Core.
 

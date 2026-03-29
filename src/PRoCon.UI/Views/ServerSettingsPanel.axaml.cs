@@ -1,9 +1,9 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using PRoCon.Core;
 using PRoCon.Core.Remote;
-using System;
 
 namespace PRoCon.UI.Views
 {

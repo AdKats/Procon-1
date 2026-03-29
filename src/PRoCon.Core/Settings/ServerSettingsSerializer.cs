@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Settings
+namespace PRoCon.Core.Settings
 {
     using System.IO;
     using System.Xml.Serialization;

@@ -1,4 +1,4 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
  
@@ -24,9 +24,9 @@ using System.Threading;
 
 namespace PRoCon.Console
 {
+    using System.Net.Sockets;
     using Core;
     using Core.Remote;
-    using System.Net.Sockets;
 
     class Program
     {

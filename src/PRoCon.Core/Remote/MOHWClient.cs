@@ -1,8 +1,8 @@
-﻿using PRoCon.Core.Maps;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using PRoCon.Core.Maps;
 
 namespace PRoCon.Core.Remote
 {

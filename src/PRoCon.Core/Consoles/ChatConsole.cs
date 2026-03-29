@@ -1,4 +1,4 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
  
@@ -19,14 +19,14 @@
  */
 
 
-using PRoCon.Core.Consoles.Chat;
-using PRoCon.Core.Logging;
-using PRoCon.Core.Players;
-using PRoCon.Core.Remote;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using PRoCon.Core.Consoles.Chat;
+using PRoCon.Core.Logging;
+using PRoCon.Core.Players;
+using PRoCon.Core.Remote;
 
 // This class will move to .Core once ProConClient is in .Core.
 

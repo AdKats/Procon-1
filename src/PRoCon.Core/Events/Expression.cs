@@ -1,8 +1,8 @@
-﻿using PRoCon.Core.Remote;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using PRoCon.Core.Remote;
 
 namespace PRoCon.Core.Events
 {

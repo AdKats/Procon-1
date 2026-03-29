@@ -1,9 +1,9 @@
-﻿using PRoCon.Core.Maps;
-using PRoCon.Core.Players;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using PRoCon.Core.Maps;
+using PRoCon.Core.Players;
 
 namespace PRoCon.Core.Remote
 {

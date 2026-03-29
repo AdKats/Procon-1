@@ -1,7 +1,7 @@
+using System;
 using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
-using System;
 
 namespace PRoCon.Themes
 {

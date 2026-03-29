@@ -1,4 +1,3 @@
-﻿using PRoCon.Core.Remote.Layer.PacketDispatchers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,6 +6,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using PRoCon.Core.Remote.Layer.PacketDispatchers;
 
 namespace PRoCon.Core.Remote.Layer
 {

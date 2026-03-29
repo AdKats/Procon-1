@@ -1,4 +1,4 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
  
@@ -18,16 +18,16 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Microsoft.Extensions.Logging;
-using PRoCon.Core.Battlemap;
-using PRoCon.Core.Players.Items;
-using PRoCon.Core.Plugin.Commands;
-using PRoCon.Core.Remote;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
+using PRoCon.Core.Battlemap;
+using PRoCon.Core.Players.Items;
+using PRoCon.Core.Plugin.Commands;
+using PRoCon.Core.Remote;
 
 namespace PRoCon.Core.Plugin
 {

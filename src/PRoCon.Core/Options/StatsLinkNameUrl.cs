@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Options
+namespace PRoCon.Core.Options
 {
     public class StatsLinkNameUrl
     {

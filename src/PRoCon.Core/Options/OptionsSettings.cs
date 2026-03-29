@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security;
 #if NETFRAMEWORK
@@ -431,7 +431,7 @@ namespace PRoCon.Core.Options
                 {
                     this.m_praApplication.UpdateRss();
                 }
-                
+
                 return this.m_isBlockRssFeedNewsEnabled;
             }
             set

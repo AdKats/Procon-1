@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Players
+namespace PRoCon.Core.Players
 {
     using System;
     using System.Collections.Generic;

@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
@@ -5,11 +10,6 @@ using Avalonia.Threading;
 using PRoCon.Core;
 using PRoCon.Core.Plugin;
 using PRoCon.Core.Remote;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Text;
 
 namespace PRoCon.UI.Views
 {

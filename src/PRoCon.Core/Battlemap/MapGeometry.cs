@@ -1,4 +1,4 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
  
@@ -18,9 +18,9 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System.Collections.Generic;
 using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
-using System.Collections.Generic;
 
 namespace PRoCon.Core.Battlemap
 {

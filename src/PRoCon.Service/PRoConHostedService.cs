@@ -16,12 +16,12 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
+using System.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using PRoCon.Core;
 using PRoCon.Core.Remote;
-using System;
-using System.Threading;
 using Task = System.Threading.Tasks.Task;
 
 namespace PRoCon.Service

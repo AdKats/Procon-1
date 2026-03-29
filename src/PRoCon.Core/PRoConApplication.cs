@@ -1,4 +1,4 @@
-﻿// Copyright 2010 Geoffrey 'Phogue' Green
+// Copyright 2010 Geoffrey 'Phogue' Green
 // 
 // http://www.phogue.net
 //  
@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using MaxMind;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,6 +27,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+using MaxMind;
 using Newtonsoft.Json;
 
 namespace PRoCon.Core
@@ -2653,7 +2653,7 @@ namespace PRoCon.Core
         #region RSS Feed
 
         public void UpdateRss()
-        {            
+        {
             // Begin RSS Update
             if (this.BeginRssUpdate != null)
             {

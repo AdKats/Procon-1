@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using PRoCon.Core;
 using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace PRoCon.UI.Views
 {

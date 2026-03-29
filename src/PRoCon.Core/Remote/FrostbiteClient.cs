@@ -1,4 +1,4 @@
-﻿// Copyright 2010 Geoffrey 'Phogue' Green
+// Copyright 2010 Geoffrey 'Phogue' Green
 // 
 // http://www.phogue.net
 //  
@@ -17,9 +17,6 @@
 // You should have received a copy of the GNU General Public License
 // along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
 
-using PRoCon.Core.Maps;
-using PRoCon.Core.Players;
-using PRoCon.Core.TextChatModeration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,6 +24,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using PRoCon.Core.Maps;
+using PRoCon.Core.Players;
+using PRoCon.Core.TextChatModeration;
 
 namespace PRoCon.Core.Remote
 {

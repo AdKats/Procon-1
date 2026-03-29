@@ -1,4 +1,4 @@
-﻿/*  Copyright 2010 Geoffrey 'Phogue' Green
+/*  Copyright 2010 Geoffrey 'Phogue' Green
 
     http://www.phogue.net
  
@@ -18,9 +18,9 @@
     along with PRoCon Frostbite.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using System;
 using PRoCon.Core.Logging;
 using PRoCon.Core.Remote;
-using System;
 
 // This class will move to .Core once ProConClient is in .Core.
 

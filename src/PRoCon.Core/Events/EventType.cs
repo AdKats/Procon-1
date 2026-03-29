@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core.Events
+namespace PRoCon.Core.Events
 {
     public enum EventType
     {

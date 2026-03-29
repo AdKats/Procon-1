@@ -1,12 +1,12 @@
-using MaxMind.GeoIP2;
-using MaxMind.GeoIP2.Exceptions;
-using PRoCon.Core;
-using PRoCon.Core.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using MaxMind.GeoIP2;
+using MaxMind.GeoIP2.Exceptions;
+using PRoCon.Core;
+using PRoCon.Core.Options;
 
 namespace MaxMind
 {

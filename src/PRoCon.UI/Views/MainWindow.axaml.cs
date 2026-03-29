@@ -1,3 +1,11 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -9,14 +17,6 @@ using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
 using PRoCon.UI.Models;
 using PRoCon.UI.Services;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace PRoCon.UI.Views
 {
@@ -268,73 +268,73 @@ namespace PRoCon.UI.Views
         {
             try
             {
-            if (_application == null)
-            {
-                _application = new PRoConApplication(false, new string[0]);
-                _application.Execute();
-            }
-
-            // Note: CacheControls() is called at the end of this method.
-            // For these early assignments, use FindControl directly since cache isn't populated yet.
-            var serverList = this.FindControl<ListBox>("ServerList");
-            if (serverList != null)
-                serverList.ItemsSource = _servers;
-
-            // Wire panels into ContentControls
-            var mapContent = this.FindControl<ContentControl>("MapListContent");
-            if (mapContent != null) mapContent.Content = _mapListPanel;
-            var banContent = this.FindControl<ContentControl>("BanListContent");
-            if (banContent != null) banContent.Content = _banListPanel;
-            var reservedContent = this.FindControl<ContentControl>("ReservedSlotsContent");
-            if (reservedContent != null) reservedContent.Content = _reservedSlotsPanel;
-            var pluginsContent = this.FindControl<ContentControl>("PluginsContent");
-            if (pluginsContent != null) pluginsContent.Content = _pluginsPanel;
-            var accountsContent = this.FindControl<ContentControl>("AccountsContent");
-            if (accountsContent != null) accountsContent.Content = _accountsPanel;
-            var eventsContent = this.FindControl<ContentControl>("EventsContent");
-            if (eventsContent != null) eventsContent.Content = _eventsPanel;
-            var settingsContent = this.FindControl<ContentControl>("ServerSettingsContent");
-            if (settingsContent != null) settingsContent.Content = _serverSettingsPanel;
-            var layerContent = this.FindControl<ContentControl>("LayerContent");
-            if (layerContent != null) layerContent.Content = _layerPanel;
-            var spectatorContent = this.FindControl<ContentControl>("SpectatorContent");
-            if (spectatorContent != null) spectatorContent.Content = _spectatorListPanel;
-            var pbContent = this.FindControl<ContentControl>("PunkBusterContent");
-            if (pbContent != null) pbContent.Content = _punkBusterPanel;
-            var textChatModContent = this.FindControl<ContentControl>("TextChatModerationContent");
-            if (textChatModContent != null) textChatModContent.Content = _textChatModerationPanel;
-            // Options panel is shown in a dialog, not embedded in tabs
-
-            // Load existing connections
-            foreach (PRoConClient client in _application.Connections)
-            {
-                var entry = EnsureServerEntry(client.HostNamePort);
-                WireClientEvents(client, entry);
-
-                if (client.CurrentServerInfo?.ServerName != null)
-                    entry.ServerName = client.CurrentServerInfo.ServerName;
-
-                if (client.Game != null && client.Game.IsLoggedIn)
-                    entry.State = ServerConnectionState.Connected;
-            }
-
-            UpdateConnectionCount();
-            UpdateContentVisibility();
-
-            // IP check service is shared from PRoConApplication
-
-            // Listen for new connections
-            _application.Connections.ConnectionAdded += conn =>
-            {
-                Dispatcher.UIThread.Post(() =>
+                if (_application == null)
                 {
-                    var entry = EnsureServerEntry(conn.HostNamePort);
-                    WireClientEvents(conn, entry);
-                    UpdateConnectionCount();
-                });
-            };
+                    _application = new PRoConApplication(false, new string[0]);
+                    _application.Execute();
+                }
 
-            CacheControls();
+                // Note: CacheControls() is called at the end of this method.
+                // For these early assignments, use FindControl directly since cache isn't populated yet.
+                var serverList = this.FindControl<ListBox>("ServerList");
+                if (serverList != null)
+                    serverList.ItemsSource = _servers;
+
+                // Wire panels into ContentControls
+                var mapContent = this.FindControl<ContentControl>("MapListContent");
+                if (mapContent != null) mapContent.Content = _mapListPanel;
+                var banContent = this.FindControl<ContentControl>("BanListContent");
+                if (banContent != null) banContent.Content = _banListPanel;
+                var reservedContent = this.FindControl<ContentControl>("ReservedSlotsContent");
+                if (reservedContent != null) reservedContent.Content = _reservedSlotsPanel;
+                var pluginsContent = this.FindControl<ContentControl>("PluginsContent");
+                if (pluginsContent != null) pluginsContent.Content = _pluginsPanel;
+                var accountsContent = this.FindControl<ContentControl>("AccountsContent");
+                if (accountsContent != null) accountsContent.Content = _accountsPanel;
+                var eventsContent = this.FindControl<ContentControl>("EventsContent");
+                if (eventsContent != null) eventsContent.Content = _eventsPanel;
+                var settingsContent = this.FindControl<ContentControl>("ServerSettingsContent");
+                if (settingsContent != null) settingsContent.Content = _serverSettingsPanel;
+                var layerContent = this.FindControl<ContentControl>("LayerContent");
+                if (layerContent != null) layerContent.Content = _layerPanel;
+                var spectatorContent = this.FindControl<ContentControl>("SpectatorContent");
+                if (spectatorContent != null) spectatorContent.Content = _spectatorListPanel;
+                var pbContent = this.FindControl<ContentControl>("PunkBusterContent");
+                if (pbContent != null) pbContent.Content = _punkBusterPanel;
+                var textChatModContent = this.FindControl<ContentControl>("TextChatModerationContent");
+                if (textChatModContent != null) textChatModContent.Content = _textChatModerationPanel;
+                // Options panel is shown in a dialog, not embedded in tabs
+
+                // Load existing connections
+                foreach (PRoConClient client in _application.Connections)
+                {
+                    var entry = EnsureServerEntry(client.HostNamePort);
+                    WireClientEvents(client, entry);
+
+                    if (client.CurrentServerInfo?.ServerName != null)
+                        entry.ServerName = client.CurrentServerInfo.ServerName;
+
+                    if (client.Game != null && client.Game.IsLoggedIn)
+                        entry.State = ServerConnectionState.Connected;
+                }
+
+                UpdateConnectionCount();
+                UpdateContentVisibility();
+
+                // IP check service is shared from PRoConApplication
+
+                // Listen for new connections
+                _application.Connections.ConnectionAdded += conn =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        var entry = EnsureServerEntry(conn.HostNamePort);
+                        WireClientEvents(conn, entry);
+                        UpdateConnectionCount();
+                    });
+                };
+
+                CacheControls();
             }
             catch (Exception ex)
             {
@@ -1021,7 +1021,8 @@ namespace PRoCon.UI.Views
             var dialog = new Avalonia.Controls.Window
             {
                 Title = "Confirm Remove",
-                Width = 350, Height = 150,
+                Width = 350,
+                Height = 150,
                 WindowStartupLocation = Avalonia.Controls.WindowStartupLocation.CenterOwner,
                 CanResize = false
             };
@@ -1703,7 +1704,8 @@ namespace PRoCon.UI.Views
                 double lastY = h - (h * Math.Min(points[points.Count - 1].Count, maxPlayers) / (double)maxPlayers);
                 var dot = new Avalonia.Controls.Shapes.Ellipse
                 {
-                    Width = 6, Height = 6,
+                    Width = 6,
+                    Height = 6,
                     Fill = new SolidColorBrush(Color.Parse("#4fc3f7"))
                 };
                 Canvas.SetLeft(dot, lastX - 3);

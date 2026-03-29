@@ -1,4 +1,4 @@
-﻿namespace PRoCon.Core
+namespace PRoCon.Core
 {
     using System;
     using System.Collections.Generic;

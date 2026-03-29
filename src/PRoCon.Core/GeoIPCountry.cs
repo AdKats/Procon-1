@@ -17,12 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-using PRoCon.Core;
 using System;
 using System.Collections;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using PRoCon.Core;
 
 // This code is based on MaxMind's original C# code, which was ported from Java.
 // This version is very simplified and does not support a majority of features for speed.

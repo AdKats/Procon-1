@@ -1,6 +1,3 @@
-﻿using Microsoft.Extensions.Logging;
-using PRoCon.Core.Logging;
-using PRoCon.Core.Remote.Cache;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,6 +11,9 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using PRoCon.Core.Logging;
+using PRoCon.Core.Remote.Cache;
 
 namespace PRoCon.Core.Remote
 {
