@@ -5,7 +5,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>PRoCon.Service</RootNamespace>
     <AssemblyName>PRoCon.Service</AssemblyName>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\builds\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>

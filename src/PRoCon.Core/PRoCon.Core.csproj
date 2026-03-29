@@ -7,7 +7,6 @@
     <OutputPath>..\..\builds\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
