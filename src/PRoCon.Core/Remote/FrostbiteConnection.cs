@@ -68,6 +68,11 @@ namespace PRoCon.Core.Remote
         protected readonly Object AcquireSequenceNumberLock = new Object();
 
         /// <summary>
+        /// Lock used when accessing PacketStream and ReceivedBuffer across threads.
+        /// </summary>
+        protected readonly object PacketStreamLock = new object();
+
+        /// <summary>
         /// The last packet that was receieved by this connection.
         /// </summary>
         public Packet LastPacketReceived { get; protected set; }
@@ -238,8 +243,11 @@ namespace PRoCon.Core.Remote
             this.OutgoingPackets = new Dictionary<uint?, Packet>();
             this.QueuedPackets = new Queue<Packet>();
 
-            this.ReceivedBuffer = new byte[FrostbiteConnection.BufferSize];
-            this.PacketStream = null;
+            lock (PacketStreamLock)
+            {
+                this.ReceivedBuffer = new byte[FrostbiteConnection.BufferSize];
+                this.PacketStream = null;
+            }
         }
 
         private static readonly ILogger _logger = PRoConLog.CreateLogger("PRoCon.FrostbiteConnection");
@@ -486,27 +494,60 @@ namespace PRoCon.Core.Remote
                         return;
                     }
 
-                    // Create or resize our packet stream to hold the new data.
-                    if (this.PacketStream == null)
+                    // Extract complete packets from the stream under the lock, then dispatch outside.
+                    bool garbageShutdown = false;
+                    List<Packet> extractedPackets = new List<Packet>();
+
+                    lock (PacketStreamLock)
                     {
-                        this.PacketStream = new byte[iBytesRead];
+                        // Create or resize our packet stream to hold the new data.
+                        if (this.PacketStream == null)
+                        {
+                            this.PacketStream = new byte[iBytesRead];
+                        }
+                        else
+                        {
+                            Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
+                        }
+
+                        Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
+
+                        UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+
+                        while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
+                        {
+                            // Copy the complete packet from the beginning of the stream.
+                            byte[] completePacket = new byte[ui32PacketSize];
+                            Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
+
+                            extractedPackets.Add(new Packet(completePacket));
+
+                            // Remove the completed packet from the beginning of the stream
+                            byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
+                            Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
+                            this.PacketStream = updatedSteam;
+
+                            ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
+                        }
+
+                        // If we've received the maximum garbage, scrap it all and shutdown the connection.
+                        // We went really wrong somewhere =)
+                        if (this.PacketStream != null && this.PacketStream.Length >= FrostbiteConnection.MaxGarbageBytes)
+                        {
+                            this.PacketStream = null;
+                            garbageShutdown = true;
+                        }
+                    } // end lock (PacketStreamLock)
+
+                    if (garbageShutdown)
+                    {
+                        this.Shutdown(new Exception("Exceeded maximum garbage packet"));
+                        return;
                     }
-                    else
+
+                    // Dispatch all extracted packets outside the lock (await is not allowed inside lock).
+                    foreach (Packet packet in extractedPackets)
                     {
-                        Array.Resize(ref this.PacketStream, this.PacketStream.Length + iBytesRead);
-                    }
-
-                    Array.Copy(this.ReceivedBuffer, 0, this.PacketStream, this.PacketStream.Length - iBytesRead, iBytesRead);
-
-                    UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
-
-                    while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
-                    {
-                        // Copy the complete packet from the beginning of the stream.
-                        byte[] completePacket = new byte[ui32PacketSize];
-                        Array.Copy(this.PacketStream, completePacket, ui32PacketSize);
-
-                        Packet packet = new Packet(completePacket);
                         //cbfConnection.m_ui32SequenceNumber = Math.Max(cbfConnection.m_ui32SequenceNumber, cpCompletePacket.SequenceNumber) + 1;
 
                         // Dispatch the completed packet.
@@ -566,25 +607,6 @@ namespace PRoCon.Core.Remote
                             // Shutdown if we're just waiting for a response to an old packet.
                             this.RestartConnectionOnQueueFailure();
                         }
-
-                        // Now remove the completed packet from the beginning of the stream
-                        if (this.PacketStream != null)
-                        {
-                            byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
-                            Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
-                            this.PacketStream = updatedSteam;
-
-                            ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
-                        }
-                    }
-
-                    // If we've recieved the maxmimum garbage, scrap it all and shutdown the connection.
-                    // We went really wrong somewhere =)
-                    if (this.ReceivedBuffer.Length >= FrostbiteConnection.MaxGarbageBytes)
-                    {
-                        this.ReceivedBuffer = null; // GC.collect()
-                        this.Shutdown(new Exception("Exceeded maximum garbage packet"));
-                        return;
                     }
                 }
             }
