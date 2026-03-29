@@ -102,33 +102,8 @@ namespace PRoCon.Core.Config
                     }
                 }
 
-                // 4. Copy plugins
-                string pluginsSrc = Path.Combine(importDir, "Plugins");
-                if (Directory.Exists(pluginsSrc))
-                {
-                    foreach (string gameType in ProConPaths.GameTypes)
-                    {
-                        string srcGameDir = Path.Combine(pluginsSrc, gameType);
-                        if (!Directory.Exists(srcGameDir)) continue;
-
-                        string destGameDir = Path.Combine(ProConPaths.PluginsDirectory, gameType);
-                        Directory.CreateDirectory(destGameDir);
-
-                        foreach (var file in Directory.GetFiles(srcGameDir, "*.*", SearchOption.AllDirectories))
-                        {
-                            string relativePath = Path.GetRelativePath(srcGameDir, file);
-                            string destPath = Path.Combine(destGameDir, relativePath);
-                            Directory.CreateDirectory(Path.GetDirectoryName(destPath));
-
-                            if (!File.Exists(destPath))
-                            {
-                                File.Copy(file, destPath);
-                                if (file.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
-                                    result.PluginsCopied++;
-                            }
-                        }
-                    }
-                }
+                // 4. Plugin source files are NOT copied — v1 plugins are outdated.
+                //    Download v2-compatible plugins from the official release page.
 
                 // 5. Rename Import/ → Import.done/
                 string doneDir = Path.Combine(ProConPaths.DataDirectory, "Import.done");
@@ -207,21 +182,19 @@ namespace PRoCon.Core.Config
         public int ServersImported { get; set; }
         public int AccountsImported { get; set; }
         public int ServerConfigsCopied { get; set; }
-        public int PluginsCopied { get; set; }
         public string Error { get; set; }
 
         public override string ToString()
         {
             if (!Success && Error != null)
                 return $"Import failed: {Error}";
-            if (!HasMainConfig && !HasAccountsConfig && PluginsCopied == 0)
+            if (!HasMainConfig && !HasAccountsConfig)
                 return "Nothing to import.";
 
             var parts = new List<string>();
             if (ServersImported > 0) parts.Add($"{ServersImported} server(s)");
             if (AccountsImported > 0) parts.Add($"{AccountsImported} account(s)");
             if (ServerConfigsCopied > 0) parts.Add($"{ServerConfigsCopied} server config(s)");
-            if (PluginsCopied > 0) parts.Add($"{PluginsCopied} plugin(s)");
             return $"Imported: {string.Join(", ", parts)}";
         }
     }

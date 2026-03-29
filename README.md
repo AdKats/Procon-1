@@ -27,22 +27,17 @@ Create an `Import/` folder inside the data directory and copy your old PRoCon fi
     accounts.cfg                  <- your layer accounts
     1.2.3.4_47200/                <- per-server plugin configs
     5.6.7.8_47300/
-  Plugins/
-    BF4/
-      AdKats.cs                   <- your plugin files
-      CInGameAdmin.cs
-      ...
-    BF3/
-      ...
 ```
 
-You can also just copy the entire old PRoCon folder contents into `Import/` — it will find the `Configs/` and `Plugins/` subdirectories automatically.
+You can also just copy your entire old PRoCon `Configs/` folder into `Import/`.
+
+**Note:** v1 plugin source files (`.cs`) are **not** imported — they need to be updated for v2. Download v2-compatible plugins from the release announcement.
 
 ### Step 3: Launch PRoCon v2.0
 
 On startup, PRoCon will:
 1. Detect the `Import/` folder
-2. Import your servers, accounts, options, per-server configs, and plugins
+2. Import your servers, accounts, options, and per-server plugin configs
 3. Save everything as encrypted `procon.json` (passwords are AES-256 encrypted)
 4. Rename `Import/` to `Import.done/` so it won't re-import
 
