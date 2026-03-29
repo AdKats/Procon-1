@@ -522,6 +522,7 @@ namespace PRoCon.UI.Views
         }
 
         private readonly HashSet<string> _wiredConsoles = new HashSet<string>();
+        private readonly HashSet<ServerEntry> _wiredGameEntries = new HashSet<ServerEntry>();
 
         private static readonly System.Text.RegularExpressions.Regex ColorCodeRegex =
             new System.Text.RegularExpressions.Regex(@"\^[0-9a-zA-Z]", System.Text.RegularExpressions.RegexOptions.Compiled);
@@ -693,6 +694,8 @@ namespace PRoCon.UI.Views
 
         private void WireGameEvents(FrostbiteClient game, ServerEntry entry)
         {
+            if (!_wiredGameEntries.Add(entry))
+                return;
             game.ServerInfo += (sender, info) => Dispatcher.UIThread.Post(() =>
             {
                 string name = info.ServerName ?? "Unknown Server";
