@@ -21,8 +21,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using PRoCon.Core.Consoles.Chat;
 using PRoCon.Core.Logging;
 using PRoCon.Core.Players;
@@ -69,7 +71,7 @@ namespace PRoCon.Core.Consoles
             DisplayTypeIndex = 0;
             DisplayTimeIndex = 0;
 
-            MessageHistory = new Queue<ChatMessage>();
+            MessageHistory = new ConcurrentQueue<ChatMessage>();
 
             Client.Game.Chat += new FrostbiteClient.RawChatHandler(m_prcClient_Chat);
 
@@ -84,7 +86,7 @@ namespace PRoCon.Core.Consoles
             Client.ReadRemoteChatConsole += new PRoConClient.ReadRemoteConsoleHandler(m_prcClient_ReadRemoteChatConsole);
         }
 
-        public Queue<ChatMessage> MessageHistory { get; private set; }
+        public ConcurrentQueue<ChatMessage> MessageHistory { get; private set; }
 
         public bool LogJoinLeaving
         {
@@ -259,7 +261,7 @@ namespace PRoCon.Core.Consoles
 
             while (MessageHistory.Count > 100)
             {
-                MessageHistory.Dequeue();
+                MessageHistory.TryDequeue(out _);
             }
         }
 
@@ -268,7 +270,7 @@ namespace PRoCon.Core.Consoles
             var messages = new Hashtable();
             var messageList = new ArrayList();
 
-            var chatHistory = new List<ChatMessage>(MessageHistory);
+            var chatHistory = MessageHistory.ToList();
             //chatHistory.Reverse();
 
             for (int i = chatHistory.Count - 1; i > chatHistory.Count - 1 - historyLength && i >= 0; i--)
@@ -286,7 +288,7 @@ namespace PRoCon.Core.Consoles
             var messages = new Hashtable();
             var messageList = new ArrayList();
 
-            foreach (ChatMessage message in MessageHistory)
+            foreach (ChatMessage message in MessageHistory.ToList())
             {
                 if (message.LoggedTime >= newerThan)
                 {
