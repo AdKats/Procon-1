@@ -35,8 +35,6 @@ Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 # Clone
 git clone https://github.com/AdKats/Procon-1.git
 cd Procon-1
-git checkout feature/modernization
-
 # Build
 dotnet build src/PRoCon.UI/PRoCon.UI.csproj
 
@@ -103,17 +101,26 @@ Plugins have access to these libraries at compile time:
 | **Dapper** | `using Dapper;` | Micro-ORM (automatic object mapping) |
 | **Flurl** | `using Flurl.Http;` | Fluent HTTP client (like axios) |
 | **Newtonsoft.Json** | `using Newtonsoft.Json;` | JSON serialization |
+| **Microsoft.Data.Sqlite** | `using Microsoft.Data.Sqlite;` | SQLite local databases |
 
 ### Multi-File Plugins
 
-Large plugins can be split using partial classes:
+Large plugins can be split using partial classes. Two layouts supported:
 
 ```
+# Flat layout (files named ClassName.Part.cs)
 Plugins/BF4/
-  AdKats.cs                  <- Main file (metadata, lifecycle)
-  AdKats.Commands.cs         <- Partial: command processing
-  AdKats.Database.cs         <- Partial: database operations
-  AdKats.Players.cs          <- Partial: player tracking
+  AdKats.cs                  <- Main file
+  AdKats.Commands.cs         <- Partial class files
+  AdKats.Database.cs
+
+# Subfolder layout (recommended for large plugins)
+Plugins/BF4/
+  AdKats.cs                  <- Main file stays at top level
+  AdKats/                    <- Subfolder with same name as class
+    Commands.cs              <- All .cs files compiled together
+    Database.cs
+    Players.cs
 ```
 
 See the full SDK template and developer guide in the [`pluginsdk/`](pluginsdk/) directory.

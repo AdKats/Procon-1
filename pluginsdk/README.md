@@ -68,23 +68,42 @@ Plugins/BF4/
 
 ### Multi-File with Partial Classes (large plugins)
 
+Two layouts are supported — use whichever fits your plugin:
+
+**Option A: Flat layout** (files named `ClassName.Part.cs`)
+
 ```
 Plugins/BF4/
   AdKats.cs                  ← Main file: metadata, lifecycle, variables
   AdKats.Commands.cs         ← Partial: command processing
   AdKats.Players.cs          ← Partial: player tracking
-  AdKats.Bans.cs             ← Partial: ban management
   AdKats.Database.cs         ← Partial: MySQL operations
-  AdKats.WebApi.cs           ← Partial: HTTP API calls
 ```
+
+**Option B: Subfolder layout** (recommended for large plugins)
+
+```
+Plugins/BF4/
+  AdKats.cs                  ← Main file stays at the top level
+  AdKats/                    ← Subfolder matches the class name
+    Commands.cs              ← Any .cs file here is compiled with the main file
+    Players.cs
+    Database.cs
+    WebApi.cs
+    Utils/                   ← Nested subdirectories work too
+      Helpers.cs
+```
+
+Both layouts can coexist — you can even have `AdKats.Legacy.cs` in BF4/ alongside an `AdKats/` subfolder. All files are compiled together.
 
 Rules:
 - The **main file** name must match the class name exactly: `AdKats.cs` → `class AdKats`
-- **Partial files** must be named `<ClassName>.<Anything>.cs`: `AdKats.Commands.cs`
+- **Flat partials** must be named `<ClassName>.<Anything>.cs`: `AdKats.Commands.cs`
+- **Subfolder files** can be named anything — just put them in a folder matching the class name
 - All files use `partial class` and the same `namespace PRoConEvents`
 - All files share fields, methods, and properties — they're one class at compile time
 
-**Main file:**
+**Main file (AdKats.cs):**
 ```csharp
 namespace PRoConEvents
 {
@@ -98,7 +117,7 @@ namespace PRoConEvents
 }
 ```
 
-**Partial file (AdKats.Commands.cs):**
+**Subfolder file (AdKats/Commands.cs):**
 ```csharp
 namespace PRoConEvents
 {
@@ -496,6 +515,40 @@ Flurl turns URLs into fluent request builders — chain `.WithHeader()`, `.SetQu
 
 ---
 
+## IP Reputation Checking (ProxyCheck.io)
+
+Plugins can check player IPs for VPN/proxy usage via the built-in ProxyCheck.io integration:
+
+```csharp
+// Register for the callback event
+public void OnPluginLoaded(string host, string port, string version)
+{
+    RegisterEvents(GetType().Name, "OnIPChecked", "OnPunkbusterPlayerInfo");
+}
+
+// Request an IP check when you get a player's IP (e.g., from PunkBuster)
+public override void OnPunkbusterPlayerInfo(CPunkbusterInfo playerInfo)
+{
+    if (!string.IsNullOrEmpty(playerInfo.Ip))
+        ExecuteCommand("procon.protected.ipcheck", playerInfo.Ip);
+}
+
+// Receive the result asynchronously
+public override void OnIPChecked(string ip, string countryName, string countryCode,
+    string city, string provider, bool isVPN, bool isProxy, bool isTor, int risk)
+{
+    if (isVPN || isProxy)
+    {
+        Log("Warn", "Player from {0} ({1}) is using a {2}",
+            ip, countryName, isVPN ? "VPN" : "Proxy");
+    }
+}
+```
+
+Results are cached in SQLite for 48 hours. Free tier: 1,000 lookups/day. Set an API key in Options for higher limits.
+
+---
+
 ## Troubleshooting
 
 | Problem | Solution |
@@ -506,4 +559,5 @@ Flurl turns URLs into fluent request builders — chain `.WithHeader()`, `.SetQu
 | `InvalidCastException` on load | Plugin was compiled against a different PRoCon.Core. Delete all `.dll` files and `PluginCache.xml`. |
 | Variables not saving | Make sure `GetPluginVariables()` returns the same variable names as `SetPluginVariable()` handles. |
 | Events not firing | Check `RegisterEvents()` includes the event name. Must be called in `OnPluginLoaded`. |
-| Partial class not found | File must be named `<ClassName>.<Something>.cs` and use `partial class` in the same namespace. |
+| Partial class not found | File must be named `<ClassName>.<Something>.cs` (flat) or placed in a `<ClassName>/` subfolder, and use `partial class` in the same namespace. |
+| Subfolder files not found | The subfolder must be named exactly like the class (e.g., `AdKats/` for `AdKats.cs`). Files inside are scanned recursively. |

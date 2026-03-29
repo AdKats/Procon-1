@@ -235,27 +235,45 @@ Plugins have access to these assemblies at compile time:
 
 **Diagnostics:** System.Diagnostics.Debug, System.Diagnostics.Process
 
-**PRoCon:** PRoCon.Core.dll, MySqlConnector.dll, Newtonsoft.Json.dll
+**PRoCon:** PRoCon.Core.dll, MySqlConnector.dll, Newtonsoft.Json.dll, Dapper.dll, Flurl.dll, Flurl.Http.dll, Microsoft.Data.Sqlite.dll
 
 ---
 
 ## Plugin File Structure
 
+Two layouts are supported for multi-file plugins:
+
+### Flat Layout (v1 compatible)
+
 ```
-Plugins/
-  BF4/
-    MyPlugin.cs              ← Main plugin file (class name = file name)
-    MyPlugin.Additional.cs   ← Optional partial class files
-    PluginCache.xml          ← Auto-generated compile cache
-  BF3/
-    ...
-  BFHL/
-    ...
+Plugins/BF4/
+  AdKats.cs                  ← Main file (class name = file name)
+  AdKats.Commands.cs         ← Partial class file (ClassName.Part.cs)
+  AdKats.Database.cs
+  PluginCache.xml            ← Auto-generated compile cache
 ```
 
+### Subfolder Layout (v2, recommended for large plugins)
+
+```
+Plugins/BF4/
+  AdKats.cs                  ← Main file stays at the top level
+  AdKats/                    ← Subfolder matching the class name
+    Commands.cs              ← All .cs files compiled with the main file
+    Database.cs
+    Players.cs
+    Utils/                   ← Nested directories scanned recursively
+      Helpers.cs
+  PluginCache.xml
+```
+
+Both layouts work simultaneously. You can even mix them.
+
+**General rules:**
 - The main `.cs` file must have the same name as the class inside it
-- Files with dots in the name (e.g., `MyPlugin.Additional.cs`) are treated as partial classes
-- `#include "file.inc"` directives work — relative to `Plugins/<GameType>/`
+- Flat partials: files named `<ClassName>.<Something>.cs` are treated as partial classes
+- Subfolder: a directory matching the class name is scanned for additional `.cs` files
+- `#include "file.inc"` directives work — relative to the file's location
 - `#include "../file.inc"` goes up to `Plugins/` for shared includes
 - `%GameType%` in include paths is replaced with the current game type
 

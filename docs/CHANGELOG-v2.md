@@ -42,7 +42,7 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 - **TLS 1.3 support** — modern encryption for game server connections
 - **Removed TLS downgrade fallback** — eliminated `AllowTlsFallback` to prevent downgrade attacks
 - **Fixed SslStream/NetworkStream double-dispose** — prevented crash in connection teardown
-- **ProxyCheck.io v3 integration** — async IP reputation checking with 48-hour file cache, 1K free daily queries
+- **ProxyCheck.io v3 integration** — async IP reputation checking with SQLite cache (Dapper ORM), 48-hour TTL, 1K free daily queries
 - **Thread-safe daily counter** — fixed race condition in IP check service
 
 ## Layer System — SignalR Migration
@@ -71,6 +71,10 @@ PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET
 - **Failed compilation cleanup** — corrupt DLLs from failed compiles are deleted instead of leaving bad files that cause `BadImageFormatException`
 - **Embedded default plugins** — extracted from assembly resources at runtime, no separate download needed
 - **`#include` directive support** — shared `.inc` files correctly resolved across game-type directories
+- **Subfolder plugin layout** — large plugins can organize partial files in a `ClassName/` subfolder alongside the main `.cs` file (scanned recursively)
+- **Plugin Output console** — Plugins tab shows timestamped compilation/load messages with 500-line scrollback
+- **IP check plugin API** — `procon.protected.ipcheck <ip>` command + `OnIPChecked` event for VPN/proxy detection
+- **Plugin isolation** — one plugin failing to compile/load no longer blocks others
 - **Plugin trust warning** — prominent banner: "Plugins run with full trust on .NET 8"
 - **Retry with backoff** — plugin panel retries wiring to PluginsManager with exponential backoff (1s, 2s, 4s, 8s, 15s)
 - **Error logging** — `PreparePluginsDirectory` and compilation errors are now logged instead of silently swallowed
@@ -114,12 +118,9 @@ See `docs/PLUGIN-REFACTORING-GUIDE.md` for migration instructions.
 
 ## Known Limitations
 
-- Self-contained Linux publish may have CoreCLR host path issues — use `dotnet run` as workaround
-- TextChatModeration panel not yet implemented
-- Player right-click context menus on team lists not yet implemented
 - Battlemap/MapViewer deferred (very complex, 9/10 effort)
-- `procon.protected` command handling not yet implemented
 - ServerEventBridge for proper event unsubscription still pending (lambda-based subscriptions may leak)
+- 17 BF4 default plugins need manual refactoring (System.Windows.Forms, Win32 Registry removal)
 
 ---
 
@@ -190,14 +191,12 @@ A major infrastructure update to PRoCon is in development. EZSCALE needed to upg
 
 **For Plugin Developers:**
 - Plugins still compile from .cs source files, now using Roslyn
-- Multi-file plugins supported via partial classes (split monoliths like AdKats)
+- Multi-file plugins supported via partial classes and subfolder layout (split monoliths like AdKats)
 - New SDK template with database (raw SQL + Dapper) and HTTP (HttpClient + Flurl) examples
 - Full .NET 8 API surface available (C# latest features supported)
 - Plugin refactoring guide included for migration from v1.x
 
 **What's Still in Progress:**
-- TextChatModeration panel
-- Player context menus
 - Refactoring remaining default plugins for cross-platform compatibility
 
 Back up your `Configs/` directory before upgrading — config files are backward compatible.
