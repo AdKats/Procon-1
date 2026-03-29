@@ -1007,12 +1007,27 @@ namespace PRoCon.Core.Plugin
                     // create a list of syntax trees and add the main source file by default
                     List<SyntaxTree> syntaxTrees = new List<SyntaxTree> { CSharpSyntaxTree.ParseText(fullPluginSource, parseOptions, pluginFile.FullName, Encoding.UTF8) };
 
-                    // get all related partial source files and add them to the list too
+                    // Get additional partial source files:
+                    // 1. Flat pattern: ClassName.*.cs in the same directory (e.g., AdKats.Commands.cs)
                     DirectoryInfo pluginsDirectoryInfo = new DirectoryInfo(PluginBaseDirectory);
                     foreach (FileInfo partialPluginFile in pluginsDirectoryInfo.GetFiles(pluginClassName + ".*.cs"))
                     {
                         string partialPluginSource = File.ReadAllText(partialPluginFile.FullName);
                         syntaxTrees.Add(CSharpSyntaxTree.ParseText(partialPluginSource, parseOptions, partialPluginFile.FullName, Encoding.UTF8));
+                    }
+
+                    // 2. Subfolder pattern: all .cs files in a ClassName/ subfolder
+                    //    e.g., Plugins/BF4/AdKats.cs + Plugins/BF4/AdKats/Commands.cs, Database.cs, ...
+                    string pluginSubDir = Path.Combine(PluginBaseDirectory, pluginClassName);
+                    if (Directory.Exists(pluginSubDir))
+                    {
+                        foreach (FileInfo subFile in new DirectoryInfo(pluginSubDir).GetFiles("*.cs", SearchOption.AllDirectories))
+                        {
+                            string subSource = File.ReadAllText(subFile.FullName);
+                            subSource = PrecompileDirectives(subSource);
+                            syntaxTrees.Add(CSharpSyntaxTree.ParseText(subSource, parseOptions, subFile.FullName, Encoding.UTF8));
+                        }
+                        WritePluginConsole("  Including {0} additional files from {1}/", syntaxTrees.Count - 1, pluginClassName);
                     }
 
                     IEnumerable<MetadataReference> compilationReferences = this.GetCSharpCompilationReferences();
@@ -1052,6 +1067,7 @@ namespace PRoCon.Core.Plugin
         private void LoadPlugin(string pluginClassName, CPRoConPluginLoaderFactory pluginFactory, bool blSandboxDisabled)
         {
             bool blSandboxEnabled = (blSandboxDisabled == true) ? false : true;
+
             string outputAssembly = Path.Combine(PluginBaseDirectory, pluginClassName + ".dll");
 
             if (File.Exists(outputAssembly) == false) return;
@@ -1173,6 +1189,7 @@ namespace PRoCon.Core.Plugin
                 var pluginsDirectoryInfo = new DirectoryInfo(PluginBaseDirectory);
                 string className = string.Empty;
 
+                // 1. Scan flat .cs files in the plugin directory (existing behavior)
                 foreach (FileInfo pluginFile in pluginsDirectoryInfo.GetFiles("*.cs"))
                 {
                     try
@@ -1205,6 +1222,7 @@ namespace PRoCon.Core.Plugin
                         WritePluginConsole(e.ToString());
                     }
                 }
+
 
                 this.PluginCache.Save(Path.Combine(this.PluginBaseDirectory, "PluginCache.xml"));
             }
