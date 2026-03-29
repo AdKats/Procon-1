@@ -85,13 +85,19 @@
         <StackPanel Spacing="8">
           <TextBlock Text="About PRoCon" FontSize="15" FontWeight="SemiBold"
                      Foreground="{DynamicResource PrimaryBrush}" />
-          <TextBlock Name="VersionText" Text="PRoCon Frostbite v1.6.0"
-                     Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" />
-          <TextBlock Text="Avalonia UI modernization of the classic Procon Frostbite RCON tool."
+          <TextBlock Name="VersionText" Text="PRoCon Frostbite v2.0.0"
+                     Foreground="{DynamicResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" />
+          <TextBlock Text="Open-source RCON tool for Frostbite game servers."
                      Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" />
-          <TextBlock Text="Running on .NET 8.0"
+          <TextBlock Text="Supports BF3, BF4, BFBC2, BFH, and MOH:W."
                      Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
           <TextBlock Name="RuntimeInfoText" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+          <TextBlock Name="DataDirText" Text=""
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+          <TextBlock Text="Originally by Phogue / Myrcon. v2.0 by Prophet / EZSCALE."
+                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0" />
+          <TextBlock Text="Licensed under GPLv3."
                      Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
         </StackPanel>
       </Border>

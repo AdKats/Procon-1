@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -61,12 +62,28 @@ namespace PRoCon.UI.Views
             if (langText != null && currentLang != null)
                 langText.Text = $"Current: {currentLang.FileName}";
 
+            // Version from assembly
+            var versionText = this.FindControl<TextBlock>("VersionText");
+            if (versionText != null)
+            {
+                var ver = Assembly.GetEntryAssembly()?.GetName().Version;
+                string vStr = ver != null ? $"{ver.Major}.{ver.Minor}.{ver.Build}" : "2.0.0";
+                versionText.Text = $"PRoCon Frostbite v{vStr}";
+            }
+
             // Runtime info
             var runtimeInfo = this.FindControl<TextBlock>("RuntimeInfoText");
             if (runtimeInfo != null)
             {
-                runtimeInfo.Text = $"OS: {RuntimeInformation.OSDescription} | " +
-                                   $"Framework: {RuntimeInformation.FrameworkDescription}";
+                runtimeInfo.Text = $"Runtime: {RuntimeInformation.FrameworkDescription} | " +
+                                   $"OS: {RuntimeInformation.OSDescription}";
+            }
+
+            // Data directory
+            var dataDirText = this.FindControl<TextBlock>("DataDirText");
+            if (dataDirText != null)
+            {
+                dataDirText.Text = $"Data: {ProConPaths.DataDirectory}";
             }
         }
 
