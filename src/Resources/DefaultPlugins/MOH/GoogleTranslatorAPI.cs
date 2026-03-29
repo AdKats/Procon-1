@@ -1,1 +1,0 @@
-#include "../GoogleTranslatorAPI.inc"

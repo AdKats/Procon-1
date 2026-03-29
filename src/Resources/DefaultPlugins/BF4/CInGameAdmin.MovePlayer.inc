@@ -1,2 +1,0 @@
-// BFBC2 has a squad id parameter
-this.ExecuteCommand("procon.protected.send", "admin.movePlayer", targetSoldierName, this[targetSoldierName].MoveLocation.TeamID.ToString(), this[targetSoldierName].MoveLocation.SquadID.ToString(), "true");

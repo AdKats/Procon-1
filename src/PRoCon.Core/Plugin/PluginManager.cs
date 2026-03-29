@@ -608,8 +608,6 @@ namespace PRoCon.Core.Plugin
                     File.Copy(pdbSrc, Path.Combine(PluginBaseDirectory, "PRoCon.Core.pdb"), true);
                 }
 
-                // Extract default plugins from embedded resources
-                ExtractDefaultPlugins();
 
                 // Clean up temp directory
                 if (Directory.Exists(PluginDebugTempDirectory) == true)
@@ -629,93 +627,6 @@ namespace PRoCon.Core.Plugin
             catch (Exception ex)
             {
                 WritePluginConsole("^1Error preparing plugins directory: {0}", ex.Message);
-            }
-        }
-
-        private static readonly string[] KnownGameTypes = { "BF3", "BF4", "BFBC2", "BFHL", "MOH", "MOHW" };
-
-        private void ExtractDefaultPlugins()
-        {
-            try
-            {
-                var assembly = typeof(PluginManager).Assembly;
-                string gameType = ProconClient.GameType;
-                string gamePrefix = "PRoCon.Core.Resources.DefaultPlugins." + gameType + ".";
-                string sharedPrefix = "PRoCon.Core.Resources.DefaultPlugins.";
-
-                foreach (string resourceName in assembly.GetManifestResourceNames())
-                {
-                    if (!resourceName.StartsWith(sharedPrefix)) continue;
-
-                    string fileName = null;
-
-                    if (resourceName.StartsWith(gamePrefix))
-                    {
-                        // Game-specific plugin file (e.g. .cs or .inc under BF4/)
-                        fileName = resourceName.Substring(gamePrefix.Length);
-                    }
-                    else
-                    {
-                        string remainder = resourceName.Substring(sharedPrefix.Length);
-
-                        // Skip files belonging to other game types
-                        bool isOtherGame = false;
-                        foreach (string gt in KnownGameTypes)
-                        {
-                            if (remainder.StartsWith(gt + "."))
-                            {
-                                isOtherGame = true;
-                                break;
-                            }
-                        }
-                        if (isOtherGame) continue;
-
-                        // Shared .inc file (directly under DefaultPlugins/)
-                        if (remainder.EndsWith(".inc"))
-                        {
-                            // Shared includes go to parent Plugins/ dir so #include "../file.inc" resolves
-                            string sharedDir = ProConPaths.PluginsDirectory;
-                            string sharedDest = Path.Combine(sharedDir, remainder);
-                            if (!File.Exists(sharedDest))
-                            {
-                                using (var stream = assembly.GetManifestResourceStream(resourceName))
-                                {
-                                    if (stream != null)
-                                    {
-                                        using (var fileStream = File.Create(sharedDest))
-                                        {
-                                            stream.CopyTo(fileStream);
-                                        }
-                                    }
-                                }
-                            }
-                            continue;
-                        }
-                    }
-
-                    if (fileName == null) continue;
-
-                    string destPath = Path.Combine(PluginBaseDirectory, fileName);
-
-                    // Only extract if the file doesn't already exist
-                    if (!File.Exists(destPath))
-                    {
-                        using (var stream = assembly.GetManifestResourceStream(resourceName))
-                        {
-                            if (stream != null)
-                            {
-                                using (var fileStream = File.Create(destPath))
-                                {
-                                    stream.CopyTo(fileStream);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                WritePluginConsole("Error extracting default plugins: " + ex.Message);
             }
         }
 
