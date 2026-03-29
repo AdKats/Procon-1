@@ -32,6 +32,23 @@ Build output: `builds/Release/` or `builds/Debug/`. Publish creates a single exe
 
 **No automated test suite.** Testing is manual against live game servers.
 
+## Code Formatting
+
+Uses `dotnet format` with `.editorconfig` rules. A pre-commit hook auto-formats staged `.cs` files.
+
+```bash
+# Enable the hook (required once per clone)
+git config core.hooksPath .githooks
+
+# Manual format
+dotnet format src/PRoCon.sln
+
+# Skip hook for a single commit
+git commit --no-verify
+```
+
+Style: 4-space indent, braces on new lines, sorted usings, LF line endings.
+
 ## Solution Structure (`src/PRoCon.sln`)
 
 | Project | Purpose |
@@ -44,7 +61,7 @@ Build output: `builds/Release/` or `builds/Debug/`. Publish creates a single exe
 
 All executables depend on `PRoCon.Core`. `PRoCon.UI` depends on `PRoCon.Themes`.
 
-## Data Directory (ProConPaths)
+## Data Directory (`ProConPaths`)
 
 All user data lives in a centralized location, **not** next to the exe:
 
@@ -53,12 +70,22 @@ All user data lives in a centralized location, **not** next to the exe:
 | Windows | `%APPDATA%\PRoCon\` |
 | Linux | `~/.config/procon/` |
 | macOS | `~/Library/Application Support/PRoCon/` |
-| Docker/K8s | `/config/` (auto-detected) |
+| Docker/K8s | `/config/` (auto-detected via `/.dockerenv`, `KUBERNETES_SERVICE_HOST`, cgroup) |
 | Portable | Exe directory (if `Configs/` exists next to exe) |
 
 Override: `PROCON_DATA_DIR` env var or `--datadir` CLI arg.
 
-Structure: `Configs/`, `Plugins/`, `Logs/`, `Cache/`, `Localization/`, `Media/`
+Structure created on first launch:
+```
+Configs/              procon.json (v2) + legacy procon.cfg
+Plugins/
+  BF3/ BF4/ BFBC2/ BFHL/ MOH/ MOHW/    (all pre-created)
+Logs/
+Cache/
+  IPCheck/ipcache.db  (SQLite, WAL mode)
+Localization/
+Media/
+```
 
 Implementation: `src/PRoCon.Core/ProConPaths.cs` — all code uses `ProConPaths.ConfigsDirectory`, `ProConPaths.PluginsDirectory`, etc. Assembly/binary paths use `ProConPaths.ApplicationDirectory`.
 
@@ -73,11 +100,15 @@ Implementation: `src/PRoCon.Core/ProConPaths.cs` — all code uses `ProConPaths.
 ### Plugin System
 - Plugins are `.cs` files compiled at runtime with Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`)
 - Loaded via `PluginLoadContext` (collectible `AssemblyLoadContext`) with shared assembly blocklist to prevent type identity issues
-- `PluginManager.cs` handles lifecycle: extract defaults → compile → load → wire events
-- Multi-file plugins via partial classes (`MyPlugin.cs`, `MyPlugin.Commands.cs`) and `#include` directives
+- `PluginManager.cs` handles lifecycle: compile → load → wire events
+- One plugin failing to compile/load does not block others
+- Multi-file plugins: flat (`AdKats.Commands.cs`) or subfolder (`AdKats/Commands.cs`) layouts
+- `#include` directives for shared code (`.inc` files)
 - 59-second execution timeout per invocation
+- Plugin Output console in the UI shows compilation/load messages
 - Plugin SDK: `pluginsdk/` directory with templates and guide
 - Available to plugins: PRoCon.Core, Newtonsoft.Json, MySqlConnector, Dapper, Flurl.Http, Microsoft.Data.Sqlite
+- Users install plugins manually into `Plugins/<GameType>/` (no embedded defaults)
 
 ### Config System
 - **v2 default**: `procon.json` (typed model in `Options/ProConConfig.cs`)
@@ -89,13 +120,14 @@ Implementation: `src/PRoCon.Core/ProConPaths.cs` — all code uses `ProConPaths.
 SignalR WebSocket at `/layer` endpoint (`Layer/LayerHostService.cs` + `Layer/LayerHub.cs`). JWT auth. Replaces old TCP binary layer protocol (still in `Remote/Layer/` for reference).
 
 ### IP Check Service
-`Network/IPCheckService.cs` — ProxyCheck.io v3 integration with SQLite cache (Dapper ORM), memory cache, rate limiting, daily query budgeting. Database: `Cache/IPCheck/ipcache.db` with WAL mode.
+`Network/IPCheckService.cs` — ProxyCheck.io v3 with SQLite cache (Dapper ORM, WAL mode), memory cache, rate limiting, daily query budgeting. Shared via `PRoConApplication.IPCheckService`. Plugins access it via `procon.protected.ipcheck <ip>` command → `OnIPChecked` event callback.
 
 ### Theme Engine
 `PRoCon.Themes` — Dark/Light Avalonia ResourceDictionaries. `ThemeManager` handles runtime switching.
 
-## Key Directories in `src/PRoCon.Core/`
+## Key Directories
 
+### `src/PRoCon.Core/`
 - `Remote/` — Game server connection, protocol, packet caching
 - `Layer/` — SignalR layer (LayerHostService, LayerHub, JWT auth)
 - `Remote/Layer/` — Legacy TCP layer (reference only)
@@ -108,17 +140,21 @@ SignalR WebSocket at `/layer` endpoint (`Layer/LayerHostService.cs` + `Layer/Lay
 - `Battlemap/` — Map geometry and zone system
 - `Localization/` — i18n (extracted from embedded resources at startup)
 
-## Key Directories in `src/PRoCon.UI/`
-
+### `src/PRoCon.UI/`
 - `Views/` — 16 Avalonia panels (MainWindow, PluginsPanel, BanListPanel, etc.)
 - `Models/` — ServerEntry, PlayerDisplayInfo, RconCommandDefs
 - `Services/` — ConsoleFileLogger
+
+### Root
+- `Plugins/` — Empty game-type directories for user plugins (BF3, BF4, BFBC2, BFHL, MOH, MOHW)
+- `pluginsdk/` — Plugin SDK template with multi-file examples and developer guide
+- `docs/` — CHANGELOG-v2.md, PLUGIN-REFACTORING-GUIDE.md
+- `.githooks/` — Pre-commit hook (dotnet format)
 
 ## Naming Conventions
 
 - **C-prefix**: Core data structures (`CBanInfo`, `CMap`, `CPlayerInfo`, `CServerInfo`)
 - **I-prefix**: Interfaces (`IPRoConPluginInterface`)
-- **usc-prefix**: Legacy control names still in some types
 - Game protocol commands defined in `.def` files under `src/Resources/Configs/`
 
 ## Dependencies
@@ -142,7 +178,9 @@ SignalR WebSocket at `/layer` endpoint (`Layer/LayerHostService.cs` + `Layer/Lay
 - Refactoring guide (v1→v2): `docs/PLUGIN-REFACTORING-GUIDE.md`
 - Plugins use `namespace PRoConEvents` and extend `PRoConPluginAPI`
 - Place `.cs` files in `Plugins/<GameType>/` — compiled automatically on connect
-- `#include` directives supported for shared code (`.inc` files in parent `Plugins/`)
+- Large plugins: use a subfolder (`Plugins/BF4/AdKats/`) or flat partials (`AdKats.Commands.cs`)
+- `#include` directives for shared `.inc` files
+- IP check: `ExecuteCommand("procon.protected.ipcheck", ip)` → `OnIPChecked` callback
 - HttpServer removed — no `OnHttpRequest`
 - `MySql.Data.MySqlClient` replaced by `MySqlConnector`
 - `System.Windows.Forms` not available — plugins must be cross-platform
@@ -166,3 +204,12 @@ All projects use `DebugType=embedded` (no loose `.pdb` files). `PRoCon.UI.csproj
 
 - `master` — v2.0 (.NET 8, Avalonia UI)
 - `v1-legacy` — v1.x stable (.NET Framework 4.7, WinForms) — frozen, no new development
+
+## Developer Setup
+
+```bash
+git clone https://github.com/AdKats/Procon-1.git
+cd Procon-1
+git config core.hooksPath .githooks    # enable formatting hook
+dotnet build src/PRoCon.UI/PRoCon.UI.csproj
+```
