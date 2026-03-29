@@ -547,6 +547,9 @@ namespace PRoCon.Core
                 this.IPCheckService.ApiKey = this.OptionsSettings.ProxyCheckApiKey ?? "";
 
             this.Checker = new Timer(o => this.ReconnectVersionChecker(), null, 20000, 20000);
+
+            // Migrate: re-save config to apply encryption and JSON format
+            this.SaveJsonConfig();
         }
 
         private void Connections_ConnectionAdded(PRoConClient item)
