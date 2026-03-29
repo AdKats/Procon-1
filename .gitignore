@@ -152,8 +152,21 @@ $RECYCLE.BIN/
 # Mac crap
 .DS_Store
 
-# Procon specific folders
+# Procon specific
 /builds
+/publish
 /src/.vs
 /.vs
 *.csproj.old
+*.dll.config
+
+# Runtime data (managed by ProConPaths, not in repo)
+Cache/
+Logs/
+Updates/
+Configs/
+procon-ui-crash.log
+
+# Tool artifacts
+.superpowers/
+docs/superpowers/
