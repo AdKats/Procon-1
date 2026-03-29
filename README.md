@@ -1,5 +1,7 @@
 # PRoCon v2.0
 
+> **⚠️ NOT READY FOR USE — This branch contains an in-progress rewrite of PRoCon. It is not yet stable or feature-complete. Do not use in production.**
+
 PRoCon is a free, open-source remote control (RCON) tool for Frostbite game servers. It supports Battlefield Bad Company 2, Battlefield 3, Battlefield 4, Battlefield Hardline, and Medal of Honor: Warfighter.
 
 ## Migrating from v1.x
