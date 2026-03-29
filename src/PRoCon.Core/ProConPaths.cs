@@ -53,12 +53,17 @@ namespace PRoCon.Core
         /// <summary>
         /// Ensures core directories exist. Called once at startup.
         /// </summary>
+        public static readonly string[] GameTypes = { "BF3", "BF4", "BFBC2", "BFHL", "MOH", "MOHW" };
+
         public static void EnsureDirectories()
         {
             Directory.CreateDirectory(ConfigsDirectory);
             Directory.CreateDirectory(PluginsDirectory);
             Directory.CreateDirectory(LogsDirectory);
             Directory.CreateDirectory(CacheDirectory);
+
+            foreach (string gameType in GameTypes)
+                Directory.CreateDirectory(Path.Combine(PluginsDirectory, gameType));
         }
 
         /// <summary>
