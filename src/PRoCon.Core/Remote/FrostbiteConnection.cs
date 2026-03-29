@@ -523,9 +523,9 @@ namespace PRoCon.Core.Remote
                             extractedPackets.Add(new Packet(completePacket));
 
                             // Remove the completed packet from the beginning of the stream
-                            byte[] updatedSteam = new byte[this.PacketStream.Length - ui32PacketSize];
-                            Array.Copy(this.PacketStream, ui32PacketSize, updatedSteam, 0, this.PacketStream.Length - ui32PacketSize);
-                            this.PacketStream = updatedSteam;
+                            byte[] updatedStream = new byte[this.PacketStream.Length - ui32PacketSize];
+                            Array.Copy(this.PacketStream, ui32PacketSize, updatedStream, 0, this.PacketStream.Length - ui32PacketSize);
+                            this.PacketStream = updatedStream;
 
                             ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
                         }
