@@ -59,7 +59,6 @@ namespace PRoCon.UI.Views
         private PunkBusterPanel _punkBusterPanel;
         private TextChatModerationPanel _textChatModerationPanel;
         private OptionsPanel _optionsPanel;
-        private PRoCon.Core.Network.IPCheckService _ipCheckService;
 
         // Cached control references (populated by CacheControls)
         private ListBox _serverList;
@@ -244,7 +243,7 @@ namespace PRoCon.UI.Views
 
         protected override void OnClosing(Avalonia.Controls.WindowClosingEventArgs e)
         {
-            _ipCheckService?.Dispose();
+            // IPCheckService disposed by PRoConApplication.Shutdown()
             foreach (var entry in _servers)
             {
                 entry.ConsoleLogger?.Dispose();
@@ -322,10 +321,7 @@ namespace PRoCon.UI.Views
             UpdateConnectionCount();
             UpdateContentVisibility();
 
-            // Initialize IP check service
-            string ipCacheDir = Path.Combine(PRoCon.Core.ProConPaths.CacheDirectory, "IPCheck");
-            string apiKey = _application?.OptionsSettings?.ProxyCheckApiKey ?? "";
-            _ipCheckService = new PRoCon.Core.Network.IPCheckService(ipCacheDir, apiKey);
+            // IP check service is shared from PRoConApplication
 
             // Listen for new connections
             _application.Connections.ConnectionAdded += conn =>
@@ -478,7 +474,7 @@ namespace PRoCon.UI.Views
                     entry.PlayerIPs[pbInfo.SoldierName] = ip;
 
                     // Async IP check — fire and forget, updates UI when done
-                    if (_ipCheckService != null)
+                    if (_application?.IPCheckService != null)
                     {
                         _ = RunIPCheckAsync(entry, pbInfo.SoldierName, ip);
                     }
@@ -493,7 +489,7 @@ namespace PRoCon.UI.Views
         {
             try
             {
-                var result = await _ipCheckService.LookupAsync(ip);
+                var result = await _application?.IPCheckService.LookupAsync(ip);
                 if (result == null) return;
 
                 Dispatcher.UIThread.Post(() =>

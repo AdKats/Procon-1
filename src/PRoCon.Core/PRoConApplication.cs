@@ -67,6 +67,11 @@ namespace PRoCon.Core
 
         private CountryLookup m_clIpToCountry;
 
+        /// <summary>
+        /// Shared IP check service (ProxyCheck.io). Available to plugins via procon.protected.ipcheck command.
+        /// </summary>
+        public Network.IPCheckService IPCheckService { get; private set; }
+
         public bool ConsoleMode { get; set; }
 
         public AccountDictionary AccountsList
@@ -479,6 +484,9 @@ namespace PRoCon.Core
             ProConPaths.EnsureDirectories();
             this.m_clIpToCountry = new CountryLookup(Path.Combine(ProConPaths.DataDirectory, "GeoIP.dat"));
 
+            string ipCacheDir = Path.Combine(ProConPaths.CacheDirectory, "IPCheck");
+            this.IPCheckService = new Network.IPCheckService(ipCacheDir);
+
             this.SavedWindowBounds = new WindowBounds();
 
             this.RegexMatchPunkbusterPlist = new Regex(@":[ ]+?(?<slotid>[0-9]+)[ ]+?(?<guid>[A-Fa-f0-9]+)\(.*?\)[ ]+?(?<ip>[0-9\.:]+).*?\(.*?\)[ ]+?""(?<name>.*?)\""", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -533,6 +541,10 @@ namespace PRoCon.Core
                 this.OptionsSettings.PluginMaxRuntime_m = this.praPluginMaxRuntime_m;
                 this.OptionsSettings.PluginMaxRuntime_s = this.m_praPluginMaxRuntime_s;
             }
+
+            // Apply API key from config to IPCheckService
+            if (this.IPCheckService != null && this.OptionsSettings != null)
+                this.IPCheckService.ApiKey = this.OptionsSettings.ProxyCheckApiKey ?? "";
 
             this.Checker = new Timer(o => this.ReconnectVersionChecker(), null, 20000, 20000);
         }
@@ -1190,6 +1202,29 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.pluginconsole.write", true) == 0 && objSender is PRoConClient)
             {
                 ((PRoConClient)objSender).PluginConsole.Write(lstWords[1]);
+            }
+            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.ipcheck", true) == 0 && objSender is PRoConClient)
+            {
+                var ipcheckClient = (PRoConClient)objSender;
+                string ipcheckIp = lstWords[1];
+                if (this.IPCheckService != null)
+                {
+                    System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var result = await this.IPCheckService.LookupAsync(ipcheckIp);
+                            if (result != null && ipcheckClient.PluginsManager != null)
+                            {
+                                ipcheckClient.PluginsManager.InvokeOnAllEnabled("OnIPChecked",
+                                    result.IP, result.CountryName, result.CountryCode,
+                                    result.City, result.Provider,
+                                    result.IsVPN, result.IsProxy, result.IsTor, result.Risk);
+                            }
+                        }
+                        catch { }
+                    });
+                }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.console.write", true) == 0 && objSender is PRoConClient)
             {
@@ -1998,6 +2033,29 @@ namespace PRoCon.Core
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.pluginconsole.write", true) == 0 && objSender is PRoConClient)
             {
                 ((PRoConClient)objSender).PluginConsole.Write(lstWords[1]);
+            }
+            else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.ipcheck", true) == 0 && objSender is PRoConClient)
+            {
+                var ipcheckClient = (PRoConClient)objSender;
+                string ipcheckIp = lstWords[1];
+                if (this.IPCheckService != null)
+                {
+                    System.Threading.Tasks.Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var result = await this.IPCheckService.LookupAsync(ipcheckIp);
+                            if (result != null && ipcheckClient.PluginsManager != null)
+                            {
+                                ipcheckClient.PluginsManager.InvokeOnAllEnabled("OnIPChecked",
+                                    result.IP, result.CountryName, result.CountryCode,
+                                    result.City, result.Provider,
+                                    result.IsVPN, result.IsProxy, result.IsTor, result.Risk);
+                            }
+                        }
+                        catch { }
+                    });
+                }
             }
             else if (lstWords.Count >= 2 && String.Compare(lstWords[0], "procon.protected.console.write", true) == 0 && objSender is PRoConClient)
             {
@@ -2906,6 +2964,7 @@ namespace PRoCon.Core
         {
 
             this.Checker.Dispose();
+            this.IPCheckService?.Dispose();
 
             this.SaveAccountsConfig();
             this.SaveMainConfig();

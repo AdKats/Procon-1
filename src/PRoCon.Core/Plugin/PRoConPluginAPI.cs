@@ -393,6 +393,19 @@ namespace PRoCon.Core.Plugin
         // These events are sent from the server without any initial request from the client.
         #region Game Server Requests (Events)
 
+        #region IP Check
+
+        /// <summary>
+        /// Called when an IP check completes (via procon.protected.ipcheck command).
+        /// Register for "OnIPChecked" event to receive this callback.
+        /// </summary>
+        public virtual void OnIPChecked(string ip, string countryName, string countryCode,
+            string city, string provider, bool isVPN, bool isProxy, bool isTor, int risk)
+        {
+        }
+
+        #endregion
+
         #region Players
 
         public virtual void OnPlayerJoin(string soldierName)
