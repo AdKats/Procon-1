@@ -511,6 +511,8 @@ namespace PRoCon.Core
         {
             string jsonPath = Path.Combine(ProConPaths.ConfigsDirectory, "procon.json");
 
+            bool migratedFromCfg = false;
+
             if (File.Exists(jsonPath))
             {
                 // v2 JSON config — single file for accounts + options + servers
@@ -533,6 +535,7 @@ namespace PRoCon.Core
 
                 this.ExecuteMainConfig("procon.cfg");
                 this.LoadingMainConfig = false;
+                migratedFromCfg = true;
             }
 
             if (this.praPluginMaxRuntimeLocked == true)
@@ -548,8 +551,30 @@ namespace PRoCon.Core
 
             this.Checker = new Timer(o => this.ReconnectVersionChecker(), null, 20000, 20000);
 
-            // Migrate: re-save config to apply encryption and JSON format
+            // Migrate: save encrypted JSON config
             this.SaveJsonConfig();
+
+            // Archive legacy .cfg files after successful migration to JSON
+            if (migratedFromCfg)
+            {
+                ArchiveLegacyConfig("procon.cfg");
+                ArchiveLegacyConfig("accounts.cfg");
+            }
+        }
+
+        private void ArchiveLegacyConfig(string fileName)
+        {
+            try
+            {
+                string cfgPath = Path.Combine(ProConPaths.ConfigsDirectory, fileName);
+                if (File.Exists(cfgPath))
+                {
+                    string bakPath = cfgPath + ".v1.bak";
+                    File.Move(cfgPath, bakPath, true);
+                    FrostbiteConnection.LogError("Config", $"Migrated {fileName} → procon.json (backup: {fileName}.v1.bak)", null);
+                }
+            }
+            catch { }
         }
 
         private void Connections_ConnectionAdded(PRoConClient item)
@@ -730,10 +755,11 @@ namespace PRoCon.Core
 
         public void SaveMainConfig()
         {
-            // Always save JSON (v2 format) alongside legacy .cfg
+            // v2: only save JSON — legacy .cfg is no longer written (plaintext passwords)
             SaveJsonConfig();
 
-            if (this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null)
+            // Legacy .cfg save disabled — keeping code for reference but not executing
+            if (false && this.LoadingMainConfig == false && this.CurrentLanguage != null && this.OptionsSettings != null && this.Connections != null)
             {
                 FileStream stmProconConfigFile = null;
 
@@ -2804,7 +2830,11 @@ namespace PRoCon.Core
 
         public void SaveAccountsConfig()
         {
-            if (this.LoadingAccountsFile == false && this.AccountsList != null)
+            // v2: accounts are saved in procon.json (encrypted) — trigger a JSON save
+            SaveJsonConfig();
+
+            // Legacy accounts.cfg save disabled (plaintext passwords)
+            if (false && this.LoadingAccountsFile == false && this.AccountsList != null)
             {
                 FileStream stmProconConfigFile = null;
 
