@@ -1,203 +1,130 @@
 # PRoCon v2.0 Changelog
 
-## Overview
-
-PRoCon v2.0 is a complete modernization of PRoCon Frostbite, migrating from .NET Framework 4.7/WinForms to .NET 8/Avalonia UI. This is the largest update in PRoCon's history — every layer of the application has been rewritten or significantly reworked while maintaining backward compatibility with existing game servers and workflows.
+PRoCon v2.0 is a complete modernization from .NET Framework 4.7/WinForms to .NET 8/Avalonia UI. Every layer of the application has been rewritten while maintaining backward compatibility with existing Frostbite game servers.
 
 ---
 
 ## Platform & Runtime
 
-- **Migrated from .NET Framework 4.7 to .NET 8** — modern runtime with better performance, TLS 1.3, and cross-platform support
-- **Cross-platform support** — runs natively on Windows, Linux, and macOS (no Mono required)
-- **SDK-style project files** — replaced legacy `.csproj` format with modern SDK-style projects
-- **Docker support** — headless console mode works in containers with multi-platform CI builds
-- **Self-contained publishing** — can be distributed as a single deployment without requiring .NET installed
+- .NET Framework 4.7 replaced by **.NET 8** — cross-platform (Windows, Linux, macOS)
+- **Single-file self-contained executables** — one ~77MB file per platform, no .NET install needed
+- **SDK-style project files** — modern `.csproj` format
+- **Docker/Kubernetes support** — headless console mode, auto-detects container environment (`/config/` data directory)
+- **Centralized data directory** — platform-aware (`%APPDATA%`, `~/.config/procon/`, `/config/`), overridable via `PROCON_DATA_DIR` or `--datadir`
+- **JSON configuration** — `procon.json` replaces `procon.cfg` (legacy format still loaded for backward compat)
+- **Code formatting** — `.editorconfig` + `dotnet format` pre-commit hook
 
-## UI — Complete Rewrite
+## UI
 
-- **Avalonia UI replaces WinForms** — modern, cross-platform UI framework
-- **Dark and Light themes** — blue + orange gaming palette with Fluent design, switchable at runtime
-- **16 tabbed panels**: Info/Dashboard, Chat, Players, Maps, Bans, Reserved Slots, Spectators, PunkBuster, Settings, Plugins, Accounts, Events, Console, Layer
-- **Live server dashboard** — real-time player count graph, kill feed, team scores, server info
-- **Landing page** — shows aggregate stats across all connected servers when no server is selected
-- **Multi-server sidebar** — servers grouped by game type, sorted by name, with animated status indicators
-- **Marquee scrolling** — long server names auto-scroll in the sidebar
-- **Add Server dialog** — supports Direct RCON and PRoCon Layer connection modes
-- **Settings dialog** — moved out of tab list into a dedicated modal window
-- **Disconnected placeholder** — context-aware messaging when a server isn't connected
-- **Ripple animation** — connection status indicators use outward ring animation
-
-## RCON Console
-
-- **Command history** — up/down arrows cycle through previous commands
-- **Autocomplete** — tab-completion with full command signatures from game definitions
-- **Game-aware commands** — only shows commands for the connected game type (BF4, BF3, BFH, etc.)
-- **admin.help discovery** — queries the server for supported commands and merges with local definitions
-- **Input validation** — validates command arguments before sending, with error messages
-- **Error coloring** — `InvalidArguments` responses shown in red, warnings in yellow
+- **Avalonia UI replaces WinForms** — modern cross-platform UI framework
+- **Dark and Light themes** — blue + orange gaming palette, switchable at runtime
+- **16 tabbed panels**: Dashboard, Chat, Players, Maps, Bans, Reserved Slots, Spectators, TextChat Moderation, PunkBuster, Settings, Plugins, Accounts, Events, Console, Layer
+- **Live server dashboard** — real-time player count graph, kill feed, team scores
+- **Multi-server sidebar** — servers grouped by game type with animated status indicators
+- **RCON console** — command history, tab-completion with game-aware signatures, input validation
+- **Player context menus** — right-click Kill, Kick, Move, Ban, Copy Name on team lists
+- **Plugin Output console** — timestamped compilation/load messages with 500-line scrollback
+- **Add Server dialog** — Direct RCON and PRoCon Layer connection modes
 
 ## Network & Security
 
 - **TLS 1.3 support** — modern encryption for game server connections
-- **Removed TLS downgrade fallback** — eliminated `AllowTlsFallback` to prevent downgrade attacks
-- **Fixed SslStream/NetworkStream double-dispose** — prevented crash in connection teardown
-- **ProxyCheck.io v3 integration** — async IP reputation checking with SQLite cache (Dapper ORM), 48-hour TTL, 1K free daily queries
-- **Thread-safe daily counter** — fixed race condition in IP check service
+- TLS downgrade fallback removed (prevented downgrade attacks)
+- SslStream/NetworkStream double-dispose fixed
+- **ProxyCheck.io v3 integration** — async IP reputation checking (VPN/proxy/Tor detection)
+  - SQLite cache with Dapper ORM, WAL mode, 48-hour TTL
+  - Memory cache layer for hot lookups
+  - Rate limiting (5 concurrent) + daily query budgeting (1K free, 100K with API key)
+  - Exposed to plugins via `procon.protected.ipcheck` command + `OnIPChecked` event
 
-## Layer System — SignalR Migration
+## Layer System
 
-- **SignalR WebSocket replaces TCP binary protocol** — Kestrel + SignalR Hub at `/layer` endpoint
-- **LayerHostService** — new `ILayerInstance` implementation using ASP.NET Core
-- **Automatic keepalive** — SignalR handles connection health (no manual `Poke()` needed)
-- **Command routing** — layer commands route through FrostbiteConnection with sequence number tracking and 10s timeout
-- **Force disconnect** — removing a layer account or changing permissions immediately disconnects affected clients
-- **Background thread startup/shutdown** — avoids UI deadlock when enabling/disabling the layer
+- **SignalR WebSocket replaces TCP binary protocol** — Kestrel + SignalR Hub at `/layer`
+- JWT authentication replaces plaintext login
+- Automatic keepalive (SignalR handles connection health)
+- Command routing with sequence number tracking and 10s timeout
 
-## HTTP Server — Removed
+## HTTP Server
 
-- **Built-in HTTP web server fully removed** — was 1,073 lines of code across 6 files
-- **Replaced by SignalR** — all remote management now goes through the layer system
-- **`OnHttpRequest` removed from plugin API** — plugins using this method must remove it
-- **Config file backward compatibility** — old `procon.private.httpWebServer.enable` config lines are silently ignored
+- **Fully removed** — 1,073 lines of code across 6 files deleted
+- Replaced by SignalR layer system
+- `OnHttpRequest` removed from plugin API
+- Old config lines silently ignored
+
+## Auto-Updater
+
+- **Fully removed** — was downloading v1 files from defunct Myrcon servers
+- Download updates from GitHub Releases instead
 
 ## Plugin System
 
-- **Roslyn 4.8 compiler** — plugins compiled with `Microsoft.CodeAnalysis.CSharp` instead of legacy CodeDom
-- **AssemblyLoadContext** — collectible load contexts replace AppDomain sandboxing (not available in .NET 8)
-- **Type identity fix** — shared assemblies (PRoCon.Core, Newtonsoft.Json, MySqlConnector) always load from the host context, preventing `InvalidCastException` on `IPRoConPluginInterface`
-- **Expanded compilation references** — 40+ .NET 8 assembly references including System.IO, System.Threading, System.Net.*, System.Xml, System.Web.HttpUtility, etc.
-- **Automatic namespace migration** — `using MySql.Data.MySqlClient;` auto-rewritten to `using MySqlConnector;`, `using PRoCon.Core.HttpServer;` auto-stripped
-- **Failed compilation cleanup** — corrupt DLLs from failed compiles are deleted instead of leaving bad files that cause `BadImageFormatException`
-- **Embedded default plugins** — extracted from assembly resources at runtime, no separate download needed
-- **`#include` directive support** — shared `.inc` files correctly resolved across game-type directories
-- **Subfolder plugin layout** — large plugins can organize partial files in a `ClassName/` subfolder alongside the main `.cs` file (scanned recursively)
-- **Plugin Output console** — Plugins tab shows timestamped compilation/load messages with 500-line scrollback
-- **IP check plugin API** — `procon.protected.ipcheck <ip>` command + `OnIPChecked` event for VPN/proxy detection
-- **Plugin isolation** — one plugin failing to compile/load no longer blocks others
-- **Plugin trust warning** — prominent banner: "Plugins run with full trust on .NET 8"
-- **Retry with backoff** — plugin panel retries wiring to PluginsManager with exponential backoff (1s, 2s, 4s, 8s, 15s)
-- **Error logging** — `PreparePluginsDirectory` and compilation errors are now logged instead of silently swallowed
-
-### Plugin Compatibility Results (BF4)
-
-| Status | Plugins |
-|--------|---------|
-| **Works** | CBasicInGameInfo, CInGameAdmin, CSpambot, CBattlelogCache, CAdaptiveTicketCount, TrueBalancer, CLatencyManager, LanguageEnforcer |
-| **Needs Refactoring** | CAdminIn_and_SpawnMsg, xVotemap, MULTIbalancer (System.Windows.Forms), CUltimateMapManager (Win32 Registry/FILETIME), AdKats, InsaneLimits, CChatGUIDStatsLogger, ProconRulz, etc. |
-
-See `docs/PLUGIN-REFACTORING-GUIDE.md` for migration instructions.
-
-## Account Management
-
-- **Redesigned Accounts panel** — grouped privileges with quick presets
-- **Layer panel** — shows connected layer clients with connection info
+- **Roslyn 4.8 compiler** — replaces CodeDom, supports C# latest features
+- **AssemblyLoadContext isolation** — collectible contexts with shared assembly blocklist (prevents `InvalidCastException` on `IPRoConPluginInterface`)
+- **Plugin isolation** — one plugin failing to compile/load does not block others
+- **Multi-file plugins** — two layouts:
+  - Flat: `AdKats.cs` + `AdKats.Commands.cs` (v1 compatible)
+  - Subfolder: `AdKats.cs` + `AdKats/Commands.cs` (new, recursive scan)
+- **`#include` directive** — shared `.inc` files across game types
+- **Plugin Output console** — UI panel showing compilation/load/runtime messages
+- **IP check API** — `procon.protected.ipcheck <ip>` → `OnIPChecked` event callback
+- **No embedded default plugins** — users install plugins manually into `Plugins/<GameType>/`
+- **Pre-created plugin directories** — `Plugins/BF3`, `BF4`, `BFBC2`, `BFHL`, `MOH`, `MOHW` exist on first launch
+- **Available libraries**: PRoCon.Core, Newtonsoft.Json, MySqlConnector, Dapper, Flurl.Http, Microsoft.Data.Sqlite
+- 40+ .NET 8 assembly references for plugin compilation
+- Failed compilation cleanup (corrupt DLLs deleted, not left for `BadImageFormatException`)
+- Plugin SDK template in `pluginsdk/` with database, HTTP, and IP check examples
 
 ## Performance
 
-- **Cached FindControl calls** — 40+ UI controls populated once instead of per-access lookup
-- **Static color brushes** — `StatusColor` uses 3 static readonly instances instead of allocating per-access
-- **Batch collection operations** — console line trimming and player list updates use efficient bulk operations
-- **Removed redundant KillFeed reassignment** — `ItemsSource` set once, not on every kill event
-- **ConsoleFileLogger with rotation** — capped at configurable size
-- **ChatBuffer capped at 500 lines** — prevents unbounded memory growth
-
-## Ban List
-
-- **Auto-refresh fixed** — packet cache invalidation via `Invalidate(Regex)` after ban mutations
-- **Cache-aware** — `CacheManager` supports pattern-based invalidation for stale data
+- Cached FindControl calls (40+ UI controls populated once)
+- Static color brushes (no per-access allocation)
+- Batch collection operations for console trimming and player lists
+- ChatBuffer capped at 500 lines
+- ConsoleFileLogger with rotation
 
 ## Infrastructure
 
-- **GitHub Actions CI** — PR builds verify compilation, tag pushes create releases with ZIP archives and checksums
-- **Version stamping** — extracted from git tags during CI, stamped into `VersionInfo.cs`
-- **Localization extraction** — `.loc` files extracted from embedded resources on first run
-- **Per-install mutex** — uses FNV-1a hash of BaseDirectory for process isolation
+- **GitHub Actions CI** — PR builds verify compilation, tag pushes create releases with checksums
+- Version stamping from git tags into `VersionInfo.cs`
+- Localization files extracted from embedded resources on first run
+- Per-install mutex for process isolation
+- `.editorconfig` + pre-commit formatting hook (`dotnet format`)
+- v1.x code preserved on `v1-legacy` branch
 
 ---
 
 ## Known Limitations
 
-- Battlemap/MapViewer deferred (very complex, 9/10 effort)
-- ServerEventBridge for proper event unsubscription still pending (lambda-based subscriptions may leak)
-- 17 BF4 default plugins need manual refactoring (System.Windows.Forms, Win32 Registry removal)
+- Battlemap/MapViewer not yet implemented (deferred — very complex)
+- ServerEventBridge for proper event unsubscription pending (lambda subscriptions may leak)
+- Some v1 plugins need manual refactoring for cross-platform compatibility (System.Windows.Forms, Win32 Registry)
 
 ---
 
-# Breaking Changes
+## Breaking Changes
 
-## For Server Administrators
+### For Server Administrators
 
-1. **Requires .NET 8 Runtime** — .NET Framework 4.7 is no longer sufficient. Install the [.NET 8 Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) or use the self-contained build.
+1. **Self-contained build or .NET 8 Runtime required** — .NET Framework 4.7 no longer supported
+2. **HTTP web server removed** — use SignalR layer for remote management
+3. **Layer protocol changed** — v1.x and v2.0 cannot cross-connect (upgrade all instances together)
+4. **Plugin sandbox removed** — plugins run with full trust (only install trusted plugins)
+5. **Auto-updater removed** — download updates from GitHub Releases
+6. **Default plugins not bundled** — install plugins manually into `Plugins/<GameType>/`
+7. **Config format** — new installs create `procon.json`; existing `procon.cfg` files still work
+8. **Data directory moved** — data no longer stored next to exe (see Data Directory section in README)
 
-2. **HTTP Web Server Removed** — If you used the built-in HTTP server for remote management, it no longer exists. Use the SignalR-based layer system instead. Old config lines are silently ignored.
+### For Plugin Developers
 
-3. **Layer Protocol Changed** — The layer now uses SignalR WebSocket instead of the custom TCP binary protocol. **v1.x PRoCon instances cannot connect as layer clients to a v2.0 layer, and vice versa.** All instances in a layer setup must be upgraded together.
+1. **Target .NET 8** — APIs removed from .NET 8 (`System.Windows.Forms`, `System.Security.Permissions`, `System.Runtime.Remoting`) are not available
+2. **`OnHttpRequest` removed** — delete HTTP request handling from plugins
+3. **`MySql.Data` → `MySqlConnector`** — `using MySqlConnector;` (auto-rewritten during compilation)
+4. **AppDomain → AssemblyLoadContext** — no cross-domain calls, no `MarshalByRefObject` remoting
+5. **New libraries available** — Dapper, Flurl.Http, Microsoft.Data.Sqlite, plus ProxyCheck.io via `procon.protected.ipcheck`
+6. **Subfolder layout** — organize large plugins in `ClassName/` subdirectories
+7. **Plugin SDK** — see `pluginsdk/` for templates and `docs/PLUGIN-REFACTORING-GUIDE.md` for migration
 
-4. **Plugin Sandbox Removed** — .NET 8 does not support AppDomain sandboxing. Plugins now run with full trust. Only install plugins you trust.
+### For Layer Client Developers
 
-5. **Windows Forms Removed** — The UI is now Avalonia-based. Plugins that referenced System.Windows.Forms must be refactored.
-
-## For Plugin Developers
-
-1. **Target .NET 8** — Plugins are compiled against .NET 8 runtime assemblies. APIs removed from .NET 8 (e.g., `System.Security.Permissions`, `System.Runtime.Remoting`, `System.Windows.Forms`) are not available.
-
-2. **`OnHttpRequest` Removed** — The method and its types (`HttpWebServerRequestData`, `HttpWebServerResponseData`) no longer exist. Remove all HTTP request handling from your plugins.
-
-3. **`MySql.Data` replaced by `MySqlConnector`** — The `using MySql.Data.MySqlClient;` is auto-rewritten to `using MySqlConnector;`. The API is largely compatible but some edge cases may differ.
-
-4. **AssemblyLoadContext replaces AppDomain** — `AppDomain.CreateDomain()`, `MarshalByRefObject` remoting, and cross-domain calls are not available. Plugins load into a collectible `AssemblyLoadContext`.
-
-5. **`System.Web` namespace** — Only `System.Web.HttpUtility` is available. The full `System.Web` assembly from .NET Framework is not present.
-
-6. **Roslyn Compilation** — Plugins are compiled with Roslyn (`Microsoft.CodeAnalysis.CSharp 4.8.0`) instead of CodeDom. All C# language features up to the latest version are supported.
-
-7. **See the SDK Plugin Template** — `pluginsdk/` provides a multi-file starting point for new .NET 8 compatible plugins.
-
-## For Layer Client Developers
-
-1. **SignalR Protocol** — Connect to `http://<host>:<port>/layer` using a SignalR client instead of raw TCP sockets with the Frostbite binary protocol.
-
-2. **Authentication** — JWT-based authentication replaces the plaintext login sequence.
-
----
-
-# Discord Announcement
-
-```
-## PRoCon v2.0 — Coming Soon
-
-A major infrastructure update to PRoCon is in development. EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codebase was blocking that — so Prophet took the time to modernize the entire stack.
-
-**Important note:** This is an infrastructure update to remove a blocker, not a full project revival. For the future of game server management, check out **metabans.com** — an all-in-one platform supporting Battlefield, Squad, CoD4, Minecraft, and more.
-
-**What's in v2.0:**
-- .NET 8 runtime — Windows, Linux, and macOS natively (no Mono!)
-- Brand new Avalonia UI with dark/light themes
-- Live server dashboard with player graphs and kill feed
-- SignalR layer system replacing the old TCP protocol
-- RCON console with autocomplete, command history, and validation
-- Async IP reputation checking via ProxyCheck.io
-- Docker support for headless deployments
-- Plugin SDK with Dapper (ORM) and Flurl (HTTP client) built in
-
-**Breaking Changes to Prepare For:**
-- .NET 8 Runtime required (or use self-contained build)
-- Built-in HTTP web server removed (replaced by SignalR layer)
-- Layer protocol changed — v1.x and v2.0 instances will not cross-connect
-- Plugin sandbox removed — plugins run with full trust
-- MySQL driver changed from MySql.Data to MySqlConnector
-- System.Windows.Forms no longer available — plugins using MessageBox, Application, etc. need updates
-
-**For Plugin Developers:**
-- Plugins still compile from .cs source files, now using Roslyn
-- Multi-file plugins supported via partial classes and subfolder layout (split monoliths like AdKats)
-- New SDK template with database (raw SQL + Dapper) and HTTP (HttpClient + Flurl) examples
-- Full .NET 8 API surface available (C# latest features supported)
-- Plugin refactoring guide included for migration from v1.x
-
-**What's Still in Progress:**
-- Refactoring remaining default plugins for cross-platform compatibility
-
-Back up your `Configs/` directory before upgrading — config files are backward compatible.
-```
+1. **SignalR protocol** — connect to `http://<host>:<port>/layer` with a SignalR client
+2. **JWT authentication** — replaces plaintext login sequence

@@ -10,13 +10,16 @@ EZSCALE needed to upgrade their MySQL infrastructure and the legacy PRoCon codeb
 
 ### What Changed
 
-- **.NET 8** — cross-platform runtime (Windows, Linux, macOS natively)
-- **Avalonia UI** — replaces WinForms with a modern cross-platform UI (dark/light themes)
-- **SignalR Layer** — replaces the custom TCP binary protocol with WebSocket
-- **MySqlConnector** — replaces MySql.Data for modern MySQL/MariaDB support
-- **Roslyn Compiler** — plugins compile with C# latest features
-- **Single-file publish** — one executable per platform, no loose DLLs
-- **Plugin SDK** — Dapper (ORM), Flurl (HTTP client), multi-file plugin support
+| Area | v1.x | v2.0 |
+|------|------|------|
+| Runtime | .NET Framework 4.7 (Windows only) | .NET 8 (Windows, Linux, macOS) |
+| UI | WinForms | Avalonia UI (dark/light themes) |
+| Layer Protocol | Custom TCP binary | SignalR WebSocket |
+| MySQL Driver | MySql.Data | MySqlConnector |
+| Plugin Compiler | CodeDom | Roslyn (C# latest) |
+| Config Format | `procon.cfg` (command-based) | `procon.json` (with .cfg fallback) |
+| IP Checking | None | ProxyCheck.io v3 (SQLite cache) |
+| Distribution | 50+ loose DLLs | Single-file executable (~77MB) |
 
 ## Download
 
@@ -32,9 +35,11 @@ Download the latest release from the [Releases](https://github.com/AdKats/Procon
 Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 ```bash
-# Clone
+# Clone and setup
 git clone https://github.com/AdKats/Procon-1.git
 cd Procon-1
+git config core.hooksPath .githooks    # enable code formatting hook
+
 # Build
 dotnet build src/PRoCon.UI/PRoCon.UI.csproj
 
@@ -42,14 +47,34 @@ dotnet build src/PRoCon.UI/PRoCon.UI.csproj
 dotnet run --project src/PRoCon.UI/PRoCon.UI.csproj
 
 # Publish single-file executables
-dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r win-x64 -o publish/win
-dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r linux-x64 -o publish/linux
-dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r osx-x64 -o publish/osx
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r win-x64 --self-contained -o publish/win
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r linux-x64 --self-contained -o publish/linux
+dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r osx-x64 --self-contained -o publish/osx
 ```
+
+### Docker
+
+```bash
+docker compose up -d
+# Data: /config/ (Configs, Plugins, Logs, Cache)
+```
+
+## Data Directory
+
+PRoCon stores all user data in a platform-appropriate location:
+
+| Platform | Path |
+|----------|------|
+| Windows | `%APPDATA%\PRoCon\` |
+| Linux | `~/.config/procon/` |
+| macOS | `~/Library/Application Support/PRoCon/` |
+| Docker/K8s | `/config/` (auto-detected) |
+
+Override with `PROCON_DATA_DIR` environment variable or `--datadir` CLI argument. If a `Configs/` folder exists next to the executable, PRoCon uses portable mode (data stored next to the exe).
 
 ## Plugin Development
 
-PRoCon plugins are `.cs` source files compiled at runtime. Place them in `Plugins/<GameType>/` and they load automatically when connecting to a server.
+Plugins are `.cs` source files compiled at runtime with Roslyn. Place them in `Plugins/<GameType>/` and they load automatically when connecting to a server.
 
 ### Quick Start
 
@@ -93,13 +118,11 @@ namespace PRoConEvents
 
 ### Available Libraries
 
-Plugins have access to these libraries at compile time:
-
 | Library | Import | Use |
 |---------|--------|-----|
-| **MySqlConnector** | `using MySqlConnector;` | Raw SQL database access |
+| **MySqlConnector** | `using MySqlConnector;` | MySQL/MariaDB database access |
 | **Dapper** | `using Dapper;` | Micro-ORM (automatic object mapping) |
-| **Flurl** | `using Flurl.Http;` | Fluent HTTP client (like axios) |
+| **Flurl** | `using Flurl.Http;` | Fluent HTTP client |
 | **Newtonsoft.Json** | `using Newtonsoft.Json;` | JSON serialization |
 | **Microsoft.Data.Sqlite** | `using Microsoft.Data.Sqlite;` | SQLite local databases |
 
@@ -123,7 +146,21 @@ Plugins/BF4/
     Players.cs
 ```
 
-See the full SDK template and developer guide in the [`pluginsdk/`](pluginsdk/) directory.
+### IP Reputation Checking
+
+Plugins can check player IPs for VPN/proxy usage:
+
+```csharp
+// Request a lookup
+ExecuteCommand("procon.protected.ipcheck", playerIP);
+
+// Receive the result (register for "OnIPChecked" event)
+public override void OnIPChecked(string ip, string countryName,
+    string countryCode, string city, string provider,
+    bool isVPN, bool isProxy, bool isTor, int risk) { }
+```
+
+See the full SDK template and developer guide in [`pluginsdk/`](pluginsdk/).
 
 ## Breaking Changes from v1.x
 
@@ -131,8 +168,11 @@ See the full SDK template and developer guide in the [`pluginsdk/`](pluginsdk/) 
 - **HTTP web server removed** — use the SignalR layer instead
 - **Layer protocol changed** — v1.x and v2.0 cannot cross-connect
 - **Plugin sandbox removed** — plugins run with full trust
+- **Auto-updater removed** — download updates from GitHub Releases
+- **Default plugins not bundled** — install plugins manually
 - **MySql.Data replaced** — use `using MySqlConnector;` instead of `using MySql.Data.MySqlClient;`
 - **System.Windows.Forms removed** — plugins must be cross-platform
+- **Config format changed** — new installs use `procon.json`, legacy `procon.cfg` still loaded
 
 See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`docs/PLUGIN-REFACTORING-GUIDE.md`](docs/PLUGIN-REFACTORING-GUIDE.md) for plugin migration steps.
 
@@ -144,8 +184,9 @@ See [`docs/CHANGELOG-v2.md`](docs/CHANGELOG-v2.md) for the full changelog and [`
 | `PRoCon.Core` | Core business logic, plugin system, RCON protocol |
 | `PRoCon.Themes` | Dark/light theme resources |
 | `PRoCon.Console` | Headless console application |
+| `PRoCon.Service` | Windows Service / Linux systemd wrapper |
 
-Key technologies: Avalonia 11, SignalR (layer system), Roslyn (plugin compilation), Kestrel (layer hosting).
+Key technologies: .NET 8, Avalonia 11, SignalR (layer system), Roslyn (plugin compilation), Dapper + SQLite (caching), Kestrel (layer hosting).
 
 ## License
 
