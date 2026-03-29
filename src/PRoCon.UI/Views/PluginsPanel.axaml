@@ -10,7 +10,9 @@
                  Foreground="#ffab40" FontSize="12" TextWrapping="Wrap" />
     </Border>
 
-  <Grid ColumnDefinitions="280,*">
+  <Grid RowDefinitions="*,Auto">
+
+  <Grid Grid.Row="0" ColumnDefinitions="280,*">
 
     <!-- Left: Plugin List -->
     <Border Grid.Column="0"
@@ -106,6 +108,43 @@
       </Border>
 
     </DockPanel>
+  </Grid>
+
+    <!-- Plugin Output Console -->
+    <Border Grid.Row="1"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0">
+      <DockPanel>
+        <Border DockPanel.Dock="Top" Padding="8,6"
+                Background="{DynamicResource SurfaceElevatedBrush}">
+          <DockPanel>
+            <TextBlock Text="Plugin Output" FontSize="12" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+              <Button Name="BtnClearOutput" Content="Clear" Padding="8,3" FontSize="11"
+                      CornerRadius="3"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Click="OnClearOutput" />
+              <Button Name="BtnToggleOutput" Content="Hide" Padding="8,3" FontSize="11"
+                      CornerRadius="3"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Click="OnToggleOutput" />
+            </StackPanel>
+          </DockPanel>
+        </Border>
+
+        <ScrollViewer Name="OutputScrollViewer" Height="160">
+          <TextBlock Name="PluginOutputText"
+                     FontFamily="Cascadia Mono,Consolas,Courier New,monospace"
+                     FontSize="11" Padding="8,4"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" />
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+
   </Grid>
 
   </DockPanel>

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text;
 
 namespace PRoCon.UI.Views
 {
@@ -64,6 +65,10 @@ namespace PRoCon.UI.Views
         private PRoConClient _client;
         private readonly ObservableCollection<PluginEntry> _plugins = new ObservableCollection<PluginEntry>();
         private readonly ObservableCollection<PluginVariableEntry> _variables = new ObservableCollection<PluginVariableEntry>();
+        private readonly StringBuilder _outputBuffer = new StringBuilder();
+        private const int MaxOutputLines = 500;
+        private int _outputLineCount;
+        private bool _outputVisible = true;
         private string _selectedClassName;
 
         public PluginsPanel()
@@ -88,6 +93,7 @@ namespace PRoCon.UI.Views
                 _client.PluginsManager.PluginEnabled -= OnPluginEnabledEvent;
                 _client.PluginsManager.PluginDisabled -= OnPluginDisabledEvent;
                 _client.PluginsManager.PluginVariableAltered -= OnPluginVariableAlteredEvent;
+                _client.PluginsManager.PluginOutput -= OnPluginOutput;
             }
 
             _client = client;
@@ -102,6 +108,7 @@ namespace PRoCon.UI.Views
                 _client.PluginsManager.PluginEnabled += OnPluginEnabledEvent;
                 _client.PluginsManager.PluginDisabled += OnPluginDisabledEvent;
                 _client.PluginsManager.PluginVariableAltered += OnPluginVariableAlteredEvent;
+                _client.PluginsManager.PluginOutput += OnPluginOutput;
                 RefreshPluginList();
             }
             else if (_client != null)
@@ -127,6 +134,7 @@ namespace PRoCon.UI.Views
                         _client.PluginsManager.PluginEnabled += OnPluginEnabledEvent;
                         _client.PluginsManager.PluginDisabled += OnPluginDisabledEvent;
                         _client.PluginsManager.PluginVariableAltered += OnPluginVariableAlteredEvent;
+                        _client.PluginsManager.PluginOutput += OnPluginOutput;
                         RefreshPluginList();
                     }
                     else
@@ -349,6 +357,64 @@ namespace PRoCon.UI.Views
                 LoadPluginDetails(_selectedClassName);
                 LoadPluginVariables(_selectedClassName);
             }
+        }
+
+        // --- Plugin Output Console ---
+
+        private void OnPluginOutput(string output)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                // Strip PRoCon color codes (^0-^9, ^b, ^n, ^i)
+                string clean = System.Text.RegularExpressions.Regex.Replace(
+                    output ?? "", @"\^[0-9bniB]", "");
+
+                string timestamp = DateTime.Now.ToString("HH:mm:ss");
+                string line = $"[{timestamp}] {clean}\n";
+
+                if (_outputLineCount >= MaxOutputLines)
+                {
+                    // Trim oldest lines
+                    string text = _outputBuffer.ToString();
+                    int cutIdx = text.IndexOf('\n');
+                    if (cutIdx >= 0)
+                    {
+                        _outputBuffer.Remove(0, cutIdx + 1);
+                        _outputLineCount--;
+                    }
+                }
+
+                _outputBuffer.Append(line);
+                _outputLineCount++;
+
+                var outputText = this.FindControl<TextBlock>("PluginOutputText");
+                if (outputText != null)
+                    outputText.Text = _outputBuffer.ToString();
+
+                var scrollViewer = this.FindControl<ScrollViewer>("OutputScrollViewer");
+                scrollViewer?.ScrollToEnd();
+            });
+        }
+
+        private void OnClearOutput(object sender, RoutedEventArgs e)
+        {
+            _outputBuffer.Clear();
+            _outputLineCount = 0;
+            var outputText = this.FindControl<TextBlock>("PluginOutputText");
+            if (outputText != null)
+                outputText.Text = "";
+        }
+
+        private void OnToggleOutput(object sender, RoutedEventArgs e)
+        {
+            _outputVisible = !_outputVisible;
+            var scrollViewer = this.FindControl<ScrollViewer>("OutputScrollViewer");
+            var toggleBtn = this.FindControl<Button>("BtnToggleOutput");
+
+            if (scrollViewer != null)
+                scrollViewer.IsVisible = _outputVisible;
+            if (toggleBtn != null)
+                toggleBtn.Content = _outputVisible ? "Hide" : "Show";
         }
     }
 }

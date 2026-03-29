@@ -596,10 +596,6 @@ namespace PRoCon.Core.Remote
             {
                 this.Shutdown(e);
             }
-            catch (Exception e)
-            {
-                this.Shutdown(e);
-            }
         }
 
         /// <summary>

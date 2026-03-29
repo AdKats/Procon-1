@@ -1054,30 +1054,34 @@ namespace PRoCon.Core.Plugin
             bool blSandboxEnabled = (blSandboxDisabled == true) ? false : true;
             string outputAssembly = Path.Combine(PluginBaseDirectory, pluginClassName + ".dll");
 
-            if (File.Exists(outputAssembly) == true)
-            {
-                IPRoConPluginInterface pluginRemoteInterface = pluginFactory.Create(outputAssembly, "PRoConEvents." + pluginClassName, null);
+            if (File.Exists(outputAssembly) == false) return;
 
+            IPRoConPluginInterface pluginRemoteInterface;
+
+            try
+            {
+                pluginRemoteInterface = pluginFactory.Create(outputAssembly, "PRoConEvents." + pluginClassName, null);
+            }
+            catch (Exception e)
+            {
+                WritePluginConsole("^1^bFailed to load {0}: {1}", pluginClassName, e.Message);
+                return;
+            }
+
+            try
+            {
                 // Indirectely invoke registercallbacks since the delegates cannot go in the interface.
                 pluginRemoteInterface.Invoke("RegisterCallbacks", new object[] { new CPRoConMarshalByRefObject.ExecuteCommandHandler(PluginCallbacks.ExecuteCommand_Callback), new CPRoConMarshalByRefObject.GetAccountPrivilegesHandler(PluginCallbacks.GetAccountPrivileges_Callback), new CPRoConMarshalByRefObject.GetVariableHandler(PluginCallbacks.GetVariable_Callback), new CPRoConMarshalByRefObject.GetVariableHandler(PluginCallbacks.GetSvVariable_Callback), new CPRoConMarshalByRefObject.GetMapDefinesHandler(PluginCallbacks.GetMapDefines_Callback), new CPRoConMarshalByRefObject.TryGetLocalizedHandler(PluginCallbacks.TryGetLocalized_Callback), new CPRoConMarshalByRefObject.RegisterCommandHandler(PluginCallbacks.RegisterCommand_Callback), new CPRoConMarshalByRefObject.UnregisterCommandHandler(PluginCallbacks.UnregisterCommand_Callback), new CPRoConMarshalByRefObject.GetRegisteredCommandsHandler(PluginCallbacks.GetRegisteredCommands_Callback), new CPRoConMarshalByRefObject.GetWeaponDefinesHandler(PluginCallbacks.GetWeaponDefines_Callback), new CPRoConMarshalByRefObject.GetSpecializationDefinesHandler(PluginCallbacks.GetSpecializationDefines_Callback), new CPRoConMarshalByRefObject.GetLoggedInAccountUsernamesHandler(PluginCallbacks.GetLoggedInAccountUsernames_Callback), new CPRoConMarshalByRefObject.RegisterEventsHandler(PluginCallbacks.RegisterEvents_Callback) });
 
                 Plugins.AddLoadedPlugin(pluginClassName, pluginRemoteInterface);
 
-                /*
-                if (this.m_dicLoadedPlugins.ContainsKey(pluginClassName) == false) {
-                    this.m_dicLoadedPlugins.Add(pluginClassName, loRemote);
-                }
-                else {
-                    this.m_dicLoadedPlugins[pluginClassName] = loRemote;
-                }
-
-                this.LoadedClassNames.Add(pluginClassName);
-                */
+                string gameMod = "None";
+                try { gameMod = ProconClient.CurrentServerInfo?.GameMod.ToString() ?? "None"; } catch { }
 
                 var pluginEnvironment = new List<string>() {
                     Assembly.GetExecutingAssembly().GetName().Version.ToString(),
                     ProconClient.GameType,
-                    ProconClient.CurrentServerInfo.GameMod.ToString(),
+                    gameMod,
                     blSandboxEnabled.ToString()
                 };
 
@@ -1092,9 +1096,10 @@ namespace PRoCon.Core.Plugin
                     this.PluginLoaded(pluginClassName);
                 }
             }
-            //else {
-            //    this.CacheFailCompiledPluginVariables.Add(pluginClassName, new Dictionary<string, string>());
-            //}
+            catch (Exception e)
+            {
+                WritePluginConsole("^1^bError initializing {0}: {1}", pluginClassName, e.Message);
+            }
         }
 
         public void RegisterPluginEvents(string className, List<string> events)
