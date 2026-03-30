@@ -27,8 +27,13 @@ die()   { err "$@"; exit 1; }
 check_prerequisites() {
     command -v git >/dev/null || die "git not found"
     command -v gh >/dev/null || die "gh (GitHub CLI) not found"
-    command -v dotnet >/dev/null && DOTNET=dotnet || DOTNET="$HOME/.dotnet/dotnet"
-    [ -x "$DOTNET" ] || die "dotnet not found (tried dotnet and ~/.dotnet/dotnet)"
+    if command -v dotnet >/dev/null 2>&1; then
+        DOTNET=dotnet
+    elif [ -x "$HOME/.dotnet/dotnet" ]; then
+        DOTNET="$HOME/.dotnet/dotnet"
+    else
+        die "dotnet not found (tried dotnet and ~/.dotnet/dotnet)"
+    fi
 
     # Must be in repo root
     [ -f "src/PRoCon.sln" ] || die "Run this script from the repository root"
