@@ -148,8 +148,19 @@ jobs:
             Write-Host "Rewrote: $sshUrl -> $httpsUrl"
           }
           git submodule sync
-          # Initialize submodules — allow bf4db to fail (private repo)
-          git submodule update --init --recursive --shallow 2>&1 | ForEach-Object { Write-Host $_ }
+          # Initialize all submodules except bf4db (private repo)
+          git submodule foreach --quiet 'echo $name' | ForEach-Object {
+            $mod = $_.Trim()
+            if ($mod -eq "bf4db") {
+              Write-Host "  SKIP $mod (private repo)"
+              return
+            }
+            Write-Host "  Cloning $mod ..."
+            git submodule update --init --depth 1 -- $mod 2>&1 | ForEach-Object { Write-Host "    $_" }
+            if ($LASTEXITCODE -ne 0) {
+              Write-Host "  WARNING: Failed to clone $mod"
+            }
+          }
           cd ..
           Write-Host "Plugins cloned successfully"
 
