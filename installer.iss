@@ -39,7 +39,7 @@ VersionInfoVersion={#AppVersionNum}
 VersionInfoCompany=AdKats / EZSCALE
 VersionInfoDescription=PRoCon Frostbite RCON Tool v2
 VersionInfoProductName=PRoCon v2
-VersionInfoProductVersion={#AppVersionStr}
+VersionInfoProductVersion={#AppVersionNum}
 DiskSpanning=no
 ExtraDiskSpaceRequired=52428800
 
