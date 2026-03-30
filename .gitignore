@@ -161,10 +161,10 @@ $RECYCLE.BIN/
 *.dll.config
 
 # Runtime data (managed by ProConPaths, not in repo)
-Cache/
-Logs/
-Updates/
-Configs/
+/Cache/
+/Logs/
+/Updates/
+/Configs/
 procon-ui-crash.log
 
 # Tool artifacts

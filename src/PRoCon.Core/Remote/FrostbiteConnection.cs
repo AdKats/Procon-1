@@ -88,6 +88,46 @@ namespace PRoCon.Core.Remote
         public ICacheManager Cache { get; set; }
 
         /// <summary>
+        /// Number of packets sent and awaiting a response from the server.
+        /// </summary>
+        public int OutgoingPacketCount
+        {
+            get { lock (this.QueueUnqueuePacketLock) { return this.OutgoingPackets.Count; } }
+        }
+
+        /// <summary>
+        /// Number of packets waiting to be sent (queued behind outstanding requests).
+        /// </summary>
+        public int QueuedPacketCount
+        {
+            get { lock (this.QueueUnqueuePacketLock) { return this.QueuedPackets.Count; } }
+        }
+
+        /// <summary>
+        /// Age of the oldest outgoing packet still awaiting a response.
+        /// Returns TimeSpan.Zero if no packets are outstanding.
+        /// </summary>
+        public TimeSpan OldestOutgoingPacketAge
+        {
+            get
+            {
+                lock (this.QueueUnqueuePacketLock)
+                {
+                    if (this.OutgoingPackets.Count == 0)
+                        return TimeSpan.Zero;
+
+                    DateTime oldest = DateTime.MaxValue;
+                    foreach (var packet in this.OutgoingPackets.Values)
+                    {
+                        if (packet.Stamp < oldest)
+                            oldest = packet.Stamp;
+                    }
+                    return DateTime.Now - oldest;
+                }
+            }
+        }
+
+        /// <summary>
         /// Why is this here?
         /// </summary>
         protected UInt32 SequenceNumber;
