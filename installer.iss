@@ -62,8 +62,8 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 [Components]
 Name: "core"; Description: "PRoCon v2 Application"; Types: full bf4only bf3only minimal custom; Flags: fixed
 Name: "plugins"; Description: "Game Server Plugins"; Types: full bf4only bf3only
-Name: "plugins\bf4"; Description: "Battlefield 4 Plugins (18 plugins)"; Types: full bf4only
-Name: "plugins\bf3"; Description: "Battlefield 3 Plugins (18 plugins)"; Types: full bf3only
+Name: "plugins\bf4"; Description: "Battlefield 4 Plugins (15 plugins)"; Types: full bf4only
+Name: "plugins\bf3"; Description: "Battlefield 3 Plugins (15 plugins)"; Types: full bf3only
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"

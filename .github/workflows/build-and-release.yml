@@ -126,16 +126,32 @@ jobs:
           # Create PRoCon/ directory that installer.iss expects
           if (!(Test-Path "PRoCon")) { New-Item -ItemType Directory -Path "PRoCon" | Out-Null }
           Copy-Item -Path "artifacts/ui-win-x64/*" -Destination "PRoCon/" -Recurse -Force
+          # Copy the icon file for Inno Setup (it's an embedded resource, not in publish output)
+          Copy-Item -Path "src/PRoCon.UI/procon.ico" -Destination "PRoCon/procon.ico" -Force
           Write-Host "Staged application files:"
           Get-ChildItem PRoCon/ | ForEach-Object { Write-Host "  $_" }
 
       - name: Clone plugins repository
         shell: pwsh
         run: |
-          # Clone with submodules — bf4db will fail (private), that's expected
-          git clone https://github.com/EZSCALE/procon_plugins.git --recurse-submodules --shallow-submodules 2>&1 | ForEach-Object { Write-Host $_ }
-          # Ignore bf4db clone failure
-          Write-Host "Plugins cloned successfully (bf4db skipped if private)"
+          # Clone the parent repo (HTTPS, no auth needed)
+          git clone https://github.com/EZSCALE/procon_plugins.git
+          cd procon_plugins
+          # Rewrite all submodule URLs from SSH to HTTPS (CI has no SSH key)
+          git config --file .gitmodules --get-regexp 'submodule\..*\.url' | ForEach-Object {
+            $parts = $_ -split '\s+', 2
+            $key = $parts[0]
+            $sshUrl = $parts[1]
+            # Convert git@github.com:org/repo.git to https://github.com/org/repo.git
+            $httpsUrl = $sshUrl -replace '^git@github\.com:', 'https://github.com/'
+            git config --file .gitmodules $key $httpsUrl
+            Write-Host "Rewrote: $sshUrl -> $httpsUrl"
+          }
+          git submodule sync
+          # Initialize submodules — allow bf4db to fail (private repo)
+          git submodule update --init --recursive --shallow 2>&1 | ForEach-Object { Write-Host $_ }
+          cd ..
+          Write-Host "Plugins cloned successfully"
 
       - name: Stage plugin source files
         shell: pwsh
