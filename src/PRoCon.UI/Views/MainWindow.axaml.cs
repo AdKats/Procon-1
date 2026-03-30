@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +30,14 @@ namespace PRoCon.UI.Views
         private int _activeTab = 6; // Default to Info tab
         private readonly ObservableCollection<ServerEntry> _servers = new ObservableCollection<ServerEntry>();
         private readonly Dictionary<string, ServerEntry> _serverLookup = new Dictionary<string, ServerEntry>(StringComparer.OrdinalIgnoreCase);
+
+        // Adaptive polling: 1-second master tick, per-server schedule (5s–30s)
+        private DispatcherTimer _playerListTimer;
+        private readonly Dictionary<string, ConnectionHealthTracker> _healthTrackers = new Dictionary<string, ConnectionHealthTracker>(StringComparer.OrdinalIgnoreCase);
+
+        // Update checker
+        private PRoCon.Core.Updates.UpdateChecker _updateChecker;
+        private string _pendingInstallerPath;
 
         // Console command history & autocomplete
         private readonly List<string> _commandHistory = new List<string>();
@@ -111,6 +120,11 @@ namespace PRoCon.UI.Views
         private Grid _teamGrid;
         private TextBox _consoleInput;
         private ListBox _consoleSuggestions;
+        private Border _updateBanner;
+        private TextBlock _updateBannerText;
+        private Avalonia.Controls.ProgressBar _updateProgressBar;
+        private Button _updateInstallButton;
+        private Button _updateLaterButton;
 
         // Array-cached controls for indexed lookups
         private Border[] _tabs; // Tab0..Tab13
@@ -169,6 +183,11 @@ namespace PRoCon.UI.Views
             _teamGrid = this.FindControl<Grid>("TeamGrid");
             _consoleInput = this.FindControl<TextBox>("ConsoleInput");
             _consoleSuggestions = this.FindControl<ListBox>("ConsoleSuggestions");
+            _updateBanner = this.FindControl<Border>("UpdateBanner");
+            _updateBannerText = this.FindControl<TextBlock>("UpdateBannerText");
+            _updateProgressBar = this.FindControl<Avalonia.Controls.ProgressBar>("UpdateProgressBar");
+            _updateInstallButton = this.FindControl<Button>("UpdateInstallButton");
+            _updateLaterButton = this.FindControl<Button>("UpdateLaterButton");
 
             // Array-cached controls
             _tabs = new Border[16];
@@ -245,6 +264,8 @@ namespace PRoCon.UI.Views
 
         protected override void OnClosing(Avalonia.Controls.WindowClosingEventArgs e)
         {
+            _playerListTimer?.Stop();
+            _updateChecker?.Dispose();
             // IPCheckService disposed by PRoConApplication.Shutdown()
             foreach (var entry in _servers)
             {
@@ -337,12 +358,152 @@ namespace PRoCon.UI.Views
                 };
 
                 CacheControls();
+
+                // Start adaptive polling: 1-second master tick checks per-server schedules (5s–30s)
+                _playerListTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                _playerListTimer.Tick += PlayerListTimer_Tick;
+                _playerListTimer.Start();
+
+                // Start update checker
+                try
+                {
+                    string infoVersion = System.Reflection.Assembly.GetEntryAssembly()?
+                        .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>()?
+                        .InformationalVersion ?? "2.0.0";
+                    // Strip build metadata (+commit hash) that .NET appends
+                    int plusIdx = infoVersion.IndexOf('+');
+                    if (plusIdx >= 0)
+                        infoVersion = infoVersion.Substring(0, plusIdx);
+                    bool isAlphaChannel = infoVersion.Contains("-");
+                    _updateChecker = new PRoCon.Core.Updates.UpdateChecker(infoVersion, includePreReleases: isAlphaChannel);
+                    _updateChecker.UpdateAvailable += OnUpdateAvailable;
+                    _updateChecker.StartPeriodicCheck();
+                }
+                catch { /* Update checker init failure must not block startup */ }
             }
             catch (Exception ex)
             {
                 System.Console.Error.WriteLine($"MainWindow_Opened failed: {ex}");
                 try { System.IO.File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "procon-ui-crash.log"), $"Opened failed:\n{ex}"); } catch { }
             }
+        }
+
+        private void PlayerListTimer_Tick(object sender, EventArgs e)
+        {
+            DateTime now = DateTime.Now;
+
+            foreach (var entry in _servers)
+            {
+                if (!_healthTrackers.TryGetValue(entry.HostPort, out var tracker))
+                {
+                    tracker = new ConnectionHealthTracker();
+                    _healthTrackers[entry.HostPort] = tracker;
+                }
+
+                // Check if this server is due for a poll
+                if (now < tracker.LastPollTime + tracker.CurrentInterval)
+                    continue;
+
+                var client = GetClient(entry.HostPort);
+                if (client?.Game == null || !client.Game.IsLoggedIn)
+                {
+                    // Not connected — set long interval and skip
+                    tracker.Evaluate(null);
+                    tracker.LastPollTime = now;
+                    continue;
+                }
+
+                // Evaluate connection health and adjust interval
+                tracker.Evaluate(client.Game.Connection);
+                tracker.LastPollTime = now;
+
+                client.Game.SendAdminListPlayersPacket(new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
+                client.Game.SendServerinfoPacket();
+            }
+        }
+
+        // --- Update Checker ---
+
+        private void OnUpdateAvailable(PRoCon.Core.Updates.UpdateInfo update)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                ShowUpdateBanner($"PRoCon {update.Version} is available — downloading...");
+                _ = DownloadAndPromptUpdate(update);
+            });
+        }
+
+        private async System.Threading.Tasks.Task DownloadAndPromptUpdate(PRoCon.Core.Updates.UpdateInfo update)
+        {
+            try
+            {
+                var progress = new Progress<double>(p =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (_updateProgressBar != null)
+                        {
+                            _updateProgressBar.IsVisible = true;
+                            _updateProgressBar.Value = p * 100;
+                        }
+                    });
+                });
+
+                string installerPath = await _updateChecker.DownloadInstallerAsync(update, progress);
+
+                if (!string.IsNullOrEmpty(installerPath) && System.IO.File.Exists(installerPath))
+                {
+                    _pendingInstallerPath = installerPath;
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        ShowUpdateBanner($"PRoCon {update.Version} ready to install");
+                        if (_updateProgressBar != null) _updateProgressBar.IsVisible = false;
+                        if (_updateInstallButton != null) _updateInstallButton.IsVisible = true;
+                        if (_updateLaterButton != null) _updateLaterButton.IsVisible = true;
+                    });
+                }
+                else
+                {
+                    Dispatcher.UIThread.Post(() =>
+                        ShowUpdateBanner($"PRoCon {update.Version} available — visit GitHub to download"));
+                }
+            }
+            catch
+            {
+                Dispatcher.UIThread.Post(() =>
+                    ShowUpdateBanner($"PRoCon {update.Version} available — visit GitHub to download"));
+            }
+        }
+
+        private void ShowUpdateBanner(string message)
+        {
+            if (_updateBanner != null)
+                _updateBanner.IsVisible = true;
+            if (_updateBannerText != null)
+                _updateBannerText.Text = message;
+        }
+
+        private void OnUpdateInstall(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_pendingInstallerPath) && System.IO.File.Exists(_pendingInstallerPath))
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = _pendingInstallerPath,
+                        UseShellExecute = true
+                    });
+                    Close();
+                }
+                catch { }
+            }
+        }
+
+        private void OnUpdateLater(object sender, RoutedEventArgs e)
+        {
+            if (_updateBanner != null)
+                _updateBanner.IsVisible = false;
         }
 
         private void EnsureServer(string host, ushort port, string password, bool autoConnect = true)
@@ -431,6 +592,10 @@ namespace PRoCon.UI.Views
                     UpdateContentVisibility();
                     SwitchTab(6); // Show dashboard on connect
                 }
+
+                // Reset polling interval to 5s on (re)connect
+                if (_healthTrackers.TryGetValue(entry.HostPort, out var tracker))
+                    tracker.Reset();
 
                 // Request supported commands from server
                 if (client.Game != null)
@@ -980,6 +1145,14 @@ namespace PRoCon.UI.Views
             UpdateSidebarButtons();
             UpdateContentVisibility();
 
+            // Immediately refresh player list for the newly selected server
+            var client = GetClient(entry.HostPort);
+            if (client?.Game != null && client.Game.IsLoggedIn)
+            {
+                client.Game.SendAdminListPlayersPacket(new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
+                client.Game.SendServerinfoPacket();
+            }
+
             // Switch to Info if connected
             if (entry.IsConnected || entry.State == ServerConnectionState.Connecting)
                 SwitchTab(6);
@@ -1067,6 +1240,7 @@ namespace PRoCon.UI.Views
 
             _wiredGameEntries.Remove(entry);
             _wiredConsoles.Remove(entry.HostPort);
+            _healthTrackers.Remove(entry.HostPort);
             if (_retryTokens.TryGetValue(entry.HostPort, out var retryCts))
             {
                 retryCts.Cancel();

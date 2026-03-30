@@ -52,16 +52,29 @@ jobs:
         env:
           TAG_NAME: ${{ github.ref_name }}
         run: |
-          $version = $env:TAG_NAME.TrimStart('v')
-          $parts = $version.Split('.')
+          $tag = $env:TAG_NAME.TrimStart('v')
+          # Parse semver: extract core version and optional pre-release suffix
+          if ($tag -match '^(\d+\.\d+\.\d+)(-(.+))?$') {
+            $coreVersion = $Matches[1]
+            $preRelease = $Matches[3]
+          } else {
+            $coreVersion = $tag
+            $preRelease = $null
+          }
+          # Assembly version must be numeric 4-part
+          $parts = $coreVersion.Split('.')
           while ($parts.Count -lt 4) { $parts += '0' }
-          $version = ($parts[0..3]) -join '.'
-          Write-Host "Setting version to: $version"
+          $assemblyVersion = ($parts[0..3]) -join '.'
+          # InformationalVersion keeps full semver
+          $infoVersion = if ($preRelease) { "$coreVersion-$preRelease" } else { $coreVersion }
+          Write-Host "Assembly version: $assemblyVersion"
+          Write-Host "Informational version: $infoVersion"
           $file = "src/Directory.Build.props"
           $content = Get-Content $file -Raw
-          $content = $content -replace '<Version>.*?</Version>', "<Version>$version</Version>"
-          $content = $content -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$version</AssemblyVersion>"
-          $content = $content -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$version</FileVersion>"
+          $content = $content -replace '<Version>.*?</Version>', "<Version>$assemblyVersion</Version>"
+          $content = $content -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$assemblyVersion</AssemblyVersion>"
+          $content = $content -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$assemblyVersion</FileVersion>"
+          $content = $content -replace '<InformationalVersion>.*?</InformationalVersion>', "<InformationalVersion>$infoVersion</InformationalVersion>"
           Set-Content -Path $file -Value $content -NoNewline
 
       - name: Restore
@@ -85,8 +98,170 @@ jobs:
           path: publish/
           retention-days: 30
 
-  release:
+  installer:
     needs: build
+    runs-on: windows-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Download win-x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: procon-win-x64
+          path: artifacts/
+
+      - name: Stage application files
+        shell: pwsh
+        run: |
+          # Create PRoCon/ directory that installer.iss expects
+          if (!(Test-Path "PRoCon")) { New-Item -ItemType Directory -Path "PRoCon" | Out-Null }
+          Copy-Item -Path "artifacts/ui-win-x64/*" -Destination "PRoCon/" -Recurse -Force
+          Write-Host "Staged application files:"
+          Get-ChildItem PRoCon/ | ForEach-Object { Write-Host "  $_" }
+
+      - name: Clone plugins repository
+        shell: pwsh
+        run: |
+          # Clone with submodules — bf4db will fail (private), that's expected
+          git clone https://github.com/EZSCALE/procon_plugins.git --recurse-submodules --shallow-submodules 2>&1 | ForEach-Object { Write-Host $_ }
+          # Ignore bf4db clone failure
+          Write-Host "Plugins cloned successfully (bf4db skipped if private)"
+
+      - name: Stage plugin source files
+        shell: pwsh
+        run: |
+          $pluginsRoot = "procon_plugins"
+
+          # Game-to-plugin mapping
+          $bf4Plugins = @(
+            "AdKats", "AdKats-LRT", "AdaptiveServerSize",
+            "ChatGUIDStatsAndMapstatsLogger", "EventLogger",
+            "insane-limits", "LatencyManager", "multi-balancer",
+            "ProconRulz", "PunkbusterScreenshotEnforcer",
+            "TrueBalancer", "UltimateMapManager",
+            "vip-slot-manager", "voteban", "xVotemap"
+          )
+          $bf3Plugins = @(
+            "AdKats", "AdKats-LRT", "AdaptiveServerSize",
+            "ChatGUIDStatsAndMapstatsLogger", "EventLogger",
+            "fail-log", "insane-limits", "LatencyManager",
+            "multi-balancer", "ProconRulz",
+            "TrueBalancer", "UltimateMapManager",
+            "vip-slot-manager", "voteban", "xVotemap"
+          )
+
+          function Stage-Plugin($pluginName, $gameDir) {
+            $pluginDir = Join-Path $pluginsRoot $pluginName
+            if (!(Test-Path $pluginDir)) {
+              Write-Host "  SKIP $pluginName (not found)"
+              return
+            }
+
+            $srcDir = Join-Path $pluginDir "src"
+            if (Test-Path $srcDir) {
+              # src/ layout: copy main .cs file and subfolder partials
+              $mainFile = Join-Path $srcDir "$pluginName.cs"
+              if (Test-Path $mainFile) {
+                Copy-Item $mainFile $gameDir -Force
+              }
+              # Copy flat partials (PluginName.*.cs)
+              Get-ChildItem $srcDir -Filter "$pluginName.*.cs" -File | ForEach-Object {
+                Copy-Item $_.FullName $gameDir -Force
+              }
+              # Copy subfolder partials (src/PluginName/*.cs)
+              $subDir = Join-Path $srcDir $pluginName
+              if (Test-Path $subDir) {
+                $destSub = Join-Path $gameDir $pluginName
+                if (!(Test-Path $destSub)) { New-Item -ItemType Directory -Path $destSub | Out-Null }
+                Get-ChildItem $subDir -Filter "*.cs" -Recurse | ForEach-Object {
+                  $relPath = $_.FullName.Substring($subDir.Length + 1)
+                  $destFile = Join-Path $destSub $relPath
+                  $destDir2 = Split-Path $destFile -Parent
+                  if (!(Test-Path $destDir2)) { New-Item -ItemType Directory -Path $destDir2 -Force | Out-Null }
+                  Copy-Item $_.FullName $destFile -Force
+                }
+              }
+              Write-Host "  OK $pluginName -> $gameDir"
+            } else {
+              # Flat layout: copy root .cs files (skip bf4db)
+              if ($pluginName -eq "bf4db") { return }
+              Get-ChildItem $pluginDir -Filter "*.cs" -File | ForEach-Object {
+                Copy-Item $_.FullName $gameDir -Force
+              }
+              Write-Host "  OK $pluginName (flat) -> $gameDir"
+            }
+          }
+
+          # Stage BF4 plugins
+          $bf4Dir = "Plugins/BF4"
+          if (!(Test-Path $bf4Dir)) { New-Item -ItemType Directory -Path $bf4Dir -Force | Out-Null }
+          Write-Host "Staging BF4 plugins:"
+          foreach ($p in $bf4Plugins) { Stage-Plugin $p $bf4Dir }
+
+          # Stage BF3 plugins
+          $bf3Dir = "Plugins/BF3"
+          if (!(Test-Path $bf3Dir)) { New-Item -ItemType Directory -Path $bf3Dir -Force | Out-Null }
+          Write-Host "Staging BF3 plugins:"
+          foreach ($p in $bf3Plugins) { Stage-Plugin $p $bf3Dir }
+
+          # Show results
+          Write-Host "`nBF4 plugin files:"
+          Get-ChildItem "Plugins/BF4" -Recurse -Filter "*.cs" | ForEach-Object { Write-Host "  $($_.FullName)" }
+          Write-Host "`nBF3 plugin files:"
+          Get-ChildItem "Plugins/BF3" -Recurse -Filter "*.cs" | ForEach-Object { Write-Host "  $($_.FullName)" }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Parse version from tag
+        id: version
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          $tag = $env:TAG_NAME.TrimStart('v')
+          if ($tag -match '^(\d+\.\d+\.\d+)(-(.+))?$') {
+            $core = $Matches[1]
+            $pre = $Matches[3]
+          } else {
+            $core = $tag
+            $pre = $null
+          }
+          $parts = $core.Split('.')
+          while ($parts.Count -lt 4) { $parts += '0' }
+          $numVer = ($parts[0..3]) -join '.'
+          $strVer = if ($pre) { "$core-$pre" } else { $core }
+          echo "version_str=$strVer" >> $env:GITHUB_OUTPUT
+          echo "version_num=$numVer" >> $env:GITHUB_OUTPUT
+
+      - name: Build installer
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
+            /DAppVersionStr="${{ steps.version.outputs.version_str }}" `
+            /DAppVersionNum="${{ steps.version.outputs.version_num }}" `
+            installer.iss
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: procon-installer
+          path: "PRoCon-*.exe"
+          retention-days: 30
+
+  release:
+    needs: [build, installer]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
 
@@ -96,12 +271,26 @@ jobs:
         with:
           path: artifacts/
 
+      - name: Determine release type
+        id: release_type
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ "$TAG" == *"-"* ]]; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create release archives
         shell: bash
         run: |
           cd artifacts
           for dir in procon-*/; do
             rid=$(echo "$dir" | sed 's/procon-//' | sed 's/\///')
+            # Skip installer artifact directory
+            if [ "$rid" = "installer" ]; then continue; fi
             for type in console ui; do
               if [ -d "$dir/$type-$rid" ]; then
                 cd "$dir/$type-$rid"
@@ -112,13 +301,22 @@ jobs:
           done
           cd ..
 
+      - name: Collect installer
+        shell: bash
+        run: |
+          if [ -d "artifacts/procon-installer" ]; then
+            cp artifacts/procon-installer/*.exe . 2>/dev/null || true
+          fi
+
       - name: Generate checksums
-        run: sha256sum Procon-*.tar.gz > checksums-sha256.txt
+        run: sha256sum Procon-*.tar.gz PRoCon-*.exe 2>/dev/null > checksums-sha256.txt || sha256sum Procon-*.tar.gz > checksums-sha256.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
+          prerelease: ${{ steps.release_type.outputs.prerelease == 'true' }}
           files: |
             Procon-*.tar.gz
+            PRoCon-*.exe
             checksums-sha256.txt
