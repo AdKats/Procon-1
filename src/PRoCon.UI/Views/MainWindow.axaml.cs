@@ -120,6 +120,11 @@ namespace PRoCon.UI.Views
         private Grid _teamGrid;
         private TextBox _consoleInput;
         private ListBox _consoleSuggestions;
+        private Border _updateBanner;
+        private TextBlock _updateBannerText;
+        private Avalonia.Controls.ProgressBar _updateProgressBar;
+        private Button _updateInstallButton;
+        private Button _updateLaterButton;
 
         // Array-cached controls for indexed lookups
         private Border[] _tabs; // Tab0..Tab13
@@ -178,6 +183,11 @@ namespace PRoCon.UI.Views
             _teamGrid = this.FindControl<Grid>("TeamGrid");
             _consoleInput = this.FindControl<TextBox>("ConsoleInput");
             _consoleSuggestions = this.FindControl<ListBox>("ConsoleSuggestions");
+            _updateBanner = this.FindControl<Border>("UpdateBanner");
+            _updateBannerText = this.FindControl<TextBlock>("UpdateBannerText");
+            _updateProgressBar = this.FindControl<Avalonia.Controls.ProgressBar>("UpdateProgressBar");
+            _updateInstallButton = this.FindControl<Button>("UpdateInstallButton");
+            _updateLaterButton = this.FindControl<Button>("UpdateLaterButton");
 
             // Array-cached controls
             _tabs = new Border[16];
@@ -431,11 +441,10 @@ namespace PRoCon.UI.Views
                 {
                     Dispatcher.UIThread.Post(() =>
                     {
-                        var bar = this.FindControl<Avalonia.Controls.ProgressBar>("UpdateProgressBar");
-                        if (bar != null)
+                        if (_updateProgressBar != null)
                         {
-                            bar.IsVisible = true;
-                            bar.Value = p * 100;
+                            _updateProgressBar.IsVisible = true;
+                            _updateProgressBar.Value = p * 100;
                         }
                     });
                 });
@@ -448,12 +457,9 @@ namespace PRoCon.UI.Views
                     Dispatcher.UIThread.Post(() =>
                     {
                         ShowUpdateBanner($"PRoCon {update.Version} ready to install");
-                        var bar = this.FindControl<Avalonia.Controls.ProgressBar>("UpdateProgressBar");
-                        if (bar != null) bar.IsVisible = false;
-                        var installBtn = this.FindControl<Avalonia.Controls.Button>("UpdateInstallButton");
-                        if (installBtn != null) installBtn.IsVisible = true;
-                        var laterBtn = this.FindControl<Avalonia.Controls.Button>("UpdateLaterButton");
-                        if (laterBtn != null) laterBtn.IsVisible = true;
+                        if (_updateProgressBar != null) _updateProgressBar.IsVisible = false;
+                        if (_updateInstallButton != null) _updateInstallButton.IsVisible = true;
+                        if (_updateLaterButton != null) _updateLaterButton.IsVisible = true;
                     });
                 }
                 else
@@ -471,12 +477,10 @@ namespace PRoCon.UI.Views
 
         private void ShowUpdateBanner(string message)
         {
-            var banner = this.FindControl<Avalonia.Controls.Border>("UpdateBanner");
-            if (banner != null)
-                banner.IsVisible = true;
-            var text = this.FindControl<Avalonia.Controls.TextBlock>("UpdateBannerText");
-            if (text != null)
-                text.Text = message;
+            if (_updateBanner != null)
+                _updateBanner.IsVisible = true;
+            if (_updateBannerText != null)
+                _updateBannerText.Text = message;
         }
 
         private void OnUpdateInstall(object sender, RoutedEventArgs e)
@@ -498,9 +502,8 @@ namespace PRoCon.UI.Views
 
         private void OnUpdateLater(object sender, RoutedEventArgs e)
         {
-            var banner = this.FindControl<Avalonia.Controls.Border>("UpdateBanner");
-            if (banner != null)
-                banner.IsVisible = false;
+            if (_updateBanner != null)
+                _updateBanner.IsVisible = false;
         }
 
         private void EnsureServer(string host, ushort port, string password, bool autoConnect = true)
