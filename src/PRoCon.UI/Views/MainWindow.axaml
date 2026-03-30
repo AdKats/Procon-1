@@ -23,10 +23,10 @@
             <Setter Property="Canvas.Left" Value="0" />
           </KeyFrame>
           <KeyFrame Cue="80%">
-            <Setter Property="Canvas.Left" Value="-100" />
+            <Setter Property="Canvas.Left" Value="-120" />
           </KeyFrame>
           <KeyFrame Cue="100%">
-            <Setter Property="Canvas.Left" Value="-100" />
+            <Setter Property="Canvas.Left" Value="-120" />
           </KeyFrame>
         </Animation>
       </Style.Animations>
@@ -171,8 +171,8 @@
                              HorizontalAlignment="Center" VerticalAlignment="Center"
                              Classes.pulse="{Binding IsPulsing}" />
                   </Panel>
-                  <StackPanel Spacing="1" MaxWidth="160" ClipToBounds="True">
-                    <Canvas Height="16" ClipToBounds="True">
+                  <StackPanel Spacing="1" Width="170" ClipToBounds="True">
+                    <Canvas Height="16" Width="170" ClipToBounds="True">
                       <TextBlock Name="ServerNameText" Text="{Binding DisplayName}"
                                  Foreground="{DynamicResource TextPrimaryBrush}"
                                  FontSize="12" FontWeight="SemiBold"
@@ -181,6 +181,10 @@
                     <TextBlock Text="{Binding HostPort}"
                                Foreground="{DynamicResource TextSecondaryBrush}"
                                FontSize="10" />
+                    <TextBlock Text="{Binding PlayerCountText}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="10"
+                               IsVisible="{Binding HasPlayerCount}" />
                   </StackPanel>
                 </StackPanel>
               </StackPanel>

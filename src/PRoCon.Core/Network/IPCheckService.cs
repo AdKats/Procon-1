@@ -167,7 +167,6 @@ namespace PRoCon.Core.Network
                 ResetDailyCountIfNeeded();
                 if (_dailyQueries >= DailyQueryLimit)
                     return dbResult ?? cached;
-                _dailyQueries++;
             }
 
             // Rate limit
@@ -182,7 +181,12 @@ namespace PRoCon.Core.Network
                     result.CachedAt = DateTime.UtcNow;
                     _memoryCache[ip] = result;
                     SaveToDb(result);
-                    SaveQueryCount();
+
+                    lock (_dailyCountLock)
+                    {
+                        _dailyQueries++;
+                        SaveQueryCount();
+                    }
                 }
                 return result;
             }

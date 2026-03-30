@@ -439,7 +439,7 @@ namespace PRoCon.Core
                     {
                         this.LicenseKey = args[i + 1];
                     }
-                    else if (String.Compare("-plugin_max_runtime", args[i], true) == 0 && int.TryParse(args[i + 1], out iValue) == true && int.TryParse(args[i + 2], out iValue2) == true)
+                    else if (String.Compare("-plugin_max_runtime", args[i], true) == 0 && i + 2 < args.Length && int.TryParse(args[i + 1], out iValue) == true && int.TryParse(args[i + 2], out iValue2) == true)
                     {
                         // transfered in this.LoadingMainConfig L-1333
                         this.praPluginMaxRuntime_m = iValue;
@@ -567,6 +567,33 @@ namespace PRoCon.Core
             {
                 ArchiveLegacyConfig("procon.cfg");
                 ArchiveLegacyConfig("accounts.cfg");
+            }
+
+            // Pre-compile plugins for all game types on boot
+            System.Threading.Tasks.Task.Run(() => PreCompileAllPlugins());
+        }
+
+        private void PreCompileAllPlugins()
+        {
+            try
+            {
+                string pluginsDir = ProConPaths.PluginsDirectory;
+                if (!Directory.Exists(pluginsDir)) return;
+
+                foreach (string gameTypeDir in Directory.GetDirectories(pluginsDir))
+                {
+                    string gameType = Path.GetFileName(gameTypeDir);
+                    var csFiles = Directory.GetFiles(gameTypeDir, "*.cs", SearchOption.TopDirectoryOnly);
+                    if (csFiles.Length == 0) continue;
+
+                    Plugin.PluginManager.RaisePreCompileOutput($"Pre-compiling {csFiles.Length} plugin(s) for {gameType}...");
+
+                    Plugin.PluginManager.PreCompileCheck(gameTypeDir, OptionsSettings?.EnablePluginDebugging == true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Plugin.PluginManager.RaisePreCompileOutput($"^1Pre-compilation failed: {ex.Message}");
             }
         }
 
@@ -1073,7 +1100,12 @@ namespace PRoCon.Core
                 }
 
                 string json = JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(Path.Combine(configsDir, "procon.json"), json, Encoding.UTF8);
+                string configPath = Path.Combine(configsDir, "procon.json");
+                File.WriteAllText(configPath, json, Encoding.UTF8);
+
+                // Restrict file permissions on Unix (contains encrypted passwords)
+                try { File.SetUnixFileMode(configPath, UnixFileMode.UserRead | UnixFileMode.UserWrite); }
+                catch { /* Windows or older runtimes */ }
             }
             catch (Exception e)
             {

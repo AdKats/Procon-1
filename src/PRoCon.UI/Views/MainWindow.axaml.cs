@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -196,7 +198,7 @@ namespace PRoCon.UI.Views
             }
             catch (Exception ex)
             {
-                System.IO.File.WriteAllText("procon-ui-crash.log", $"InitializeComponent failed:\n{ex}");
+                try { System.IO.File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "procon-ui-crash.log"), $"InitializeComponent failed:\n{ex}"); } catch { }
                 throw;
             }
 
@@ -226,7 +228,7 @@ namespace PRoCon.UI.Views
             }
             catch (Exception ex)
             {
-                System.IO.File.WriteAllText("procon-ui-crash.log", $"Panel creation failed:\n{ex}");
+                try { System.IO.File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "procon-ui-crash.log"), $"Panel creation failed:\n{ex}"); } catch { }
                 throw;
             }
 
@@ -339,7 +341,7 @@ namespace PRoCon.UI.Views
             catch (Exception ex)
             {
                 System.Console.Error.WriteLine($"MainWindow_Opened failed: {ex}");
-                System.IO.File.WriteAllText("procon-ui-crash.log", $"Opened failed:\n{ex}");
+                try { System.IO.File.WriteAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "procon-ui-crash.log"), $"Opened failed:\n{ex}"); } catch { }
             }
         }
 
@@ -373,6 +375,7 @@ namespace PRoCon.UI.Views
         }
 
         private readonly HashSet<string> _wiredClients = new HashSet<string>();
+        private readonly Dictionary<string, CancellationTokenSource> _retryTokens = new Dictionary<string, CancellationTokenSource>();
 
         private void WireClientEvents(PRoConClient client, ServerEntry entry)
         {
@@ -449,10 +452,14 @@ namespace PRoCon.UI.Views
 
             // Wire console RCON traffic — retry multiple times as Console may init late
             WireConsoleEvents(client, entry);
+            var retryCts = new CancellationTokenSource();
+            _retryTokens[entry.HostPort] = retryCts;
             foreach (int delay in new[] { 2000, 5000, 10000, 20000 })
             {
-                System.Threading.Tasks.Task.Delay(delay).ContinueWith(_ =>
-                    Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry)));
+                var token = retryCts.Token;
+                System.Threading.Tasks.Task.Delay(delay, token).ContinueWith(_ =>
+                    Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry)),
+                    TaskContinuationOptions.OnlyOnRanToCompletion);
             }
 
             client.GameTypeDiscovered += sender =>
@@ -706,6 +713,8 @@ namespace PRoCon.UI.Views
                 entry.GameType = sender.GameType ?? "";
                 entry.State = ServerConnectionState.Connected;
                 entry.LastServerInfo = info;
+                entry.PlayerCount = info.PlayerCount;
+                entry.MaxPlayerCount = info.MaxPlayerCount;
                 SortAndGroupServers();
                 entry.GameVersion = sender.FriendlyVersionNumber ?? sender.VersionNumber ?? "";
 
@@ -1056,6 +1065,14 @@ namespace PRoCon.UI.Views
                 _wiredClients.Remove(entry.HostPort);
             }
 
+            _wiredGameEntries.Remove(entry);
+            _wiredConsoles.Remove(entry.HostPort);
+            if (_retryTokens.TryGetValue(entry.HostPort, out var retryCts))
+            {
+                retryCts.Cancel();
+                retryCts.Dispose();
+                _retryTokens.Remove(entry.HostPort);
+            }
             entry.ConsoleLogger?.Dispose();
             entry.ConsoleLogger = null;
             _servers.Remove(entry);

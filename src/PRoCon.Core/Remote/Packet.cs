@@ -262,7 +262,15 @@ namespace PRoCon.Core.Remote
 
             for (UInt32 ui32WordCount = 0; ui32WordCount < ui32Words; ui32WordCount++)
             {
+                // Bounds check: need at least 4 bytes for the word length field
+                if (Packet.PacketHeaderSize + iWordOffset + 4 > rawPacket.Length)
+                    break;
+
                 UInt32 ui32WordLength = BitConverter.ToUInt32(rawPacket, Packet.PacketHeaderSize + iWordOffset);
+
+                // Bounds check: word data + null terminator must fit in the packet
+                if (Packet.PacketHeaderSize + iWordOffset + 4 + ui32WordLength > rawPacket.Length)
+                    break;
 
                 this.Words.Add(Encoding.UTF8.GetString(rawPacket, Packet.PacketHeaderSize + iWordOffset + 4, (int)ui32WordLength));
 
@@ -297,6 +305,8 @@ namespace PRoCon.Core.Remote
             return Convert.ToBase64String(gzBuffer);
         }
 
+        private const int MaxDecompressedSize = 10 * 1024 * 1024; // 10 MB
+
         public static string Decompress(string compressedText)
         {
 
@@ -306,6 +316,10 @@ namespace PRoCon.Core.Remote
             {
 
                 int msgLength = BitConverter.ToInt32(gzBuffer, 0);
+
+                if (msgLength < 0 || msgLength > MaxDecompressedSize)
+                    throw new InvalidOperationException($"Decompressed size {msgLength} exceeds maximum allowed ({MaxDecompressedSize})");
+
                 ms.Write(gzBuffer, 4, gzBuffer.Length - 4);
 
                 byte[] buffer = new byte[msgLength];

@@ -128,7 +128,7 @@ namespace PRoCon.Core.Remote
         {
             get
             {
-                return this.Client != null && true ^ this.Client.Connected;
+                return this.Client != null && !this.Client.Connected;
             }
         }
 
@@ -514,7 +514,7 @@ namespace PRoCon.Core.Remote
 
                         UInt32 ui32PacketSize = Packet.DecodePacketSize(this.PacketStream);
 
-                        while (this.PacketStream != null && this.PacketStream.Length >= ui32PacketSize && this.PacketStream.Length > Packet.PacketHeaderSize)
+                        while (this.PacketStream != null && ui32PacketSize >= Packet.PacketHeaderSize && this.PacketStream.Length >= ui32PacketSize)
                         {
                             // Copy the complete packet from the beginning of the stream.
                             byte[] completePacket = new byte[ui32PacketSize];
@@ -805,6 +805,9 @@ namespace PRoCon.Core.Remote
                 }
                 this.SequenceNumber = 0;
 
+                // Cancel and dispose any existing CTS to prevent resource leak on rapid reconnects
+                try { this.ConnectionCts?.Cancel(); } catch { }
+                try { this.ConnectionCts?.Dispose(); } catch { }
                 this.ConnectionCts = new CancellationTokenSource();
 
                 this.Client = new TcpClient();

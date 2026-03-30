@@ -41,6 +41,17 @@ namespace PRoCon.Service
         {
             _logger.LogInformation("PRoCon Service starting...");
 
+            // Handle --datadir before constructing PRoConApplication
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (string.Equals(args[i], "--datadir", StringComparison.OrdinalIgnoreCase))
+                {
+                    ProConPaths.SetDataDirectory(args[i + 1]);
+                    break;
+                }
+            }
+
             if (PRoConApplication.IsProcessOpen())
             {
                 _logger.LogWarning("PRoCon is already running. Service will not start a second instance.");
@@ -49,7 +60,7 @@ namespace PRoCon.Service
 
             try
             {
-                _application = new PRoConApplication(true, Environment.GetCommandLineArgs());
+                _application = new PRoConApplication(true, args);
                 _application.Execute();
                 _logger.LogInformation("PRoCon Application started successfully.");
             }

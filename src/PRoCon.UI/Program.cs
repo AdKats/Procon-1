@@ -13,6 +13,22 @@ namespace PRoCon.UI
         [STAThread]
         public static void Main(string[] args)
         {
+            try
+            {
+                RunApp(args);
+            }
+            catch (Exception ex)
+            {
+                string crashPath = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    "procon-crash.log");
+                try { System.IO.File.WriteAllText(crashPath, $"PRoCon crashed on startup:\n{ex}"); } catch { }
+                throw;
+            }
+        }
+
+        private static void RunApp(string[] args)
+        {
             // Handle --datadir before anything else
             for (int i = 0; i < args.Length - 1; i++)
             {
@@ -71,7 +87,6 @@ namespace PRoCon.UI
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .WithInterFont()
-                .LogToTrace()
                 .UseReactiveUI();
     }
 }

@@ -125,8 +125,26 @@ namespace PRoCon.UI.Models
 
         public string GameHeaderText => !string.IsNullOrEmpty(GameType) ? GameType : "Unknown";
 
-        // Marquee for long names (> ~18 chars at 12px font in 160px width)
-        public bool IsNameOverflow => (DisplayName?.Length ?? 0) > 20;
+        // Player count for sidebar display
+        private int _playerCount;
+        public int PlayerCount
+        {
+            get => _playerCount;
+            set { _playerCount = value; Notify(nameof(PlayerCount)); Notify(nameof(PlayerCountText)); Notify(nameof(HasPlayerCount)); }
+        }
+
+        private int _maxPlayerCount;
+        public int MaxPlayerCount
+        {
+            get => _maxPlayerCount;
+            set { _maxPlayerCount = value; Notify(nameof(MaxPlayerCount)); Notify(nameof(PlayerCountText)); Notify(nameof(HasPlayerCount)); }
+        }
+
+        public string PlayerCountText => $"{PlayerCount}/{MaxPlayerCount}";
+        public bool HasPlayerCount => MaxPlayerCount > 0;
+
+        // Marquee for long names (> ~25 chars at 12px font in available sidebar width)
+        public bool IsNameOverflow => (DisplayName?.Length ?? 0) > 25;
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void Notify(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

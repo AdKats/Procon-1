@@ -35,19 +35,28 @@
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Border Padding="8,6" CornerRadius="4" Margin="2">
-                <DockPanel>
-                  <ToggleButton DockPanel.Dock="Right"
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                  <Ellipse Grid.Column="0" Width="8" Height="8" Fill="{Binding StatusColor}"
+                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                  <StackPanel Grid.Column="1" Spacing="2" Margin="0,0,8,0">
+                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13"
+                               TextWrapping="Wrap" TextTrimming="None" />
+                    <TextBlock Text="{Binding InfoLine}" FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" TextTrimming="None" />
+                  </StackPanel>
+                  <ToggleButton Grid.Column="2"
                                 IsChecked="{Binding IsEnabled}"
                                 Content="{Binding EnabledText}"
-                                Padding="8,4" FontSize="11" CornerRadius="4"
+                                Background="{Binding StatusColor}"
+                                Foreground="#ffffff"
+                                Padding="8,4" FontSize="11" FontWeight="SemiBold"
+                                CornerRadius="4" MinWidth="40"
+                                HorizontalContentAlignment="Center"
+                                VerticalAlignment="Center"
                                 Click="OnTogglePlugin" />
-                  <StackPanel Spacing="2">
-                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="13" />
-                    <TextBlock Text="{Binding InfoLine}" FontSize="11"
-                               Foreground="{DynamicResource TextSecondaryBrush}" />
-                  </StackPanel>
-                </DockPanel>
+                </Grid>
               </Border>
             </DataTemplate>
           </ListBox.ItemTemplate>
@@ -55,57 +64,99 @@
       </DockPanel>
     </Border>
 
-    <!-- Right: Plugin Details + Variables -->
-    <DockPanel Grid.Column="1" Margin="16">
+    <!-- Right: Plugin Details with Tabs -->
+    <DockPanel Grid.Column="1">
 
-      <!-- Plugin Details Header -->
+      <!-- Plugin Header -->
       <Border DockPanel.Dock="Top"
               Background="{DynamicResource SurfaceBrush}"
-              CornerRadius="8" Padding="16" Margin="0,0,0,12"
-              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-        <StackPanel Spacing="8">
-          <TextBlock Name="DetailNameText" Text="Select a plugin" FontSize="18" FontWeight="Bold"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
-          <StackPanel Orientation="Horizontal" Spacing="16">
-            <TextBlock Name="DetailVersionText" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-            <TextBlock Name="DetailAuthorText" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" />
-          </StackPanel>
-          <TextBlock Name="DetailDescriptionText" TextWrapping="Wrap"
-                     Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
-                     MaxHeight="120" />
-        </StackPanel>
-      </Border>
-
-      <!-- Plugin Variables Editor -->
-      <Border Background="{DynamicResource SurfaceBrush}"
-              CornerRadius="8" Padding="16"
-              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+              Padding="16,12" Margin="0,0,0,0"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
         <DockPanel>
-          <TextBlock DockPanel.Dock="Top" Text="Plugin Variables" FontSize="14" FontWeight="SemiBold"
-                     Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
-
-          <ScrollViewer>
-            <ItemsControl Name="VariablesItemsControl">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Grid ColumnDefinitions="200,*" Margin="0,2">
-                    <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center"
-                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12"
-                               Margin="0,0,8,0" />
-                    <TextBox Grid.Column="1" Text="{Binding Value}"
-                             Background="{DynamicResource InputBackgroundBrush}"
-                             Foreground="{DynamicResource TextPrimaryBrush}"
-                             BorderBrush="{DynamicResource BorderBrush}"
-                             FontSize="12" Padding="6,4"
-                             IsReadOnly="{Binding IsReadOnly}"
-                             LostFocus="OnVariableValueChanged" />
-                  </Grid>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
+          <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+            <TextBlock Name="DetailVersionText" Foreground="{DynamicResource TextSecondaryBrush}"
+                       FontSize="11" HorizontalAlignment="Right" />
+            <TextBlock Name="DetailAuthorText" Foreground="{DynamicResource TextSecondaryBrush}"
+                       FontSize="11" HorizontalAlignment="Right" />
+          </StackPanel>
+          <TextBlock Name="DetailNameText" Text="Select a plugin" FontSize="18" FontWeight="Bold"
+                     Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
         </DockPanel>
       </Border>
+
+      <!-- Tab Control: Description / Settings -->
+      <TabControl Name="PluginTabControl" Margin="0"
+                  Background="{DynamicResource SurfaceBrush}">
+
+        <!-- Description Tab -->
+        <TabItem Header="Description" FontSize="13">
+          <ScrollViewer Padding="16">
+            <StackPanel Name="DescriptionPanel" Spacing="4" />
+          </ScrollViewer>
+        </TabItem>
+
+        <!-- Settings Tab -->
+        <TabItem Header="Settings" FontSize="13">
+          <ListBox Name="VariablesItemsControl"
+                   Background="Transparent" Margin="8"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Panel>
+                  <!-- Group header row -->
+                  <TextBlock Text="{Binding Name}" IsVisible="{Binding IsHeader}"
+                             Foreground="{DynamicResource SecondaryBrush}"
+                             FontSize="12" FontWeight="Bold"
+                             Margin="0,12,0,4" />
+
+                  <!-- Variable row -->
+                <Grid ColumnDefinitions="220,*" Margin="0,3" IsVisible="{Binding IsNotHeader}">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Top"
+                             Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12"
+                             TextWrapping="Wrap" Margin="0,6,12,0" />
+
+                  <!-- Dropdown for bool/onoff/yesno/enum types -->
+                  <ComboBox Grid.Column="1"
+                            ItemsSource="{Binding DropdownOptions}"
+                            SelectedItem="{Binding Value}"
+                            IsVisible="{Binding IsDropdown}"
+                            IsEnabled="{Binding !IsReadOnly}"
+                            Background="{DynamicResource InputBackgroundBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            FontSize="12" Padding="6,4"
+                            HorizontalAlignment="Stretch"
+                            SelectionChanged="OnDropdownChanged" />
+
+                  <!-- Multiline TextBox for multiline/stringarray types -->
+                  <TextBox Grid.Column="1" Text="{Binding Value}"
+                           IsVisible="{Binding IsMultiline}"
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}"
+                           FontSize="12" Padding="8,6"
+                           AcceptsReturn="True" TextWrapping="Wrap"
+                           MinHeight="80" MaxHeight="250"
+                           IsReadOnly="{Binding IsReadOnly}"
+                           LostFocus="OnVariableValueChanged" />
+
+                  <!-- Single-line TextBox for int/double/string types -->
+                  <TextBox Grid.Column="1" Text="{Binding Value}"
+                           IsVisible="{Binding IsTextBox}"
+                           Background="{DynamicResource InputBackgroundBrush}"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           BorderBrush="{DynamicResource BorderBrush}"
+                           FontSize="12" Padding="8,6"
+                           IsReadOnly="{Binding IsReadOnly}"
+                           LostFocus="OnVariableValueChanged" />
+                </Grid>
+                </Panel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </TabItem>
+
+      </TabControl>
 
     </DockPanel>
   </Grid>
@@ -121,6 +172,11 @@
             <TextBlock Text="Plugin Output" FontSize="12" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+              <Button Name="BtnCopyOutput" Content="Copy" Padding="8,3" FontSize="11"
+                      CornerRadius="3"
+                      Background="{DynamicResource ButtonSecondaryBrush}"
+                      Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                      Click="OnCopyOutput" />
               <Button Name="BtnClearOutput" Content="Clear" Padding="8,3" FontSize="11"
                       CornerRadius="3"
                       Background="{DynamicResource ButtonSecondaryBrush}"
@@ -135,13 +191,14 @@
           </DockPanel>
         </Border>
 
-        <ScrollViewer Name="OutputScrollViewer" Height="160">
-          <TextBlock Name="PluginOutputText"
-                     FontFamily="Cascadia Mono,Consolas,Courier New,monospace"
-                     FontSize="11" Padding="8,4"
-                     TextWrapping="Wrap"
-                     Foreground="{DynamicResource TextSecondaryBrush}" />
-        </ScrollViewer>
+        <TextBox Name="PluginOutputText"
+                 FontFamily="Cascadia Mono,Consolas,Courier New,monospace"
+                 FontSize="11" Padding="8,4" Height="160"
+                 TextWrapping="Wrap" AcceptsReturn="True"
+                 IsReadOnly="True"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Foreground="{DynamicResource TextSecondaryBrush}" />
       </DockPanel>
     </Border>
 

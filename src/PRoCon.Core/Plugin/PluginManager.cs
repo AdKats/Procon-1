@@ -60,7 +60,7 @@ namespace PRoCon.Core.Plugin
         /// Bool specifying if a check is currently occuring for plugin invocation timeouts. We
         /// ignore the check instead of blocking.
         /// </summary>
-        protected bool InvocationTimeoutCheckRunning { get; set; }
+        private int _invocationTimeoutCheckRunning;
 
         /// <summary>
         /// The maximum time span a single invocation can run
@@ -90,6 +90,10 @@ namespace PRoCon.Core.Plugin
         public delegate void PluginEventHandler();
 
         public delegate void PluginOutputHandler(string strOutput);
+
+        public static event PluginOutputHandler PreCompileOutput;
+
+        internal static void RaisePreCompileOutput(string message) => PreCompileOutput?.Invoke(message);
 
         public delegate void PluginVariableAlteredHandler(PluginDetails spdNewDetails);
 
@@ -166,40 +170,40 @@ namespace PRoCon.Core.Plugin
 
         private void InvocationTimeoutCheck()
         {
-            if (this.InvocationTimeoutCheckRunning == false)
+            if (Interlocked.CompareExchange(ref _invocationTimeoutCheckRunning, 1, 0) != 0)
+                return;
+
+            try
             {
-                this.InvocationTimeoutCheckRunning = true;
+                PluginInvocation invocation = Invocations.FirstOrDefault();
 
-                PluginInvocation invocation = Invocations.FirstOrDefault(); // .OrderBy(x => x.Runtime())
-
-                if (invocation != null)
+                if (invocation != null && invocation.Runtime() >= this.InvocationMaxRuntime)
                 {
-                    if (invocation.Runtime() >= this.InvocationMaxRuntime)
+                    WritePluginConsole("^1^bPlugin manager entering panic..");
+
+                    // Prevent the plugin from being loaded again during this instance
+                    // of the plugin manager.
+                    IgnoredPluginClassNames.Add(invocation.Plugin.ClassName);
+
+                    String faultText = invocation.FormatInvocationFault("Call exceeded maximum execution time of {0}", this.InvocationMaxRuntime);
+
+                    // Log the error so we might alert a plugin developer that
+                    // a call to their plugin has caused the plugin manager to go
+                    // into a panic.
+                    File.AppendAllText(Path.Combine(ProConPaths.LogsDirectory, "PLUGIN_DEBUG.txt"), faultText);
+
+                    WritePluginConsole("^1^bPlugin invocation timeout: ");
+                    WritePluginConsole("^1" + faultText);
+
+                    if (PluginPanic != null)
                     {
-                        WritePluginConsole("^1^bPlugin manager entering panic..");
-
-                        // Prevent the plugin from being loaded again during this instance
-                        // of the plugin manager.
-                        IgnoredPluginClassNames.Add(invocation.Plugin.ClassName);
-
-                        String faultText = invocation.FormatInvocationFault("Call exceeded maximum execution time of {0}", this.InvocationMaxRuntime);
-
-                        // Log the error so we might alert a plugin developer that
-                        // a call to their plugin has caused the plugin manager to go
-                        // into a panic.
-                        File.AppendAllText(Path.Combine(ProConPaths.LogsDirectory, "PLUGIN_DEBUG.txt"), faultText);
-
-                        WritePluginConsole("^1^bPlugin invocation timeout: ");
-                        WritePluginConsole("^1" + faultText);
-
-                        if (PluginPanic != null)
-                        {
-                            PluginPanic();
-                        }
+                        PluginPanic();
                     }
-
-                    this.InvocationTimeoutCheckRunning = false;
                 }
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _invocationTimeoutCheckRunning, 0);
             }
         }
 
@@ -282,7 +286,10 @@ namespace PRoCon.Core.Plugin
 
         public List<MatchCommand> GetRegisteredCommands()
         {
-            return new List<MatchCommand>(MatchedInGameCommands.Values);
+            lock (MatchedInGameCommandsLocker)
+            {
+                return new List<MatchCommand>(MatchedInGameCommands.Values);
+            }
         }
 
         private static Assembly TryGetAssembly(string name)
@@ -365,11 +372,16 @@ namespace PRoCon.Core.Plugin
 
         public void SetPluginVariable(string strClassName, string strVariable, string strValue, bool notification = true)
         {
-            // FailCompiledPlugins
+            // Strip group prefix (e.g., "Group Name|Variable Name" → "Variable Name")
+            // Plugins only see the variable name, not the display group
+            string pluginVariable = strVariable;
+            int pipeIdx = strVariable.IndexOf('|');
+            if (pipeIdx >= 0)
+                pluginVariable = strVariable.Substring(pipeIdx + 1).Trim();
 
             if (Plugins.Contains(strClassName) == true && Plugins[strClassName].IsLoaded == true)
             {
-                InvokeOnLoaded(strClassName, "SetPluginVariable", new object[] { strVariable, strValue });
+                InvokeOnLoaded(strClassName, "SetPluginVariable", new object[] { pluginVariable, strValue });
 
                 if (PluginVariableAltered != null && notification == true)
                 {
@@ -469,6 +481,11 @@ namespace PRoCon.Core.Plugin
         public List<CPluginVariable> GetPluginVariables(string strClassName)
         {
             return InvokeOnLoaded_CPluginVariables(strClassName, "GetPluginVariables");
+        }
+
+        public List<CPluginVariable> GetDisplayPluginVariables(string strClassName)
+        {
+            return InvokeOnLoaded_CPluginVariables(strClassName, "GetDisplayPluginVariables");
         }
 
         private List<CPluginVariable> InvokeOnLoaded_CPluginVariables(string strClassName, string strMethod, params object[] parameters)
@@ -730,6 +747,15 @@ namespace PRoCon.Core.Plugin
                 "System.Xml.XmlSerializer",
                 "System.ComponentModel.TypeConverter",
                 "Microsoft.CSharp",
+                "System.Linq.Expressions",
+                "System.Net.Mail",
+                "System.Net.NameResolution",
+                "System.Net.NetworkInformation",
+                "System.Net.Ping",
+                "System.Net.ServicePoint",
+                "System.Net.WebProxy",
+                "System.IO.Compression",
+                "System.ComponentModel.EventBasedAsync",
                 "netstandard",
                 "System.Private.CoreLib"
             };
@@ -825,7 +851,17 @@ namespace PRoCon.Core.Plugin
                 {
                     try
                     {
-                        string fileContents = File.ReadAllText(Path.Combine(PluginBaseDirectory, match.Groups["file"].Value.Replace("%GameType%", ProconClient.GameType)));
+                        string includePath = Path.GetFullPath(Path.Combine(PluginBaseDirectory, match.Groups["file"].Value.Replace("%GameType%", ProconClient.GameType)));
+                        string pluginBaseFullPath = Path.GetFullPath(PluginBaseDirectory);
+
+                        if (!includePath.StartsWith(pluginBaseFullPath + Path.DirectorySeparatorChar) && includePath != pluginBaseFullPath)
+                        {
+                            WritePluginConsole("^PluginManager.PrecompileDirectives(): #include path traversal blocked: {0}", match.Groups["file"].Value);
+                            source = source.Replace(match.Value, "// #include blocked: path traversal");
+                            continue;
+                        }
+
+                        string fileContents = File.ReadAllText(includePath);
 
                         source = source.Replace(match.Value, fileContents);
                     }
@@ -1140,6 +1176,113 @@ namespace PRoCon.Core.Plugin
             catch (Exception e)
             {
                 WritePluginConsole(e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Lightweight pre-compilation check that validates plugin source files
+        /// without loading them. Runs at app startup before any server connection.
+        /// </summary>
+        public static void PreCompileCheck(string pluginDirectory, bool enableDebugging)
+        {
+            var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                .WithOverflowChecks(true)
+                .WithOptimizationLevel(enableDebugging ? OptimizationLevel.Debug : OptimizationLevel.Release);
+
+            // Gather references (same as instance method)
+            string runtimeDir = Path.GetDirectoryName(typeof(object).Assembly.Location);
+            string proconDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location ?? typeof(PluginManager).Assembly.Location);
+            var references = new List<MetadataReference>();
+
+            foreach (string asm in new[] {
+                "System.Runtime", "System.Collections", "System.Collections.Specialized",
+                "System.Linq", "System.Data.Common", "System.Net.Http", "System.Net.Primitives",
+                "System.Net.WebClient", "System.Net.Requests", "System.ComponentModel",
+                "System.Text.RegularExpressions", "System.Threading", "System.Threading.Thread",
+                "System.Threading.Timer", "System.IO", "System.Console",
+                "System.Web.HttpUtility", "System.Private.Uri", "System.Security.Cryptography",
+                "System.Private.CoreLib", "System.Xml.XDocument", "System.Xml.XmlSerializer",
+                "netstandard", "Microsoft.CSharp", "System.Runtime.InteropServices",
+                "System.ComponentModel.Primitives", "System.ComponentModel.TypeConverter",
+                "System.Globalization", "System.Reflection", "System.ObjectModel",
+                "System.Diagnostics.Debug", "System.Diagnostics.Process",
+                "System.IO.FileSystem", "System.Net.Sockets", "System.Net.WebHeaderCollection",
+                "System.Text.Encoding.Extensions", "System.Reflection.Primitives",
+                "System.Runtime.Serialization.Primitives", "System.Runtime.Serialization.Xml",
+                "System.Private.Xml", "System.Private.Xml.Linq", "System.Xml", "System.Xml.ReaderWriter",
+                "System.Linq.Expressions", "System.Net.Mail", "System.Net.NameResolution",
+                "System.Net.NetworkInformation", "System.Net.Ping", "System.Net.ServicePoint",
+                "System.Net.WebProxy", "System.IO.Compression",
+                "System.ComponentModel.EventBasedAsync" })
+            {
+                string path = Path.Combine(runtimeDir, asm + ".dll");
+                if (File.Exists(path)) references.Add(MetadataReference.CreateFromFile(path));
+            }
+
+            foreach (string dll in new[] { "PRoCon.Core.dll", "MySqlConnector.dll", "Newtonsoft.Json.dll",
+                "Dapper.dll", "Flurl.dll", "Flurl.Http.dll", "Microsoft.Data.Sqlite.dll" })
+            {
+                string path = Path.Combine(proconDir, dll);
+                if (File.Exists(path)) references.Add(MetadataReference.CreateFromFile(path));
+            }
+
+            var csFiles = Directory.GetFiles(pluginDirectory, "*.cs", SearchOption.TopDirectoryOnly);
+            foreach (string csFile in csFiles)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(csFile);
+                string className = fileName;
+
+                try
+                {
+                    string source = File.ReadAllText(csFile);
+                    source = source.Replace("using MySql.Data.MySqlClient;", "using MySqlConnector;");
+
+                    var syntaxTrees = new List<SyntaxTree>();
+                    syntaxTrees.Add(CSharpSyntaxTree.ParseText(source, parseOptions, csFile, Encoding.UTF8));
+
+                    // Check for subfolder with partial class files
+                    string subDir = Path.Combine(pluginDirectory, className);
+                    if (Directory.Exists(subDir))
+                    {
+                        foreach (var subFile in Directory.GetFiles(subDir, "*.cs", SearchOption.AllDirectories))
+                        {
+                            string subSource = File.ReadAllText(subFile);
+                            subSource = subSource.Replace("using MySql.Data.MySqlClient;", "using MySqlConnector;");
+                            syntaxTrees.Add(CSharpSyntaxTree.ParseText(subSource, parseOptions, subFile, Encoding.UTF8));
+                        }
+                    }
+
+                    var compilation = CSharpCompilation.Create(
+                        className + "_precheck",
+                        syntaxTrees,
+                        references,
+                        compilationOptions);
+
+                    using (var ms = new MemoryStream())
+                    {
+                        EmitResult result = compilation.Emit(ms);
+                        if (result.Success)
+                        {
+                            PreCompileOutput?.Invoke($"^2  {fileName}: OK ({syntaxTrees.Count} file(s))");
+                        }
+                        else
+                        {
+                            var errors = result.Diagnostics
+                                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                                .Take(5);
+                            PreCompileOutput?.Invoke($"^1  {fileName}: {errors.Count()} error(s)");
+                            foreach (var diag in errors)
+                            {
+                                PreCompileOutput?.Invoke($"^1    {diag.GetMessage()}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PreCompileOutput?.Invoke($"^1  {fileName}: Exception - {ex.Message}");
+                }
             }
         }
 

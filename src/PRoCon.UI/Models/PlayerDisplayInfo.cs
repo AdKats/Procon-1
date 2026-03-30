@@ -51,7 +51,8 @@ namespace PRoCon.UI.Models
 
         private static string CountryCodeToFlag(string code)
         {
-            if (string.IsNullOrEmpty(code) || code.Length != 2) return "";
+            if (string.IsNullOrEmpty(code) || code.Length != 2
+                || !char.IsLetter(code[0]) || !char.IsLetter(code[1])) return "";
             // Convert country code to regional indicator emoji
             return string.Concat(
                 char.ConvertFromUtf32(0x1F1E6 + (code.ToUpper()[0] - 'A')),
