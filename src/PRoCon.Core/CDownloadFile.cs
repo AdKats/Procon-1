@@ -193,7 +193,9 @@ namespace PRoCon.Core
 
         public void BeginDownload()
         {
-            new Thread(new ThreadStart(this.BeginDownloadCallback)).Start();
+            var thread = new Thread(new ThreadStart(this.BeginDownloadCallback));
+            thread.IsBackground = true;
+            thread.Start();
         }
 
         private void BeginDownloadCallback()

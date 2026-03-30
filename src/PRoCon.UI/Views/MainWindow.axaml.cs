@@ -266,6 +266,14 @@ namespace PRoCon.UI.Views
         {
             _playerListTimer?.Stop();
             _updateChecker?.Dispose();
+
+            // Cancel all pending retry tasks
+            foreach (var cts in _retryTokens.Values)
+            {
+                try { cts?.Cancel(); cts?.Dispose(); } catch { }
+            }
+            _retryTokens.Clear();
+
             // IPCheckService disposed by PRoConApplication.Shutdown()
             foreach (var entry in _servers)
             {
@@ -274,6 +282,9 @@ namespace PRoCon.UI.Views
             }
             try { _application?.Shutdown(); } catch { }
             base.OnClosing(e);
+
+            // Force exit — ensures no lingering threads keep the process alive
+            Environment.Exit(0);
         }
 
         private PRoConClient GetClient(string hostPort)

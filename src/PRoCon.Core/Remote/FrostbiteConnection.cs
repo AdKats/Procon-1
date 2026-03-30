@@ -916,12 +916,9 @@ namespace PRoCon.Core.Remote
                     // Cancel any in-flight async operations
                     if (this.ConnectionCts != null)
                     {
-                        this.ConnectionCts?.Cancel();
-                        // Don't dispose immediately - let async operations observe the cancellation
-                        var oldCts = this.ConnectionCts;
+                        this.ConnectionCts.Cancel();
+                        this.ConnectionCts.Dispose();
                         this.ConnectionCts = null;
-                        // Dispose after a delay to allow pending operations to complete
-                        System.Threading.Tasks.Task.Delay(1000).ContinueWith(_ => oldCts?.Dispose());
                     }
 
                     this.ClearConnection();

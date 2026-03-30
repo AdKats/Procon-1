@@ -1005,6 +1005,7 @@ namespace PRoCon.Core.Remote
             if (TaskTimer != null)
             {
                 TaskTimer.Stop();
+                TaskTimer.Dispose();
                 TaskTimer = null;
             }
             /*
@@ -2059,6 +2060,7 @@ namespace PRoCon.Core.Remote
             if (TaskTimer != null)
             {
                 TaskTimer.Stop();
+                TaskTimer.Dispose();
             }
 
             /*
@@ -2326,6 +2328,7 @@ namespace PRoCon.Core.Remote
             else
             {
                 m_thSound = new Thread(new ParameterizedThreadStart(PlaySound));
+                m_thSound.IsBackground = true;
                 m_blPlaySound = true;
                 m_thSound.Start(spsSound);
             }
@@ -2356,6 +2359,7 @@ namespace PRoCon.Core.Remote
                     if (obj != null)
                     {
                         m_thSound = new Thread(new ParameterizedThreadStart(PlaySound));
+                        m_thSound.IsBackground = true;
                         m_blPlaySound = true;
                         m_thSound.Start((SPlaySound)obj);
                     }
