@@ -62,12 +62,24 @@ namespace PRoCon.UI.Views
             if (langText != null && currentLang != null)
                 langText.Text = $"Current: {currentLang.FileName}";
 
-            // Version from assembly
+            // Version from assembly — prefer InformationalVersion (includes pre-release suffix)
             var versionText = this.FindControl<TextBlock>("VersionText");
             if (versionText != null)
             {
-                var ver = Assembly.GetEntryAssembly()?.GetName().Version;
-                string vStr = ver != null ? $"{ver.Major}.{ver.Minor}.{ver.Build}" : "2.0.0";
+                string vStr = Assembly.GetEntryAssembly()?
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                    .InformationalVersion;
+                // Strip build metadata (+commit hash) that .NET appends
+                if (!string.IsNullOrEmpty(vStr))
+                {
+                    int plusIdx = vStr.IndexOf('+');
+                    if (plusIdx >= 0) vStr = vStr.Substring(0, plusIdx);
+                }
+                else
+                {
+                    var ver = Assembly.GetEntryAssembly()?.GetName().Version;
+                    vStr = ver != null ? $"{ver.Major}.{ver.Minor}.{ver.Build}" : "2.0.0";
+                }
                 versionText.Text = $"PRoCon Frostbite v{vStr}";
             }
 
