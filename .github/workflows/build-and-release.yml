@@ -347,3 +347,39 @@ jobs:
             Procon-*.tar.gz
             PRoCon-*.exe
             checksums-sha256.txt
+
+      - name: Notify Discord
+        if: success()
+        shell: bash
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TAG: ${{ github.ref_name }}
+          IS_PRE: ${{ steps.release_type.outputs.prerelease }}
+        run: |
+          VERSION="${TAG#v}"
+          if [ "$IS_PRE" = "true" ]; then
+            TITLE="PRoCon ${VERSION} (Pre-Release)"
+            COLOR=16744448
+          else
+            TITLE="PRoCon ${VERSION} Released"
+            COLOR=3066993
+          fi
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+
+          # Count assets
+          ASSET_LIST=""
+          for f in PRoCon-*.exe; do
+            [ -f "$f" ] && ASSET_LIST="${ASSET_LIST}- **Windows Installer**: ${f}\n"
+          done
+          ASSET_LIST="${ASSET_LIST}- Linux, macOS, and Windows archives\n- SHA256 checksums"
+
+          curl -sf -H "Content-Type: application/json" -d "{
+            \"embeds\": [{
+              \"title\": \"${TITLE}\",
+              \"url\": \"${RELEASE_URL}\",
+              \"color\": ${COLOR},
+              \"description\": \"A new PRoCon release is available.\n\n**Download:** [${TAG}](${RELEASE_URL})\n\n**Assets:**\n${ASSET_LIST}\",
+              \"footer\": { \"text\": \"PRoCon Frostbite RCON Tool\" },
+              \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+            }]
+          }" "$DISCORD_WEBHOOK"
