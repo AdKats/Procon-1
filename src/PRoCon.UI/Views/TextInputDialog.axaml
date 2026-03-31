@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}">
 
-  <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="16">
+  <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="24" Margin="16">
     <StackPanel Spacing="12">
       <TextBlock Name="PromptText" Text="Enter a value:"
                  FontSize="14" FontWeight="SemiBold"

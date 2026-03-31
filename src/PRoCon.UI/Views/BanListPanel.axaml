@@ -11,17 +11,17 @@
     <!-- Action buttons -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="8" Margin="0,0,0,8">
+            CornerRadius="3" Padding="8" Margin="0,0,0,8">
       <StackPanel Orientation="Horizontal" Spacing="6">
         <Button Content="Refresh"
                 Background="{DynamicResource ButtonSecondaryBrush}"
                 Foreground="{DynamicResource ButtonSecondaryTextBrush}"
                 Padding="10,6" CornerRadius="4" Click="OnRefresh" />
         <Button Content="Unban Selected"
-                Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
                 Padding="10,6" CornerRadius="4" Click="OnUnban" />
         <Button Content="Clear All Bans"
-                Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
                 Padding="10,6" CornerRadius="4" Click="OnClearAllBans" />
       </StackPanel>
     </Border>
@@ -29,7 +29,7 @@
     <!-- Add ban form at bottom -->
     <Border DockPanel.Dock="Bottom"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+            CornerRadius="3" Padding="12" Margin="0,8,0,0">
       <StackPanel Spacing="8">
         <TextBlock Text="Add Ban" FontSize="13" FontWeight="SemiBold"
                    Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -141,7 +141,7 @@
 
     <!-- Ban list -->
     <Border Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="6" Padding="4"
+            CornerRadius="3" Padding="4"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
       <ListBox Name="BanListBox"
                Background="Transparent"

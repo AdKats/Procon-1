@@ -1,26 +1,30 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!-- Blue + Orange Gaming-Oriented Light Theme -->
+  <!-- Modern Tactical / BF2042 HUD Light Theme -->
 
-  <!-- Base Colors -->
-  <Color x:Key="BackgroundColor">#f5f7fa</Color>
-  <Color x:Key="SurfaceColor">#ffffff</Color>
-  <Color x:Key="SurfaceElevatedColor">#e8ecf0</Color>
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Base Colors                                 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <Color x:Key="BackgroundColor">#e8ecf0</Color>
+  <Color x:Key="SurfaceColor">#f0f3f6</Color>
+  <Color x:Key="SurfaceElevatedColor">#ffffff</Color>
 
-  <!-- Accent Colors (same as dark for brand consistency) -->
-  <Color x:Key="PrimaryColor">#1e88e5</Color>
-  <Color x:Key="SecondaryColor">#f57c00</Color>
-  <Color x:Key="SuccessColor">#43a047</Color>
-  <Color x:Key="ErrorColor">#e53935</Color>
-  <Color x:Key="WarningColor">#f57c00</Color>
+  <!-- Accent Colors (darker for contrast on light bg) -->
+  <Color x:Key="PrimaryColor">#0088cc</Color>
+  <Color x:Key="SecondaryColor">#cc8800</Color>
+  <Color x:Key="SuccessColor">#00994d</Color>
+  <Color x:Key="ErrorColor">#cc2222</Color>
+  <Color x:Key="WarningColor">#cc8800</Color>
 
   <!-- Text Colors -->
   <Color x:Key="TextPrimaryColor">#1a2332</Color>
-  <Color x:Key="TextSecondaryColor">#6b7c8d</Color>
-  <Color x:Key="TextDisabledColor">#a0aab4</Color>
+  <Color x:Key="TextSecondaryColor">#5a7088</Color>
+  <Color x:Key="TextDisabledColor">#8899aa</Color>
 
-  <!-- Brushes -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Solid Brushes                               -->
+  <!-- ═══════════════════════════════════════════ -->
   <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
   <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
   <SolidColorBrush x:Key="SurfaceElevatedBrush" Color="{StaticResource SurfaceElevatedColor}" />
@@ -33,39 +37,168 @@
   <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
   <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource TextDisabledColor}" />
 
-  <!-- Border -->
-  <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource SurfaceElevatedColor}" />
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Glass Panel System (frosted-white variant)  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="GlassBorderBrush" Color="#200088cc" />
+  <SolidColorBrush x:Key="GlassBorderTopBrush" Color="#400088cc" />
+
+  <LinearGradientBrush x:Key="GlassPanelBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#B0ffffff" Offset="0" />
+    <GradientStop Color="#80ffffff" Offset="0.5" />
+    <GradientStop Color="#60ffffff" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="GlassHeaderBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#0A0088cc" Offset="0" />
+    <GradientStop Color="#040088cc" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="TopBarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#0A0088cc" Offset="0" />
+    <GradientStop Color="#04003050" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="NavActiveBackgroundBrush" StartPoint="0%,0%" EndPoint="100%,0%">
+    <GradientStop Color="#100088cc" Offset="0" />
+    <GradientStop Color="#00000000" Offset="1" />
+  </LinearGradientBrush>
+
+  <LinearGradientBrush x:Key="ServerTabActiveBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#140088cc" Offset="0" />
+    <GradientStop Color="#080088cc" Offset="1" />
+  </LinearGradientBrush>
+
+  <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="#f5f7fa" />
+  <SolidColorBrush x:Key="GridLineBrush" Color="#060064b4" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Borders & Geometry                          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="BorderBrush" Color="#180088cc" />
+  <SolidColorBrush x:Key="BorderSubtleBrush" Color="#0C0088cc" />
+  <SolidColorBrush x:Key="BorderBrightBrush" Color="#300088cc" />
   <Thickness x:Key="BorderThickness">1</Thickness>
-  <CornerRadius x:Key="CornerRadius">4</CornerRadius>
+  <CornerRadius x:Key="CornerRadius">3</CornerRadius>
+  <CornerRadius x:Key="CornerRadiusSmall">2</CornerRadius>
 
-  <!-- Tab / Navigation -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Tab / Navigation                            -->
+  <!-- ═══════════════════════════════════════════ -->
   <SolidColorBrush x:Key="TabActiveBrush" Color="{StaticResource PrimaryColor}" />
-  <SolidColorBrush x:Key="TabInactiveBrush" Color="{StaticResource TextSecondaryColor}" />
-  <SolidColorBrush x:Key="TabHoverBrush" Color="#e0e8f0" />
+  <SolidColorBrush x:Key="TabInactiveBrush" Color="{StaticResource TextDisabledColor}" />
+  <SolidColorBrush x:Key="TabHoverBrush" Color="#140088cc" />
 
-  <!-- Status -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Status                                      -->
+  <!-- ═══════════════════════════════════════════ -->
   <SolidColorBrush x:Key="ConnectedBrush" Color="{StaticResource SuccessColor}" />
   <SolidColorBrush x:Key="DisconnectedBrush" Color="{StaticResource ErrorColor}" />
 
-  <!-- Chat -->
-  <SolidColorBrush x:Key="ChatTeamBrush" Color="{StaticResource TextPrimaryColor}" />
-  <SolidColorBrush x:Key="ChatSquadBrush" Color="#1565c0" />
-  <SolidColorBrush x:Key="ChatAllBrush" Color="{StaticResource TextSecondaryColor}" />
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Chat Channel Colors                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="ChatAllBrush" Color="#5a7088" />
+  <SolidColorBrush x:Key="ChatTeamBrush" Color="#2266aa" />
+  <SolidColorBrush x:Key="ChatSquadBrush" Color="#448822" />
   <SolidColorBrush x:Key="ChatAdminBrush" Color="{StaticResource SecondaryColor}" />
 
-  <!-- Input -->
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Data Value Colors                           -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="KillsBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="DeathsBrush" Color="#cc4444" />
+  <SolidColorBrush x:Key="ScoreBrush" Color="{StaticResource SecondaryColor}" />
+  <SolidColorBrush x:Key="PingLowBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="PingMedBrush" Color="{StaticResource SecondaryColor}" />
+  <SolidColorBrush x:Key="PingHighBrush" Color="{StaticResource ErrorColor}" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Input                                       -->
+  <!-- ═══════════════════════════════════════════ -->
   <SolidColorBrush x:Key="InputBackgroundBrush" Color="#ffffff" />
   <SolidColorBrush x:Key="InputFocusBorderBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="InputBorderBrush" Color="#200088cc" />
 
-  <!-- Button -->
-  <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="{StaticResource PrimaryColor}" />
-  <SolidColorBrush x:Key="ButtonPrimaryHoverBrush" Color="#2196f3" />
-  <SolidColorBrush x:Key="ButtonPrimaryTextBrush" Color="#ffffff" />
-  <SolidColorBrush x:Key="ButtonSecondaryBrush" Color="{StaticResource SurfaceElevatedColor}" />
-  <SolidColorBrush x:Key="ButtonSecondaryTextBrush" Color="{StaticResource TextPrimaryColor}" />
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Button Variants                             -->
+  <!-- ═══════════════════════════════════════════ -->
 
-  <!-- ScrollBar -->
-  <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#c0c8d0" />
+  <!-- Primary -->
+  <SolidColorBrush x:Key="ButtonPrimaryBrush" Color="#200088cc" />
+  <SolidColorBrush x:Key="ButtonPrimaryHoverBrush" Color="#400088cc" />
+  <SolidColorBrush x:Key="ButtonPrimaryTextBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="ButtonPrimaryBorderBrush" Color="#300088cc" />
+  <LinearGradientBrush x:Key="ButtonPrimaryGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#140088cc" Offset="0" />
+    <GradientStop Color="#080088cc" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Warning -->
+  <SolidColorBrush x:Key="ButtonWarningBrush" Color="#20cc8800" />
+  <SolidColorBrush x:Key="ButtonWarningTextBrush" Color="{StaticResource SecondaryColor}" />
+  <SolidColorBrush x:Key="ButtonWarningBorderBrush" Color="#26cc8800" />
+  <LinearGradientBrush x:Key="ButtonWarningGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#0Acc8800" Offset="0" />
+    <GradientStop Color="#04cc8800" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Danger -->
+  <SolidColorBrush x:Key="ButtonDangerBrush" Color="#20cc2222" />
+  <SolidColorBrush x:Key="ButtonDangerTextBrush" Color="{StaticResource ErrorColor}" />
+  <SolidColorBrush x:Key="ButtonDangerBorderBrush" Color="#26cc2222" />
+  <LinearGradientBrush x:Key="ButtonDangerGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#0Acc2222" Offset="0" />
+    <GradientStop Color="#04cc2222" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Secondary -->
+  <SolidColorBrush x:Key="ButtonSecondaryBrush" Color="#120088cc" />
+  <SolidColorBrush x:Key="ButtonSecondaryTextBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="ButtonSecondaryBorderBrush" Color="#120088cc" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Toggle / Badge                              -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="ToggleOnBrush" Color="#1A00994d" />
+  <SolidColorBrush x:Key="ToggleOnBorderBrush" Color="#2600994d" />
+  <SolidColorBrush x:Key="ToggleOnTextBrush" Color="{StaticResource SuccessColor}" />
+  <SolidColorBrush x:Key="ToggleOffBrush" Color="#14cc2222" />
+  <SolidColorBrush x:Key="ToggleOffBorderBrush" Color="#1Ecc2222" />
+  <SolidColorBrush x:Key="ToggleOffTextBrush" Color="{StaticResource ErrorColor}" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Checkbox                                    -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="CheckboxCheckedBrush" Color="#1A00994d" />
+  <SolidColorBrush x:Key="CheckboxCheckedBorderBrush" Color="#4000994d" />
+  <SolidColorBrush x:Key="CheckboxUncheckedBorderBrush" Color="#180088cc" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- ScrollBar                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#260088cc" />
   <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="Transparent" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Row Alternation                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="RowAlternateBrush" Color="#06000000" />
+  <SolidColorBrush x:Key="RowHoverBrush" Color="#0A0088cc" />
+  <SolidColorBrush x:Key="RowSelectedBrush" Color="#140088cc" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Breadcrumb / Separator                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="SeparatorBrush" Color="#100088cc" />
+  <SolidColorBrush x:Key="BreadcrumbTextBrush" Color="{StaticResource TextDisabledColor}" />
+  <SolidColorBrush x:Key="BreadcrumbActiveTextBrush" Color="{StaticResource TextSecondaryColor}" />
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- RCON Console Directional Colors             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <SolidColorBrush x:Key="ConsoleSentBrush" Color="{StaticResource PrimaryColor}" />
+  <SolidColorBrush x:Key="ConsoleReceivedBrush" Color="#226644" />
+  <SolidColorBrush x:Key="ConsoleEventBrush" Color="#886622" />
 
 </ResourceDictionary>

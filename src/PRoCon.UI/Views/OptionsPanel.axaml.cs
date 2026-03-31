@@ -119,6 +119,20 @@ namespace PRoCon.UI.Views
             _application.OptionsSettings.MinimizeToTray = (sender as CheckBox)?.IsChecked == true;
         }
 
+        private void OnEnableAnimationsToggle(object sender, RoutedEventArgs e)
+        {
+            bool enabled = (sender as CheckBox)?.IsChecked == true;
+            if (Avalonia.Application.Current?.ApplicationLifetime is
+                Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop &&
+                desktop.MainWindow != null)
+            {
+                if (enabled)
+                    desktop.MainWindow.Classes.Remove("no-animations");
+                else
+                    desktop.MainWindow.Classes.Add("no-animations");
+            }
+        }
+
         private void OnLanguageChanged(object sender, SelectionChangedEventArgs e)
         {
             var combo = this.FindControl<ComboBox>("LanguageComboBox");

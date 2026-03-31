@@ -5,9 +5,11 @@
 
   <DockPanel>
     <!-- Security warning -->
-    <Border DockPanel.Dock="Top" Background="#3d2200" CornerRadius="6" Padding="12" Margin="0,0,0,8">
+    <Border DockPanel.Dock="Top" Background="{DynamicResource ButtonWarningGradient}"
+            BorderBrush="{DynamicResource ButtonWarningBorderBrush}" BorderThickness="1"
+            CornerRadius="3" Padding="12" Margin="0,0,0,8">
       <TextBlock Text="Plugins run with full trust on .NET 8. Only install plugins from trusted sources."
-                 Foreground="#ffab40" FontSize="12" TextWrapping="Wrap" />
+                 Foreground="{DynamicResource WarningBrush}" FontSize="12" TextWrapping="Wrap" />
     </Border>
 
   <Grid RowDefinitions="*,Auto">
@@ -50,7 +52,7 @@
                                 IsChecked="{Binding IsEnabled}"
                                 Content="{Binding EnabledText}"
                                 Background="{Binding StatusColor}"
-                                Foreground="#ffffff"
+                                Foreground="#c8d8e8"
                                 Padding="8,4" FontSize="11" FontWeight="SemiBold"
                                 CornerRadius="4" MinWidth="40"
                                 HorizontalContentAlignment="Center"

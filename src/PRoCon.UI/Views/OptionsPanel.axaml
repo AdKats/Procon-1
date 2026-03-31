@@ -9,7 +9,7 @@
       <!-- General Options -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="General" FontSize="15" FontWeight="SemiBold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -24,6 +24,10 @@
             <CheckBox Name="MinimizeToTrayCheck" Content="Minimize to system tray"
                       Foreground="{DynamicResource TextPrimaryBrush}"
                       Click="OnMinimizeToTrayToggle" />
+            <CheckBox Name="EnableAnimationsCheck" Content="Enable animations"
+                      IsChecked="True"
+                      Foreground="{DynamicResource TextPrimaryBrush}"
+                      Click="OnEnableAnimationsToggle" />
           </StackPanel>
         </StackPanel>
       </Border>
@@ -31,7 +35,7 @@
       <!-- Language -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Language" FontSize="15" FontWeight="SemiBold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -54,7 +58,7 @@
       <!-- ProxyCheck.io IP Checking -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="IP Checking (ProxyCheck.io v3)" FontSize="15" FontWeight="SemiBold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -81,7 +85,7 @@
       <!-- About -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="8">
           <TextBlock Text="About PRoCon" FontSize="15" FontWeight="SemiBold"
                      Foreground="{DynamicResource PrimaryBrush}" />

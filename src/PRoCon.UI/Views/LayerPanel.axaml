@@ -10,7 +10,7 @@
       <!-- Layer Status Hero -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="20">
+              CornerRadius="3" Padding="20">
         <Grid ColumnDefinitions="*,Auto">
           <StackPanel Spacing="6">
             <StackPanel Orientation="Horizontal" Spacing="10">
@@ -18,7 +18,7 @@
                          Foreground="{DynamicResource TextPrimaryBrush}" />
               <Border Name="LayerProtocolBadge" Background="{DynamicResource PrimaryBrush}"
                       CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
-                <TextBlock Text="SignalR WebSocket" FontSize="10" FontWeight="Bold" Foreground="#0f1923" />
+                <TextBlock Text="SignalR WebSocket" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource BackgroundBrush}" />
               </Border>
             </StackPanel>
             <TextBlock Text="The layer allows remote admin connections to manage this server through PRoCon."
@@ -46,7 +46,7 @@
         <!-- Enable/Disable -->
         <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                CornerRadius="8" Padding="16" Margin="0,0,6,0">
+                CornerRadius="3" Padding="16" Margin="0,0,6,0">
           <StackPanel Spacing="10">
             <TextBlock Text="CONTROL" FontSize="10" FontWeight="Bold"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -62,7 +62,7 @@
         <!-- Configuration -->
         <Border Grid.Column="1" Background="{DynamicResource SurfaceBrush}"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                CornerRadius="8" Padding="16" Margin="6,0,0,0">
+                CornerRadius="3" Padding="16" Margin="6,0,0,0">
           <StackPanel Spacing="8">
             <TextBlock Text="CONFIGURATION" FontSize="10" FontWeight="Bold"
                        Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -93,16 +93,16 @@
       <!-- Connected Clients -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <DockPanel>
           <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="8">
               <TextBlock Text="CONNECTED CLIENTS" FontSize="10" FontWeight="Bold"
                          Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
               <Border Name="ClientCountBadge" Background="{DynamicResource PrimaryBrush}"
-                      CornerRadius="10" Padding="8,2" VerticalAlignment="Center">
+                      CornerRadius="3" Padding="8,2" VerticalAlignment="Center">
                 <TextBlock Name="ClientCountText" Text="0" FontSize="10" FontWeight="Bold"
-                           Foreground="#0f1923" />
+                           Foreground="{DynamicResource BackgroundBrush}" />
               </Border>
             </StackPanel>
             <Button Content="Refresh" HorizontalAlignment="Right"
@@ -117,7 +117,7 @@
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <StackPanel Orientation="Horizontal" Spacing="8" Margin="4,3">
-                  <Ellipse Width="6" Height="6" Fill="#66bb6a" VerticalAlignment="Center" />
+                  <Ellipse Width="6" Height="6" Fill="#00ff88" VerticalAlignment="Center" />
                   <TextBlock Text="{Binding}" FontFamily="Consolas, Courier New, monospace" />
                 </StackPanel>
               </DataTemplate>
@@ -129,7 +129,7 @@
       <!-- Connection Info -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="6">
           <TextBlock Text="CONNECTION INFO" FontSize="10" FontWeight="Bold"
                      Foreground="{DynamicResource TextSecondaryBrush}" />

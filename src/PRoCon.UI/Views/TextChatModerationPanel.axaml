@@ -11,7 +11,7 @@
     <!-- Action buttons -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="8" Margin="0,0,0,8">
+            CornerRadius="3" Padding="8" Margin="0,0,0,8">
       <StackPanel Orientation="Horizontal" Spacing="6">
         <Button Name="BtnRefresh" Content="Refresh"
                 Background="{DynamicResource ButtonSecondaryBrush}"
@@ -19,11 +19,11 @@
                 Padding="10,6" CornerRadius="4" Click="OnRefresh" />
         <Button Name="BtnRemovePlayer" Content="Remove Selected"
                 Background="{DynamicResource ErrorBrush}"
-                Foreground="#ffffff"
+                Foreground="#c8d8e8"
                 Padding="10,6" CornerRadius="4" Click="OnRemovePlayer" />
         <Button Name="BtnClearAll" Content="Clear All"
                 Background="{DynamicResource ErrorBrush}"
-                Foreground="#ffffff"
+                Foreground="#c8d8e8"
                 Padding="10,6" CornerRadius="4" Click="OnClearAll" />
       </StackPanel>
     </Border>
@@ -31,7 +31,7 @@
     <!-- Add player form at bottom -->
     <Border DockPanel.Dock="Bottom"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+            CornerRadius="3" Padding="12" Margin="0,8,0,0">
       <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="Add Player to Moderation List" FontSize="13" FontWeight="SemiBold"
                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
@@ -64,7 +64,7 @@
     <!-- Column headers -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6,6,0,0" Padding="12,6">
+            CornerRadius="3,3,0,0" Padding="12,6">
       <Grid ColumnDefinitions="*,150">
         <TextBlock Grid.Column="0" Text="Player Name" FontSize="12" FontWeight="SemiBold"
                    Foreground="{DynamicResource TextSecondaryBrush}" />
@@ -75,7 +75,7 @@
 
     <!-- Moderation list -->
     <Border Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="0,0,6,6" Padding="4"
+            CornerRadius="0,0,3,3" Padding="4"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
       <ListBox Name="ModerationList"
                Background="Transparent"

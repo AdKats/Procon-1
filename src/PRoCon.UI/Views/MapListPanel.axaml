@@ -11,7 +11,7 @@
     <!-- Bottom bar: round control buttons -->
     <Border DockPanel.Dock="Bottom"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="8" Margin="0,8,0,0">
+            CornerRadius="3" Padding="8" Margin="0,8,0,0">
       <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left">
         <Button Name="BtnRestartRound" Content="Restart Round" Margin="0,0,6,0"
                 Background="{DynamicResource ButtonSecondaryBrush}"
@@ -34,7 +34,7 @@
       <!-- LEFT COLUMN: Available Maps -->
       <Border Grid.Column="0" Margin="0,0,4,0"
               Background="{DynamicResource SurfaceElevatedBrush}"
-              CornerRadius="6" Padding="8">
+              CornerRadius="3" Padding="8">
         <DockPanel>
           <TextBlock DockPanel.Dock="Top" Text="Available Maps" FontSize="13" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6" />
@@ -79,7 +79,7 @@
       <!-- RIGHT COLUMN: Current Rotation -->
       <Border Grid.Column="1" Margin="4,0,0,0"
               Background="{DynamicResource SurfaceElevatedBrush}"
-              CornerRadius="6" Padding="8">
+              CornerRadius="3" Padding="8">
         <DockPanel>
           <TextBlock DockPanel.Dock="Top" Text="Current Rotation" FontSize="13" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6" />
@@ -91,7 +91,7 @@
             <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
               <Button Name="BtnRemove" Content="Remove" Margin="0,0,4,0"
                       Background="{DynamicResource ErrorBrush}"
-                      Foreground="#ffffff"
+                      Foreground="#c8d8e8"
                       Padding="10,6" CornerRadius="4" Click="OnRemoveMap" />
               <Button Name="BtnMoveUp" Content="Move Up" Margin="0,0,4,0"
                       Background="{DynamicResource ButtonSecondaryBrush}"

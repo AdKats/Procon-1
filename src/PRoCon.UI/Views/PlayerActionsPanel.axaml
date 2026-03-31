@@ -9,7 +9,7 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            CornerRadius="3" Padding="16" Margin="0,0,0,12">
       <StackPanel Spacing="6">
         <TextBlock Text="Selected Player" FontSize="15" FontWeight="SemiBold"
                    Foreground="{DynamicResource PrimaryBrush}" />
@@ -49,14 +49,14 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            CornerRadius="3" Padding="16" Margin="0,0,0,12">
       <StackPanel Spacing="10">
         <TextBlock Text="Quick Actions" FontSize="15" FontWeight="SemiBold"
                    Foreground="{DynamicResource PrimaryBrush}" />
 
         <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
           <Button Name="KillButton" Content="Kill Player" Margin="0,0,8,8"
-                  Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                  Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
                   Padding="16,6" CornerRadius="4"
                   Click="OnKillPlayer" />
           <Button Name="MoveTeamButton" Content="Move Team" Margin="0,0,8,8"
@@ -92,7 +92,7 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="8" Padding="16" Margin="0,0,0,12">
+            CornerRadius="3" Padding="16" Margin="0,0,0,12">
       <StackPanel Spacing="10">
         <TextBlock Text="Kick / Ban" FontSize="15" FontWeight="SemiBold"
                    Foreground="{DynamicResource PrimaryBrush}" />
@@ -113,7 +113,7 @@
                   Click="OnKickPlayer" />
         </StackPanel>
 
-        <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="6" Padding="12" Margin="0,4,0,0">
+        <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="3" Padding="12" Margin="0,4,0,0">
           <StackPanel Spacing="8">
             <TextBlock Text="Ban Options" FontSize="13" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -138,7 +138,7 @@
             </StackPanel>
 
             <Button Name="BanButton" Content="Ban Player"
-                    Background="{DynamicResource ErrorBrush}" Foreground="#ffffff"
+                    Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
                     Padding="20,6" CornerRadius="4"
                     Click="OnBanPlayer" />
           </StackPanel>

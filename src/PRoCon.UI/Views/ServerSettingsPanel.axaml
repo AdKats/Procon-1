@@ -8,9 +8,9 @@
     <StackPanel Spacing="16" Margin="16">
 
       <!-- Server Type Banner -->
-      <Border Name="ServerTypeBanner" Background="#2D2D30"
+      <Border Name="ServerTypeBanner" Background="{DynamicResource SurfaceElevatedBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="12,8">
+              CornerRadius="3" Padding="12,8">
         <StackPanel Orientation="Horizontal" Spacing="8">
           <TextBlock Text="Server Type:" FontWeight="SemiBold"
                      Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
@@ -31,7 +31,7 @@
       <!-- ==================== GENERAL ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="General" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -113,7 +113,7 @@
       <!-- ==================== GAMEPLAY ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Gameplay" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -242,7 +242,7 @@
       <!-- ==================== DAMAGE and HEALTH ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Damage and Health" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -301,7 +301,7 @@
       <!-- ==================== TICKETS and ROUNDS ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Tickets and Rounds" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -420,7 +420,7 @@
       <!-- ==================== TEAM KILL ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Team Kill" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -489,7 +489,7 @@
       <!-- ==================== IDLE ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Idle" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />
@@ -528,7 +528,7 @@
       <!-- ==================== MISC ==================== -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-              CornerRadius="8" Padding="16">
+              CornerRadius="3" Padding="16">
         <StackPanel Spacing="10">
           <TextBlock Text="Misc" FontSize="15" FontWeight="Bold"
                      Foreground="{DynamicResource PrimaryBrush}" />

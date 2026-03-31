@@ -91,8 +91,17 @@ namespace PRoCon.UI.Views
         private Avalonia.Controls.Shapes.Ellipse _statusIndicator;
         private Border _disconnectedOverlay;
         private Border _tabBarBorder;
-        private WrapPanel _tabBar;
+        private StackPanel _tabBar;
         private Button _layerTabButton;
+        private Border _breadcrumbBar;
+        private TextBlock _breadcrumbServerName;
+        private TextBlock _breadcrumbTabName;
+        private TextBlock _breadcrumbPlayers;
+        private TextBlock _breadcrumbTickets;
+        private TextBlock _breadcrumbPing;
+        private Canvas _gridOverlay;
+        private Border _dashboardCardsSection;
+        private ItemsControl _dashboardServerCards;
         private TextBlock _overlayTitle;
         private TextBlock _overlayIcon;
         private TextBlock _disconnectedSubtext;
@@ -154,8 +163,19 @@ namespace PRoCon.UI.Views
             _statusIndicator = this.FindControl<Avalonia.Controls.Shapes.Ellipse>("StatusIndicator");
             _disconnectedOverlay = this.FindControl<Border>("DisconnectedOverlay");
             _tabBarBorder = this.FindControl<Border>("TabBarBorder");
-            _tabBar = this.FindControl<WrapPanel>("TabBar");
+            _tabBar = this.FindControl<StackPanel>("TabBar");
             _layerTabButton = this.FindControl<Button>("LayerTabButton");
+            _breadcrumbBar = this.FindControl<Border>("BreadcrumbBar");
+            _breadcrumbServerName = this.FindControl<TextBlock>("BreadcrumbServerName");
+            _breadcrumbTabName = this.FindControl<TextBlock>("BreadcrumbTabName");
+            _breadcrumbPlayers = this.FindControl<TextBlock>("BreadcrumbPlayers");
+            _breadcrumbTickets = this.FindControl<TextBlock>("BreadcrumbTickets");
+            _breadcrumbPing = this.FindControl<TextBlock>("BreadcrumbPing");
+            _gridOverlay = this.FindControl<Canvas>("GridOverlay");
+            _dashboardCardsSection = this.FindControl<Border>("DashboardCardsSection");
+            _dashboardServerCards = this.FindControl<ItemsControl>("DashboardServerCards");
+            DrawGridOverlay();
+            RefreshDashboardCards();
             _overlayTitle = this.FindControl<TextBlock>("OverlayTitle");
             _overlayIcon = this.FindControl<TextBlock>("OverlayIcon");
             _disconnectedSubtext = this.FindControl<TextBlock>("DisconnectedSubtext");
@@ -348,8 +368,24 @@ namespace PRoCon.UI.Views
                     if (client.CurrentServerInfo?.ServerName != null)
                         entry.ServerName = client.CurrentServerInfo.ServerName;
 
+                    // Set game type and player counts from the game client if available
+                    if (client.Game != null)
+                        entry.GameType = client.Game.GameType ?? "";
+                    if (client.CurrentServerInfo != null)
+                    {
+                        entry.PlayerCount = client.CurrentServerInfo.PlayerCount;
+                        entry.MaxPlayerCount = client.CurrentServerInfo.MaxPlayerCount;
+                        entry.LastServerInfo = client.CurrentServerInfo;
+                    }
+
                     if (client.Game != null && client.Game.IsLoggedIn)
                         entry.State = ServerConnectionState.Connected;
+                    else if (client.AutomaticallyConnect && client.State != PRoCon.Core.Remote.ConnectionState.Connected)
+                    {
+                        // Trigger immediate connect instead of waiting for the 20s reconnect timer
+                        entry.State = ServerConnectionState.Connecting;
+                        Task.Run(() => client.Connect());
+                    }
                 }
 
                 UpdateConnectionCount();
@@ -431,6 +467,10 @@ namespace PRoCon.UI.Views
                 client.Game.SendAdminListPlayersPacket(new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
                 client.Game.SendServerinfoPacket();
             }
+
+            // Refresh dashboard cards every 5 seconds when visible
+            if (_disconnectedOverlay?.IsVisible == true && now.Second % 5 == 0)
+                RefreshDashboardCards();
         }
 
         // --- Update Checker ---
@@ -559,7 +599,7 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Connecting;
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#ffab40", $"Connecting to {entry.HostPort}...");
+                    UpdateStatus("WarningBrush", $"Connecting to {entry.HostPort}...");
                     UpdateSidebarButtons();
                     UpdateContentVisibility();
                 }
@@ -570,7 +610,7 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Connecting;
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#ffab40", "Connected, logging in...");
+                    UpdateStatus("WarningBrush", "Connected, logging in...");
                     UpdateContentVisibility();
                 }
             });
@@ -580,7 +620,7 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Disconnected;
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#ef5350", "Disconnected");
+                    UpdateStatus("ErrorBrush", "Disconnected");
                     UpdateSidebarButtons();
                     UpdateContentVisibility();
                 }
@@ -598,7 +638,7 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Connected;
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#66bb6a", $"Logged in to {entry.HostPort}");
+                    UpdateStatus("SuccessBrush", $"Logged in to {entry.HostPort}");
                     UpdateSidebarButtons();
                     UpdateContentVisibility();
                     SwitchTab(6); // Show dashboard on connect
@@ -621,7 +661,7 @@ namespace PRoCon.UI.Views
                 entry.State = ServerConnectionState.Disconnected;
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#ffab40", "Logged out");
+                    UpdateStatus("WarningBrush", "Logged out");
                     UpdateContentVisibility();
                 }
             });
@@ -641,7 +681,10 @@ namespace PRoCon.UI.Views
             client.GameTypeDiscovered += sender =>
             {
                 if (sender.Game != null)
+                {
                     WireGameEvents(sender.Game, entry);
+                    Dispatcher.UIThread.Post(() => { entry.GameType = sender.Game.GameType ?? ""; });
+                }
                 // Also try wiring console when game type discovered
                 Dispatcher.UIThread.Post(() => WireConsoleEvents(client, entry));
             };
@@ -711,21 +754,21 @@ namespace PRoCon.UI.Views
             new System.Text.RegularExpressions.Regex(@"\^[0-9a-zA-Z]", System.Text.RegularExpressions.RegexOptions.Compiled);
 
         private static readonly Avalonia.Media.IBrush DefaultConsoleBrush =
-            new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#eceff1"));
+            new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#c8d8e8"));
 
         private static Avalonia.Media.IBrush GetColorBrushForCode(string code)
         {
             return code switch
             {
                 "^0" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#263238")),  // black
-                "^1" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef5350")),  // red
-                "^2" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#66bb6a")),  // green
-                "^3" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffab40")),  // yellow/orange
-                "^4" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#4fc3f7")),  // blue
+                "^1" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ff3c3c")),  // red
+                "^2" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#00ff88")),  // green
+                "^3" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffaa00")),  // yellow/orange
+                "^4" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#00c8ff")),  // blue
                 "^5" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#00bcd4")),  // cyan
                 "^6" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ce93d8")),  // magenta
-                "^7" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#eceff1")),  // white
-                "^8" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#8899aa")),  // gray
+                "^7" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#c8d8e8")),  // white
+                "^8" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#557799")),  // gray
                 "^9" => new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#f48fb1")),  // pink
                 _ => null
             };
@@ -761,7 +804,7 @@ namespace PRoCon.UI.Views
                 {
                     Text = displayText,
                     RawText = rawText,
-                    ColorBrush = new SolidColorBrush(Color.Parse("#ef5350")), // red
+                    ColorBrush = ResolveThemeBrush("ErrorBrush") ?? new SolidColorBrush(Color.Parse("#ff3c3c")),
                     Weight = Avalonia.Media.FontWeight.Bold
                 };
             }
@@ -903,13 +946,15 @@ namespace PRoCon.UI.Views
 
                 if (_selectedServer == entry)
                 {
-                    UpdateStatus("#66bb6a", name);
+                    UpdateStatus("SuccessBrush", name);
                     UpdateServerInfoPanel(name, $"{map} — {mode} — {info.PlayerCount}/{info.MaxPlayerCount} players");
                     UpdateDashboard(entry, sender);
                 }
 
                 UpdateConnectionCount();
                 UpdateLandingStats();
+                // Refresh dashboard cards if landing page is visible
+                if (_disconnectedOverlay?.IsVisible == true) RefreshDashboardCards();
             });
 
             game.PlayerJoin += (sender, playerName) => Dispatcher.UIThread.Post(() =>
@@ -1012,11 +1057,16 @@ namespace PRoCon.UI.Views
                 {
                     if (child is Button tabBtn && tabBtn.Tag is string ts && int.TryParse(ts, out int ti))
                     {
-                        tabBtn.Foreground = new SolidColorBrush(Color.Parse(ti == index ? "#4fc3f7" : "#8899aa"));
-                        tabBtn.FontWeight = ti == index ? Avalonia.Media.FontWeight.SemiBold : Avalonia.Media.FontWeight.Normal;
+                        bool isActive = ti == index;
+                        tabBtn.Foreground = isActive ? ThemeBrush("PrimaryBrush") : ThemeBrush("TextDisabledBrush");
+                        tabBtn.FontWeight = isActive ? Avalonia.Media.FontWeight.SemiBold : Avalonia.Media.FontWeight.Normal;
+                        tabBtn.BorderBrush = isActive ? ThemeBrush("PrimaryBrush") : Brushes.Transparent;
+                        tabBtn.Background = isActive ? ThemeBrush("NavActiveBackgroundBrush") : Brushes.Transparent;
                     }
                 }
             }
+
+            UpdateBreadcrumb();
 
             // Auto-scroll console to bottom when switching to Console tab
             if (index == 11)
@@ -1042,9 +1092,150 @@ namespace PRoCon.UI.Views
             if (_serverList != null) _serverList.SelectedItem = null;
 
             ClearServerContext();
-            UpdateStatus("#8899aa", "PRoCon Frostbite 2.0");
+            UpdateStatus("TextSecondaryBrush", "PRoCon Frostbite 2.0");
             UpdateSidebarButtons();
             UpdateContentVisibility();
+            RefreshDashboardCards();
+        }
+
+        private void RefreshDashboardCards()
+        {
+            if (_dashboardServerCards == null || _dashboardCardsSection == null) return;
+
+            var cards = new List<Control>();
+            foreach (var entry in _servers)
+            {
+                if (entry.State == ServerConnectionState.Disconnected && entry.ServerName == null)
+                    continue; // Skip servers we've never connected to
+
+                var client = _application?.Connections?[entry.HostPort];
+                var info = client?.CurrentServerInfo;
+
+                // Resolve friendly names via GameData lookup
+                string name = entry.ServerName ?? entry.HostPort;
+                string friendlyMap = info != null ? (GameData.GetMapName(info.Map ?? "") ?? info.Map ?? "") : "";
+                string friendlyMode = info != null ? (GameData.GetModeName(info.GameMode ?? "") ?? info.GameMode ?? "") : "";
+                string mapMode = info != null ? $"{friendlyMap} — {friendlyMode}" : entry.HostPort;
+                string players = info != null ? $"{info.PlayerCount}/{info.MaxPlayerCount}" : "--";
+                string game = entry.GameType ?? "?";
+                bool connected = entry.State == ServerConnectionState.Connected;
+                bool connecting = entry.State == ServerConnectionState.Connecting;
+
+                // Build card
+                var card = new Border
+                {
+                    Width = 280,
+                    Margin = new Avalonia.Thickness(4),
+                    BorderThickness = new Avalonia.Thickness(1),
+                    BorderBrush = connected ? ThemeBrush("GlassBorderBrush") : ThemeBrush("BorderSubtleBrush"),
+                    Background = ThemeBrush("GlassPanelBrush"),
+                    CornerRadius = new Avalonia.CornerRadius(3),
+                    BoxShadow = new Avalonia.Media.BoxShadows(new Avalonia.Media.BoxShadow { Blur = 16, Color = Color.Parse("#66000000") }),
+                    Cursor = new Avalonia.Input.Cursor(Avalonia.Input.StandardCursorType.Hand),
+                    Tag = entry,
+                };
+                card.PointerPressed += (s, args) =>
+                {
+                    if (s is Border b && b.Tag is ServerEntry srv)
+                    {
+                        if (_serverList != null) _serverList.SelectedItem = srv;
+                        LoadServerView(srv);
+                        UpdateSidebarButtons();
+                        UpdateContentVisibility();
+                        if (srv.IsConnected) SwitchTab(6);
+                    }
+                };
+
+                var cardContent = new DockPanel();
+
+                // Header
+                var header = new Border
+                {
+                    Background = ThemeBrush("GlassHeaderBrush"),
+                    BorderBrush = ThemeBrush("BorderBrush"),
+                    BorderThickness = new Avalonia.Thickness(0, 0, 0, 1),
+                    Padding = new Avalonia.Thickness(12, 8),
+                };
+                var headerPanel = new DockPanel();
+
+                // Status dot
+                var statusDot = new Avalonia.Controls.Shapes.Ellipse
+                {
+                    Width = 8,
+                    Height = 8,
+                    Fill = connected ? ThemeBrush("ConnectedBrush")
+                         : connecting ? ThemeBrush("WarningBrush")
+                         : ThemeBrush("DisconnectedBrush"),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Margin = new Avalonia.Thickness(0, 0, 8, 0),
+                };
+                if (connected) statusDot.Classes.Add("pulse-dot");
+
+                var nameText = new TextBlock
+                {
+                    Text = name,
+                    FontSize = 12,
+                    FontWeight = Avalonia.Media.FontWeight.SemiBold,
+                    Foreground = ThemeBrush("TextPrimaryBrush"),
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                };
+
+                var playerText = new TextBlock
+                {
+                    Text = players,
+                    FontSize = 14,
+                    FontWeight = Avalonia.Media.FontWeight.Bold,
+                    Foreground = connected ? ThemeBrush("PrimaryBrush") : ThemeBrush("TextDisabledBrush"),
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    Margin = new Avalonia.Thickness(8, 0, 0, 0),
+                };
+                DockPanel.SetDock(playerText, Avalonia.Controls.Dock.Right);
+
+                headerPanel.Children.Add(playerText);
+                headerPanel.Children.Add(statusDot);
+                headerPanel.Children.Add(nameText);
+                header.Child = headerPanel;
+                DockPanel.SetDock(header, Avalonia.Controls.Dock.Top);
+                cardContent.Children.Add(header);
+
+                // Body
+                var body = new StackPanel
+                {
+                    Margin = new Avalonia.Thickness(12, 8),
+                    Spacing = 2,
+                };
+                body.Children.Add(new TextBlock
+                {
+                    Text = mapMode,
+                    FontSize = 10,
+                    Foreground = ThemeBrush("TextSecondaryBrush"),
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                });
+                var badgePanel = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6, Margin = new Avalonia.Thickness(0, 4, 0, 0) };
+                badgePanel.Children.Add(new TextBlock
+                {
+                    Text = game,
+                    FontSize = 9,
+                    Foreground = ThemeBrush("PrimaryBrush"),
+                });
+                badgePanel.Children.Add(new TextBlock
+                {
+                    Text = connected ? "ONLINE" : connecting ? "CONNECTING" : "OFFLINE",
+                    FontSize = 9,
+                    Foreground = connected ? ThemeBrush("SuccessBrush")
+                               : connecting ? ThemeBrush("WarningBrush")
+                               : ThemeBrush("TextDisabledBrush"),
+                });
+                body.Children.Add(badgePanel);
+                cardContent.Children.Add(body);
+
+                card.Child = cardContent;
+                cards.Add(card);
+            }
+
+            _dashboardCardsSection.IsVisible = cards.Count > 0;
+            _dashboardServerCards.ItemsSource = cards;
         }
 
         private async void OnShowConnectForm(object sender, RoutedEventArgs e)
@@ -1061,7 +1252,7 @@ namespace PRoCon.UI.Views
             bool isLayer = dialog.IsLayerConnection;
             string hostPort = $"{host}:{port}";
 
-            UpdateStatus("#ffab40", $"Connecting to {hostPort}...");
+            UpdateStatus("WarningBrush", $"Connecting to {hostPort}...");
 
             try
             {
@@ -1117,7 +1308,7 @@ namespace PRoCon.UI.Views
 
                     if (client == null)
                     {
-                        UpdateStatus("#ef5350", "Failed to create connection");
+                        UpdateStatus("ErrorBrush", "Failed to create connection");
                         return;
                     }
 
@@ -1140,7 +1331,7 @@ namespace PRoCon.UI.Views
             }
             catch (System.Exception ex)
             {
-                UpdateStatus("#ef5350", $"Error: {ex.Message}");
+                UpdateStatus("ErrorBrush", $"Error: {ex.Message}");
             }
         }
 
@@ -1186,7 +1377,7 @@ namespace PRoCon.UI.Views
             if (client == null) return;
 
             _selectedServer.State = ServerConnectionState.Connecting;
-            UpdateStatus("#ffab40", $"Connecting to {_selectedServer.HostPort}...");
+            UpdateStatus("WarningBrush", $"Connecting to {_selectedServer.HostPort}...");
             client.AutomaticallyConnect = true;
             UpdateSidebarButtons();
         }
@@ -1204,7 +1395,7 @@ namespace PRoCon.UI.Views
             _selectedServer.ConsoleLogger = null;
             _wiredConsoles.Remove(_selectedServer.HostPort);
 
-            UpdateStatus("#ef5350", "Disconnected");
+            UpdateStatus("ErrorBrush", "Disconnected");
             UpdateSidebarButtons();
             UpdateContentVisibility();
         }
@@ -1264,7 +1455,7 @@ namespace PRoCon.UI.Views
             _serverLookup.Remove(entry.HostPort);
             _selectedServer = null;
 
-            UpdateStatus("#8899aa", "Server removed");
+            UpdateStatus("TextSecondaryBrush", "Server removed");
             ShowConnectButton(false);
             ShowDisconnectButton(false);
             ShowRemoveButton(false);
@@ -1356,9 +1547,9 @@ namespace PRoCon.UI.Views
 
             // Status
             if (connected)
-                UpdateStatus("#66bb6a", entry.ServerName ?? entry.HostPort);
+                UpdateStatus("SuccessBrush", entry.ServerName ?? entry.HostPort);
             else
-                UpdateStatus("#8899aa", entry.HostPort);
+                UpdateStatus("TextSecondaryBrush", entry.HostPort);
 
             // Server info panel (on connection tab)
             if (connected && entry.LastServerInfo != null)
@@ -1569,7 +1760,7 @@ namespace PRoCon.UI.Views
                     {
                         Text = $"[{timestamp2}] Error: Too few parameters. Usage: {cmdDef.Signature}",
                         RawText = $"Error: Too few parameters for {cmdName}",
-                        ColorBrush = new SolidColorBrush(Color.Parse("#ef5350")),
+                        ColorBrush = ThemeBrush("ErrorBrush") as IBrush ?? Brushes.Red,
                         Weight = Avalonia.Media.FontWeight.Bold
                     });
                     if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
@@ -1583,7 +1774,7 @@ namespace PRoCon.UI.Views
                     {
                         Text = $"[{timestamp2}] Error: Too many parameters. Usage: {cmdDef.Signature}",
                         RawText = $"Error: Too many parameters for {cmdName}",
-                        ColorBrush = new SolidColorBrush(Color.Parse("#ef5350")),
+                        ColorBrush = ThemeBrush("ErrorBrush") as IBrush ?? Brushes.Red,
                         Weight = Avalonia.Media.FontWeight.Bold
                     });
                     if (_consoleLogList != null && _consoleLogList.ItemCount > 0)
@@ -1602,7 +1793,7 @@ namespace PRoCon.UI.Views
             {
                 Text = $"[{timestamp}] > {cmd}",
                 RawText = cmd,
-                ColorBrush = new SolidColorBrush(Color.Parse("#ffab40")),
+                ColorBrush = ThemeBrush("WarningBrush") as IBrush ?? Brushes.Orange,
                 Weight = Avalonia.Media.FontWeight.Bold
             };
             _selectedServer.ConsoleLines.Add(line);
@@ -1700,24 +1891,97 @@ namespace PRoCon.UI.Views
             await dialog.ShowDialog(this);
         }
 
-        private void UpdateStatus(string color, string text)
+        /// <summary>Static brush resolver for use in static methods.</summary>
+        private static IBrush ResolveThemeBrush(string resourceKey)
+        {
+            try
+            {
+                var app = Avalonia.Application.Current;
+                if (app != null && app.TryGetResource(resourceKey, app.ActualThemeVariant, out var val) && val is IBrush b)
+                    return b;
+            }
+            catch { }
+            return null;
+        }
+
+        /// <summary>Resolve a brush from the current theme's resource dictionary.</summary>
+        private IBrush ThemeBrush(string resourceKey)
+        {
+            if (Avalonia.Application.Current != null &&
+                Avalonia.Application.Current.TryFindResource(resourceKey, Avalonia.Application.Current.ActualThemeVariant, out var value) &&
+                value is IBrush brush)
+                return brush;
+            return Brushes.Transparent;
+        }
+
+        /// <summary>Resolve a color from the current theme's resource dictionary.</summary>
+        private Color ThemeColor(string resourceKey)
+        {
+            if (Avalonia.Application.Current != null &&
+                Avalonia.Application.Current.TryFindResource(resourceKey, Avalonia.Application.Current.ActualThemeVariant, out var value) &&
+                value is Color color)
+                return color;
+            return Colors.Transparent;
+        }
+
+        private void UpdateStatus(string brushKey, string text)
         {
             if (_statusIndicator != null)
             {
-                _statusIndicator.Fill = new SolidColorBrush(Color.Parse(color));
-                // Pulse when connected (green) or connecting (orange)
-                bool shouldPulse = color == "#66bb6a" || color == "#ffab40";
-                if (shouldPulse && !_statusIndicator.Classes.Contains("pulse"))
-                    _statusIndicator.Classes.Add("pulse");
-                else if (!shouldPulse)
-                    _statusIndicator.Classes.Remove("pulse");
+                _statusIndicator.Fill = ThemeBrush(brushKey) as IBrush ?? Brushes.Gray;
             }
             if (_statusText != null) _statusText.Text = text;
+            // Update window title dynamically
+            this.Title = string.IsNullOrEmpty(text) ? "PRoCon Frostbite" : $"PRoCon — {text}";
         }
 
         private void UpdateServerInfoPanel(string title, string details)
         {
             // Status is shown in bottom bar and dashboard — this is now a no-op
+        }
+
+        private void DrawGridOverlay()
+        {
+            if (_gridOverlay == null) return;
+            _gridOverlay.Children.Clear();
+            var brush = ThemeBrush("GridLineBrush");
+            // Draw enough lines to cover a large window (2000px each direction)
+            for (double x = 0; x < 2000; x += 40)
+            {
+                _gridOverlay.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Avalonia.Point(x, 0),
+                    EndPoint = new Avalonia.Point(x, 2000),
+                    Stroke = brush,
+                    StrokeThickness = 1
+                });
+            }
+            for (double y = 0; y < 2000; y += 40)
+            {
+                _gridOverlay.Children.Add(new Avalonia.Controls.Shapes.Line
+                {
+                    StartPoint = new Avalonia.Point(0, y),
+                    EndPoint = new Avalonia.Point(2000, y),
+                    Stroke = brush,
+                    StrokeThickness = 1
+                });
+            }
+        }
+
+        private static readonly string[] TabNames = { "", "CHAT", "PLAYERS", "MAPS", "BANS", "RESERVED", "INFO",
+            "SETTINGS", "PLUGINS", "ACCOUNTS", "EVENTS", "CONSOLE", "LAYER", "", "SPECTATORS", "PUNKBUSTER", "CHAT MOD" };
+
+        private void UpdateBreadcrumb()
+        {
+            if (_breadcrumbBar == null) return;
+            bool show = _selectedServer != null && _tabBarBorder?.IsVisible == true;
+            _breadcrumbBar.IsVisible = show;
+            if (!show) return;
+
+            if (_breadcrumbServerName != null)
+                _breadcrumbServerName.Text = _selectedServer?.ServerName ?? _selectedServer?.HostPort ?? "";
+            if (_breadcrumbTabName != null && _activeTab >= 0 && _activeTab < TabNames.Length)
+                _breadcrumbTabName.Text = TabNames[_activeTab];
         }
 
         private void UpdateContentVisibility()
@@ -1729,6 +1993,8 @@ namespace PRoCon.UI.Views
 
             if (_disconnectedOverlay != null) _disconnectedOverlay.IsVisible = !connected;
             if (_tabBarBorder != null) _tabBarBorder.IsVisible = connected;
+            UpdateBreadcrumb();
+            if (!connected) RefreshDashboardCards();
 
             // Hide Layer tab for layer connections (can't manage a layer from a layer)
             if (_layerTabButton != null)
@@ -1781,7 +2047,7 @@ namespace PRoCon.UI.Views
             // Badges
             if (_dashRankedBadge != null)
             {
-                _dashRankedBadge.Background = new SolidColorBrush(Color.Parse(info.Ranked ? "#66bb6a" : "#ef5350"));
+                _dashRankedBadge.Background = info.Ranked ? ThemeBrush("ToggleOnBrush") : ThemeBrush("ToggleOffBrush");
                 if (_dashRankedText != null) _dashRankedText.Text = info.Ranked ? "RANKED" : "UNRANKED";
             }
             if (_dashPbBadge != null) _dashPbBadge.IsVisible = info.PunkBuster;
@@ -1858,7 +2124,7 @@ namespace PRoCon.UI.Views
                 {
                     StartPoint = new Avalonia.Point(0, y),
                     EndPoint = new Avalonia.Point(w, y),
-                    Stroke = new SolidColorBrush(Color.Parse("#1a2a3a")),
+                    Stroke = ThemeBrush("GridLineBrush"),
                     StrokeThickness = 1
                 };
                 _playerGraphCanvas.Children.Add(gridLine);
@@ -1869,7 +2135,7 @@ namespace PRoCon.UI.Views
                 {
                     Text = val.ToString(),
                     FontSize = 9,
-                    Foreground = new SolidColorBrush(Color.Parse("#556677"))
+                    Foreground = ThemeBrush("TextDisabledBrush")
                 };
                 Canvas.SetLeft(label, 2);
                 Canvas.SetTop(label, y - 12);
@@ -1895,7 +2161,7 @@ namespace PRoCon.UI.Views
             var fill = new Avalonia.Controls.Shapes.Path
             {
                 Data = geometry,
-                Fill = new SolidColorBrush(Color.Parse("#1a4fc3f7")),
+                Fill = ThemeBrush("GridLineBrush"),
             };
             _playerGraphCanvas.Children.Add(fill);
 
@@ -1917,7 +2183,7 @@ namespace PRoCon.UI.Views
             var line = new Avalonia.Controls.Shapes.Path
             {
                 Data = lineGeometry,
-                Stroke = new SolidColorBrush(Color.Parse("#4fc3f7")),
+                Stroke = ThemeBrush("PrimaryBrush"),
                 StrokeThickness = 2
             };
             _playerGraphCanvas.Children.Add(line);
@@ -1931,7 +2197,7 @@ namespace PRoCon.UI.Views
                 {
                     Width = 6,
                     Height = 6,
-                    Fill = new SolidColorBrush(Color.Parse("#4fc3f7"))
+                    Fill = ThemeBrush("PrimaryBrush")
                 };
                 Canvas.SetLeft(dot, lastX - 3);
                 Canvas.SetTop(dot, lastY - 3);

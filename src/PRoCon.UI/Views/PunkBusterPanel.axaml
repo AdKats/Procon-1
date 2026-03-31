@@ -10,7 +10,7 @@
     <!-- Command input at bottom -->
     <Border DockPanel.Dock="Bottom"
             Background="{DynamicResource SurfaceElevatedBrush}"
-            CornerRadius="6" Padding="12" Margin="0,8,0,0">
+            CornerRadius="3" Padding="12" Margin="0,8,0,0">
       <DockPanel>
         <TextBlock DockPanel.Dock="Top" Text="Send PunkBuster Command" FontSize="13" FontWeight="SemiBold"
                    Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8" />
@@ -32,7 +32,7 @@
 
     <!-- Log output -->
     <Border Background="{DynamicResource BackgroundBrush}"
-            CornerRadius="6" Padding="4"
+            CornerRadius="3" Padding="4"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
       <ListBox Name="LogListBox"
                Background="Transparent"

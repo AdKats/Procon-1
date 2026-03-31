@@ -41,9 +41,10 @@ namespace PRoCon.UI.Models
         public string GameType
         {
             get => _gameType;
-            set { _gameType = value; Notify(nameof(GameType)); Notify(nameof(DisplayLabel)); Notify(nameof(GameTypeLabel)); Notify(nameof(GameHeaderText)); }
+            set { _gameType = value; Notify(nameof(GameType)); Notify(nameof(HasGameType)); Notify(nameof(DisplayLabel)); Notify(nameof(GameTypeLabel)); Notify(nameof(GameHeaderText)); }
         }
 
+        public bool HasGameType => !string.IsNullOrEmpty(GameType);
         public string GameTypeLabel => !string.IsNullOrEmpty(GameType) ? $"[{GameType}]" : "";
 
         private ServerConnectionState _state = ServerConnectionState.Disconnected;
@@ -68,16 +69,28 @@ namespace PRoCon.UI.Models
             }
         }
 
-        // Status color brush for the indicator dot
-        private static readonly Avalonia.Media.ISolidColorBrush ConnectedBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#66bb6a"));
-        private static readonly Avalonia.Media.ISolidColorBrush ConnectingBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffab40"));
-        private static readonly Avalonia.Media.ISolidColorBrush DisconnectedBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef5350"));
+        // Status color brush for the indicator dot — resolved from theme resources
+        private static Avalonia.Media.ISolidColorBrush ResolveBrush(string key, string fallback)
+        {
+            try
+            {
+                var app = Avalonia.Application.Current;
+                if (app != null && app.Styles != null)
+                {
+                    if (app.TryGetResource(key, app.ActualThemeVariant, out var value) &&
+                        value is Avalonia.Media.ISolidColorBrush brush)
+                        return brush;
+                }
+            }
+            catch { }
+            return new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(fallback));
+        }
 
         public Avalonia.Media.ISolidColorBrush StatusColor => _state switch
         {
-            ServerConnectionState.Connected => ConnectedBrush,
-            ServerConnectionState.Connecting => ConnectingBrush,
-            _ => DisconnectedBrush,
+            ServerConnectionState.Connected => ResolveBrush("ConnectedBrush", "#00ff88"),
+            ServerConnectionState.Connecting => ResolveBrush("WarningBrush", "#ffaa00"),
+            _ => ResolveBrush("DisconnectedBrush", "#ff3c3c"),
         };
 
         // Per-server state

@@ -14,6 +14,15 @@ namespace PRoCon.UI.Views
     {
         private PRoConClient _client;
 
+        private static IBrush ResolveBrush(string key)
+        {
+            if (Avalonia.Application.Current != null &&
+                Avalonia.Application.Current.TryFindResource(key, Avalonia.Application.Current.ActualThemeVariant, out var value) &&
+                value is IBrush brush)
+                return brush;
+            return Brushes.Transparent;
+        }
+
         public LayerPanel()
         {
             InitializeComponent();
@@ -249,7 +258,7 @@ namespace PRoCon.UI.Views
             var statusText = this.FindControl<TextBlock>("LayerStatusText");
 
             if (indicator != null)
-                indicator.Fill = new SolidColorBrush(Color.Parse(isOnline ? "#66bb6a" : "#ef5350"));
+                indicator.Fill = ResolveBrush(isOnline ? "ConnectedBrush" : "DisconnectedBrush");
             if (statusText != null)
                 statusText.Text = isOnline ? "Online" : "Offline";
 

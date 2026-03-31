@@ -22,9 +22,17 @@ namespace PRoCon.UI.Views
 
     public class PluginEntry : INotifyPropertyChanged
     {
-        private static readonly Avalonia.Media.ISolidColorBrush EnabledBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#66bb6a"));
-        private static readonly Avalonia.Media.ISolidColorBrush DisabledBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ef5350"));
-        private static readonly Avalonia.Media.ISolidColorBrush EnablingBrush = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse("#ffab40"));
+        private static Avalonia.Media.ISolidColorBrush ResolveBrush(string key, string fallback)
+        {
+            if (Avalonia.Application.Current != null &&
+                Avalonia.Application.Current.TryFindResource(key, Avalonia.Application.Current.ActualThemeVariant, out var value) &&
+                value is Avalonia.Media.ISolidColorBrush brush)
+                return brush;
+            return new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.Parse(fallback));
+        }
+        private static Avalonia.Media.ISolidColorBrush EnabledBrush => ResolveBrush("SuccessBrush", "#00ff88");
+        private static Avalonia.Media.ISolidColorBrush DisabledBrush => ResolveBrush("ErrorBrush", "#ff3c3c");
+        private static Avalonia.Media.ISolidColorBrush EnablingBrush => ResolveBrush("WarningBrush", "#ffaa00");
 
         public string ClassName { get; set; } = "";
         public string DisplayName { get; set; } = "";

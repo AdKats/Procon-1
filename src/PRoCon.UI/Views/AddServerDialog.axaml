@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterOwner"
         Background="{DynamicResource BackgroundBrush}">
 
-  <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="8" Padding="24" Margin="16">
+  <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="3" Padding="24" Margin="16">
     <StackPanel Spacing="14">
       <TextBlock Name="DialogTitle" Text="Add Game Server" FontSize="18" FontWeight="Bold"
                  Foreground="{DynamicResource PrimaryBrush}" />
@@ -17,7 +17,7 @@
       <StackPanel Orientation="Horizontal" Spacing="4">
         <Button Name="ModeDirectBtn" Content="Direct RCON" Padding="14,6" CornerRadius="4"
                 FontSize="12" FontWeight="SemiBold"
-                Background="{DynamicResource PrimaryBrush}" Foreground="#0f1923"
+                Background="{DynamicResource PrimaryBrush}" Foreground="{DynamicResource BackgroundBrush}"
                 Click="OnModeDirectClick" />
         <Button Name="ModeLayerBtn" Content="PRoCon Layer" Padding="14,6" CornerRadius="4"
                 FontSize="12"

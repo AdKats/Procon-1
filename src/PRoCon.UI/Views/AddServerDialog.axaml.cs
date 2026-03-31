@@ -18,6 +18,15 @@ namespace PRoCon.UI.Views
             InitializeComponent();
         }
 
+        private static IBrush ResolveBrush(string key)
+        {
+            if (Avalonia.Application.Current != null &&
+                Avalonia.Application.Current.TryFindResource(key, Avalonia.Application.Current.ActualThemeVariant, out var value) &&
+                value is IBrush brush)
+                return brush;
+            return Brushes.Transparent;
+        }
+
         private void OnModeDirectClick(object sender, RoutedEventArgs e)
         {
             IsLayerConnection = false;
@@ -43,8 +52,8 @@ namespace PRoCon.UI.Views
 
             if (IsLayerConnection)
             {
-                if (directBtn != null) { directBtn.Background = new SolidColorBrush(Color.Parse("#2a3a4a")); directBtn.Foreground = new SolidColorBrush(Color.Parse("#8899aa")); }
-                if (layerBtn != null) { layerBtn.Background = new SolidColorBrush(Color.Parse("#4fc3f7")); layerBtn.Foreground = new SolidColorBrush(Color.Parse("#0f1923")); }
+                if (directBtn != null) { directBtn.Background = ResolveBrush("ButtonSecondaryBrush"); directBtn.Foreground = ResolveBrush("TextSecondaryBrush"); }
+                if (layerBtn != null) { layerBtn.Background = ResolveBrush("PrimaryBrush"); layerBtn.Foreground = ResolveBrush("BackgroundBrush"); }
                 if (title != null) title.Text = "Connect to PRoCon Layer";
                 if (desc != null) desc.Text = "Connect to a remote PRoCon instance via its SignalR layer service. Requires a PRoCon account.";
                 if (usernameLabel != null) usernameLabel.IsVisible = true;
@@ -54,8 +63,8 @@ namespace PRoCon.UI.Views
             }
             else
             {
-                if (directBtn != null) { directBtn.Background = new SolidColorBrush(Color.Parse("#4fc3f7")); directBtn.Foreground = new SolidColorBrush(Color.Parse("#0f1923")); }
-                if (layerBtn != null) { layerBtn.Background = new SolidColorBrush(Color.Parse("#2a3a4a")); layerBtn.Foreground = new SolidColorBrush(Color.Parse("#8899aa")); }
+                if (directBtn != null) { directBtn.Background = ResolveBrush("PrimaryBrush"); directBtn.Foreground = ResolveBrush("BackgroundBrush"); }
+                if (layerBtn != null) { layerBtn.Background = ResolveBrush("ButtonSecondaryBrush"); layerBtn.Foreground = ResolveBrush("TextSecondaryBrush"); }
                 if (title != null) title.Text = "Add Game Server";
                 if (desc != null) desc.Text = "Connect directly to a game server's RCON port.";
                 if (usernameLabel != null) usernameLabel.IsVisible = false;

@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <AvaloniaResource Include="procon.ico" />
+    <AvaloniaResource Include="Assets\myrcon_logo.png" />
   </ItemGroup>
 
 </Project>
