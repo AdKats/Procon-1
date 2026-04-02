@@ -268,6 +268,13 @@
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                     Padding="6,4" FontSize="11"                     IsVisible="False"
                     Click="OnDisconnect" />
+            <Button Name="AutoConnectButton"
+                    Content="AUTO-CONNECT: ON"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                    Padding="6,4" FontSize="9"                     IsVisible="False"
+                    Click="OnToggleAutoConnect" />
             <Button Name="RemoveServerButton"
                     Content="REMOVE" Classes="danger"
                     HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"

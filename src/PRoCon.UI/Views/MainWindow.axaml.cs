@@ -122,6 +122,7 @@ namespace PRoCon.UI.Views
         private TextBlock _dashGraphRange;
         private Button _connectSelectedButton;
         private Button _disconnectButton;
+        private Button _autoConnectButton;
         private Button _removeServerButton;
         private TextBlock _connectionCountText;
         private TextBlock _landingServerCount;
@@ -202,6 +203,7 @@ namespace PRoCon.UI.Views
             _dashGraphRange = this.FindControl<TextBlock>("DashGraphRange");
             _connectSelectedButton = this.FindControl<Button>("ConnectSelectedButton");
             _disconnectButton = this.FindControl<Button>("DisconnectButton");
+            _autoConnectButton = this.FindControl<Button>("AutoConnectButton");
             _removeServerButton = this.FindControl<Button>("RemoveServerButton");
             _connectionCountText = this.FindControl<TextBlock>("ConnectionCountText");
             _landingServerCount = this.FindControl<TextBlock>("LandingServerCount");
@@ -1478,6 +1480,17 @@ namespace PRoCon.UI.Views
             UpdateContentVisibility();
         }
 
+        private void OnToggleAutoConnect(object sender, RoutedEventArgs e)
+        {
+            if (_selectedServer == null) return;
+            var client = GetClient(_selectedServer.HostPort);
+            if (client == null) return;
+
+            client.AutomaticallyConnect = !client.AutomaticallyConnect;
+            UpdateSidebarButtons();
+            _application.SaveMainConfig();
+        }
+
         private async void OnRemoveServer(object sender, RoutedEventArgs e)
         {
             if (_selectedServer == null) return;
@@ -2327,6 +2340,18 @@ namespace PRoCon.UI.Views
             ShowConnectButton(hasSelection && !connected && !connecting);
             ShowDisconnectButton(hasSelection && (connected || connecting));
             ShowRemoveButton(hasSelection);
+
+            // Auto-connect toggle — always visible when a server is selected
+            if (_autoConnectButton != null)
+            {
+                _autoConnectButton.IsVisible = hasSelection;
+                if (hasSelection)
+                {
+                    var client = GetClient(_selectedServer.HostPort);
+                    bool autoOn = client?.AutomaticallyConnect ?? false;
+                    _autoConnectButton.Content = autoOn ? "AUTO-CONNECT: ON" : "AUTO-CONNECT: OFF";
+                }
+            }
         }
 
         private void ShowConnectButton(bool show)
