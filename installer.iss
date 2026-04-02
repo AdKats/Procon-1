@@ -64,6 +64,7 @@ Name: "core"; Description: "PRoCon v2 Application"; Types: full bf4only bf3only 
 Name: "plugins"; Description: "Game Server Plugins"; Types: full bf4only bf3only
 Name: "plugins\bf4"; Description: "Battlefield 4 Plugins (15 plugins)"; Types: full bf4only
 Name: "plugins\bf3"; Description: "Battlefield 3 Plugins (15 plugins)"; Types: full bf3only
+Name: "service"; Description: "PRoCon Service (background service)"; Types: full custom
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"
@@ -72,24 +73,28 @@ Name: "autostart"; Description: "Start PRoCon when Windows starts"; GroupDescrip
 Name: "firewall"; Description: "Add Windows Firewall exception"; GroupDescription: "Options:"; Flags: checkedonce
 
 [Files]
-; PRoCon application files
-Source: "PRoCon\*"; DestDir: "{app}"; Components: core; Flags: ignoreversion recursesubdirs createallsubdirs
-
-; Plugin files
-Source: "Plugins\BF4\*"; DestDir: "{app}\Plugins\BF4"; Components: plugins\bf4; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Plugins\BF3\*"; DestDir: "{app}\Plugins\BF3"; Components: plugins\bf3; Flags: ignoreversion recursesubdirs createallsubdirs
+; Core application
+Source: "PRoCon\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
+; Service (optional — only if staged by CI)
+Source: "PRoCon\Service\*"; DestDir: "{app}\Service"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: service
+; Service helper scripts
+Source: "install-service.bat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: service
+Source: "uninstall-service.bat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: service
+; Plugins — installed to user data directory, don't overwrite existing
+Source: "Plugins\BF4\*"; DestDir: "{userappdata}\PRoCon\Plugins\BF4"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist; Components: plugins\bf4
+Source: "Plugins\BF3\*"; DestDir: "{userappdata}\PRoCon\Plugins\BF3"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist; Components: plugins\bf3
 
 [Dirs]
-; Create directories for portable mode
-Name: "{app}\Configs"; Components: core
-Name: "{app}\Logs"; Components: core
-Name: "{app}\Cache"; Components: core
-Name: "{app}\Plugins\BF3"; Components: core
-Name: "{app}\Plugins\BF4"; Components: core
-Name: "{app}\Plugins\BFBC2"; Components: core
-Name: "{app}\Plugins\BFHL"; Components: core
-Name: "{app}\Plugins\MOH"; Components: core
-Name: "{app}\Plugins\MOHW"; Components: core
+; Data directories live in %APPDATA%\PRoCon\ (not inside program folder)
+Name: "{userappdata}\PRoCon\Configs"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Logs"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Cache"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\BF3"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\BF4"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\BFBC2"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\BFHL"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\MOH"; Permissions: users-modify
+Name: "{userappdata}\PRoCon\Plugins\MOHW"; Permissions: users-modify
 
 [Icons]
 ; Desktop shortcut
@@ -97,9 +102,9 @@ Name: "{autodesktop}\PRoCon v2"; Filename: "{app}\PRoCon.UI.exe"; WorkingDir: "{
 
 ; Start Menu
 Name: "{group}\PRoCon v2"; Filename: "{app}\PRoCon.UI.exe"; WorkingDir: "{app}"; Tasks: startmenu
-Name: "{group}\Plugin Folder"; Filename: "{app}\Plugins"; Tasks: startmenu
-Name: "{group}\Config Folder"; Filename: "{app}\Configs"; Tasks: startmenu
-Name: "{group}\Logs Folder"; Filename: "{app}\Logs"; Tasks: startmenu
+Name: "{group}\Plugin Folder"; Filename: "{userappdata}\PRoCon\Plugins"; Tasks: startmenu
+Name: "{group}\Config Folder"; Filename: "{userappdata}\PRoCon\Configs"; Tasks: startmenu
+Name: "{group}\Logs Folder"; Filename: "{userappdata}\PRoCon\Logs"; Tasks: startmenu
 Name: "{group}\Uninstall PRoCon v2"; Filename: "{uninstallexe}"; Tasks: startmenu
 
 [Registry]
@@ -120,6 +125,18 @@ Filename: "{app}\PRoCon.UI.exe"; Description: "Launch PRoCon v2"; WorkingDir: "{
 [UninstallRun]
 ; Remove firewall rule on uninstall
 Filename: "netsh"; Parameters: "advfirewall firewall delete rule name=""PRoCon v2"""; Flags: runhidden; RunOnceId: "RemoveFirewall"
+
+[InstallDelete]
+; Clean old program files on upgrade — data dirs are in %APPDATA%\PRoCon\ now
+Type: files; Name: "{app}\*.exe"
+Type: files; Name: "{app}\*.dll"
+Type: files; Name: "{app}\*.pdb"
+Type: files; Name: "{app}\*.xml"
+Type: files; Name: "{app}\*.json"
+Type: files; Name: "{app}\*.ico"
+Type: files; Name: "{app}\install-info.txt"
+Type: files; Name: "{app}\procon-ui-crash.log"
+Type: filesandordirs; Name: "{app}\Service"
 
 [UninstallDelete]
 ; Clean up generated files (but not configs — user data)
@@ -149,13 +166,23 @@ end;
 // ============================================================
 procedure BackupConfigs;
 var
-  ConfigDir, BackupDir, TimestampDir: String;
+  ConfigDir, BackupDir, BackupBase, TimestampDir: String;
 begin
-  ConfigDir := ExpandConstant('{app}\Configs');
-  if DirExists(ConfigDir) and not BackupDone then
+  if BackupDone then Exit;
+
+  // Prefer new AppData location; fall back to legacy {app}\Configs
+  ConfigDir := ExpandConstant('{userappdata}\PRoCon\Configs');
+  BackupBase := ExpandConstant('{userappdata}\PRoCon');
+  if not DirExists(ConfigDir) then
+  begin
+    ConfigDir := ExpandConstant('{app}\Configs');
+    BackupBase := ExpandConstant('{app}');
+  end;
+
+  if DirExists(ConfigDir) then
   begin
     TimestampDir := GetDateTimeString('yyyy-mm-dd_hh-nn-ss', '-', '-');
-    BackupDir := ExpandConstant('{app}\Configs.backup.' + TimestampDir);
+    BackupDir := BackupBase + '\Configs.backup.' + TimestampDir;
     if not DirExists(BackupDir) then
       ForceDirectories(BackupDir);
     SaveStringToFile(BackupDir + '\backup-info.txt',
@@ -166,6 +193,31 @@ begin
     BackupDone := True;
     Log('Config backup created at: ' + BackupDir);
   end;
+end;
+
+// ============================================================
+// PRE-INSTALL: Migrate data from old {app} location to AppData
+// ============================================================
+procedure MigrateDataFromAppDir;
+var
+  AppDir, DataDir: String;
+begin
+  AppDir := ExpandConstant('{app}');
+  DataDir := ExpandConstant('{userappdata}\PRoCon');
+
+  // Only migrate if old-style data exists in {app} and new location doesn't have it yet
+  if not DirExists(AppDir + '\Configs') then Exit;
+  if DirExists(DataDir + '\Configs') then Exit;
+
+  Log('Migrating data from ' + AppDir + ' to ' + DataDir);
+  ForceDirectories(DataDir);
+
+  if DirExists(AppDir + '\Configs') and not DirExists(DataDir + '\Configs') then
+    RenameFile(AppDir + '\Configs', DataDir + '\Configs');
+  if DirExists(AppDir + '\Plugins') and not DirExists(DataDir + '\Plugins') then
+    RenameFile(AppDir + '\Plugins', DataDir + '\Plugins');
+  if DirExists(AppDir + '\Logs') and not DirExists(DataDir + '\Logs') then
+    RenameFile(AppDir + '\Logs', DataDir + '\Logs');
 end;
 
 // ============================================================
@@ -211,6 +263,7 @@ begin
   begin
     KillRunningPRoCon;
     BackupConfigs;
+    MigrateDataFromAppDir;
   end;
 
   if CurStep = ssPostInstall then
