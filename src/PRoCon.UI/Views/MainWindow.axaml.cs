@@ -694,6 +694,7 @@ namespace PRoCon.UI.Views
                 if (_selectedServer == entry)
                 {
                     UpdateStatus("WarningBrush", "Logged out");
+                    UpdateSidebarButtons();
                     UpdateContentVisibility();
                 }
             });
@@ -1454,7 +1455,9 @@ namespace PRoCon.UI.Views
             _selectedServer.State = ServerConnectionState.Connecting;
             UpdateStatus("WarningBrush", $"Connecting to {_selectedServer.HostPort}...");
             client.AutomaticallyConnect = true;
+            client.Connect();
             UpdateSidebarButtons();
+            UpdateContentVisibility();
         }
 
         private void OnDisconnect(object sender, RoutedEventArgs e)
