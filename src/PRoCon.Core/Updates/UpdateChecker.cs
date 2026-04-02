@@ -140,13 +140,13 @@ namespace PRoCon.Core.Updates
 
                 bool isPreRelease = release.Value<bool>("prerelease");
 
-                // Stable channel: skip any tag containing '-'
+                // Stable channel: skip any tag containing '-' (only accept stable releases)
                 if (!_includePreReleases && tagName.Contains('-'))
                     continue;
 
-                // Alpha channel: include pre-releases with '-alpha'
-                if (_includePreReleases && tagName.Contains('-') && !tagName.Contains("-alpha"))
-                    continue;
+                // Pre-release channel: include all pre-releases (alpha, beta, rc, dev)
+                // Stable releases are also included since they are always newer than pre-releases
+                // of the same version per semver rules
 
                 if (!SemanticVersion.TryParse(tagName, out SemanticVersion version))
                     continue;

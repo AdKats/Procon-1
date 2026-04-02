@@ -110,6 +110,10 @@ namespace PRoCon.UI.Models
             { 3, new List<PlayerDisplayInfo>() },
             { 4, new List<PlayerDisplayInfo>() }
         };
+        public List<PlayerDisplayInfo> Spectators { get; set; } = new List<PlayerDisplayInfo>();
+        public List<PlayerDisplayInfo> Commanders { get; set; } = new List<PlayerDisplayInfo>();
+        // Fast lookup by soldier name for kill/spawn event updates
+        public ConcurrentDictionary<string, PlayerDisplayInfo> PlayerLookup { get; } = new ConcurrentDictionary<string, PlayerDisplayInfo>(StringComparer.OrdinalIgnoreCase);
         public string ServerInfoText { get; set; } = "";
         public CServerInfo LastServerInfo { get; set; }
 

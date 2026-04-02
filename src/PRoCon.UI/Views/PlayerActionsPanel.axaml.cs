@@ -1,18 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using PRoCon.Core;
-using PRoCon.Core.Players;
 using PRoCon.Core.Remote;
+using PRoCon.UI.Models;
 
 namespace PRoCon.UI.Views
 {
     public partial class PlayerActionsPanel : UserControl
     {
         private PRoConClient _client;
-        private string _selectedPlayerName;
+        private readonly List<PlayerDisplayInfo> _selectedPlayers = new List<PlayerDisplayInfo>();
 
         public PlayerActionsPanel()
         {
@@ -22,7 +23,7 @@ namespace PRoCon.UI.Views
         public void SetClient(PRoConClient client)
         {
             _client = client;
-            _selectedPlayerName = null;
+            _selectedPlayers.Clear();
             ClearPlayerInfo();
 
             if (_client == null)
@@ -40,46 +41,52 @@ namespace PRoCon.UI.Views
         }
 
         /// <summary>
-        /// Called externally when a player is selected in the player list.
+        /// Called when player selection changes. Accepts the full list of currently selected players.
         /// </summary>
-        public void SetSelectedPlayer(CPlayerInfo player)
+        public void SetSelectedPlayers(List<PlayerDisplayInfo> players)
         {
-            if (player == null)
+            _selectedPlayers.Clear();
+
+            if (players == null || players.Count == 0)
             {
-                _selectedPlayerName = null;
                 ClearPlayerInfo();
                 return;
             }
 
-            _selectedPlayerName = player.SoldierName;
+            _selectedPlayers.AddRange(players);
 
-            var nameText = this.FindControl<TextBlock>("PlayerNameText");
-            if (nameText != null) nameText.Text = player.SoldierName ?? "--";
-
-            var scoreText = this.FindControl<TextBlock>("PlayerScoreText");
-            if (scoreText != null) scoreText.Text = player.Score.ToString();
-
-            var guidText = this.FindControl<TextBlock>("PlayerGuidText");
-            if (guidText != null) guidText.Text = player.GUID ?? "--";
-
-            var pingText = this.FindControl<TextBlock>("PlayerPingText");
-            if (pingText != null) pingText.Text = player.Ping.ToString();
-
-            var ipText = this.FindControl<TextBlock>("PlayerIpText");
-            if (ipText != null) ipText.Text = "--";
-
-            var kdText = this.FindControl<TextBlock>("PlayerKDText");
-            if (kdText != null) kdText.Text = $"{player.Kills}/{player.Deaths}";
+            if (_selectedPlayers.Count == 1)
+            {
+                var p = _selectedPlayers[0];
+                SetText("PlayerNameText", p.Name ?? "--");
+                SetText("PlayerScoreText", p.ScoreText);
+                SetText("PlayerKDText", $"{p.Kills}/{p.Deaths}");
+                SetText("PlayerPingText", p.PingText);
+                SetText("PlayerSquadText", p.SquadText);
+            }
+            else
+            {
+                // Multi-select: show count and abbreviated name list
+                string names = string.Join(", ", _selectedPlayers.Select(p => p.Name));
+                if (names.Length > 60)
+                    names = names.Substring(0, 57) + "...";
+                SetText("PlayerNameText", $"{_selectedPlayers.Count} players selected");
+                SetText("PlayerScoreText", _selectedPlayers.Sum(p => p.Score).ToString());
+                SetText("PlayerKDText", $"{_selectedPlayers.Sum(p => p.Kills)}/{_selectedPlayers.Sum(p => p.Deaths)}");
+                SetText("PlayerPingText", "--");
+                SetText("PlayerSquadText", "--");
+                SetStatus(names);
+            }
         }
 
         private void ClearPlayerInfo()
         {
-            SetTextBlock("PlayerNameText", "--");
-            SetTextBlock("PlayerScoreText", "--");
-            SetTextBlock("PlayerGuidText", "--");
-            SetTextBlock("PlayerPingText", "--");
-            SetTextBlock("PlayerIpText", "--");
-            SetTextBlock("PlayerKDText", "--");
+            SetText("PlayerNameText", "No player selected");
+            SetText("PlayerScoreText", "--");
+            SetText("PlayerKDText", "--");
+            SetText("PlayerPingText", "--");
+            SetText("PlayerSquadText", "--");
+            SetText("ActionStatusText", "");
         }
 
         // --- Actions ---
@@ -88,47 +95,79 @@ namespace PRoCon.UI.Views
         {
             if (!ValidateSelection()) return;
 
-            _client.SendRequest(new List<string> { "admin.killPlayer", _selectedPlayerName });
-            SetStatus($"Kill command sent for {_selectedPlayerName}.");
+            foreach (var player in _selectedPlayers)
+                _client.SendRequest(new List<string> { "admin.killPlayer", player.Name });
+
+            SetStatus($"Kill sent: {FormatNames()}");
         }
 
         private void OnKickPlayer(object sender, RoutedEventArgs e)
         {
             if (!ValidateSelection()) return;
 
-            string reason = GetText("ReasonInput");
+            string reason = GetMessage();
             if (string.IsNullOrWhiteSpace(reason))
                 reason = "Kicked by admin";
 
-            _client.SendRequest(new List<string> { "admin.kickPlayer", _selectedPlayerName, reason });
-            SetStatus($"Kick command sent for {_selectedPlayerName}.");
+            foreach (var player in _selectedPlayers)
+                _client.SendRequest(new List<string> { "admin.kickPlayer", player.Name, reason });
+
+            SetStatus($"Kicked: {FormatNames()}");
         }
 
-        private void OnMoveTeam(object sender, RoutedEventArgs e)
+        private void OnSayPlayer(object sender, RoutedEventArgs e)
+        {
+            if (!ValidateClient()) return;
+
+            string message = GetMessage();
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                SetStatus("Enter a message first.");
+                return;
+            }
+
+            _client.SendRequest(new List<string> { "admin.say", message, "all" });
+            SetStatus($"Said: {message}");
+        }
+
+        private void OnYellPlayer(object sender, RoutedEventArgs e)
+        {
+            if (!ValidateClient()) return;
+
+            string message = GetMessage();
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                SetStatus("Enter a message first.");
+                return;
+            }
+
+            _client.SendRequest(new List<string> { "admin.yell", message, "10", "all" });
+            SetStatus($"Yelled: {message}");
+        }
+
+        private void OnMoveTeam1(object sender, RoutedEventArgs e) => MoveToTeam(1);
+        private void OnMoveTeam2(object sender, RoutedEventArgs e) => MoveToTeam(2);
+        private void OnMoveTeam3(object sender, RoutedEventArgs e) => MoveToTeam(3);
+        private void OnMoveTeam4(object sender, RoutedEventArgs e) => MoveToTeam(4);
+
+        private void MoveToTeam(int teamId)
         {
             if (!ValidateSelection()) return;
-
-            if (!int.TryParse(GetText("MoveTeamIdInput"), out int teamId))
-                teamId = 1;
 
             if (!int.TryParse(GetText("MoveSquadIdInput"), out int squadId))
                 squadId = 0;
 
-            _client.Game?.SendAdminMovePlayerPacket(_selectedPlayerName, teamId, squadId, true);
-            SetStatus($"Move command sent for {_selectedPlayerName} to Team {teamId}, Squad {squadId}.");
-        }
+            foreach (var player in _selectedPlayers)
+                _client.Game?.SendAdminMovePlayerPacket(player.Name, teamId, squadId, true);
 
-        private void OnMoveSquad(object sender, RoutedEventArgs e)
-        {
-            // Same as move team but uses the squad ID field
-            OnMoveTeam(sender, e);
+            SetStatus($"Moved {FormatNames()} to Team {teamId}, Squad {squadId}");
         }
 
         private void OnBanPlayer(object sender, RoutedEventArgs e)
         {
             if (!ValidateSelection()) return;
 
-            string reason = GetText("ReasonInput");
+            string reason = GetMessage();
             if (string.IsNullOrWhiteSpace(reason))
                 reason = "Banned by admin";
 
@@ -136,41 +175,52 @@ namespace PRoCon.UI.Views
             var banTemp = this.FindControl<RadioButton>("BanTemporaryRadio");
             var banRound = this.FindControl<RadioButton>("BanRoundRadio");
 
-            var words = new List<string> { "banList.add", "name", _selectedPlayerName };
-
-            if (banPerm?.IsChecked == true)
+            foreach (var player in _selectedPlayers)
             {
-                words.Add("perm");
+                var words = new List<string> { "banList.add", "name", player.Name };
+
+                if (banPerm?.IsChecked == true)
+                {
+                    words.Add("perm");
+                }
+                else if (banRound?.IsChecked == true)
+                {
+                    words.Add("rounds");
+                    words.Add("1");
+                }
+                else if (banTemp?.IsChecked == true)
+                {
+                    if (!int.TryParse(GetText("BanDurationInput"), out int minutes))
+                        minutes = 60;
+
+                    words.Add("seconds");
+                    words.Add((minutes * 60).ToString(CultureInfo.InvariantCulture));
+                }
+
+                words.Add(reason);
+                _client.SendRequest(words);
             }
-            else if (banRound?.IsChecked == true)
-            {
-                words.Add("rounds");
-                words.Add("1");
-            }
-            else if (banTemp?.IsChecked == true)
-            {
-                if (!int.TryParse(GetText("BanDurationInput"), out int minutes))
-                    minutes = 60;
 
-                words.Add("seconds");
-                words.Add((minutes * 60).ToString(CultureInfo.InvariantCulture));
-            }
-
-            words.Add(reason);
-
-            _client.SendRequest(words);
-
-            // Save the ban list
             _client.Game?.SendBanListSavePacket();
 
-            SetStatus($"Ban command sent for {_selectedPlayerName}.");
+            SetStatus($"Banned: {FormatNames()}");
         }
 
         // --- Helpers ---
 
+        private bool ValidateClient()
+        {
+            if (_client == null)
+            {
+                SetStatus("No connection.");
+                return false;
+            }
+            return true;
+        }
+
         private bool ValidateSelection()
         {
-            if (_client == null || string.IsNullOrEmpty(_selectedPlayerName))
+            if (_client == null || _selectedPlayers.Count == 0)
             {
                 SetStatus("No player selected or no connection.");
                 return false;
@@ -178,7 +228,20 @@ namespace PRoCon.UI.Views
             return true;
         }
 
-        private void SetTextBlock(string controlName, string value)
+        private string FormatNames()
+        {
+            if (_selectedPlayers.Count == 1)
+                return _selectedPlayers[0].Name;
+            return $"{_selectedPlayers.Count} players ({string.Join(", ", _selectedPlayers.Select(p => p.Name))})";
+        }
+
+        private string GetMessage()
+        {
+            var tb = this.FindControl<TextBox>("MessageInput");
+            return tb?.Text ?? "";
+        }
+
+        private void SetText(string controlName, string value)
         {
             var tb = this.FindControl<TextBlock>(controlName);
             if (tb != null) tb.Text = value;

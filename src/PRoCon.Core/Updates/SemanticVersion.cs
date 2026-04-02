@@ -108,7 +108,12 @@ namespace PRoCon.Core.Updates
             if (IsPreRelease && !other.IsPreRelease) return -1;
             if (!IsPreRelease && !other.IsPreRelease) return 0;
 
-            // Both have pre-release labels: compare alphabetically then numerically
+            // Both have pre-release labels: "dev" is always lowest, then alphabetically
+            bool thisDev = string.Equals(PreReleaseLabel, "dev", StringComparison.OrdinalIgnoreCase);
+            bool otherDev = string.Equals(other.PreReleaseLabel, "dev", StringComparison.OrdinalIgnoreCase);
+            if (thisDev && !otherDev) return -1;
+            if (!thisDev && otherDev) return 1;
+
             c = string.Compare(PreReleaseLabel, other.PreReleaseLabel, StringComparison.OrdinalIgnoreCase);
             if (c != 0) return c;
 

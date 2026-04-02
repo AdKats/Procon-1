@@ -140,6 +140,12 @@ namespace PRoCon.UI.Views
         private ListBox[] _teamLists; // TeamList1..TeamList4
         private TextBlock[] _teamHeaders; // TeamHeader1..TeamHeader4
         private Border[] _teamPanels; // TeamPanel1..TeamPanel4
+        private ListBox _spectatorList;
+        private TextBlock _spectatorHeader;
+        private Border _spectatorPanel;
+        private ListBox _commanderList;
+        private TextBlock _commanderHeader;
+        private Border _commanderPanel;
         private TextBlock[] _dashTeamScores; // DashTeam1Score, DashTeam2Score
 
         private void CacheControls()
@@ -223,6 +229,24 @@ namespace PRoCon.UI.Views
                 _teamHeaders[t] = this.FindControl<TextBlock>($"TeamHeader{t + 1}");
                 _teamPanels[t] = this.FindControl<Border>($"TeamPanel{t + 1}");
             }
+
+            _spectatorList = this.FindControl<ListBox>("SpectatorList");
+            _spectatorHeader = this.FindControl<TextBlock>("SpectatorHeader");
+            _spectatorPanel = this.FindControl<Border>("SpectatorPanel");
+            _commanderList = this.FindControl<ListBox>("CommanderList");
+            _commanderHeader = this.FindControl<TextBlock>("CommanderHeader");
+            _commanderPanel = this.FindControl<Border>("CommanderPanel");
+
+            // Wire player selection on all player list boxes
+            for (int t = 0; t < 4; t++)
+            {
+                if (_teamLists[t] != null)
+                    _teamLists[t].SelectionChanged += OnPlayerListSelectionChanged;
+            }
+            if (_spectatorList != null)
+                _spectatorList.SelectionChanged += OnPlayerListSelectionChanged;
+            if (_commanderList != null)
+                _commanderList.SelectionChanged += OnPlayerListSelectionChanged;
 
             _dashTeamScores = new TextBlock[2];
             _dashTeamScores[0] = this.FindControl<TextBlock>("DashTeam1Score");
@@ -357,6 +381,8 @@ namespace PRoCon.UI.Views
                 if (pbContent != null) pbContent.Content = _punkBusterPanel;
                 var textChatModContent = this.FindControl<ContentControl>("TextChatModerationContent");
                 if (textChatModContent != null) textChatModContent.Content = _textChatModerationPanel;
+                var playerActionsContent = this.FindControl<ContentControl>("PlayerActionsContent");
+                if (playerActionsContent != null) playerActionsContent.Content = _playerActionsPanel;
                 // Options panel is shown in a dialog, not embedded in tabs
 
                 // Load existing connections
@@ -648,11 +674,13 @@ namespace PRoCon.UI.Views
                 if (_healthTrackers.TryGetValue(entry.HostPort, out var tracker))
                     tracker.Reset();
 
-                // Request supported commands from server
+                // Request supported commands and immediate player list on login
                 if (client.Game != null)
                 {
                     entry._pendingAdminHelp = true;
                     client.SendRequest(new List<string> { "admin.help" });
+                    client.Game.SendAdminListPlayersPacket(new CPlayerSubset(CPlayerSubset.PlayerSubsetType.All));
+                    client.Game.SendServerinfoPacket();
                 }
             });
 
@@ -720,22 +748,14 @@ namespace PRoCon.UI.Views
 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    // Find the player in the team lists and update
-                    for (int t = 1; t <= 4; t++)
+                    // Update the player via fast lookup
+                    if (entry.PlayerLookup.TryGetValue(soldierName, out var player))
                     {
-                        if (!entry.TeamPlayers.ContainsKey(t)) continue;
-                        foreach (var player in entry.TeamPlayers[t])
-                        {
-                            if (string.Equals(player.Name, soldierName, StringComparison.OrdinalIgnoreCase))
-                            {
-                                player.Country = result.CountryName;
-                                player.CountryCode = result.CountryCode;
-                                player.IsVPN = result.IsVPN;
-                                player.IsProxy = result.IsProxy;
-                                player.IP = ip;
-                                break;
-                            }
-                        }
+                        player.Country = result.CountryName;
+                        player.CountryCode = result.CountryCode;
+                        player.IsVPN = result.IsVPN;
+                        player.IsProxy = result.IsProxy;
+                        player.IP = ip;
                     }
                 });
             }
@@ -979,7 +999,23 @@ namespace PRoCon.UI.Views
                 while (entry.KillFeed.Count > 50)
                     entry.KillFeed.RemoveAt(entry.KillFeed.Count - 1);
 
-                // ObservableCollection auto-updates the UI — no need to reassign ItemsSource
+                // Semi-live stats: increment kills/deaths and mark victim dead
+                // Skip kill increment on suicide (killer == victim)
+                if (!string.IsNullOrEmpty(killer)
+                    && !string.Equals(killer, victim, StringComparison.OrdinalIgnoreCase)
+                    && entry.PlayerLookup.TryGetValue(killer, out var killerInfo))
+                    killerInfo.Kills++;
+                if (!string.IsNullOrEmpty(victim) && entry.PlayerLookup.TryGetValue(victim, out var victimInfo))
+                {
+                    victimInfo.Deaths++;
+                    victimInfo.IsAlive = false;
+                }
+            });
+
+            game.PlayerSpawned += (sender, soldierName, kit, weapons, specializations) => Dispatcher.UIThread.Post(() =>
+            {
+                if (entry.PlayerLookup.TryGetValue(soldierName, out var spawnedPlayer))
+                    spawnedPlayer.IsAlive = true;
             });
 
             game.Chat += (sender, rawChat) => Dispatcher.UIThread.Post(() =>
@@ -995,25 +1031,60 @@ namespace PRoCon.UI.Views
 
             game.ListPlayers += (sender, players, subset) => Dispatcher.UIThread.Post(() =>
             {
-                // Clear all teams
+                // Clear all teams, spectators, commanders
                 for (int t = 1; t <= 4; t++)
                     entry.TeamPlayers[t].Clear();
+                entry.Spectators.Clear();
+                entry.Commanders.Clear();
 
-                // Sort players into teams
+                // Snapshot existing lookup for preserving IP/country data
+                var previousLookup = new Dictionary<string, PlayerDisplayInfo>(entry.PlayerLookup, StringComparer.OrdinalIgnoreCase);
+                entry.PlayerLookup.Clear();
+
+                // Sort players into teams, spectators, or commanders
                 foreach (var player in players)
                 {
-                    int teamId = player.TeamID;
-                    if (teamId < 1 || teamId > 4) teamId = 1;
-
-                    entry.TeamPlayers[teamId].Add(new PlayerDisplayInfo
+                    var display = new PlayerDisplayInfo
                     {
                         Name = player.SoldierName,
+                        ClanTag = player.ClanTag,
+                        TeamID = player.TeamID,
                         Score = player.Score,
                         Kills = player.Kills,
                         Deaths = player.Deaths,
                         Ping = player.Ping,
-                        Squad = player.SquadID
-                    });
+                        Squad = player.SquadID,
+                        PlayerType = player.Type,
+                        IsAlive = true // Full sync resets alive state
+                    };
+
+                    // Preserve IP/country data from previous refresh
+                    if (previousLookup.TryGetValue(player.SoldierName, out var prev))
+                    {
+                        display.IP = prev.IP;
+                        display.Country = prev.Country;
+                        display.CountryCode = prev.CountryCode;
+                        display.IsVPN = prev.IsVPN;
+                        display.IsProxy = prev.IsProxy;
+                    }
+
+                    entry.PlayerLookup[player.SoldierName] = display;
+
+                    // Type: 0=player, 1=spectator, 2=commander
+                    if (player.Type == 1)
+                    {
+                        entry.Spectators.Add(display);
+                    }
+                    else if (player.Type == 2)
+                    {
+                        entry.Commanders.Add(display);
+                    }
+                    else
+                    {
+                        int teamId = player.TeamID;
+                        if (teamId < 1 || teamId > 4) teamId = 1;
+                        entry.TeamPlayers[teamId].Add(display);
+                    }
                 }
 
                 // Sort each team by score descending
@@ -1499,6 +1570,14 @@ namespace PRoCon.UI.Views
                 if (_teamLists[t] != null) _teamLists[t].ItemsSource = null;
                 if (_teamHeaders[t] != null) _teamHeaders[t].Text = $"Team {t + 1} (0)";
             }
+
+            // Clear spectator/commander panels
+            if (_spectatorList != null) _spectatorList.ItemsSource = null;
+            if (_spectatorHeader != null) _spectatorHeader.Text = "Spectators (0)";
+            if (_spectatorPanel != null) _spectatorPanel.IsVisible = false;
+            if (_commanderList != null) _commanderList.ItemsSource = null;
+            if (_commanderHeader != null) _commanderHeader.Text = "Commanders (0)";
+            if (_commanderPanel != null) _commanderPanel.IsVisible = false;
 
             // Clear dashboard
             if (_playerGraphCanvas != null) _playerGraphCanvas.Children.Clear();
@@ -2329,6 +2408,22 @@ namespace PRoCon.UI.Views
                 if (t >= 2 && _teamPanels[t] != null)
                     _teamPanels[t].IsVisible = players.Count > 0;
             }
+
+            // Spectators
+            if (_spectatorList != null)
+                _spectatorList.ItemsSource = entry.Spectators;
+            if (_spectatorHeader != null)
+                _spectatorHeader.Text = $"Spectators ({entry.Spectators.Count})";
+            if (_spectatorPanel != null)
+                _spectatorPanel.IsVisible = entry.Spectators.Count > 0;
+
+            // Commanders
+            if (_commanderList != null)
+                _commanderList.ItemsSource = entry.Commanders;
+            if (_commanderHeader != null)
+                _commanderHeader.Text = $"Commanders ({entry.Commanders.Count})";
+            if (_commanderPanel != null)
+                _commanderPanel.IsVisible = entry.Commanders.Count > 0;
         }
 
         private void RefreshPlayerList()
@@ -2345,6 +2440,24 @@ namespace PRoCon.UI.Views
             if (sender is MenuItem menuItem && menuItem.DataContext is PlayerDisplayInfo player)
                 return player;
             return null;
+        }
+
+        private void OnPlayerListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Gather all selected players across every team/spectator/commander ListBox
+            var allLists = new ListBox[] { _teamLists[0], _teamLists[1], _teamLists[2], _teamLists[3], _spectatorList, _commanderList };
+            var selected = new List<PlayerDisplayInfo>();
+            foreach (var lb in allLists)
+            {
+                if (lb?.SelectedItems == null) continue;
+                foreach (var item in lb.SelectedItems)
+                {
+                    if (item is PlayerDisplayInfo p)
+                        selected.Add(p);
+                }
+            }
+
+            _playerActionsPanel?.SetSelectedPlayers(selected);
         }
 
         private void OnPlayerKill(object sender, RoutedEventArgs e)

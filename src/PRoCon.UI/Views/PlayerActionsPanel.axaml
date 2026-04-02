@@ -1,47 +1,57 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PRoCon.UI.Views.PlayerActionsPanel"
-             Background="{DynamicResource BackgroundBrush}">
+             Background="{DynamicResource BackgroundBrush}"
+             MinWidth="220" MaxWidth="320">
 
-  <DockPanel Margin="16">
+  <DockPanel>
 
     <!-- Player Info Header -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="3" Padding="16" Margin="0,0,0,12">
-      <StackPanel Spacing="6">
-        <TextBlock Text="Selected Player" FontSize="15" FontWeight="SemiBold"
-                   Foreground="{DynamicResource PrimaryBrush}" />
-
-        <Grid ColumnDefinitions="80,*,80,*" RowDefinitions="Auto,Auto,Auto" Margin="0,4,0,0">
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"
+            CornerRadius="3" Padding="10" Margin="0,0,0,6">
+      <StackPanel Spacing="4">
+        <TextBlock Name="PlayerNameText" Text="No player selected"
+                   FontSize="14" FontWeight="Bold"
+                   Foreground="{DynamicResource PrimaryBrush}"
+                   TextTrimming="CharacterEllipsis" />
+        <Grid ColumnDefinitions="Auto,*,Auto,*" RowDefinitions="Auto,Auto" Margin="0,2,0,0">
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="Score: " FontSize="10"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="0" Grid.Column="1" Name="PlayerNameText" Text="--"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
-          <TextBlock Grid.Row="0" Grid.Column="2" Text="Score:"
+          <TextBlock Grid.Row="0" Grid.Column="1" Name="PlayerScoreText" Text="--" FontSize="10"
+                     Foreground="{DynamicResource ScoreBrush}" />
+          <TextBlock Grid.Row="0" Grid.Column="2" Text="K/D: " FontSize="10"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="0" Grid.Column="3" Name="PlayerScoreText" Text="--"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
-
-          <TextBlock Grid.Row="1" Grid.Column="0" Text="GUID:" Margin="0,4,0,0"
-                     Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="1" Grid.Column="1" Name="PlayerGuidText" Text="--" Margin="0,4,0,0"
-                     Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" />
-          <TextBlock Grid.Row="1" Grid.Column="2" Text="Ping:" Margin="0,4,0,0"
-                     Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="1" Grid.Column="3" Name="PlayerPingText" Text="--" Margin="0,4,0,0"
+          <TextBlock Grid.Row="0" Grid.Column="3" Name="PlayerKDText" Text="--" FontSize="10"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
 
-          <TextBlock Grid.Row="2" Grid.Column="0" Text="IP:" Margin="0,4,0,0"
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="Ping: " FontSize="10"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="2" Grid.Column="1" Name="PlayerIpText" Text="--" Margin="0,4,0,0"
-                     Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11" />
-          <TextBlock Grid.Row="2" Grid.Column="2" Text="K/D:" Margin="0,4,0,0"
+          <TextBlock Grid.Row="1" Grid.Column="1" Name="PlayerPingText" Text="--" FontSize="10"
+                     Foreground="{DynamicResource TextPrimaryBrush}" />
+          <TextBlock Grid.Row="1" Grid.Column="2" Text="Squad: " FontSize="10"
                      Foreground="{DynamicResource TextSecondaryBrush}" />
-          <TextBlock Grid.Row="2" Grid.Column="3" Name="PlayerKDText" Text="--" Margin="0,4,0,0"
+          <TextBlock Grid.Row="1" Grid.Column="3" Name="PlayerSquadText" Text="--" FontSize="10"
                      Foreground="{DynamicResource TextPrimaryBrush}" />
         </Grid>
+      </StackPanel>
+    </Border>
+
+    <!-- Message / Reason Input (shared) -->
+    <Border DockPanel.Dock="Top"
+            Background="{DynamicResource SurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+            CornerRadius="3" Padding="10" Margin="0,0,0,6">
+      <StackPanel Spacing="4">
+        <TextBlock Text="MESSAGE / REASON" FontSize="9" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextDisabledBrush}" />
+        <TextBox Name="MessageInput" Watermark="Message or reason..."
+                 Background="{DynamicResource InputBackgroundBrush}"
+                 Foreground="{DynamicResource TextPrimaryBrush}"
+                 BorderBrush="{DynamicResource BorderBrush}"
+                 FontSize="11" Height="50"
+                 AcceptsReturn="True" TextWrapping="Wrap" />
       </StackPanel>
     </Border>
 
@@ -49,106 +59,122 @@
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="3" Padding="16" Margin="0,0,0,12">
-      <StackPanel Spacing="10">
-        <TextBlock Text="Quick Actions" FontSize="15" FontWeight="SemiBold"
-                   Foreground="{DynamicResource PrimaryBrush}" />
+            CornerRadius="3" Padding="10" Margin="0,0,0,6">
+      <StackPanel Spacing="6">
+        <TextBlock Text="ACTIONS" FontSize="9" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextDisabledBrush}" />
 
-        <WrapPanel Orientation="Horizontal" Margin="0,4,0,0">
-          <Button Name="KillButton" Content="Kill Player" Margin="0,0,8,8"
+        <!-- Say / Yell row -->
+        <UniformGrid Columns="2" Margin="0,2,0,0">
+          <Button Content="SAY ALL" Margin="0,0,3,0"
+                  Background="{DynamicResource ButtonSecondaryBrush}"
+                  Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                  Padding="0,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                  HorizontalContentAlignment="Center"
+                  Click="OnSayPlayer" />
+          <Button Content="YELL ALL" Margin="3,0,0,0"
+                  Background="{DynamicResource WarningBrush}" Foreground="#1a1a1a"
+                  Padding="0,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                  HorizontalContentAlignment="Center"
+                  Click="OnYellPlayer" />
+        </UniformGrid>
+
+        <!-- Kill / Kick row -->
+        <UniformGrid Columns="2">
+          <Button Content="KILL" Margin="0,0,3,0"
                   Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
-                  Padding="16,6" CornerRadius="4"
+                  Padding="0,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                  HorizontalContentAlignment="Center"
                   Click="OnKillPlayer" />
-          <Button Name="MoveTeamButton" Content="Move Team" Margin="0,0,8,8"
-                  Background="{DynamicResource ButtonSecondaryBrush}"
-                  Foreground="{DynamicResource ButtonSecondaryTextBrush}"
-                  Padding="16,6" CornerRadius="4"
-                  Click="OnMoveTeam" />
-          <Button Name="MoveSquadButton" Content="Move Squad" Margin="0,0,8,8"
-                  Background="{DynamicResource ButtonSecondaryBrush}"
-                  Foreground="{DynamicResource ButtonSecondaryTextBrush}"
-                  Padding="16,6" CornerRadius="4"
-                  Click="OnMoveSquad" />
-        </WrapPanel>
+          <Button Content="KICK" Margin="3,0,0,0"
+                  Background="{DynamicResource WarningBrush}" Foreground="#1a1a1a"
+                  Padding="0,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                  HorizontalContentAlignment="Center"
+                  Click="OnKickPlayer" />
+        </UniformGrid>
 
-        <Grid ColumnDefinitions="80,80,20,80,80" RowDefinitions="Auto" Margin="0,4,0,0">
-          <TextBlock Grid.Column="0" Text="Team ID:"
-                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-          <TextBox Grid.Column="1" Name="MoveTeamIdInput" Text="1"
+        <!-- Move row -->
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Left" Text="Move:" FontSize="10"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     VerticalAlignment="Center" Margin="0,0,6,0" />
+          <TextBox DockPanel.Dock="Right" Name="MoveSquadIdInput" Text="0" Width="35"
                    Background="{DynamicResource InputBackgroundBrush}"
                    Foreground="{DynamicResource TextPrimaryBrush}"
-                   BorderBrush="{DynamicResource BorderBrush}" />
-          <TextBlock Grid.Column="3" Text="Squad ID:"
-                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-          <TextBox Grid.Column="4" Name="MoveSquadIdInput" Text="0"
-                   Background="{DynamicResource InputBackgroundBrush}"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
-                   BorderBrush="{DynamicResource BorderBrush}" />
-        </Grid>
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   FontSize="10" Padding="4,3" Margin="4,0,0,0" />
+          <TextBlock DockPanel.Dock="Right" Text="Sq:" FontSize="10"
+                     Foreground="{DynamicResource TextSecondaryBrush}"
+                     VerticalAlignment="Center" Margin="6,0,0,0" />
+          <UniformGrid Columns="4">
+            <Button Content="1" Margin="0,0,2,0" Padding="0,4" CornerRadius="3"
+                    FontSize="10" HorizontalContentAlignment="Center"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Click="OnMoveTeam1" />
+            <Button Content="2" Margin="0,0,2,0" Padding="0,4" CornerRadius="3"
+                    FontSize="10" HorizontalContentAlignment="Center"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Click="OnMoveTeam2" />
+            <Button Content="3" Margin="0,0,2,0" Padding="0,4" CornerRadius="3"
+                    FontSize="10" HorizontalContentAlignment="Center"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Click="OnMoveTeam3" />
+            <Button Content="4" Padding="0,4" CornerRadius="3"
+                    FontSize="10" HorizontalContentAlignment="Center"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Click="OnMoveTeam4" />
+          </UniformGrid>
+        </DockPanel>
       </StackPanel>
     </Border>
 
-    <!-- Kick / Ban -->
+    <!-- Ban Section -->
     <Border DockPanel.Dock="Top"
             Background="{DynamicResource SurfaceBrush}"
             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-            CornerRadius="3" Padding="16" Margin="0,0,0,12">
-      <StackPanel Spacing="10">
-        <TextBlock Text="Kick / Ban" FontSize="15" FontWeight="SemiBold"
-                   Foreground="{DynamicResource PrimaryBrush}" />
+            CornerRadius="3" Padding="10" Margin="0,0,0,6">
+      <StackPanel Spacing="6">
+        <TextBlock Text="BAN" FontSize="9" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextDisabledBrush}" />
 
-        <Grid ColumnDefinitions="80,*" RowDefinitions="Auto">
-          <TextBlock Grid.Column="0" Text="Reason:"
-                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-          <TextBox Grid.Column="1" Name="ReasonInput" Watermark="Enter reason..."
-                   Background="{DynamicResource InputBackgroundBrush}"
-                   Foreground="{DynamicResource TextPrimaryBrush}"
-                   BorderBrush="{DynamicResource BorderBrush}" />
-        </Grid>
-
-        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-          <Button Name="KickButton" Content="Kick"
-                  Background="{DynamicResource WarningBrush}" Foreground="#1a1a1a"
-                  Padding="20,6" CornerRadius="4"
-                  Click="OnKickPlayer" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <RadioButton Name="BanPermanentRadio" Content="Perm" GroupName="BanType"
+                       IsChecked="True" FontSize="10"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          <RadioButton Name="BanTemporaryRadio" Content="Temp" GroupName="BanType"
+                       FontSize="10"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+          <RadioButton Name="BanRoundRadio" Content="Round" GroupName="BanType"
+                       FontSize="10"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
         </StackPanel>
 
-        <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="3" Padding="12" Margin="0,4,0,0">
-          <StackPanel Spacing="8">
-            <TextBlock Text="Ban Options" FontSize="13" FontWeight="SemiBold"
-                       Foreground="{DynamicResource TextPrimaryBrush}" />
+        <StackPanel Orientation="Horizontal" Spacing="6">
+          <TextBlock Text="Minutes:" FontSize="10"
+                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+          <TextBox Name="BanDurationInput" Text="60" Width="55"
+                   Background="{DynamicResource InputBackgroundBrush}"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   FontSize="10" Padding="4,3" />
+        </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Spacing="16">
-              <RadioButton Name="BanPermanentRadio" Content="Permanent" GroupName="BanType"
-                           IsChecked="True"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-              <RadioButton Name="BanTemporaryRadio" Content="Temporary" GroupName="BanType"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-              <RadioButton Name="BanRoundRadio" Content="Round" GroupName="BanType"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="8">
-              <TextBlock Text="Duration (min):"
-                         Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-              <TextBox Name="BanDurationInput" Text="60" Width="80"
-                       Background="{DynamicResource InputBackgroundBrush}"
-                       Foreground="{DynamicResource TextPrimaryBrush}"
-                       BorderBrush="{DynamicResource BorderBrush}" />
-            </StackPanel>
-
-            <Button Name="BanButton" Content="Ban Player"
-                    Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
-                    Padding="20,6" CornerRadius="4"
-                    Click="OnBanPlayer" />
-          </StackPanel>
-        </Border>
+        <Button Content="BAN PLAYER"
+                Background="{DynamicResource ErrorBrush}" Foreground="#c8d8e8"
+                Padding="0,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                HorizontalContentAlignment="Center"
+                HorizontalAlignment="Stretch"
+                Click="OnBanPlayer" />
       </StackPanel>
     </Border>
 
     <!-- Status -->
     <TextBlock Name="ActionStatusText" Text=""
-               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"
-               Margin="0,4,0,0" />
+               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
+               TextWrapping="Wrap" Margin="4,2" />
   </DockPanel>
 </UserControl>

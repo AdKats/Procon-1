@@ -75,7 +75,7 @@
   <Window.Resources>
     <!-- Shared player list item template (used by all 4 team ListBoxes) -->
     <DataTemplate x:Key="PlayerItemTemplate">
-      <Grid ColumnDefinitions="22,*,45,35,40,30,35,40" Margin="2,1">
+      <Grid ColumnDefinitions="16,22,*,45,35,40,30,35,40" Margin="2,1">
         <Grid.ContextMenu>
           <ContextMenu>
             <MenuItem Header="Kill" Click="OnPlayerKill" />
@@ -91,14 +91,16 @@
             <MenuItem Header="Copy Name" Click="OnPlayerCopyName" />
           </ContextMenu>
         </Grid.ContextMenu>
-        <TextBlock Grid.Column="0" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
-        <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextPrimaryBrush}" />
-        <TextBlock Grid.Column="2" Text="{Binding ScoreText}" Foreground="{DynamicResource ScoreBrush}" HorizontalAlignment="Right" />
-        <TextBlock Grid.Column="3" Text="{Binding KillsText}" Foreground="{DynamicResource KillsBrush}" HorizontalAlignment="Right" />
-        <TextBlock Grid.Column="4" Text="{Binding DeathsText}" Foreground="{DynamicResource DeathsBrush}" HorizontalAlignment="Right" />
-        <TextBlock Grid.Column="5" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
-        <TextBlock Grid.Column="6" Text="{Binding SquadText}" Foreground="{DynamicResource TextDisabledBrush}" HorizontalAlignment="Right" />
-        <TextBlock Grid.Column="7" Text="{Binding ThreatText}" Foreground="{DynamicResource ErrorBrush}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="0" Text="{Binding StatusIcon}" FontSize="11" VerticalAlignment="Center"
+                   Foreground="{DynamicResource ErrorBrush}" HorizontalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding FlagText}" FontSize="12" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource TextPrimaryBrush}" />
+        <TextBlock Grid.Column="3" Text="{Binding ScoreText}" Foreground="{DynamicResource ScoreBrush}" HorizontalAlignment="Right" />
+        <TextBlock Grid.Column="4" Text="{Binding KillsText}" Foreground="{DynamicResource KillsBrush}" HorizontalAlignment="Right" />
+        <TextBlock Grid.Column="5" Text="{Binding DeathsText}" Foreground="{DynamicResource DeathsBrush}" HorizontalAlignment="Right" />
+        <TextBlock Grid.Column="6" Text="{Binding PingText}" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+        <TextBlock Grid.Column="7" Text="{Binding SquadText}" Foreground="{DynamicResource TextDisabledBrush}" HorizontalAlignment="Right" />
+        <TextBlock Grid.Column="8" Text="{Binding ThreatText}" Foreground="{DynamicResource ErrorBrush}" FontSize="9" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center" />
       </Grid>
     </DataTemplate>
   </Window.Resources>
@@ -598,84 +600,131 @@
               <Border DockPanel.Dock="Top" Classes="glass-header">
                 <TextBlock Text="PLAYER LIST" Classes="section-label" />
               </Border>
-              <Grid ColumnDefinitions="*,*" RowDefinitions="*,Auto" Name="TeamGrid" Margin="8">
-                <!-- Team 1 -->
-                <Border Grid.Row="0" Grid.Column="0" Margin="4" CornerRadius="3"
-                        Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        Name="TeamPanel1">
-                  <DockPanel>
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
-                            Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
-                      <TextBlock Name="TeamHeader1" Text="Team 1 (0)"
-                                 FontWeight="SemiBold" FontSize="9"
-                                 Foreground="{DynamicResource PrimaryBrush}" />
-                    </Border>
-                    <ListBox Name="TeamList1" Background="Transparent"
-                             Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
-                             Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
+              <!-- Player Actions side panel -->
+              <Border DockPanel.Dock="Right" Width="240" Margin="0,8,8,8">
+                <ContentControl Name="PlayerActionsContent" />
+              </Border>
+              <DockPanel Margin="8">
+                <!-- Spectators & Commanders bar (below teams) -->
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="4,0,4,4">
+                  <!-- Commanders -->
+                  <Border Name="CommanderPanel" CornerRadius="3" Margin="0,0,4,0" IsVisible="False"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          MinWidth="200">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="CommanderHeader" Text="Commanders (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource WarningBrush}" />
+                      </Border>
+                      <ListBox Name="CommanderList" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}" />
+                    </DockPanel>
+                  </Border>
+                  <!-- Spectators -->
+                  <Border Name="SpectatorPanel" CornerRadius="3" IsVisible="False"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          MinWidth="200">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="SpectatorHeader" Text="Spectators (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource TextDisabledBrush}" />
+                      </Border>
+                      <ListBox Name="SpectatorList" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}" />
+                    </DockPanel>
+                  </Border>
+                </StackPanel>
 
-                    </ListBox>
-                  </DockPanel>
-                </Border>
-                <!-- Team 2 -->
-                <Border Grid.Row="0" Grid.Column="1" Margin="4" CornerRadius="3"
-                        Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        Name="TeamPanel2">
-                  <DockPanel>
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
-                            Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
-                      <TextBlock Name="TeamHeader2" Text="Team 2 (0)"
-                                 FontWeight="SemiBold" FontSize="9"
-                                 Foreground="{DynamicResource PrimaryBrush}" />
-                    </Border>
-                    <ListBox Name="TeamList2" Background="Transparent"
-                             Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
-                             Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
-
-                    </ListBox>
-                  </DockPanel>
-                </Border>
-                <!-- Team 3 -->
-                <Border Grid.Row="1" Grid.Column="0" Margin="4" CornerRadius="3"
-                        Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        Name="TeamPanel3" IsVisible="False">
-                  <DockPanel>
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
-                            Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
-                      <TextBlock Name="TeamHeader3" Text="Team 3 (0)"
-                                 FontWeight="SemiBold" FontSize="9"
-                                 Foreground="{DynamicResource PrimaryBrush}" />
-                    </Border>
-                    <ListBox Name="TeamList3" Background="Transparent"
-                             Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
-                             Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
-
-                    </ListBox>
-                  </DockPanel>
-                </Border>
-                <!-- Team 4 -->
-                <Border Grid.Row="1" Grid.Column="1" Margin="4" CornerRadius="3"
-                        Background="{DynamicResource SurfaceBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                        Name="TeamPanel4" IsVisible="False">
-                  <DockPanel>
-                    <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
-                            Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
-                      <TextBlock Name="TeamHeader4" Text="Team 4 (0)"
-                                 FontWeight="SemiBold" FontSize="9"
-                                 Foreground="{DynamicResource PrimaryBrush}" />
-                    </Border>
-                    <ListBox Name="TeamList4" Background="Transparent"
-                             Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
-                             Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
-
-                    </ListBox>
-                  </DockPanel>
-                </Border>
-              </Grid>
+                <!-- Team grid -->
+                <Grid ColumnDefinitions="*,*" RowDefinitions="*,Auto" Name="TeamGrid">
+                  <!-- Team 1 -->
+                  <Border Grid.Row="0" Grid.Column="0" Margin="4" CornerRadius="3"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel1">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="TeamHeader1" Text="Team 1 (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList1" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 2 -->
+                  <Border Grid.Row="0" Grid.Column="1" Margin="4" CornerRadius="3"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel2">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="TeamHeader2" Text="Team 2 (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList2" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 3 -->
+                  <Border Grid.Row="1" Grid.Column="0" Margin="4" CornerRadius="3"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel3" IsVisible="False">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="TeamHeader3" Text="Team 3 (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList3" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                  <!-- Team 4 -->
+                  <Border Grid.Row="1" Grid.Column="1" Margin="4" CornerRadius="3"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                          Name="TeamPanel4" IsVisible="False">
+                    <DockPanel>
+                      <Border DockPanel.Dock="Top" Background="{DynamicResource GlassHeaderBrush}"
+                              Padding="8,5" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <TextBlock Name="TeamHeader4" Text="Team 4 (0)"
+                                   FontWeight="SemiBold" FontSize="9"
+                                   Foreground="{DynamicResource PrimaryBrush}" />
+                      </Border>
+                      <ListBox Name="TeamList4" Background="Transparent"
+                               Foreground="{DynamicResource TextPrimaryBrush}" FontSize="10"
+                               SelectionMode="Multiple"
+                               Padding="2" ItemTemplate="{StaticResource PlayerItemTemplate}">
+                      </ListBox>
+                    </DockPanel>
+                  </Border>
+                </Grid>
+              </DockPanel>
             </DockPanel>
           </Border>
 

@@ -5,12 +5,47 @@ namespace PRoCon.UI.Models
     public class PlayerDisplayInfo : INotifyPropertyChanged
     {
         public string Name { get; set; }
-        public int Score { get; set; }
-        public int Kills { get; set; }
-        public int Deaths { get; set; }
+        public string ClanTag { get; set; }
+        public int TeamID { get; set; }
+
+        private int _score;
+        public int Score
+        {
+            get => _score;
+            set { _score = value; OnPropertyChanged(nameof(Score)); OnPropertyChanged(nameof(ScoreText)); }
+        }
+
+        private int _kills;
+        public int Kills
+        {
+            get => _kills;
+            set { _kills = value; OnPropertyChanged(nameof(Kills)); OnPropertyChanged(nameof(KillsText)); }
+        }
+
+        private int _deaths;
+        public int Deaths
+        {
+            get => _deaths;
+            set { _deaths = value; OnPropertyChanged(nameof(Deaths)); OnPropertyChanged(nameof(DeathsText)); }
+        }
+
         public int Ping { get; set; }
         public int Squad { get; set; }
         public string IP { get; set; }
+
+        // Player type from Frostbite: 0=player, 1=spectator, 2=commander
+        public int PlayerType { get; set; }
+        public bool IsSpectator => PlayerType == 1;
+        public bool IsCommander => PlayerType == 2;
+
+        private bool _isAlive = true;
+        public bool IsAlive
+        {
+            get => _isAlive;
+            set { _isAlive = value; OnPropertyChanged(nameof(IsAlive)); OnPropertyChanged(nameof(StatusIcon)); }
+        }
+
+        public string StatusIcon => IsAlive ? "" : "\u2620";
 
         private string _country = "";
         public string Country
