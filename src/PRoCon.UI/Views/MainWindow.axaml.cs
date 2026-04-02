@@ -38,6 +38,7 @@ namespace PRoCon.UI.Views
         // Update checker
         private PRoCon.Core.Updates.UpdateChecker _updateChecker;
         private string _pendingInstallerPath;
+        private string _appVersion = "2.0.0";
 
         // Console command history & autocomplete
         private readonly List<string> _commandHistory = new List<string>();
@@ -447,6 +448,9 @@ namespace PRoCon.UI.Views
                     int plusIdx = infoVersion.IndexOf('+');
                     if (plusIdx >= 0)
                         infoVersion = infoVersion.Substring(0, plusIdx);
+                    _appVersion = infoVersion;
+                    var versionRun = Avalonia.Controls.NameScope.GetNameScope(this)?.Find<Avalonia.Controls.Documents.Run>("VersionRun");
+                    if (versionRun != null) versionRun.Text = $"v{_appVersion}";
                     bool isAlphaChannel = infoVersion.Contains("-");
                     _updateChecker = new PRoCon.Core.Updates.UpdateChecker(infoVersion, includePreReleases: isAlphaChannel);
                     _updateChecker.UpdateAvailable += OnUpdateAvailable;
@@ -1163,7 +1167,7 @@ namespace PRoCon.UI.Views
             if (_serverList != null) _serverList.SelectedItem = null;
 
             ClearServerContext();
-            UpdateStatus("TextSecondaryBrush", "PRoCon Frostbite 2.0");
+            UpdateStatus("TextSecondaryBrush", $"PRoCon Frostbite v{_appVersion}");
             UpdateSidebarButtons();
             UpdateContentVisibility();
             RefreshDashboardCards();

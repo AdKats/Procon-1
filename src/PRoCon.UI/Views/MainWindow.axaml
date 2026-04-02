@@ -215,7 +215,7 @@
                    Foreground="{DynamicResource TextDisabledBrush}" FontSize="9"
                    HorizontalAlignment="Right" VerticalAlignment="Center">
           <Run Text="PRoCon" /><Run Text=" " />
-          <Run Text="v2.0.0" Foreground="{DynamicResource TextSecondaryBrush}" />
+          <Run x:Name="VersionRun" Text="" Foreground="{DynamicResource TextSecondaryBrush}" />
         </TextBlock>
       </DockPanel>
     </Border>
