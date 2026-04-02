@@ -63,6 +63,32 @@ namespace PRoCon.Service
                 _application = new PRoConApplication(true, args);
                 _application.Execute();
                 _logger.LogInformation("PRoCon Application started successfully.");
+
+                // CLI/env var server connection (one server per launch)
+                string rconHost = GetArg(args, "--rcon-host") ?? Environment.GetEnvironmentVariable("PROCON_RCON_HOST");
+                string rconPortStr = GetArg(args, "--rcon-port") ?? Environment.GetEnvironmentVariable("PROCON_RCON_PORT");
+                string rconPass = GetArg(args, "--rcon-pass") ?? Environment.GetEnvironmentVariable("PROCON_RCON_PASS");
+
+                if (!string.IsNullOrEmpty(rconHost) && ushort.TryParse(rconPortStr, out ushort rconPort))
+                {
+                    _logger.LogInformation("Connecting to {Host}:{Port}...", rconHost, rconPort);
+                    var client = _application.AddConnection(rconHost, rconPort, "default", rconPass ?? "");
+                    if (client != null)
+                    {
+                        client.AutomaticallyConnect = true;
+
+                        // Layer enable (optional)
+                        string layerPortStr = GetArg(args, "--layer-port") ?? Environment.GetEnvironmentVariable("PROCON_LAYER_PORT");
+                        bool layerEnable = HasFlag(args, "--layer-enable") ||
+                                           string.Equals(Environment.GetEnvironmentVariable("PROCON_LAYER_ENABLE"), "true", StringComparison.OrdinalIgnoreCase);
+                        if (layerEnable)
+                        {
+                            ushort layerPort = ushort.TryParse(layerPortStr, out var lp) ? lp : (ushort)27260;
+                            client.ProconProtectedLayerEnable(true, layerPort, "0.0.0.0", "PRoCon[%servername%]");
+                            _logger.LogInformation("Layer enabled on port {Port}", layerPort);
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -82,6 +108,22 @@ namespace PRoCon.Service
             });
 
             return Task.CompletedTask;
+        }
+
+        private static string GetArg(string[] args, string flag)
+        {
+            for (int i = 0; i < args.Length - 1; i++)
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                    return args[i + 1];
+            return null;
+        }
+
+        private static bool HasFlag(string[] args, string flag)
+        {
+            for (int i = 0; i < args.Length; i++)
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            return false;
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)

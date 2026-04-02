@@ -51,11 +51,41 @@ namespace PRoCon.Console
                     System.Console.WriteLine($"Data directory: {ProConPaths.DataDirectory}");
                     if (ProConPaths.IsContainer)
                         System.Console.WriteLine("Container detected — using /config/");
+                    System.Console.WriteLine("Flags:");
+                    System.Console.WriteLine("  --rcon-host <ip> --rcon-port <port> --rcon-pass <pass>");
+                    System.Console.WriteLine("  --layer-enable --layer-port <port>");
+                    System.Console.WriteLine("  --datadir <path>  --interactive / -i");
                     System.Console.WriteLine();
 
                     application.Execute();
 
                     GC.Collect();
+
+                    // CLI/env var server connection (one server per launch)
+                    string rconHost = GetArg(args, "--rcon-host") ?? Environment.GetEnvironmentVariable("PROCON_RCON_HOST");
+                    string rconPortStr = GetArg(args, "--rcon-port") ?? Environment.GetEnvironmentVariable("PROCON_RCON_PORT");
+                    string rconPass = GetArg(args, "--rcon-pass") ?? Environment.GetEnvironmentVariable("PROCON_RCON_PASS");
+
+                    if (!string.IsNullOrEmpty(rconHost) && ushort.TryParse(rconPortStr, out ushort rconPort))
+                    {
+                        System.Console.WriteLine($"Connecting to {rconHost}:{rconPort}...");
+                        var client = application.AddConnection(rconHost, rconPort, "default", rconPass ?? "");
+                        if (client != null)
+                        {
+                            client.AutomaticallyConnect = true;
+
+                            // Layer enable (optional)
+                            string layerPortStr = GetArg(args, "--layer-port") ?? Environment.GetEnvironmentVariable("PROCON_LAYER_PORT");
+                            bool layerEnable = HasFlag(args, "--layer-enable") ||
+                                               string.Equals(Environment.GetEnvironmentVariable("PROCON_LAYER_ENABLE"), "true", StringComparison.OrdinalIgnoreCase);
+                            if (layerEnable)
+                            {
+                                ushort layerPort = ushort.TryParse(layerPortStr, out var lp) ? lp : (ushort)27260;
+                                client.ProconProtectedLayerEnable(true, layerPort, "0.0.0.0", "PRoCon[%servername%]");
+                                System.Console.WriteLine($"Layer enabled on port {layerPort}");
+                            }
+                        }
+                    }
 
                     // Game server health monitoring (optional, set via env vars)
                     string gameServerIP = Environment.GetEnvironmentVariable("PROCON_GAMESERVER_IP") ?? "";
@@ -137,6 +167,22 @@ namespace PRoCon.Console
                 System.Console.WriteLine("Already running — shutting down.");
                 Thread.Sleep(50);
             }
+        }
+
+        static string GetArg(string[] args, string flag)
+        {
+            for (int i = 0; i < args.Length - 1; i++)
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                    return args[i + 1];
+            return null;
+        }
+
+        static bool HasFlag(string[] args, string flag)
+        {
+            for (int i = 0; i < args.Length; i++)
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            return false;
         }
     }
 }

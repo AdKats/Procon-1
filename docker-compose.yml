@@ -8,9 +8,14 @@ services:
     volumes:
       - ./data:/config  # Configs, Plugins, Logs, Cache
     environment:
+      PROCON_RCON_HOST: ""          # Game server IP
+      PROCON_RCON_PORT: ""          # Game server RCON port
+      PROCON_RCON_PASS: ""          # Game server RCON password
+      # PROCON_LAYER_ENABLE: "true"
+      # PROCON_LAYER_PORT: "27260"
       # Optional: game server health monitoring
-      # - PROCON_GAMESERVER_IP=your.server.ip
-      # - PROCON_GAMESERVER_PORT=47200
+      # PROCON_GAMESERVER_IP: ""
+      # PROCON_GAMESERVER_PORT: ""
     healthcheck:
       test: ["CMD", "pgrep", "-f", "PRoCon.Console"]
       interval: 30s
