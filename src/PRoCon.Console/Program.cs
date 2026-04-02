@@ -87,6 +87,24 @@ namespace PRoCon.Console
                         }
                     }
 
+                    // Interactive console mode (opt-in)
+                    bool interactive = false;
+                    for (int ia = 0; ia < args.Length; ia++)
+                    {
+                        if (string.Equals(args[ia], "--interactive", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(args[ia], "-i", StringComparison.OrdinalIgnoreCase))
+                        {
+                            interactive = true;
+                            break;
+                        }
+                    }
+
+                    if (interactive)
+                    {
+                        var interactiveConsole = new InteractiveConsole(application, exitEvent);
+                        interactiveConsole.Start();
+                    }
+
                     // Game server health monitoring (optional, set via env vars)
                     string gameServerIP = Environment.GetEnvironmentVariable("PROCON_GAMESERVER_IP") ?? "";
                     if (gameServerIP != "")
