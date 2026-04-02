@@ -90,6 +90,9 @@ jobs:
         if: matrix.rid != 'linux-arm64'
         run: dotnet publish src/PRoCon.UI/PRoCon.UI.csproj -c Release -r ${{ matrix.rid }} --self-contained -o publish/ui-${{ matrix.rid }}
 
+      - name: Publish Service
+        run: dotnet publish src/PRoCon.Service/PRoCon.Service.csproj -c Release -r ${{ matrix.rid }} --self-contained -o publish/service-${{ matrix.rid }}
+
       - name: Upload artifacts
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
@@ -130,6 +133,14 @@ jobs:
           Copy-Item -Path "src/PRoCon.UI/procon.ico" -Destination "PRoCon/procon.ico" -Force
           Write-Host "Staged application files:"
           Get-ChildItem PRoCon/ | ForEach-Object { Write-Host "  $_" }
+
+          # Stage Service files
+          if (Test-Path "artifacts/service-win-x64") {
+            if (!(Test-Path "PRoCon/Service")) { New-Item -ItemType Directory -Path "PRoCon/Service" | Out-Null }
+            Copy-Item -Path "artifacts/service-win-x64/*" -Destination "PRoCon/Service/" -Recurse -Force
+            Write-Host "Staged Service files:"
+            Get-ChildItem PRoCon/Service/ | ForEach-Object { Write-Host "  $_" }
+          }
 
       - name: Clone plugins repository
         shell: pwsh
@@ -318,7 +329,7 @@ jobs:
             rid=$(echo "$dir" | sed 's/procon-//' | sed 's/\///')
             # Skip installer artifact directory
             if [ "$rid" = "installer" ]; then continue; fi
-            for type in console ui; do
+            for type in console ui service; do
               if [ -d "$dir/$type-$rid" ]; then
                 cd "$dir/$type-$rid"
                 tar czf "../../../Procon-${type}-${rid}.tar.gz" .
