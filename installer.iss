@@ -64,6 +64,7 @@ Name: "core"; Description: "PRoCon v2 Application"; Types: full bf4only bf3only 
 Name: "plugins"; Description: "Game Server Plugins"; Types: full bf4only bf3only
 Name: "plugins\bf4"; Description: "Battlefield 4 Plugins (15 plugins)"; Types: full bf4only
 Name: "plugins\bf3"; Description: "Battlefield 3 Plugins (15 plugins)"; Types: full bf3only
+Name: "console"; Description: "PRoCon Console (headless / Docker)"; Types: full custom
 Name: "service"; Description: "PRoCon Service (background service)"; Types: full custom
 
 [Tasks]
@@ -75,7 +76,9 @@ Name: "firewall"; Description: "Add Windows Firewall exception"; GroupDescriptio
 [Files]
 ; Core application
 Source: "PRoCon\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
-; Service (optional — only if staged by CI)
+; Console (optional — headless mode)
+Source: "PRoCon\Console\*"; DestDir: "{app}\Console"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: console
+; Service (optional — background service)
 Source: "PRoCon\Service\*"; DestDir: "{app}\Service"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: service
 ; Service helper scripts
 Source: "install-service.bat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: service
@@ -136,6 +139,7 @@ Type: files; Name: "{app}\*.json"
 Type: files; Name: "{app}\*.ico"
 Type: files; Name: "{app}\install-info.txt"
 Type: files; Name: "{app}\procon-ui-crash.log"
+Type: filesandordirs; Name: "{app}\Console"
 Type: filesandordirs; Name: "{app}\Service"
 
 [UninstallDelete]
