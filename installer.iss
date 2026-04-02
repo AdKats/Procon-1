@@ -76,10 +76,8 @@ Name: "firewall"; Description: "Add Windows Firewall exception"; GroupDescriptio
 [Files]
 ; Core application
 Source: "PRoCon\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
-; Console (optional — headless mode)
-Source: "PRoCon\Console\*"; DestDir: "{app}\Console"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: console
-; Service (optional — background service)
-Source: "PRoCon\Service\*"; DestDir: "{app}\Service"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: service
+; Console and Service are single-file exes in the root alongside the UI
+; They share the same runtime, so no subdirectory needed
 ; Service helper scripts
 Source: "install-service.bat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: service
 Source: "uninstall-service.bat"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist; Components: service
@@ -139,8 +137,6 @@ Type: files; Name: "{app}\*.json"
 Type: files; Name: "{app}\*.ico"
 Type: files; Name: "{app}\install-info.txt"
 Type: files; Name: "{app}\procon-ui-crash.log"
-Type: filesandordirs; Name: "{app}\Console"
-Type: filesandordirs; Name: "{app}\Service"
 
 [UninstallDelete]
 ; Clean up generated files (but not configs — user data)

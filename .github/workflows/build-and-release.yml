@@ -134,20 +134,14 @@ jobs:
           Write-Host "Staged application files:"
           Get-ChildItem PRoCon/ | ForEach-Object { Write-Host "  $_" }
 
-          # Stage Console files
+          # Stage Console and Service files into root alongside UI
           if (Test-Path "artifacts/console-win-x64") {
-            if (!(Test-Path "PRoCon/Console")) { New-Item -ItemType Directory -Path "PRoCon/Console" | Out-Null }
-            Copy-Item -Path "artifacts/console-win-x64/*" -Destination "PRoCon/Console/" -Recurse -Force
-            Write-Host "Staged Console files:"
-            Get-ChildItem PRoCon/Console/ | ForEach-Object { Write-Host "  $_" }
+            Copy-Item -Path "artifacts/console-win-x64/*" -Destination "PRoCon/" -Recurse -Force
+            Write-Host "Staged Console files"
           }
-
-          # Stage Service files
           if (Test-Path "artifacts/service-win-x64") {
-            if (!(Test-Path "PRoCon/Service")) { New-Item -ItemType Directory -Path "PRoCon/Service" | Out-Null }
-            Copy-Item -Path "artifacts/service-win-x64/*" -Destination "PRoCon/Service/" -Recurse -Force
-            Write-Host "Staged Service files:"
-            Get-ChildItem PRoCon/Service/ | ForEach-Object { Write-Host "  $_" }
+            Copy-Item -Path "artifacts/service-win-x64/*" -Destination "PRoCon/" -Recurse -Force
+            Write-Host "Staged Service files"
           }
 
       - name: Clone plugins repository
