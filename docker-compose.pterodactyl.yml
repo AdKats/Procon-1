@@ -1,0 +1,21 @@
+# Pterodactyl / Game Panel deployment
+# The panel maps /home/container to user-accessible SFTP storage.
+# Use --datadir to point PRoCon data to the panel-managed directory.
+services:
+  procon:
+    build: .
+    container_name: procon
+    restart: unless-stopped
+    stdin_open: true        # Keep stdin open for interactive console
+    tty: true               # Allocate TTY for Pterodactyl console viewer
+    command: ["/app/PRoCon.Console", "--interactive", "--datadir", "/home/container/procon-data"]
+    ports:
+      - "27260:27260"
+    volumes:
+      - /home/container/procon-data/Configs:/home/container/procon-data/Configs
+      - /home/container/procon-data/Plugins:/home/container/procon-data/Plugins
+      - /home/container/procon-data/Logs:/home/container/procon-data/Logs
+    environment:
+      PROCON_RCON_HOST: ""
+      PROCON_RCON_PORT: ""
+      PROCON_RCON_PASS: ""

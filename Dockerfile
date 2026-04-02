@@ -27,6 +27,9 @@ RUN chmod +x /app/PRoCon.Console
 # Mount a volume here for persistent configs, plugins, logs, cache
 VOLUME /config
 
+# Pre-create data subdirectories so volume mounts work on first run
+RUN mkdir -p /config/Configs /config/Plugins /config/Logs /config/Cache
+
 EXPOSE 27260
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
