@@ -82,6 +82,28 @@
         </StackPanel>
       </Border>
 
+      <!-- What's New -->
+      <Border Background="{DynamicResource SurfaceBrush}"
+              BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+              CornerRadius="3" Padding="16" Margin="0,0,0,12">
+        <StackPanel Spacing="8">
+          <DockPanel>
+            <Button DockPanel.Dock="Right" Name="RefreshChangelogButton" Content="REFRESH"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Padding="10,4" CornerRadius="3" FontSize="9" FontWeight="SemiBold"
+                    Click="OnRefreshChangelog" />
+            <TextBlock Text="What's New" FontSize="15" FontWeight="SemiBold"
+                       Foreground="{DynamicResource PrimaryBrush}" VerticalAlignment="Center" />
+          </DockPanel>
+          <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+            <TextBlock Name="ChangelogText" Text="Click REFRESH to load release notes..."
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                       TextWrapping="Wrap" />
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+
       <!-- About -->
       <Border Background="{DynamicResource SurfaceBrush}"
               BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"

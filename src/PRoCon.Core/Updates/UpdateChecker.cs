@@ -24,6 +24,7 @@ namespace PRoCon.Core.Updates
         public string HtmlUrl { get; set; }
         public bool IsPreRelease { get; set; }
         public DateTime PublishedAt { get; set; }
+        public string Body { get; set; }
         public List<ReleaseAsset> Assets { get; set; } = new List<ReleaseAsset>();
     }
 
@@ -104,6 +105,45 @@ namespace PRoCon.Core.Updates
             });
         }
 
+        /// <summary>
+        /// Fetches recent v2.x releases from GitHub for the changelog viewer.
+        /// </summary>
+        public async Task<List<UpdateInfo>> GetRecentReleasesAsync(int maxCount = 10, CancellationToken ct = default)
+        {
+            var results = new List<UpdateInfo>();
+            try
+            {
+                using var response = await _httpClient.GetAsync(ReleasesUrl, ct).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                JArray releases = JArray.Parse(json);
+
+                foreach (JToken release in releases)
+                {
+                    ct.ThrowIfCancellationRequested();
+                    if (results.Count >= maxCount) break;
+
+                    string tagName = release.Value<string>("tag_name");
+                    if (string.IsNullOrEmpty(tagName)) continue;
+                    if (!tagName.StartsWith("v2", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!SemanticVersion.TryParse(tagName, out SemanticVersion version)) continue;
+
+                    results.Add(new UpdateInfo
+                    {
+                        TagName = tagName,
+                        Version = version,
+                        HtmlUrl = release.Value<string>("html_url"),
+                        IsPreRelease = release.Value<bool>("prerelease"),
+                        PublishedAt = release.Value<DateTime>("published_at"),
+                        Body = release.Value<string>("body") ?? "",
+                        Assets = ParseAssets(release["assets"])
+                    });
+                }
+            }
+            catch { }
+            return results;
+        }
+
         private async Task CheckSilently()
         {
             try
@@ -174,6 +214,7 @@ namespace PRoCon.Core.Updates
                         HtmlUrl = release.Value<string>("html_url"),
                         IsPreRelease = isPreRelease,
                         PublishedAt = release.Value<DateTime>("published_at"),
+                        Body = release.Value<string>("body") ?? "",
                         Assets = ParseAssets(release["assets"])
                     };
                 }
