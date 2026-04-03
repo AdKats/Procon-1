@@ -91,6 +91,19 @@ namespace PRoCon.Core.Updates
             _timer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
+        /// <summary>
+        /// Forces an immediate update check, resetting the "already reported" guard.
+        /// </summary>
+        public void ForceCheck()
+        {
+            _lastReportedVersion = null;
+            _ = Task.Run(async () =>
+            {
+                try { await CheckSilently().ConfigureAwait(false); }
+                catch { }
+            });
+        }
+
         private async Task CheckSilently()
         {
             try

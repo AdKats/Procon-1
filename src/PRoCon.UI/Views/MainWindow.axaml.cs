@@ -291,6 +291,7 @@ namespace PRoCon.UI.Views
                 _punkBusterPanel = new PunkBusterPanel();
                 _textChatModerationPanel = new TextChatModerationPanel();
                 _optionsPanel = new OptionsPanel();
+                _optionsPanel.OnForceUpdateCheck = () => _updateChecker?.ForceCheck();
             }
             catch (Exception ex)
             {

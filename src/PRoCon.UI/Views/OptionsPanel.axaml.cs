@@ -15,6 +15,11 @@ namespace PRoCon.UI.Views
     {
         private PRoConApplication _application;
 
+        /// <summary>
+        /// Callback set by MainWindow to trigger an update check.
+        /// </summary>
+        public Action OnForceUpdateCheck { get; set; }
+
         public OptionsPanel()
         {
             InitializeComponent();
@@ -170,6 +175,22 @@ namespace PRoCon.UI.Views
                 status.Text = string.IsNullOrEmpty(key)
                     ? "Using free tier (1,000 queries/day). Key cleared."
                     : "API key saved. Using paid tier.";
+        }
+
+        private void OnCheckForUpdates(object sender, RoutedEventArgs e)
+        {
+            var statusText = this.FindControl<TextBlock>("UpdateCheckStatusText");
+            if (statusText != null) statusText.Text = "Checking...";
+
+            if (OnForceUpdateCheck != null)
+            {
+                OnForceUpdateCheck();
+                if (statusText != null) statusText.Text = "Check triggered — see banner if update found.";
+            }
+            else
+            {
+                if (statusText != null) statusText.Text = "Update checker not available.";
+            }
         }
     }
 }

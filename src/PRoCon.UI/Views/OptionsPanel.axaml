@@ -103,6 +103,16 @@
                      Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,4,0,0" />
           <TextBlock Text="Licensed under GPLv3."
                      Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" />
+          <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,6,0,0">
+            <Button Name="CheckUpdateButton" Content="CHECK FOR UPDATES"
+                    Background="{DynamicResource ButtonSecondaryBrush}"
+                    Foreground="{DynamicResource ButtonSecondaryTextBrush}"
+                    Padding="12,5" CornerRadius="3" FontSize="10" FontWeight="SemiBold"
+                    Click="OnCheckForUpdates" />
+            <TextBlock Name="UpdateCheckStatusText" Text=""
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                       VerticalAlignment="Center" />
+          </StackPanel>
         </StackPanel>
       </Border>
 
