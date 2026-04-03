@@ -368,31 +368,74 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           TAG: ${{ github.ref_name }}
           IS_PRE: ${{ steps.release_type.outputs.prerelease }}
+          REPO: ${{ github.repository }}
         run: |
           VERSION="${TAG#v}"
-          if [ "$IS_PRE" = "true" ]; then
-            TITLE="PRoCon ${VERSION} (Pre-Release)"
-            COLOR=16744448
-          else
-            TITLE="PRoCon ${VERSION} Released"
-            COLOR=3066993
-          fi
-          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+          RELEASE_URL="https://github.com/${REPO}/releases/tag/${TAG}"
+          COMPARE_URL="https://github.com/${REPO}/compare/$(git describe --tags --abbrev=0 ${TAG}^)...${TAG}"
 
-          # Count assets
-          ASSET_LIST=""
+          if [ "$IS_PRE" = "true" ]; then
+            TITLE="🚀 PRoCon ${VERSION} Pre-Release"
+            COLOR=16744448
+            BADGE="⚠️ PRE-RELEASE"
+          else
+            TITLE="🎉 PRoCon ${VERSION} Released!"
+            COLOR=3066993
+            BADGE="✅ STABLE"
+          fi
+
+          # Get commit messages since last tag for changelog
+          PREV_TAG=$(git describe --tags --abbrev=0 ${TAG}^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"• %s" ${PREV_TAG}..${TAG} | head -15)
+          else
+            CHANGELOG="• Initial release"
+          fi
+          # Escape for JSON
+          CHANGELOG=$(echo "$CHANGELOG" | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+
+          # Build asset list
+          ASSETS=""
           for f in PRoCon-*.exe; do
-            [ -f "$f" ] && ASSET_LIST="${ASSET_LIST}- **Windows Installer**: ${f}\n"
+            [ -f "$f" ] && ASSETS="${ASSETS}🖥️ **Windows Installer**: \`${f}\`\\n"
           done
-          ASSET_LIST="${ASSET_LIST}- Linux, macOS, and Windows archives\n- SHA256 checksums"
+          ASSETS="${ASSETS}🐧 Linux (x64, arm64)\\n"
+          ASSETS="${ASSETS}🍎 macOS (x64, arm64)\\n"
+          ASSETS="${ASSETS}🔒 SHA256 checksums"
+
+          # Platform count
+          ARCHIVE_COUNT=$(ls Procon-*.tar.gz 2>/dev/null | wc -l)
 
           curl -sf -H "Content-Type: application/json" -d "{
+            \"content\": null,
             \"embeds\": [{
               \"title\": \"${TITLE}\",
               \"url\": \"${RELEASE_URL}\",
               \"color\": ${COLOR},
-              \"description\": \"A new PRoCon release is available.\n\n**Download:** [${TAG}](${RELEASE_URL})\n\n**Assets:**\n${ASSET_LIST}\",
-              \"footer\": { \"text\": \"PRoCon Frostbite RCON Tool\" },
+              \"description\": \"${BADGE}\\n\\nPRoCon Frostbite RCON Tool — a new version is ready to download.\",
+              \"fields\": [
+                {
+                  \"name\": \"📋 Changes\",
+                  \"value\": \"${CHANGELOG}\",
+                  \"inline\": false
+                },
+                {
+                  \"name\": \"📦 Downloads (${ARCHIVE_COUNT} platforms)\",
+                  \"value\": \"${ASSETS}\",
+                  \"inline\": false
+                },
+                {
+                  \"name\": \"🔗 Links\",
+                  \"value\": \"[📥 Download](${RELEASE_URL}) • [📝 Full Changelog](${COMPARE_URL}) • [⭐ GitHub](https://github.com/${REPO})\",
+                  \"inline\": false
+                }
+              ],
+              \"thumbnail\": {
+                \"url\": \"https://raw.githubusercontent.com/${REPO}/master/src/PRoCon.UI/Assets/myrcon_logo.png\"
+              },
+              \"footer\": {
+                \"text\": \"PRoCon Frostbite • ${VERSION} • $(date -u +%B\\ %d,\\ %Y)\"
+              },
               \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
             }]
           }" "$DISCORD_WEBHOOK"
