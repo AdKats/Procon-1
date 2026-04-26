@@ -118,7 +118,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Download win-x64 artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: procon-win-x64
           path: artifacts/
@@ -312,7 +312,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts/
 
